@@ -1,0 +1,24 @@
+{
+  "snownova.ice_crystal": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_crystal" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_crystal"
+  },
+  "snownova.ice_whirlwind": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_whirlwind" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_whirlwind"
+  },
+  "music.permafrost": {
+    "sounds": [
+      "torchesbecomesunlight:music/permafrost"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.permafrost",
+    "stream": true
+  },
+  "music.lullabye": {
+    "sounds": [
+      "torchesbecomesunlight:music/lullabye"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.lullabye",
+    "stream": true
+  }
+}
