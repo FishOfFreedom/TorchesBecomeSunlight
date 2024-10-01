@@ -16,6 +16,7 @@ import com.freefish.torchesbecomesunlight.server.world.structure.STStructures;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -30,14 +31,21 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Mod(TorchesBecomeSunlight.MOD_ID)
 public class TorchesBecomeSunlight
 {
     public static final String MOD_ID = "torchesbecomesunlight";
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Map<UUID, ResourceLocation> bossBarRegistryNames = new HashMap<>();
 
     public static SimpleChannel NETWORK;
 
@@ -101,6 +109,12 @@ public class TorchesBecomeSunlight
             if(!livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).isPresent()){
                 event.addCapability(new ResourceLocation(MOD_ID,"frozen"),new FrozenCapabilityProvider());
             }
+        }
+    }
+
+    public static <MSG> void sendMSGToAll(MSG message) {
+        for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
+            NETWORK.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 }

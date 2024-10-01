@@ -20,5 +20,6 @@ public class ModGroup {
                     .displayItems((parameters,output) ->{
                         output.accept(ItemRegistry.TEST_ITEM.get());
                         output.accept(ItemRegistry.SPEED_ITEM.get());
+                        output.accept(ItemRegistry.Animation_ITEM.get());
                     }).build());
 }

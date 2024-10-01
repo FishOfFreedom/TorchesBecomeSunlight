@@ -17,7 +17,6 @@ public class StartDialogueMessage {
     private Dialogue dialogue;
 
     public StartDialogueMessage(){
-
     }
 
     public StartDialogueMessage(Dialogue dialogue,int dialogueEntity,Entity ... entities) {

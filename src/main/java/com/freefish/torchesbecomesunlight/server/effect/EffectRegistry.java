@@ -12,4 +12,10 @@ public class EffectRegistry {
 
     public static final RegistryObject<Freeze> FREEZE =
             POTIONS.<Freeze>register("freeze", Freeze::new);
+    public static final RegistryObject<DeepFear> DEEP_FEAR =
+            POTIONS.<DeepFear>register("deep_fear", DeepFear::new);
+    public static final RegistryObject<Windigo> WINDIGO =
+            POTIONS.<Windigo>register("windigo", Windigo::new);
+    public static final RegistryObject<SongOFGuerrilla> SONG_OF_GUERRILLA =
+            POTIONS.<SongOFGuerrilla>register("song_of_guerrilla", SongOFGuerrilla::new);
 }

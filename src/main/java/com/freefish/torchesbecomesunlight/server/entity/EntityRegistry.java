@@ -2,13 +2,16 @@ package com.freefish.torchesbecomesunlight.server.entity;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.effect.EntityFallingBlock;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceWallEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova1;
 import com.freefish.torchesbecomesunlight.server.entity.help.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.help.SpeedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BigIceCrystal;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.HalberdOTIEntity;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceBlade;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceCrystal;
 import com.freefish.torchesbecomesunlight.server.entity.villager.Man;
@@ -78,8 +81,20 @@ public class EntityRegistry {
                     setUpdateInterval(Integer.MAX_VALUE).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "ice_wall").toString()));
 
     public static final RegistryObject<EntityType<IceBlade>> ICE_BLADE = ENTITY_TYPE.register("ice_blade",
-                    () -> EntityType.Builder.<IceBlade>of(IceBlade::new, MobCategory.MISC).sized(0.4f, 3f)
+                    () -> EntityType.Builder.<IceBlade>of(IceBlade::new, MobCategory.MISC).sized(3f, 0.8f)
                             .setUpdateInterval(1).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "ice_blade").toString()));
+
+    public static final RegistryObject<EntityType<HalberdOTIEntity>> HALBERD_OTI_ENTITY = ENTITY_TYPE.register("halberd_of_the_infected",
+            () -> EntityType.Builder.<HalberdOTIEntity>of(HalberdOTIEntity::new, MobCategory.MISC)
+                    .sized(1F, 1F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "halberd_of_the_infected").toString()));
+
+    public static final RegistryObject<EntityType<EntityFallingBlock>> FALLING_BLOCK = ENTITY_TYPE.register("falling_block",
+            () -> EntityType.Builder.<EntityFallingBlock>of(EntityFallingBlock::new, MobCategory.MISC)
+                    .sized(1, 1).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "falling_block").toString()));
+
+    public static final RegistryObject<EntityType<Patriot>> PATRIOT = ENTITY_TYPE.register("patriot",
+            () -> EntityType.Builder.<Patriot>of(Patriot::new, MobCategory.CREATURE)
+                    .sized(1F, 3.5F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "patriot").toString()));
 
 
     @SubscribeEvent
@@ -87,5 +102,6 @@ public class EntityRegistry {
         event.put(EntityRegistry.SNOWNOVA.get(), SnowNova.createAttributes().build());
         event.put(EntityRegistry.SNOWNOVA1.get(), SnowNova1.createAttributes().build());
         event.put(EntityRegistry.MAN.get(), Man.createAttributes().build());
+        event.put(EntityRegistry.PATRIOT.get(), Patriot.createAttributes().build());
     }
 }

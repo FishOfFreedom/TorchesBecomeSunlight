@@ -15,10 +15,17 @@ public class SoundRegistry {
     // SnowNova
     public static final RegistryObject<SoundEvent> ICE_CRYSTAL = create("snownova.ice_crystal");
     public static final RegistryObject<SoundEvent> ICE_WHIRLWIND = create("snownova.ice_whirlwind");
+    public static final RegistryObject<SoundEvent> ICE_WIND = create("snownova.ice_wind");
+    public static final RegistryObject<SoundEvent> ICE_DASH = create("snownova.ice_dash");
+    public static final RegistryObject<SoundEvent> ICE_GROUND = create("snownova.ice_ground");
+
+    // Patriot
+    public static final RegistryObject<SoundEvent> GIANT_STEP = create("giant_step");
 
     // Music
     public static final RegistryObject<SoundEvent> SNOWNOVA_LULLABYE = create("music.lullabye");
     public static final RegistryObject<SoundEvent> SNOWNOVA_PERMAFROST = create("music.permafrost");
+    public static final RegistryObject<SoundEvent> PATRIOT_UNYIELDING = create("music.unyielding");
 
     private static RegistryObject<SoundEvent> create(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, name)));

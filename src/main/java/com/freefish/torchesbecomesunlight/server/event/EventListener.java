@@ -9,6 +9,8 @@ import com.freefish.torchesbecomesunlight.server.command.SetStoryStateCommand;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.freefish.torchesbecomesunlight.server.story.ProcessManage;
+import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
+import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.quest.QuestBase;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.quest.TalkWithEntity;
@@ -148,15 +150,17 @@ public class EventListener {
                     Mob entity = (Mob)dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()];
                     dialogueTrigger.trigger(entity);
                     ServerNetwork.toServerMessage(new DialogueTriggerMessage(entity.getId(),dialogueEntity.getDialogue(),number));
-                    dialogueEntity.setDialogue(null);
                 }
                 else {
                     if (dialogueEntity.getDialogue().getNextDialogue() != null) {
                         dialogueEntity.setOldOptions(dialogueEntity.getDialogue().getOptions().size());
                         dialogueEntity.startSpeak(dialogueEntity.getDialogue().getNextDialogue(), 100);
-                    } else
-                        dialogueEntity.setDialogue(null);
+                    }
                 }
+                if(dialogueTrigger.getNextDialogue() != null)
+                    dialogueEntity.startSpeak(dialogueTrigger.getNextDialogue(),100);
+                else
+                    dialogueEntity.setDialogue(null);
                 dialogueEntity.setNumber(0);
                 event.setCanceled(true);
             }

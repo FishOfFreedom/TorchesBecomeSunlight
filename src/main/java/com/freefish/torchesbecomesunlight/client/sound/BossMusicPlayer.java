@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.sound;
 
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 public class BossMusicPlayer {
     public static BossMusicSound bossMusic;
 
-    public static void playBossMusic(AnimatedEntity entity) {
+    public static void playBossMusic(FreeFishEntity entity) {
         SoundEvent soundEvent = entity.getBossMusic();
         if (soundEvent != null && entity.isAlive()) {
             Player player = Minecraft.getInstance().player;
@@ -36,7 +36,7 @@ public class BossMusicPlayer {
         }
     }
 
-    public static void stopBossMusic(AnimatedEntity entity) {
+    public static void stopBossMusic(FreeFishEntity entity) {
         if (bossMusic != null && bossMusic.getBoss() == entity)
             bossMusic.setBoss(null);
     }

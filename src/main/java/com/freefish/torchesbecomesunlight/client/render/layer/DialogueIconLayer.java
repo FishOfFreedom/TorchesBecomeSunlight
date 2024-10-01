@@ -20,13 +20,13 @@ import software.bernie.shadowed.eliotlash.mclib.utils.MathUtils;
 
 public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<T> {
     private static final ResourceLocation[] DIALOGUE = new ResourceLocation[]{
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon1.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon2.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon3.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon4.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon5.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon6.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueIcon7.png")
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon1.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon2.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon3.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon4.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon5.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon6.png"),
+            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon7.png")
     };
 
     public DialogueIconLayer(GeoRenderer<T> entityRendererIn) {

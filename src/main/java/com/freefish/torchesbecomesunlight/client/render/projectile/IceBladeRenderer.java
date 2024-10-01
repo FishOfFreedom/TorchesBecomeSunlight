@@ -20,7 +20,7 @@ public class IceBladeRenderer extends GeoEntityRenderer<IceBlade> {
     @Override
     public void render(IceBlade entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource bufferIn, int packedLightIn) {
         stack.pushPose(); // 保存当前矩阵状态
-        stack.scale(1.6f, 1.6f, 1.6f);
+        stack.scale(2f, 2f, 2f);
         super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn);
         stack.popPose();
     }

@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.sound;
 
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -8,14 +8,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
 public class BossMusicSound extends AbstractTickableSoundInstance {
-    private AnimatedEntity boss;
+    private FreeFishEntity boss;
     private int ticksExisted = 0;
     private int timeUntilFade;
 
     private final SoundEvent soundEvent;
     ControlledAnimation volumeControl;
 
-    public BossMusicSound(SoundEvent sound, AnimatedEntity boss) {
+    public BossMusicSound(SoundEvent sound, FreeFishEntity boss) {
         super(sound, SoundSource.MUSIC, SoundInstance.createUnseededRandom());
         this.boss = boss;
         this.soundEvent = sound;
@@ -64,11 +64,11 @@ public class BossMusicSound extends AbstractTickableSoundInstance {
         ticksExisted++;
     }
 
-    public void setBoss(AnimatedEntity boss) {
+    public void setBoss(FreeFishEntity boss) {
         this.boss = boss;
     }
 
-    public AnimatedEntity getBoss() {
+    public FreeFishEntity getBoss() {
         return boss;
     }
 

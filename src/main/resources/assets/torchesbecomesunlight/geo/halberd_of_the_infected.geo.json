@@ -13,7 +13,7 @@
 			"bones": [
 				{
 					"name": "halber",
-					"pivot": [0, 4, 0],
+					"pivot": [0, -16, 0],
 					"cubes": [
 						{
 							"origin": [-1, -63, -1],

@@ -3,16 +3,24 @@ package com.freefish.torchesbecomesunlight.server.entity.guerrillas;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.attribute.AttributeRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public abstract class GuerrillasEntity extends AnimatedEntity {
     //private static final EntityDataAccessor<Float> ARMORDURABILITY = SynchedEntityData.defineId(GuerrillasEntity.class, EntityDataSerializers.FLOAT);
@@ -84,4 +92,15 @@ public abstract class GuerrillasEntity extends AnimatedEntity {
     }
 
  */
+    @Nullable
+    public Vec3 findVillage(){
+        if(!level().isClientSide) {
+            ServerLevel serverlevel = (ServerLevel) this.level();
+            BlockPos blockpos = this.blockPosition();
+            SectionPos sectionpos = SectionPos.of(blockpos);
+            SectionPos sectionpos1 = BehaviorUtils.findSectionClosestToVillage(serverlevel, sectionpos, 20);
+            return sectionpos1 != sectionpos ? Vec3.atBottomCenterOf(sectionpos1.center()): null;
+        }
+        return null;
+    }
 }

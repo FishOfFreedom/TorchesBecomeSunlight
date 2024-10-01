@@ -8,6 +8,13 @@ pluginManagement {
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://repo.spongepowered.org/maven' }
     }
+    resolutionStrategy {
+        eachPlugin {
+            if (it.requested.id.namespace == 'org.spongepowered') {
+                it.useModule('org.spongepowered:mixingradle:0.7-SNAPSHOT')
+            }
+        }
+    }
 }
 
 plugins {

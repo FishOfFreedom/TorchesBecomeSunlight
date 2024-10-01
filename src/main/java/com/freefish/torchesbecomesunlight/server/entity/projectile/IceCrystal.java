@@ -96,23 +96,30 @@ public class IceCrystal extends Projectile implements GeoEntity {
     }
 
     private void bomb(@Nullable Entity entity){
-        if(entity !=null){
-            if(entity instanceof LivingEntity livingEntity) {
-                ItemStack pPlayerItemStack = livingEntity.getUseItem();
-                if (!(!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD))) {
-                    livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
-                        data.setFrozen(livingEntity, 150);
-                    });
-                }
+        if(entity instanceof LivingEntity livingEntity){
+            boolean flag = true;
+            if(entity instanceof Player player){
+                ItemStack pPlayerItemStack = player.getUseItem();
+                if(!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD))
+                    flag = false;
+            }
+            if (flag) {
+                livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
+                    data.setFrozen(livingEntity, 150);
+                });
             }
         }
-        List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),hit ->
-                !(hit instanceof GuerrillasEntity)&&hit.distanceTo(this)<3+hit.getBbWidth()/2);
-        for(LivingEntity livingEntity:livingEntities){
-            Entity caster = getOwner();
-            if(caster instanceof SnowNova snowNova) {
-                double damage = snowNova.getAttribute(Attributes.ATTACK_DAMAGE).getValue() * 1.5;
-                livingEntity.hurt(DamageSourceRegistry.SnowMonsterFrozen(snowNova),(float) damage);
+        Entity caster = getOwner();
+
+        if(caster instanceof SnowNova snowNova) {
+            int is1;
+            if(snowNova.getState()==1) is1 = 1;
+            else is1 = 0;
+            List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),hit ->
+                    !(hit instanceof GuerrillasEntity)&&hit.distanceTo(this)<2+is1+hit.getBbWidth()/2);
+            for(LivingEntity livingEntity:livingEntities){
+                    double damage = snowNova.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+                    livingEntity.hurt(DamageSourceRegistry.SnowMonsterFrozen(snowNova),(float) damage);
             }
         }
         playSound(SoundRegistry.ICE_CRYSTAL.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
@@ -140,14 +147,16 @@ public class IceCrystal extends Projectile implements GeoEntity {
             else
                 break;
         }
-        int time = 3 + random.nextInt(3);
-        Vec3 finalVec = new Vec3(getX(),Math.ceil(vec3.y-count2-1),getZ());
-        for(int i = 0;i<time;i++){
-            IceTuft iceTuft = new IceTuft(EntityRegistry.ICE_TUFT.get(), level());
-            iceTuft.setYRot(2*(float)Math.PI*random.nextFloat());
-            iceTuft.setPos(finalVec.add(3-random.nextFloat()*6,0,3-random.nextFloat()*6));
-            if(!level().isClientSide)
-                level().addFreshEntity(iceTuft);
+        Vec3 finalVec = new Vec3(getX(), Math.ceil(vec3.y - count2 - 1), getZ());
+        if(getOwner() instanceof SnowNova snowNova&&snowNova.getState()==1) {
+            int time = 3 + random.nextInt(3);
+            for (int i = 0; i < time; i++) {
+                IceTuft iceTuft = new IceTuft(EntityRegistry.ICE_TUFT.get(), level());
+                iceTuft.setYRot(2 * (float) Math.PI * random.nextFloat());
+                iceTuft.setPos(finalVec.add(3 - random.nextFloat() * 6, 0, 3 - random.nextFloat() * 6));
+                if (!level().isClientSide)
+                    level().addFreshEntity(iceTuft);
+            }
         }
         if(level().isClientSide){
             for(int i = 0;i<4;i++) {

@@ -10,6 +10,7 @@ import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabil
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.EntityRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
 import com.freefish.torchesbecomesunlight.server.entity.help.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.help.SpeedEntity;
@@ -79,8 +80,8 @@ public class TestItem extends Item {
                 else if(mode==Mode.PLAY_ANIMATION){
                     List<AnimatedEntity> entities = level.getEntitiesOfClass(AnimatedEntity.class, player.getBoundingBox().inflate(6));
                     AnimatedEntity livingEntity = MathUtils.getClosestEntity(player, entities);
-                    if(livingEntity instanceof SnowNova snowNova)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova,SnowNova.REMOTE_2);
+                    if(livingEntity instanceof Patriot snowNova)
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova,Patriot.PIERCE2);
                 }
             }
         }

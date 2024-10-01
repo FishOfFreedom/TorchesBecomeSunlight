@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
@@ -20,6 +21,7 @@ public class SnowNova1AttackAI extends Goal {
     private int timeSinceIceJump;
     private int timeSinceIceGround;
     private int timeSinceIceWind;
+    private int timeSinceIceBlade;
 
     private double targetX;
     private double targetY;
@@ -28,12 +30,12 @@ public class SnowNova1AttackAI extends Goal {
 
     public SnowNova1AttackAI(SnowNova mob) {
         this.mob = mob;
-        setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK,Flag.JUMP));
     }
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() != null&&mob.getTarget().isAlive()&&mob.getAnimation()== SnowNova.NO_ANIMATION;
+        return mob.getTarget() != null&&mob.getTarget().isAlive();
     }
 
     public void start() {
@@ -49,72 +51,88 @@ public class SnowNova1AttackAI extends Goal {
 
     public void tick() {
         LivingEntity target = this.mob.getTarget();
+        if (target == null) return;
         RandomSource random = mob.getRandom();
-        final float cycleSpeed = 7.3f;
-        if (target != null) {
-            target.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
-                if(data.isFrozen)
-                    timeSinceDash += 2;
-            });
+        final float cycleSpeed = 8.5f;
 
-            double distToTarget = this.mob.distanceTo(target);
-            if(mob.cycleTime > 0){
-                float speed = ((float) Math.PI*2)/(cycleSpeed/mob.cycleRadius);
-                Vec3 cycle = mob.updateCyclePosition(1.0f/speed);
-                this.mob.getMoveControl().strafe(0, 0);
-                moveMode(cycle);
+        timeSinceDash++;
+        timeSinceIceJump++;
+        mob.timeSinceIceBomb++;
+        timeSinceIceGround++;
+        timeSinceIceWind++;
+        timeSinceIceBlade++;
+
+        if(!(mob.getAnimation()== SnowNova.NO_ANIMATION||mob.getAnimation()==SnowNova.DASH_RUN)) return;
+        if(mob.getAnimation()==SnowNova.DASH_RUN){
+            walk();
+            return;
+        }
+
+        target.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
+            if(data.isFrozen) {
+                timeSinceDash += 4;
+                timeSinceIceBlade +=2;
+            }
+        });
+
+        double distToTarget = this.mob.distanceTo(target);
+        if(mob.cycleTime > 0){
+            float speed = ((float) Math.PI*2)/(cycleSpeed/mob.cycleRadius);
+            Vec3 cycle = mob.updateCyclePosition(1.0f/speed);
+            this.mob.getMoveControl().strafe(0, 0);
+            moveMode(cycle);
+        }
+        else {
+            if (distToTarget > 0.6) {
+                walk();
+            }
+            if(distToTarget >= 6 && distToTarget <= 16 &&timeSinceDash>=160) {
+                timeSinceDash = 0;
+                AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.DASH_RUN);
+            } else if(distToTarget <=5 && timeSinceIceJump>=100){
+                timeSinceIceJump = 0;
+                AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_JUMP);
+            } else if(distToTarget <=3 && mob.timeSinceIceBomb>=100){
+                mob.timeSinceIceBomb = 0;
+                if(mob.getState()==0) {
+                    mob.timeSinceIceBomb = 50;
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.REMOTE_2);
+                }
+                else
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_BOMB);
+            }else if(mob.getState()==1&&distToTarget <=11 && timeSinceIceGround>=140){
+                timeSinceIceGround = 0;
+                AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_GROUND);
+            }
+            else if(distToTarget > 7 && distToTarget < 9.5 && timeSinceIceWind>=100){
+                timeSinceIceWind = 0;
+                AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_WIND);
+            }
+            else if(mob.getState()==1&&distToTarget >= 10 && timeSinceIceBlade>=50){
+                timeSinceIceBlade = 0;
+                AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.REMOTE_3);
+            }
+            if(mob.getState()==0) {
+                if (distToTarget <= 2 + target.getBbWidth()/2) {
+                    if (random.nextFloat() < 0.5)
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ATTACK_1);
+                    else
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ATTACK_2);
+                }
             }
             else {
-                if (distToTarget > 0.6) {
-                    walk();
+                List<IceWallEntity> iceWall = mob.level().getEntitiesOfClass(IceWallEntity.class,mob.getBoundingBox().inflate(3));
+                if(distToTarget <=9&&mob.timeSinceBackJump>=120) {
+                    mob.timeSinceBackJump = 0;
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.BACK_JUMP);
                 }
-                if(distToTarget >= 10 && distToTarget <= 14 &&timeSinceDash>=80) {
-                    timeSinceDash = 0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.DASH);
-                } else
-                if(distToTarget <=5 && timeSinceIceJump>=100){
-                    timeSinceIceJump = 0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_JUMP);
-                } else
-                if(distToTarget <=3 && mob.timeSinceIceBomb>=100){
-                    mob.timeSinceIceBomb = 0;
-                    if(mob.getState()==0) {
-                        mob.timeSinceIceBomb = 50;
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.REMOTE_2);
-                    }
-                    else
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_BOMB);
-                }else
-                if(mob.getState()==1&&distToTarget <=11 && timeSinceIceGround>=60){
-                    timeSinceIceGround = 0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_GROUND);
-                }
-                else if(distToTarget <= 6 && timeSinceIceWind>=40){
-                    timeSinceIceWind = 0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ICE_WIND);
-                }
-                if(mob.getState()==0) {
-                    if (distToTarget <= 2 + target.getBbWidth()/2) {
-                        if (random.nextFloat() < 0.5)
-                            AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ATTACK_1);
-                        else
-                            AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.ATTACK_2);
-                    }
-                }
-                else {
-                    if(distToTarget <=10)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.BACK_JUMP);
-                    else if (distToTarget <= 13) {
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.REMOTE_1);
-                        mob.startCycle(20);
-                    }
+                else if (distToTarget <= 13&&iceWall.isEmpty()) {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(mob, SnowNova.REMOTE_1);
+                    int add = 0;
+                    if(target instanceof Player) add = 20;
+                    mob.startCycle(30+add);
                 }
             }
-            timeSinceDash++;
-            timeSinceIceJump++;
-            mob.timeSinceIceBomb++;
-            timeSinceIceGround++;
-            timeSinceIceWind++;
         }
     }
 
@@ -122,7 +140,6 @@ public class SnowNova1AttackAI extends Goal {
         LivingEntity target = mob.getTarget();
         if(target!=null) {
             double dist = this.mob.distanceToSqr(this.targetX, this.targetY, this.targetZ);
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
             if (--this.rePath <= 0 && (
                     this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D ||
                             target.distanceToSqr(this.targetX, this.targetY, this.targetZ) >= 1.0D) ||
@@ -145,30 +162,21 @@ public class SnowNova1AttackAI extends Goal {
     }
 
     private boolean moveMode(LivingEntity target){
-        List<IceWallEntity> iceWall = mob.level().getEntitiesOfClass(IceWallEntity.class,mob.getBoundingBox().inflate(6),
-                iceWallEntity -> iceWallEntity.distanceTo(mob)<4.5);
-        if(iceWall.isEmpty()) {
+        if(mob.getAnimation()==SnowNova.DASH_RUN)
+            return this.mob.getNavigation().moveTo(target, 1.1);
+        else  {
             if (mob.getState() == 0)
                 return this.mob.getNavigation().moveTo(target, 0.6);
             else
                 return this.mob.getNavigation().moveTo(target, 0.35);
         }
-        else {
-            this.mob.getNavigation().stop();
-            return false;
-        }
     }
 
     private void moveMode(Vec3 vec3){
-        List<IceWallEntity> iceWall = mob.level().getEntitiesOfClass(IceWallEntity.class,mob.getBoundingBox().inflate(6),
-                iceWallEntity -> iceWallEntity.distanceTo(mob)<4.5);
-        if(iceWall.isEmpty()) {
-            if(mob.getState()==0) {
-                this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 0.6);
-            } else {
-                this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 0.35);
-            }
+        if(mob.getState()==0) {
+            this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 0.6);
+        } else {
+            this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 0.35);
         }
-        else this.mob.getNavigation().stop();
     }
 }

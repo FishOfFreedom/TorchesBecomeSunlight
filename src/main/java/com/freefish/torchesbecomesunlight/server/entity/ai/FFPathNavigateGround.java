@@ -14,10 +14,10 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 
-public class EMPathNavigateGround extends GroundPathNavigation {
+public class FFPathNavigateGround extends GroundPathNavigation {
     private static final float EPSILON = 1.0E-8F;
 
-    public EMPathNavigateGround(AnimatedEntity entity, Level world) {
+    public FFPathNavigateGround(AnimatedEntity entity, Level world) {
         super(entity, world);
     }
 
@@ -25,7 +25,7 @@ public class EMPathNavigateGround extends GroundPathNavigation {
     protected net.minecraft.world.level.pathfinder.PathFinder createPathFinder(int maxVisitedNodes) {
         this.nodeEvaluator = new WalkNodeEvaluator();
         this.nodeEvaluator.setCanPassDoors(true);
-        return new EMPathFinder(this.nodeEvaluator, maxVisitedNodes);
+        return new FFPathFinder(this.nodeEvaluator, maxVisitedNodes);
     }
 
     @Override

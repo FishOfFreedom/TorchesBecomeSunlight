@@ -9,13 +9,13 @@ import net.minecraft.world.entity.ai.control.BodyRotationControl;
  * @author EEEAB
  * @since 1.20.1
  */
-public class EMBodyRotationControl extends BodyRotationControl {
+public class FFBodyRotationControl extends BodyRotationControl {
     private static final float MAX_ROTATE = 75;
     private final Mob mob;
     private int headStableTime;
     private float lastStableYHeadRot;
 
-    public EMBodyRotationControl(Mob mob) {
+    public FFBodyRotationControl(Mob mob) {
         super(mob);
         this.mob = mob;
     }

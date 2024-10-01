@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.render.model;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.animation.IAnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -35,17 +36,9 @@ public class SnowNovaModel extends GeoModel<SnowNova> {
         super.setCustomAnimations(animatable, instanceId, animationState);
         CoreGeoBone head = this.getAnimationProcessor().getBone("Head");
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
-        head.setRotX(extraData.headPitch() * 0.017453292F);
-        head.setRotY(extraData.netHeadYaw() * 0.017453292F);
-    }
-
-    @Override
-    public void applyMolangQueries(SnowNova animatable, double animTime) {
-        super.applyMolangQueries(animatable, animTime);
-        MolangParser parser = MolangParser.INSTANCE;
-        LivingEntity livingEntity = animatable;
-        Vec3 velocity = livingEntity.getDeltaMovement();
-        float groundSpeed = Mth.sqrt((float) ((velocity.x * velocity.x) + (velocity.z * velocity.z)));
-        parser.setValue("move_speed", () -> groundSpeed*45);
+        if(animatable.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+            head.setRotX(extraData.headPitch() * 0.017453292F);
+            head.setRotY(extraData.netHeadYaw() * 0.017453292F);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.render.gui.CustomBossBar;
 import com.freefish.torchesbecomesunlight.client.render.util.IceRenderer;
 import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
@@ -9,16 +10,23 @@ import com.freefish.torchesbecomesunlight.server.entity.help.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -30,10 +38,49 @@ import java.util.stream.Collectors;
 public enum ForgeClientEventL {
     INSTANCE;
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void fogRender(ViewportEvent.RenderFog event) {
+        if (event.isCanceled()) {
+            return;
+        }
+        if(ClientStorage.INSTANCE.isBossActive()) {
+            float nearness = 0.5f;
+            float primordialBossAmount = 0.5f;
+            boolean flag = Math.abs(nearness) - 1.0F < 0.01F;
+            if (primordialBossAmount > 0.0F) {
+                flag = true;
+            }
+            if (flag) {
+                event.setCanceled(true);
+                event.setNearPlaneDistance(1);
+                event.setFarPlaneDistance(64);
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void fogColor(ViewportEvent.ComputeFogColor event) {
+        if(ClientStorage.INSTANCE.isBossActive()) {
+            event.setRed(0.6f);
+            event.setGreen(0.6f);
+            event.setBlue(0.6f);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRenderBossBar(CustomizeGuiOverlayEvent.BossEventProgress event){
+        ResourceLocation bossRegistryName = TorchesBecomeSunlight.bossBarRegistryNames.getOrDefault(event.getBossEvent().getId(), null);
+        if (bossRegistryName == null) return;
+        CustomBossBar customBossBar = CustomBossBar.customBossBars.getOrDefault(bossRegistryName, null);
+        if (customBossBar == null) return;
+
+        event.setCanceled(true);
+        customBossBar.renderBossBar(event);
+    }
+
     @SubscribeEvent
     public void onPostRenderLiving(RenderLivingEvent.Post event) {
         LivingEntity entity = event.getEntity();
-
         entity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(frozenCapability -> {
             if(frozenCapability.isFrozen){
                 IceRenderer.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), frozenCapability.frozenTicks);

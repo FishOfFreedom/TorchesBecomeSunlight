@@ -3,10 +3,7 @@ package com.freefish.torchesbecomesunlight.client.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.entity.*;
-import com.freefish.torchesbecomesunlight.client.render.projectile.BigIceCrystalRenderer;
-import com.freefish.torchesbecomesunlight.client.render.projectile.IceBladeRenderer;
-import com.freefish.torchesbecomesunlight.client.render.projectile.IceCrystalRenderer;
-import com.freefish.torchesbecomesunlight.client.render.projectile.IceTuftRenderer;
+import com.freefish.torchesbecomesunlight.client.render.projectile.*;
 import com.freefish.torchesbecomesunlight.server.entity.EntityRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -28,5 +25,8 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityRegistry.ICE_TUFT.get(), IceTuftRenderer::new);
         event.registerEntityRenderer(EntityRegistry.ICE_WALL_ENTITY.get(), VoidRenderer::new);
         event.registerEntityRenderer(EntityRegistry.ICE_BLADE.get(), IceBladeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.FALLING_BLOCK.get(), RenderFallingBlock::new);
+        event.registerEntityRenderer(EntityRegistry.HALBERD_OTI_ENTITY.get(), HalberdOTIRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.PATRIOT.get(), PatriotRenderer::new);
     }
 }

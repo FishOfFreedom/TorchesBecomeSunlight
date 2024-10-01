@@ -1,9 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.event.packet.toclient.AnimationActMessage;
-import com.freefish.torchesbecomesunlight.server.event.packet.toclient.SetStoryStatePacket;
-import com.freefish.torchesbecomesunlight.server.event.packet.toclient.StartDialogueMessage;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.*;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.ilexiconn.llibrary.server.network.AnimationMessage;
 import net.minecraft.network.FriendlyByteBuf;
@@ -33,6 +31,9 @@ public class ServerNetwork {
         registerMessage(SetStoryStatePacket.class, SetStoryStatePacket::serialize, SetStoryStatePacket::deserialize, new SetStoryStatePacket.Handler());
         registerMessage(StartDialogueMessage.class, StartDialogueMessage::serialize, StartDialogueMessage::deserialize, new StartDialogueMessage.Handler());
         registerMessage(DialogueTriggerMessage.class, DialogueTriggerMessage::serialize, DialogueTriggerMessage::deserialize, new DialogueTriggerMessage.Handler());
+        registerMessage(MessageUpdateBossBar.class, MessageUpdateBossBar::serialize, MessageUpdateBossBar::deserialize, new MessageUpdateBossBar.Handler());
+        registerMessage(SetDialogueMessage.class, SetDialogueMessage::serialize, SetDialogueMessage::deserialize, new SetDialogueMessage.Handler());
+        registerMessage(UpdateBossBlizzard.class, UpdateBossBlizzard::serialize, UpdateBossBlizzard::deserialize, new UpdateBossBlizzard.Handler());
     }
 
     private static  <MSG> void registerMessage(final Class<MSG> clazz, final BiConsumer<MSG, FriendlyByteBuf> encoder, final Function<FriendlyByteBuf, MSG> decoder, final BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {

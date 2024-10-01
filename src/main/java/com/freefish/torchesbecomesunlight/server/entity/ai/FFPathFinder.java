@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EMPathFinder extends net.minecraft.world.level.pathfinder.PathFinder {
-    public EMPathFinder(NodeEvaluator processor, int maxVisitedNodes) {
+public class FFPathFinder extends net.minecraft.world.level.pathfinder.PathFinder {
+    public FFPathFinder(NodeEvaluator processor, int maxVisitedNodes) {
         super(processor, maxVisitedNodes);
     }
 

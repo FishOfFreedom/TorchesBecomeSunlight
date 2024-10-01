@@ -1,9 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogue;
 
 import com.freefish.torchesbecomesunlight.server.animation.AnimationActHandler;
+import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +15,8 @@ import java.util.List;
 public class DialogueStore {
     public static List<Dialogue> dialogueList = new ArrayList<>();
     public static int dialogueAmount = 0;
+
+    public static Dialogue NONE = new Dialogue("",null,null,0);
 
     public static Dialogue dialogue3 = new Dialogue("may be you should end dialogue.",null,null,0);
     public static Dialogue dialogue2 = new Dialogue("this is third dialogue!!!", withoutTrigger(Arrays.asList("hello","end")), dialogue3, 1);
@@ -32,6 +37,7 @@ public class DialogueStore {
     public static Dialogue state_1_1 = new Dialogue("是啊,再过几天就是收获的大日子了.", withoutTrigger(Arrays.asList("不赖啊","真不错")), state_1_2, 1);
     public static Dialogue state_1_0 = new Dialogue("今年的庄稼长得可真好,看起来收获的日子不远了吧?", null, state_1_1, 0);
 
+    public static Dialogue snownova_meet_2 = new Dialogue(entity -> {return  "1";},null,null,1);
     public static Dialogue snownova_meet_1 = new Dialogue("有什么事吗?", genList(new DialogueTrigger("没事",0,null),new DialogueTrigger("(挑战)",1,
             entity -> {
                 Player player = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(Player.class,entity.getBoundingBox().inflate(5)));
@@ -41,7 +47,7 @@ public class DialogueStore {
                         snowNova.tempTarget = player;
                     }
                 }
-            })), null, 1);
+            }),new DialogueTrigger("请问这附近哪有村庄吗?",0,snownova_meet_2,null)), null, 1);
 
     public static List<DialogueTrigger> withoutTrigger(List<String> strings){
         List<DialogueTrigger> dialogueTriggers = new ArrayList<>();

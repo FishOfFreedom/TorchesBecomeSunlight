@@ -4,31 +4,40 @@ import com.bobmowzie.mowziesmobs.client.particle.ParticleCloud;
 import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
 import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
 import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
-import com.freefish.torchesbecomesunlight.server.entity.ai.EMBodyRotationControl;
-import com.freefish.torchesbecomesunlight.server.entity.ai.EMPathNavigateGround;
+import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
+import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
 import com.freefish.torchesbecomesunlight.server.entity.ai.attribute.AttributeRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.snownova.SnowNova1AttackAI;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceWallEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.entity.help.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BigIceCrystal;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceBlade;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceCrystal;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.UpdateBossBlizzard;
 import com.freefish.torchesbecomesunlight.server.sound.SoundRegistry;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
+import com.freefish.torchesbecomesunlight.server.util.storage.TBSWorldData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -75,7 +84,7 @@ public class SnowNova extends GuerrillasEntity {
     public final int maxTimeSinceJump = 80;
     public LivingEntity tempTarget;
     private int timeSinceDodge;
-    private int timeSinceBackJump;
+    public int timeSinceBackJump;
     private int defendWilling;
     public int timeSinceIceBomb;
     public int timeSinceIceJump_1;
@@ -87,7 +96,7 @@ public class SnowNova extends GuerrillasEntity {
     public static final AnimationAct<SnowNova> RIGHT_JUMP =new AnimationAct<SnowNova>("rightjump",15);
     public static final AnimationAct<SnowNova> LEFT_JUMP = new AnimationAct<SnowNova>("leftjump",15);
     public static final AnimationAct<SnowNova> DIE = new AnimationAct<SnowNova>("die",100,1);
-    public static final AnimationAct<SnowNova> BACK_JUMP = new AnimationAct<SnowNova>("backjump",16,2){
+    public static final AnimationAct<SnowNova> BACK_JUMP = new AnimationAct<SnowNova>("backjump",16){
         @Override
         public void tickUpdate(SnowNova entity) {
             int tick = entity.getAnimationTick();
@@ -201,7 +210,6 @@ public class SnowNova extends GuerrillasEntity {
         public void stop(SnowNova entity) {
             LivingEntity target = entity.getTarget();
             if(target!=null&&target.distanceTo(entity)<6+target.getBbWidth()/2) {
-                System.out.println("yes");
                 AnimationActHandler.INSTANCE.sendAnimationMessage(entity, SnowNova.BACK_JUMP);
             }
             else
@@ -218,14 +226,12 @@ public class SnowNova extends GuerrillasEntity {
                 entity.locateEntity();
             else if(tick<=15)
                 entity.setForwardMotion(0.1f);
-            //todo dist
             entity.setYRot(entity.yRotO);
             if (tick == 12) {
                 List<LivingEntity> livingEntities = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(15),entity1 ->
                         entity1!=entity&&entity1.distanceTo(entity)<=8&&entity.getY()-entity1.getY()<=3);
                 for(LivingEntity livingEntity:livingEntities) {
                     float dist = Math.lerp(1.66f,0.8f,livingEntity.distanceTo(entity) / 8);
-                    System.out.println(dist);
                     livingEntity.hurt(entity.damageSources().mobAttack(entity), damage * dist);
                 }
             }
@@ -279,30 +285,36 @@ public class SnowNova extends GuerrillasEntity {
         }
     };
 
-    public static final AnimationAct<SnowNova> DASH = new  AnimationAct<SnowNova>("dash",33){
+    public static final AnimationAct<SnowNova> DASH = new  AnimationAct<SnowNova>("dash_2",20,2){
         @Override
         public void tickUpdate(SnowNova entity) {
             int tick = entity.getAnimationTick();
             LivingEntity target = entity.getTarget();
-            if(tick<4)
-                entity.setDeltaMovement(0,entity.getDeltaMovement().y,0);
-            else if(tick<=17)
-                entity.setForwardMotion(0.9f);
-            else if(tick>25)
-                entity.setForwardMotion(0.1f);
-            if(tick>8&&tick<=15) entity.setYRot(entity.yRotO);
-            else if(target!=null) entity.getLookControl().setLookAt(target,15f,15f);
-            if(tick>=21&&tick<=23)
+            if(tick>=3&&tick<=10) entity.setYRot(entity.yRotO);
+            else if(target!=null) entity.getLookControl().setLookAt(target,30f,30f);
+            if(tick>=7&&tick<=8)
                 entity.doDash();
         }
 
         @Override
         public void stop(SnowNova entity) {
-            AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SnowNova.BACK_JUMP);
+            LivingEntity target = entity.getTarget();
+            if(target!=null&&target.distanceTo(entity)<6+target.getBbWidth()/2) {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(entity, SnowNova.BACK_JUMP);
+            }
+            else
+                super.stop(entity);
         }
     };
-
-    public static final AnimationAct<SnowNova> ICE_JUMP = new AnimationAct<SnowNova>("temp_2",42){
+    public static final AnimationAct<SnowNova> DASH_RUN = new  AnimationAct<SnowNova>("dash_1",21){
+        @Override
+        public void tickUpdate(SnowNova entity) {
+            LivingEntity target = entity.getTarget();
+            if(target!=null&&target.distanceTo(entity)<6+target.getBbWidth()/2)
+                AnimationActHandler.INSTANCE.sendAnimationMessage(entity,DASH);
+        }
+    };
+    public static final AnimationAct<SnowNova> ICE_JUMP = new AnimationAct<SnowNova>("temp_2",42,2){
         @Override
         public void tickUpdate(SnowNova entity) {
             int tick = entity.getAnimationTick();
@@ -337,6 +349,9 @@ public class SnowNova extends GuerrillasEntity {
                 for(LivingEntity livingEntity:livingEntities){
                     float dist = Math.lerp(3f,1,livingEntity.distanceTo(entity) / 12);
                     livingEntity.hurt(entity.damageSources().mobAttack(entity),damage*dist);
+                    livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data ->{
+                        data.setFrozen(livingEntity,100);
+                    });
                 }
             }
         }
@@ -352,7 +367,7 @@ public class SnowNova extends GuerrillasEntity {
             if(target!=null)
                 entity.getLookControl().setLookAt(target);
             if(tick==17){
-                entity.doRangeAttack(2,160,damage*2f,0,true);
+                entity.doRangeAttack(2,160,damage*2f,true);
             }
         }
     };
@@ -367,15 +382,13 @@ public class SnowNova extends GuerrillasEntity {
                 LivingEntity target = entity.getTarget();
                 if(target!=null){
                     BigIceCrystal bigIceCrystal = new BigIceCrystal(entity.level(),entity);
-                    bigIceCrystal.setPos(target.position().add(0,7,0));
-                    bigIceCrystal.setDeltaMovement(0,0.2,0);
+                    bigIceCrystal.setPos(target.position().add(0,5,0));
                     entity.level().addFreshEntity(bigIceCrystal);
                 }
                 for(int i = 0;i<time;i++){
-                    Vec3 newPosition = new Vec3(0,6,entity.random.nextFloat()*6+2).yRot((float)Math.PI*2*i/time);
+                    Vec3 newPosition = new Vec3(0,5,entity.random.nextFloat()*6+2).yRot((float)Math.PI*2*i/time);
                     BigIceCrystal bigIceCrystal = new BigIceCrystal(entity.level(),entity);
                     bigIceCrystal.setPos(entity.position().add(newPosition));
-                    bigIceCrystal.setDeltaMovement(0,0.2,0);
                     entity.level().addFreshEntity(bigIceCrystal);
                 }
             }
@@ -426,10 +439,11 @@ public class SnowNova extends GuerrillasEntity {
             else face = entity.yBodyRot;
             if(tick==5) {
                 IceWallEntity iceWallEntity = new IceWallEntity(entity.level(),face,entity.getOnPos());
+                iceWallEntity.setPos(entity.position());
                 entity.level().addFreshEntity(iceWallEntity);
             }
-            if(tick==6||tick==7){
-                entity.setPos(new Vec3(0,0,-0.2).yRot(face).add(entity.position()));
+            if(tick>=6&&tick<=10){
+                entity.setPos(new Vec3(0,0.02,-0.2).yRot(face).add(entity.position()));
             }
         }
     };
@@ -440,13 +454,31 @@ public class SnowNova extends GuerrillasEntity {
             entity.locateEntity();
             LivingEntity target = entity.getTarget();
             if(target!=null) {
-                entity.getLookControl().setLookAt(target, 30, 30);
-                entity.lookAt(target, 30, 30);
-                entity.absFaceEntity(target);
+                entity.getLookControl().setLookAt(target,30f,30f);
             }
-            if(tick>=12&&tick<=55&&entity.tickCount%2==0){
+            if(tick>=12&&tick<=55){
                 float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-                entity.doRangeAttack(8,35,damage/2,1.5f,false);
+                float range = 10;
+                float arc = 40;
+                List<LivingEntity> entitiesHit = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(range, 3, range), e -> e != entity && entity.distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= entity.getY() + 3);
+                for (LivingEntity entityHit : entitiesHit) {
+                    float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - entity.getZ(), entityHit.getX() - entity.getX()) * (180 /Math.PI) - 90) % 360);
+                    float entityAttackingAngle = entity.yBodyRot % 360;
+                    if (entityHitAngle < 0) {
+                        entityHitAngle += 360;
+                    }
+                    if (entityAttackingAngle < 0) {
+                        entityAttackingAngle += 360;
+                    }
+                    float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
+                    float entityHitDistance = (float) Math.sqrt((entityHit.getZ() -entity.getZ()) * (entityHit.getZ() - entity.getZ()) + (entityHit.getX() - entity.getX()) * (entityHit.getX() - entity.getX())) - entityHit.getBbWidth() / 2f;
+                    if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
+                        if(entity.tickCount%2==0)
+                            entityHit.hurt(entity.damageSources().mobAttack(entity),damage/2);
+                        Vec3 move = new Vec3(entityHit.getX()-entity.getX(),0,entityHit.getZ()-entity.getZ()).normalize().scale(0.1);
+                        entityHit.setDeltaMovement(entityHit.getDeltaMovement().x +move.x, entityHit.getDeltaMovement().y+0.02, entityHit.getDeltaMovement().z+move.z);
+                    }
+                }
             }
         }
     };
@@ -455,7 +487,10 @@ public class SnowNova extends GuerrillasEntity {
         public void tickUpdate(SnowNova entity) {
             int tick = entity.getAnimationTick();
             entity.setYRot(entity.yRotO);
-            if(tick==80) ((ServerLevel) entity.level()).setWeatherParameters(0, 20000, true, false);
+            if(tick==80) {
+                ((ServerLevel) entity.level()).setWeatherParameters(0, 20000, true, false);
+                entity.toggleServerBlizzard(true);
+            }
             entity.locateEntity();
         }
 
@@ -464,7 +499,7 @@ public class SnowNova extends GuerrillasEntity {
             AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SnowNova.LULLABYE_2);
         }
     };
-    public static final AnimationAct<SnowNova> LULLABYE_2 = new AnimationAct<SnowNova>("lullabye_2",20,1){//465*6
+    public static final AnimationAct<SnowNova> LULLABYE_2 = new AnimationAct<SnowNova>("lullabye_2",60,1){//465*6
         @Override
         public void tickUpdate(SnowNova entity) {
             entity.locateEntity();
@@ -483,16 +518,29 @@ public class SnowNova extends GuerrillasEntity {
         @Override
         public void tickUpdate(SnowNova entity) {
             int tick = entity.getAnimationTick();
+            entity.locateEntity();
+            float damage = (float)entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+            entity.setYRot(entity.yRotO);
+            if(tick==88){
+                List<LivingEntity> livingEntities = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(15),entity1 ->
+                        entity1!=entity&&entity1.distanceTo(entity)<=14&&entity.getY()-entity1.getY()<=3);
+                for(LivingEntity livingEntity:livingEntities){
+                    float dist = Math.lerp(3f,1,livingEntity.distanceTo(entity) / 14);
+                    livingEntity.hurt(entity.damageSources().mobAttack(entity),damage*dist);
+                    livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data ->{
+                        data.setFrozen(livingEntity,300);
+                    });
+                }
+            }
             if(tick==1)
                 entity.setHealth(entity.getMaxHealth()/3);
-            entity.locateEntity();
+
         }
 
         @Override
         public void stop(SnowNova entity) {
             LivingEntity target = entity.getTarget();
             if(target!=null&&target.distanceTo(entity)<8+target.getBbWidth()/2) {
-                entity.absFaceEntity(target);
                 AnimationActHandler.INSTANCE.sendAnimationMessage(entity, SnowNova.BACK_JUMP);
             }
             else
@@ -503,13 +551,13 @@ public class SnowNova extends GuerrillasEntity {
     @Override
     public AnimationAct[] getAnimations() {
         return new AnimationAct[]{NO_ANIMATION,ATTACK_1,ATTACK_2,RIGHT_JUMP,LEFT_JUMP,BACK_JUMP,REMOTE_1,REMOTE_2,REMOTE_3,ATTACK_PREPARE
-                ,DASH,ICE_JUMP,ICE_BOMB,COUNTERATTACK,ICE_GROUND,KICK,DIE,DEFEND,ICE_WIND,LULLABYE_1,REBORN,LULLABYE_2};
+                ,DASH,ICE_JUMP,ICE_BOMB,COUNTERATTACK,ICE_GROUND,KICK,DIE,DEFEND,ICE_WIND,LULLABYE_1,REBORN,LULLABYE_2,DASH_RUN};
     }
 
     @Override
     @NotNull
     protected BodyRotationControl createBodyControl() {
-        return new EMBodyRotationControl(this);
+        return new FFBodyRotationControl(this);
     }
 
     @Override
@@ -519,7 +567,7 @@ public class SnowNova extends GuerrillasEntity {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        return new EMPathNavigateGround(this, level);
+        return new FFPathNavigateGround(this, level);
     }
 
     public SnowNova(EntityType<? extends SnowNova> entityType, Level level) {
@@ -548,7 +596,7 @@ public class SnowNova extends GuerrillasEntity {
     public void tick() {
         if(!level().isClientSide()&&getAnimation()!=SnowNova.REBORN){
             LivingEntity target = getTarget();
-            if(target!=null&&target.isAlive()&&tickCount%3==0&&timeSinceIceJump_1>=40){
+            if(target!=null&&target.isAlive()&&tickCount%2==0&&timeSinceIceJump_1>=80){
                 timeSinceIceJump_1 = 0;
                 float speed = getTargetMove(target);
                 Vec3 face = getTargetMoveVec(target);
@@ -565,11 +613,13 @@ public class SnowNova extends GuerrillasEntity {
             }
             if(target!=null) {
                 if (position().subtract(target.position()).horizontalDistance() < 6) {
-                    if (target.getDeltaMovement().y < -0.1 && target.getY() - getY() > 3)
+                    if (target.getDeltaMovement().y < -0.1 && target.getY() - getY() > 3&&timeSinceIceJump_1>=80) {
+                        timeSinceIceJump_1 = 0;
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this, SnowNova.ICE_JUMP);
+                    }
                 }
-                List<IceWallEntity> iceWall = level().getEntitiesOfClass(IceWallEntity.class,getBoundingBox().inflate(4));
-                if(defendWilling >4&&iceWall.isEmpty()&&target.distanceTo(this)>8)
+                List<IceWallEntity> iceWall = level().getEntitiesOfClass(IceWallEntity.class,getBoundingBox().inflate(3));
+                if(defendWilling >4&&iceWall.isEmpty()&&target.distanceTo(this)>6)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this,SnowNova.DEFEND);
             }
         }
@@ -590,7 +640,7 @@ public class SnowNova extends GuerrillasEntity {
 
             if (getAnimation() == NO_ANIMATION) {
 
-                List<Projectile> projectilesNearby = level().getEntitiesOfClass(Projectile.class, getBoundingBox().inflate(7, 7, 7), e -> distanceTo(e) <= 7 + e.getBbWidth() / 2f);
+                List<Projectile> projectilesNearby = level().getEntitiesOfClass(Projectile.class, getBoundingBox().inflate(8), e -> distanceTo(e) <= 8 + e.getBbWidth() / 2f);
                 for (Projectile a : projectilesNearby) {
                     Vec3 aActualMotion = new Vec3(  a.xo-a.getX(), a.yo-a.getY()  , a.zo-a.getZ());
                     if (aActualMotion.length() < 0.1) {
@@ -604,27 +654,26 @@ public class SnowNova extends GuerrillasEntity {
                     if(dot2<-180)
                         dot2 = 180+(dot2+180);
                     //left plus
-                    if(Math.abs(dot2)<=80&&timeSinceDodge>=25){
+                    if(Math.abs(dot2)<=80&&timeSinceDodge>=220){
                         timeSinceDodge = 0;
-                        Vec3 direction1= new Vec3(a.getX()-a.xo,0,a.getZ()-a.zo).normalize();
+                        Vec3 direction1= new Vec3(a.getX()-a.xo,0,a.getZ()-a.zo).normalize().scale(1.5);
                         if(random.nextInt(2)==0){
-                            direction1 = direction1.yRot((float) Math.toRadians(90)).add(0,0.3,0);
+                            direction1 = direction1.yRot((float) Math.toRadians(90)).add(0,0.4,0);
                             AnimationActHandler.INSTANCE.sendAnimationMessage(this,SnowNova.RIGHT_JUMP);
                         }else {
-                            direction1 = direction1.yRot((float) Math.toRadians(-90)).add(0,0.3,0);
+                            direction1 = direction1.yRot((float) Math.toRadians(-90)).add(0,0.4,0);
                             AnimationActHandler.INSTANCE.sendAnimationMessage(this,SnowNova.LEFT_JUMP);
                         }
                         this.setDeltaMovement(direction1);
                     }
                 }
             }
-            List<IceWallEntity> iceWall = level().getEntitiesOfClass(IceWallEntity.class,getBoundingBox().inflate(5));
+            List<IceWallEntity> iceWall = level().getEntitiesOfClass(IceWallEntity.class,getBoundingBox().inflate(3));
             if(cycleTime==0&&getAnimation() == NO_ANIMATION&&iceWall.isEmpty()){
-                int i = 0;//random.nextInt(2);
-                if(i==0)
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(this,REMOTE_1);
-                else if(i==1)
+                if(getState()==1&&random.nextInt(6)==0)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this,REMOTE_3);
+                else
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this,REMOTE_1);
             }
             if(timeSinceJump < maxTimeSinceJump)
                 timeSinceJump++;
@@ -632,16 +681,18 @@ public class SnowNova extends GuerrillasEntity {
                 cycleTime--;
 
             setHasDialogue(getTarget()==null);
-            if(timeSinceDodge<=25) timeSinceDodge++;
+            if(timeSinceDodge<=400) timeSinceDodge++;
             if(tickCount%10==0&&defendWilling>0) defendWilling--;
         }
-        if(timeSinceBackJump<100) timeSinceBackJump++;
-        if(timeSinceIceJump_1<40) timeSinceIceJump_1++;
+        if(timeSinceBackJump<120) timeSinceBackJump++;
+        if(timeSinceIceJump_1<80) timeSinceIceJump_1++;
         addIceBombParticle();
         addRemote2Particle();
         addLullabyeParticle();
+        addLullabyeWindParticle();
         addRebornParticle();
         addIceWindParticle();
+        addDashParticle();
     }
 
     @Override
@@ -670,8 +721,8 @@ public class SnowNova extends GuerrillasEntity {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(2,new SnowNova1AttackAI(this));
 
-        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this , 0.31));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
@@ -701,7 +752,7 @@ public class SnowNova extends GuerrillasEntity {
             }
             LivingEntity target = getTarget();
             List<IceWallEntity> iceWall = level().getEntitiesOfClass(IceWallEntity.class,getBoundingBox().inflate(3));
-            if((getState()==1&&target!=null&&distanceTo(target)<3&&timeSinceBackJump>=60)||!iceWall.isEmpty()) {
+            if((target!=null&&distanceTo(target)<3&&timeSinceBackJump>=120)||(!iceWall.isEmpty()&&pSource.getEntity()==target)) {
                 timeSinceBackJump = 0;
                 AnimationActHandler.INSTANCE.sendAnimationMessage(this, SnowNova.BACK_JUMP);
             }
@@ -779,6 +830,26 @@ public class SnowNova extends GuerrillasEntity {
         this.entityData.define(IS_FIRST,false);
     }
 
+    @Override
+    public boolean hasBossBar() {
+        return true;
+    }
+
+    @Override
+    public BossEvent.BossBarColor bossBarColor() {
+        return BossEvent.BossBarColor.WHITE;
+    }
+
+    public void stopSeenByPlayer(ServerPlayer serverPlayer) {
+        super.stopSeenByPlayer(serverPlayer);
+        toggleServerBlizzard(false);
+    }
+
+    public void remove(Entity.RemovalReason removalReason) {
+        super.remove(removalReason);
+        toggleServerBlizzard(false);
+    }
+
     public void doDash(){
         float teleDist = 0;
         for(int i = 0;i<=3;i++){
@@ -794,8 +865,8 @@ public class SnowNova extends GuerrillasEntity {
             else break;
         }
         Vec3 telePos = new Vec3(0, 0, teleDist).yRot((float) (-yBodyRot / 180 * Math.PI));
-        List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(5),entity ->
-                !(entity instanceof GuerrillasEntity) && entity.distanceTo(this)<1.5+entity.getBbWidth()/2);
+        List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),entity ->
+                !(entity instanceof GuerrillasEntity) && entity.distanceTo(this)<2.2+entity.getBbWidth()/2);
         for(LivingEntity livingEntity:livingEntities){
             Vec3 offset = livingEntity.position().subtract(position());
             double t = telePos.length();
@@ -805,12 +876,14 @@ public class SnowNova extends GuerrillasEntity {
                     float dis = (float) telePos.scale(len).subtract(offset).length();
                     if (dis < (livingEntity.getBbWidth() / 2 + 1.5)) {
                         livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
-                            float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue() * 2;
+                            float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue() * 1.5f;
                             if (data.isFrozen) {
                                 data.clearFrozen(livingEntity);
                                 damage *= 2;
                             }
-                            livingEntity.hurt(damageSources().mobAttack(this), damage);
+                            boolean flad = livingEntity.hurt(damageSources().mobAttack(this), damage);
+                            if(flad)
+                                playSound(SoundRegistry.ICE_DASH.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                         });
                     }
                 }
@@ -847,11 +920,12 @@ public class SnowNova extends GuerrillasEntity {
         IceBlade abstractarrow = new IceBlade(level(),this);
         Vec3 position = this.position().add(new Vec3(0,1.5,0));
         abstractarrow.setPos(position);
-        double d0 = target.getX() - this.getX();
-        double d2 = target.getZ() - this.getZ();
-        double d1 = target.getY(0.4D) - abstractarrow.getY();
-        abstractarrow.shoot(d0, d1 , d2, 2F, (float)(9 - this.level().getDifficulty().getId() * 3));
-        //this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        int dist = (int)(target.distanceTo(this));
+        Vec3 move = target.getDeltaMovement().scale(dist/2);
+        double d0 = target.getX()+move.x - this.getX();
+        double d2 = target.getY(0.6D)+move.y - abstractarrow.getY();
+        double d1 = target.getZ()+move.z - this.getZ();
+        abstractarrow.shoot(d0, d2 , d1, 3.5F, (float)(9 - this.level().getDifficulty().getId() * 3));
         this.level().addFreshEntity(abstractarrow);
     }
 
@@ -938,7 +1012,7 @@ public class SnowNova extends GuerrillasEntity {
             }
             else {
                 int tick = getAnimationTick();
-                if(tick==40)
+                if(tick==20)
                     playSound(SoundRegistry.ICE_WHIRLWIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
             }
         }
@@ -975,14 +1049,39 @@ public class SnowNova extends GuerrillasEntity {
                 int tick = getAnimationTick();
                 if(tick==40)
                     playSound(SoundRegistry.ICE_WHIRLWIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                if(tick==88)
+                    EntityCameraShake.cameraShake(this.level(), this.position(), 16F, 0.1F, 10, 15);
+            }
+        }
+    }
+
+    private void addDashParticle(){
+        if(getAnimation() == SnowNova.DASH) {
+            if (level().isClientSide) {
+                int tick = getAnimationTick();
+                if (tick == 6) {
+                    for (int i = 0; i < 8; i++) {
+                        Vec3 move = new Vec3(0, 0.1, -0.4).yRot((float) (-yBodyRot / 180 * Math.PI+random.nextFloat()));
+                        level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0.8f, 0.8f, 1f, (float) (10d + random.nextDouble() * 10d), 12, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), getX(), getY() + 0.4, getZ(), move.x, move.y, move.z);
+                    }
+                }
+                ParticleComponent.KeyTrack track = new ParticleComponent.KeyTrack(new float[]{0,1,1,0},new float[]{0,0.25f,0.75f,1});
+                if (tick == 7||tick == 8) {
+                    for (int i = 0; i < 4; i++) {
+                        Vec3 move = new Vec3(0, 0.1, -0.4).yRot((float) (-yBodyRot / 180 * Math.PI+random.nextFloat()));
+                        level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0.8f, 0.8f, 1f, (float) (10d + random.nextDouble() * 10d), 12, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), getX(), getY() + 0.4, getZ(), move.x, move.y, move.z);
+                        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.SAN.get(), getX(), getY(), getZ(), move.x, move.y, move.z, true, 0, 0, 0, 0, 1.5F, 1, 1, 1, 0.75, 1, 40+random.nextInt(21), true, false, new ParticleComponent[]{
+                                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, track, false)
+                        });
+                    }
+                }
             }
         }
     }
 
     private void addLullabyeParticle(){
-        if(getAnimation() == SnowNova.LULLABYE_1) {
+        if(getAnimation() == SnowNova.LULLABYE_1||getAnimation() == SnowNova.LULLABYE_2) {
             if (level().isClientSide && tickCount%2==0) {
-                int tick = getAnimationTick();
                 int times = 1+random.nextInt(2);
                 for(int i = 0;i<times;i++) {
                     ParticleComponent.KeyTrack track = new ParticleComponent.KeyTrack(new float[]{0,1,1,0},new float[]{0,0.25f,0.75f,1});
@@ -994,8 +1093,23 @@ public class SnowNova extends GuerrillasEntity {
             }
             else {
                 int tick = getAnimationTick();
-                if(tick==40)
-                    playSound(SoundRegistry.ICE_WHIRLWIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+            }
+        }
+    }
+
+    private void addLullabyeWindParticle(){
+        if((getAnimation() == SnowNova.LULLABYE_1&&getAnimationTick()>=80)||getAnimation() == SnowNova.LULLABYE_2) {
+            if (level().isClientSide && tickCount%2==0) {
+                List<Player> players = level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(20));
+                for(Player player:players) {
+                    if(!player.isCreative()) {
+                        int times = 10 + random.nextInt(10);
+                        for (int i = 0; i < times; i++) {
+                            Vec3 move = player.position().subtract(position()).normalize().scale(random.nextFloat()+3);
+                            level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0.6f, 0.6f, 0.6f, (float) (10d + random.nextDouble() * 15d), 20, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), getX()+random.nextFloat()*4-2, getY(0.5+random.nextFloat()), getZ()+random.nextFloat()*4-2, move.x, move.y, move.z);
+                        }
+                    }
+                }
             }
         }
     }
@@ -1019,22 +1133,17 @@ public class SnowNova extends GuerrillasEntity {
                     });
                 }
             }
-            else {
-                int tick = getAnimationTick();
-                if(tick==2)
-                    playSound(SoundRegistry.ICE_WHIRLWIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
-            }
         }
     }
 
     private void addIceWindParticle(){
         if(getAnimation() == SnowNova.ICE_WIND) {
+            int tick = getAnimationTick();
             if (level().isClientSide) {
-                int tick = getAnimationTick();
                 if(tick>=12&&tick<=55){
                     if(tickCount%4==0) {
-                        Vec3 vec3 = new Vec3(0, 0, 0.5).yRot((float) (-yBodyRot / 180 * Math.PI));
-                        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 1.5, getZ(), vec3.x, 0, vec3.z, false, Math.toRadians(-yBodyRot), 0, 0, 0, 5F, 1, 1, 1, 1, 1, 30, true, false, new ParticleComponent[]{
+                        Vec3 vec3 = new Vec3(0, 0, 1).yRot((float) (-yBodyRot / 180 * Math.PI));
+                        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 1.5, getZ(), vec3.x, 0, vec3.z, false, Math.toRadians(-yBodyRot), 0, 0, 0, 5F, 1, 1, 1, 1, 1, 15, true, false, new ParticleComponent[]{
                                 new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1f, 25f), false),
                                 new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
                         });
@@ -1042,14 +1151,16 @@ public class SnowNova extends GuerrillasEntity {
                     if(tickCount%2==0) {
                         int times = 1+random.nextInt(2);
                         for(int i = 0;i<times;i++) {
-                            Vec3 vec3 = new Vec3(0, 0, 0.5).yRot((float)(-yBodyRot / 180 * Math.PI+Math.toRadians(10 - random.nextInt(21)))).xRot((float) Math.toRadians(10 - random.nextInt(21)));
-                            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.SAN.get(), getX(), getY() + 1.5, getZ(), vec3.x, vec3.y, vec3.z, true, 0, 0, 0, 0, 1.5F, 1, 1, 1, 0.75, 1, 20+random.nextInt(21), true, false, new ParticleComponent[]{
+                            Vec3 vec3 = new Vec3(0, 0, 1).yRot((float)(-yBodyRot / 180 * Math.PI+Math.toRadians(10 - random.nextInt(21)))).xRot((float) Math.toRadians(10 - random.nextInt(21)));
+                            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.SAN.get(), getX(), getY() + 1.5, getZ(), vec3.x, vec3.y, vec3.z, true, 0, 0, 0, 0, 1.5F, 1, 1, 1, 0.75, 1, 10+random.nextInt(11), true, false, new ParticleComponent[]{
                                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
                             });
                         }
                     }
                 }
             }
+            else if(tick == 10)
+                playSound(SoundRegistry.ICE_WIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
         }
     }
 
@@ -1086,5 +1197,19 @@ public class SnowNova extends GuerrillasEntity {
 
     public boolean getIsFirst(){
         return this.entityData.get(IS_FIRST);
+    }
+
+    private void toggleServerBlizzard(boolean blizzard) {
+        if (!level().isClientSide) {
+            TBSWorldData worldData = TBSWorldData.get(level());
+            if (worldData != null) {
+                worldData.trackPrimordialBoss(this.getId(), blizzard);
+                TorchesBecomeSunlight.sendMSGToAll(new UpdateBossBlizzard(this.getId(), worldData.isBossActive(level())));
+            }
+        }
+    }
+
+    public boolean isLoadedInWorld() {
+        return this.level().hasChunk(SectionPos.blockToSectionCoord(this.getX()), SectionPos.blockToSectionCoord(this.getZ()));
     }
 }

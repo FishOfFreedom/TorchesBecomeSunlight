@@ -36,18 +36,18 @@ public class FrozenCapability {
         }
 
         if (isFrozen && !(entity instanceof Player player && player.isCreative())) {
-            entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.25F, 1, 0.25F));
+            entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.15F, 1, 0.15F));
 
             if (!(entity instanceof EnderDragon) && !entity.onGround()) {
-                entity.setDeltaMovement(entity.getDeltaMovement().add(0, -0.2, 0));
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0, -0.3, 0));
             }
         }
     }
 
     public void setFrozen(final LivingEntity target, int duration) {
-        //if (!isFrozen) {
-        //    target.playSound(SoundEvents.GLASS_PLACE, 1, 1);
-        //}
+        if (!isFrozen) {
+            target.playSound(SoundEvents.GLASS_PLACE, 1, 1);
+        }
         frozenTicks = duration;
         isFrozen = true;
     }

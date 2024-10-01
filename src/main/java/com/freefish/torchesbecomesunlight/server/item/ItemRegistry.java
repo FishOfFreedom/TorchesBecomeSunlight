@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.item.help.AnimationItem;
 import com.freefish.torchesbecomesunlight.server.item.help.TestItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
@@ -16,4 +17,7 @@ public class ItemRegistry {
 
     public static final RegistryObject<Item> SPEED_ITEM = ITEMS.register("speed_item",
             () -> new TestItem(new Item.Properties()));
+
+    public static final RegistryObject<Item> Animation_ITEM = ITEMS.register("animation_item",
+            () -> new AnimationItem(new Item.Properties()));
 }

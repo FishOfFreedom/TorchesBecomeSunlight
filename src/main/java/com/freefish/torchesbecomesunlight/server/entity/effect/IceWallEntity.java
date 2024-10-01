@@ -78,11 +78,13 @@ public class IceWallEntity extends Entity {
             }
         }
         for(int i :block){
-            Vec3 wall = new Vec3(i,0,1).yRot((float) (-iceWallYaw / 180 * Math.PI)).add(center);
-            BlockPos blockPos1 = new BlockPos((int)wall.x,(int)wall.y,(int)wall.z);
-            BlockState wallState = level().getBlockState(blockPos1);
-            if(wallState.isAir()||wallState.is(Blocks.SNOW))
-                level().setBlock(blockPos1, Blocks.ICE.defaultBlockState(), 3);
+            for(int i1 = 0;i1<2;i1++) {
+                Vec3 wall = new Vec3(i, 0, i1).yRot((float) (-iceWallYaw / 180 * Math.PI)).add(center);
+                BlockPos blockPos1 = new BlockPos((int) wall.x, (int) wall.y, (int) wall.z);
+                BlockState wallState = level().getBlockState(blockPos1);
+                if (wallState.isAir() || wallState.is(Blocks.SNOW))
+                    level().setBlock(blockPos1, Blocks.ICE.defaultBlockState(), 3);
+            }
         }
     }
 
@@ -106,12 +108,14 @@ public class IceWallEntity extends Entity {
                 }
             }
         }
-        for(int i :block){
-            Vec3 wall = new Vec3(i,0,1).yRot((float) (-iceWallYaw / 180 * Math.PI)).add(center);
-            BlockPos blockPos1 = new BlockPos((int)wall.x,(int)wall.y,(int)wall.z);
-            BlockState wallState = level().getBlockState(blockPos1);
-            if(wallState.is(Blocks.ICE)){
-                level().destroyBlock(blockPos1,false);
+        for(int i1 = 0;i1<2;i1++) {
+            for (int i : block) {
+                Vec3 wall = new Vec3(i, 0, i1).yRot((float) (-iceWallYaw / 180 * Math.PI)).add(center);
+                BlockPos blockPos1 = new BlockPos((int) wall.x, (int) wall.y, (int) wall.z);
+                BlockState wallState = level().getBlockState(blockPos1);
+                if (wallState.is(Blocks.ICE)) {
+                    level().destroyBlock(blockPos1, false);
+                }
             }
         }
     }

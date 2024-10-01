@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.server.entity.projectile;
 import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
 import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
 import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.damageSource.DamageSourceRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.EntityRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
@@ -77,11 +78,17 @@ public class IceBlade extends Projectile implements GeoEntity {
     }
 
     private void hit(@Nullable Entity entity){
-        if(entity!= null){
+        if(entity instanceof LivingEntity livingEntity){
             Entity owner = getOwner();
             if(owner instanceof SnowNova snowNova){
-                float damage = (float) snowNova.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-                entity.hurt(DamageSourceRegistry.SnowMonsterFrozen(snowNova),damage*2);
+                livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data ->{
+                    float damage = (float) snowNova.getAttribute(Attributes.ATTACK_DAMAGE).getValue() * 1.5f;
+                    if (data.isFrozen) {
+                        data.clearFrozen(livingEntity);
+                        damage *= 2;
+                    }
+                    livingEntity.hurt(damageSources().mobAttack(snowNova), damage);
+                });
             }
         }
     }

@@ -1,18 +1,25 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogue;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
 public class DialogueTrigger{
     private final String content;
     private final int number;
     private final DialogueTriggerAction action;
+    private final Dialogue nextDialogue;
 
     public DialogueTrigger(String content,int number,DialogueTriggerAction action) {
         this.content = content;
         this.number = number;
         this.action = action;
+        this.nextDialogue = null;
+    }
+
+    public DialogueTrigger(String content,int number,Dialogue nextDialogue,DialogueTriggerAction action) {
+        this.content = content;
+        this.number = number;
+        this.action = action;
+        this.nextDialogue = nextDialogue;
     }
 
     public String getContent() {
@@ -27,6 +34,9 @@ public class DialogueTrigger{
         return number;
     }
 
+    public Dialogue getNextDialogue(){
+        return nextDialogue;
+    }
 
     public void trigger(Mob entity) {
         if (this.action != null) {

@@ -3,11 +3,14 @@ package com.freefish.torchesbecomesunlight.server.entity.projectile;
 import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
 import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
 import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
+import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
 import com.freefish.torchesbecomesunlight.server.block.BlockRegistry;
+import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.damageSource.DamageSourceRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.EntityRegistry;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
+import com.freefish.torchesbecomesunlight.server.sound.SoundRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
@@ -63,9 +66,27 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
                 spawnIceFloor();
         }
 
+        if(tickCount<=10) {
+            setDeltaMovement(0, 0.8f*((10-tickCount)/10.0f), 0);
+        }
+        if(tickCount==11) {
+            setDeltaMovement(0, -1.2, 0);
+        }
+        if(level().isClientSide&&tickCount>=11&&tickCount<=21)
+            spawnRing();
+
         if(inGroundTime>0){
             if(level().isClientSide)addFx();
             hurtEntity();
+        }
+        if (inGroundTime == 1) {
+            List<LivingEntity> livingEntity = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),entity ->
+                    !(entity instanceof GuerrillasEntity) && entity.distanceTo(this)<=3.5+entity.getBbWidth()/2);
+            for(LivingEntity livingEntity1:livingEntity) {
+                livingEntity1.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data ->{
+                    data.setFrozen(livingEntity1,200);
+                });
+            }
         }
 
         super.tick();
@@ -188,6 +209,7 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
             level().setBlock(blockpos, blockstate2, 3);
             level().gameEvent(GameEvent.BLOCK_PLACE, blockpos, GameEvent.Context.of(this, blockstate2));
         }
+        playSound(SoundRegistry.ICE_GROUND.get(), 0.8F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
     }
 
     public void removeIceFloor(){
@@ -248,6 +270,25 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
                     livingEntity1.setDeltaMovement(move.x*0.8f,move.y,move.z*0.8f);
                 }
             }
+        }
+    }
+
+    public void spawnRing(){
+        if(level().isClientSide){
+            if((tickCount&3)==0) {
+                AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY(), getZ(), 0, 0, 0, false, 0, -Math.toRadians(90), 0, 0, 4F, 1, 1, 1, 0.75, 1, 25, true, false, new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(5f, 20f), false)
+                });
+            }
+            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.ARROW_HEAD.get(), xo, yo, zo, 0, 0, 0, false, 0, 0, 0, 0, 3.5F, 1, 1, 1, 0.75, 1, 2, true, false, new ParticleComponent[]{
+                    new ParticleComponent.Attractor(new Vec3[]{new Vec3(getX(), getY(), getZ())}, 0.5f, 0.2f, ParticleComponent.Attractor.EnumAttractorBehavior.LINEAR),
+                    new RibbonComponent(ParticleHandler.RIBBON_FLAT.get(), 10, 0, 0, 0, 0.12F, 1, 1, 1, 0.75, true, true, new ParticleComponent[]{
+                            new RibbonComponent.PropertyOverLength(RibbonComponent.PropertyOverLength.EnumRibbonProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1, 0))
+                    }),
+                    new ParticleComponent.FaceMotion(),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0, 0, 1}, new float[]{0, 0.05f, 0.06f}), false),
+            });
         }
     }
 }

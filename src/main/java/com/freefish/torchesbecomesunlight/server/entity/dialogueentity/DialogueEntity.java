@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.server.entity.dialogueentity;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.EntityRegistry;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.SetDialogueMessage;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.StartDialogueMessage;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import net.minecraft.nbt.CompoundTag;
@@ -60,6 +61,10 @@ public class DialogueEntity extends Entity {
         }
         if(!level().isClientSide&&tickCount==1&&getDialogue()!=null){
             TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new StartDialogueMessage(getDialogue(),this.getId(),getChatEntities()));
+            String temp = getDialogue().trigger(this);
+            System.out.println(temp);
+            if(temp!=null)
+                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new SetDialogueMessage(temp,this.getId()));
         }
         if(getDialogue() != null) {
             if(getSpeakTickCount() == getMaxSpeakTickCount()){
