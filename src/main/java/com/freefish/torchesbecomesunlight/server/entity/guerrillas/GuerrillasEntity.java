@@ -14,7 +14,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
@@ -61,6 +63,7 @@ public abstract class GuerrillasEntity extends AnimatedEntity {
         return super.hurt(source, amount);
     }
 
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -92,6 +95,22 @@ public abstract class GuerrillasEntity extends AnimatedEntity {
     }
 
  */
+
+    @Override
+    public void tick() {
+        super.tick();
+        if(getTarget() instanceof GuerrillasEntity) setTarget(null);
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float damage) {
+        Entity entity = source.getDirectEntity();
+        if(entity instanceof GuerrillasEntity)
+            return false;
+        else
+            return super.hurt(source, damage);
+    }
+
     @Nullable
     public Vec3 findVillage(){
         if(!level().isClientSide) {

@@ -21,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
@@ -33,6 +35,9 @@ public abstract class FreeFishEntity extends PathfinderMob {
     private static final byte MUSIC_STOP_ID = 68;
 
     private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this);
+
+    @OnlyIn(Dist.CLIENT)
+    int time = -1;
 
     public FreeFishEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -176,7 +181,8 @@ public abstract class FreeFishEntity extends PathfinderMob {
         }
     }
 
-    public void doRangeAttack(double range, double arc,float damage,boolean isBreakingShield){
+    public boolean doRangeAttack(double range, double arc,float damage,boolean isBreakingShield){
+        boolean flag = false;
         List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range, 3, range), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
@@ -190,7 +196,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-                entityHit.hurt(damageSources().mobAttack(this),damage);
+            flag = entityHit.hurt(damageSources().mobAttack(this),damage);
                 if(isBreakingShield&&entityHit instanceof Player player){
                     ItemStack pPlayerItemStack = player.getUseItem();
                     if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -200,6 +206,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
                 }
             }
         }
+        return  flag;
     }
 
     public void doRangeAttack(double range, double arc, float damage, boolean isBreakingShield, MobEffectInstance effectInstance){

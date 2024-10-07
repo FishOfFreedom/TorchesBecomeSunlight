@@ -21,6 +21,8 @@ minecraft {
     mappings channel: mapping_channel, version: mapping_version
     copyIdeResources = true
 
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
     runs {
         configureEach {
             workingDirectory project.file('run')
@@ -83,13 +85,19 @@ repositories {
         name = 'GeckoLib'
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
+    maven {
+        name = 'MinecraftForge'
+        url = 'https://maven.minecraftforge.net/'
+    }
+    maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = 'https://repo.spongepowered.org/maven' }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.2.2')
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.5')
 }
 
 tasks.named('processResources', ProcessResources).configure {

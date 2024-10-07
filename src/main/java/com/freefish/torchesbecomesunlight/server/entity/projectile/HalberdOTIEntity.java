@@ -58,6 +58,15 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
     }
 
     public void tick() {
+        for(LivingEntity livingEntity : livingEntities){
+            Vec3 move = position().add(0,1,0).subtract(livingEntity.position());
+            if(move.length()>3){
+                livingEntities.remove(livingEntity);
+                continue;
+            }
+            livingEntity.setDeltaMovement(move);
+        }
+
         if (this.inGroundTime > 4) {
             this.dealtDamage = true;
         }
@@ -90,7 +99,14 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
                     livingEntity.hurt(damageSources().trident(this,shooter), damage*d);
                 }
             }
-
+            //for(int i = 0;i<3;i++){
+            //    BlockPos blockPos = new BlockPos((int)vector3d.x,(int)vector3d.y,(int)vector3d.z);
+            //    BlockState blockState = level().getBlockState(blockPos);
+            //    if(blockState.isAir()||blockState.isCollisionShapeFullBlock(level(),blockPos))
+            //        break;
+            //    else
+            //        vector3d = vector3d.add(0,1,0);
+            //}
             for (int i1 = 1; i1 <= 10; i1++) {
                 double spread = Math.PI * 2;
                 int arcLen = Mth.ceil(i1 * spread * 2);
@@ -134,11 +150,6 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
         return this.tridentItem.copy();
     }
 
-    @Nullable
-    protected EntityHitResult findHitEntity(Vec3 pStartVec, Vec3 pEndVec) {
-        return this.dealtDamage ? null : super.findHitEntity(pStartVec, pEndVec);
-    }
-
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
         float f = 20.0F;
@@ -155,19 +166,19 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
             }
         }
         Entity entity1 = this.getOwner();
-        DamageSource damagesource = damageSources().trident(this, (Entity) (entity1 == null ? this : entity1));
+        DamageSource damagesource = damageSources().mobAttack((LivingEntity) entity1);
         this.dealtDamage = true;
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
 
         if (entity instanceof LivingEntity) {
             LivingEntity livingentity1 = (LivingEntity)entity;
             if(!livingEntities.contains(livingentity1)) {
+                livingentity1.setDeltaMovement(this.getDeltaMovement());
                 entity.hurt(damagesource, f);
-                //this.arrowHit(livingentity1);
                 livingEntities.add(livingentity1);
-                livingentity1.startRiding(this);
             }
         }
+
         this.playSound(soundevent, 1f, 1.0F);
     }
 

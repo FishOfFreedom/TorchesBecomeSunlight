@@ -28,5 +28,6 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityRegistry.FALLING_BLOCK.get(), RenderFallingBlock::new);
         event.registerEntityRenderer(EntityRegistry.HALBERD_OTI_ENTITY.get(), HalberdOTIRenderer::new);
         event.registerEntityRenderer(EntityRegistry.PATRIOT.get(), PatriotRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.STOMP_ENTITY.get(), VoidRenderer::new);
     }
 }

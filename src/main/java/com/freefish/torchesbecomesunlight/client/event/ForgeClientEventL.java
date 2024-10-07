@@ -26,6 +26,7 @@ import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,6 +38,17 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, value = Dist.CLIENT)
 public enum ForgeClientEventL {
     INSTANCE;
+
+    @SubscribeEvent
+    public void preRenderLiving(RenderLivingEvent.Pre event) {
+        if (ClientStorage.INSTANCE.blockedEntityRenders.contains(event.getEntity().getUUID())) {
+            if (!ClientStorage.INSTANCE.isFirstPersonPlayer(event.getEntity())) {
+                MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Post(event.getEntity(), event.getRenderer(), event.getPartialTick(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight()));
+                event.setCanceled(true);
+            }
+            ClientStorage.INSTANCE.blockedEntityRenders.remove(event.getEntity().getUUID());
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void fogRender(ViewportEvent.RenderFog event) {

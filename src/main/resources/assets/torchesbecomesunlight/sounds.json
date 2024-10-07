@@ -4,6 +4,22 @@
       "torchesbecomesunlight:entity/patriot/giant_step_2","torchesbecomesunlight:entity/patriot/giant_step_3"],
     "subtitle": "subtitles.torchesbecomesunlight.giant_step"
   },
+  "patriot.axe_swept": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/axe_swept"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.axe_swept"
+  },
+  "patriot.axe_hit": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/axe_hit"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.axe_hit"
+  },
+  "patriot.hit": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/hit"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.hit"
+  },
+  "patriot.ground": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/ground"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.ground"
+  },
   "snownova.ice_crystal": {
     "sounds": [ "torchesbecomesunlight:entity/snownova/ice_crystal" ],
     "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_crystal"

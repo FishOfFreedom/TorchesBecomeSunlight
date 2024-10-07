@@ -47,10 +47,10 @@ public class ManModel extends GeoModel<Man> {
     @Override
     public void applyMolangQueries(Man animatable, double animTime) {
         super.applyMolangQueries(animatable, animTime);
-        MolangParser parser = MolangParser.INSTANCE;
-        LivingEntity livingEntity = (LivingEntity) animatable;
-        Vec3 velocity = livingEntity.getDeltaMovement();
-        float groundSpeed = Mth.sqrt((float) ((velocity.x * velocity.x) + (velocity.z * velocity.z)));
-        parser.setValue("move_speed", () -> groundSpeed * 20);
+        //MolangParser parser = MolangParser.INSTANCE;
+        //LivingEntity livingEntity = (LivingEntity) animatable;
+        //Vec3 velocity = livingEntity.getDeltaMovement();
+        //float groundSpeed = Mth.sqrt((float) ((velocity.x * velocity.x) + (velocity.z * velocity.z)));
+        //parser.setValue("move_speed", () -> groundSpeed * 20);
     }
 }

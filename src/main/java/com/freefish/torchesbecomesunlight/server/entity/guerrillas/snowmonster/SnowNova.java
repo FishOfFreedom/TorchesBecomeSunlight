@@ -499,12 +499,14 @@ public class SnowNova extends GuerrillasEntity {
             AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SnowNova.LULLABYE_2);
         }
     };
-    public static final AnimationAct<SnowNova> LULLABYE_2 = new AnimationAct<SnowNova>("lullabye_2",60,1){//465*6
+    public static final AnimationAct<SnowNova> LULLABYE_2 = new AnimationAct<SnowNova>("lullabye_2",660,1){//465*6
         @Override
         public void tickUpdate(SnowNova entity) {
             entity.locateEntity();
-            if(entity.getTarget()!=null)
-                entity.getLookControl().setLookAt(entity.getTarget());
+            if(entity.getTarget()!=null) {
+                entity.getLookControl().setLookAt(entity.getTarget(),30f,30f);
+                entity.lookAt(entity.getTarget(),30f,30f);
+            }
         }
 
         @Override
@@ -732,6 +734,7 @@ public class SnowNova extends GuerrillasEntity {
 
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
+        if(pAmount>getMaxHealth()/10&&!pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) pAmount = getMaxHealth()/10;
         if(getAnimation() == SnowNova.REBORN||getAnimation() == SnowNova.LULLABYE_1||getAnimation() == SnowNova.LULLABYE_2) return false;
         else if(getAnimation()==SnowNova.REMOTE_2||getAnimation()==SnowNova.ICE_BOMB|getAnimation()==SnowNova.ICE_GROUND) return super.hurt(pSource, pAmount/3);
 
@@ -797,7 +800,7 @@ public class SnowNova extends GuerrillasEntity {
                 .add(Attributes.ATTACK_DAMAGE, 12.0f)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5)
                 .add(Attributes.FOLLOW_RANGE, 64)
-                .add(Attributes.ARMOR, 6.0f)
+                .add(Attributes.ARMOR, 2.0f)
                 .add(AttributeRegistry.ARMOR_DURABILITY.get(),10f);
     }
 

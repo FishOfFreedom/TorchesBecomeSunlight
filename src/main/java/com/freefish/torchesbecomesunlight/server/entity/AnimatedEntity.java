@@ -50,7 +50,7 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
             if(!level().isClientSide()) {
                 if(animationWalk!=null){
                     float t = animationWalk.tickWalk(animationTick);
-                    if(t != 0&&(getTarget() == null ||  (getTarget()!=null&&getTarget().distanceTo(this) > 1.8F)))
+                    if(t != 0&&(getTarget() == null ||  (getTarget()!=null&&getTarget().distanceTo(this) > 1.8F+getTarget().getBbWidth()/2)))
                         move(MoverType.SELF, new Vec3(0, 0, t).yRot((float) (-this.yBodyRot / 180 * Math.PI)));
                 }
                 getAnimation().tickUpdate(this);
@@ -68,7 +68,8 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         boolean attack = super.hurt(source, damage);
         if (attack) {
             if (getHealth() <= 0.0F) {
-                if(this instanceof SnowNova snowNova){
+                //todo
+                if(this instanceof SnowNova snowNova&&false){
                     if(!snowNova.getIsFirst()) {
                         setHealth(1);
                         snowNova.setIsFirst(true);

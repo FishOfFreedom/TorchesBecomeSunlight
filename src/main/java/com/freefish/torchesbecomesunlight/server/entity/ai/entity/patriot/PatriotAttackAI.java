@@ -4,12 +4,12 @@ package com.freefish.torchesbecomesunlight.server.entity.ai.entity.patriot;
 import com.freefish.torchesbecomesunlight.server.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
 import java.util.EnumSet;
 
@@ -24,10 +24,11 @@ public class PatriotAttackAI extends Goal {
     private double targetZ;
     private int timeNormalAttack;
     private int timeSinceRun;
-    private int timeSinceThrow;
     private int timeSinceStomp;
     private int timeSinceStrengthen;
     private int timeSinceHunt;
+    private int timeSinceShield;
+    private int timeSincePropel;
 
     public PatriotAttackAI(Patriot patriot) {
         this.patriot = patriot;
@@ -55,49 +56,62 @@ public class PatriotAttackAI extends Goal {
         LivingEntity target = this.patriot.getTarget();
         if (target == null) return;
         RandomSource random = patriot.getRandom();
+
+        timeSinceRun++;
+        patriot.timeSinceThrow++;
+        timeSinceStomp++;
+        timeSinceStrengthen++;
+        timeSinceHunt++;
+        timeSinceShield++;
+        timeSincePropel++;
+
         if(!(this.patriot.getAnimation() == NO_ANIMATION||patriot.getAnimation()==Patriot.RUN)) return;
         walk();
         if(patriot.getAnimation()==Patriot.RUN) return;
 
         double dist = this.patriot.distanceToSqr(this.targetX, this.targetY, this.targetZ);
 
-        if(timeSinceStrengthen>=100){
+        if(timeSinceStrengthen>=300){
             timeSinceStrengthen=0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.STRENGTHEN);
         }
-        if (dist > 8  && timeSinceThrow > 120) {
-            timeSinceThrow = 0;
+        else if (dist > 8  && patriot.timeSinceThrow > 440) {
+            patriot.timeSinceThrow = 0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.THROW);
         }
-        else if(dist >= 20 &&timeSinceRun>=80) {
+        else if(dist < 8 && timeSinceStomp>=160){
+            timeSinceStomp=0;
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.STOMP);
+        }
+        else if(dist < 2 + target.getBbWidth()/2 && timeSinceShield>=120){
+            timeSinceShield=0;
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.SHIELD);
+        }
+        else if(dist < 14 &&timeSinceHunt>=320&&patriot.getHealth()<patriot.getMaxHealth()/2){
+            timeSinceHunt=0;
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.HUNT);
+        }
+        else if(dist >= 20 &&timeSinceRun>=180) {
+            targetX = targetY = targetZ = 0;
             timeSinceRun = 0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, Patriot.RUN);
         } else if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
-            if (dist < 7D * 7D && Math.abs(MathHelper.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
-                if(timeSinceStomp>=100){
-                    timeSinceStomp=0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.STOMP);
-                }
-                else  if(timeSinceHunt>=100&&patriot.getHealth()<patriot.getMaxHealth()/2){
-                    timeSinceHunt=0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.HUNT);
-                }
-                else if(shouldFollowUp(3.5-timeNormalAttack*1.5)) {
-                    if (random.nextDouble() >= 0.66)
+            if (dist < 7D * 7D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
+                if(shouldFollowUp(3.5-timeNormalAttack*1.5)) {
+                    double rand = random.nextDouble();
+                    if(rand<0.2&&timeSinceShield<=260) rand+=0.2;
+                    if (rand >= 0.5)
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.ATTACK1);
-                    else if (random.nextDouble() >= 0.33)
+                    else if (rand >= 0.2)
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PIERCE2);
-                    else
+                    else {
+                        timeSincePropel = 0;
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PROPEL1);
+                    }
                 }
 
             }
         }
-        timeSinceRun++;
-        timeSinceThrow++;
-        timeSinceStomp++;
-        timeSinceStrengthen++;
-        timeSinceHunt++;
     }
 
     private boolean shouldFollowUp(double bonusRange) {
@@ -141,6 +155,6 @@ public class PatriotAttackAI extends Goal {
         if(patriot.getAnimation()==Patriot.RUN)
             return this.patriot.getNavigation().moveTo(target, 0.8);
         else
-            return this.patriot.getNavigation().moveTo(target, 0.25);
+            return this.patriot.getNavigation().moveTo(target, 0.3);
     }
 }

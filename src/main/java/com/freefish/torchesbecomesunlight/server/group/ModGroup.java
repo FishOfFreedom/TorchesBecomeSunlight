@@ -21,5 +21,7 @@ public class ModGroup {
                         output.accept(ItemRegistry.TEST_ITEM.get());
                         output.accept(ItemRegistry.SPEED_ITEM.get());
                         output.accept(ItemRegistry.Animation_ITEM.get());
+                        output.accept(ItemRegistry.PATRIOT_EGG.get());
+                        output.accept(ItemRegistry.SNOW_NOVA_EGG.get());
                     }).build());
 }

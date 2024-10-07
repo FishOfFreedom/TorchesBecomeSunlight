@@ -7,6 +7,7 @@ import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStorySto
 import com.freefish.torchesbecomesunlight.server.command.GetStoryStateCommand;
 import com.freefish.torchesbecomesunlight.server.command.SetStoryStateCommand;
 import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.freefish.torchesbecomesunlight.server.story.ProcessManage;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
@@ -18,6 +19,7 @@ import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -27,8 +29,10 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -36,6 +40,23 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class EventListener {
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onEntityHurt(LivingHurtEvent event) {
+        if (!event.isCanceled()) {
+            LivingEntity entity = event.getEntity();
+            if (entity.level().isClientSide()) {
+                return;
+            }
+            DamageSource source = event.getSource();
+            Entity trueSource = source.getDirectEntity();
+
+            if (trueSource instanceof Patriot patriot&&(patriot.getAnimation()==Patriot.PIERCE1||patriot.getAnimation()==Patriot.PIERCE2)) {
+                event.getEntity().invulnerableTime=1;
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void registerCommand(RegisterCommandsEvent event){
         GetStoryStateCommand.register(event.getDispatcher());

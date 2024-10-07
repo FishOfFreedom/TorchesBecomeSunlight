@@ -21,6 +21,10 @@ public class SoundRegistry {
 
     // Patriot
     public static final RegistryObject<SoundEvent> GIANT_STEP = create("giant_step");
+    public static final RegistryObject<SoundEvent> AXE_SWEPT = create("patriot.axe_swept");
+    public static final RegistryObject<SoundEvent> AXE_HIT = create("patriot.axe_hit");
+    public static final RegistryObject<SoundEvent> HIT = create("patriot.hit");
+    public static final RegistryObject<SoundEvent> GROUND = create("patriot.ground");
 
     // Music
     public static final RegistryObject<SoundEvent> SNOWNOVA_LULLABYE = create("music.lullabye");

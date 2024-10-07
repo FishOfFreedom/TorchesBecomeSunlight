@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.client.render.layer;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -9,14 +10,15 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
-import software.bernie.shadowed.eliotlash.mclib.utils.MathUtils;
 
 public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<T> {
     private static final ResourceLocation[] DIALOGUE = new ResourceLocation[]{
@@ -37,7 +39,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
     public void render(PoseStack poseStack, T animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
         super.render(poseStack, animatable, bakedModel, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
         poseStack.pushPose();
-        poseStack.translate(0, animatable.getEyeY()+2.5, 0);
+        poseStack.translate(0, animatable.getBbHeight()+2, 0);
         PoseStack.Pose matrixstack$entry = poseStack.last();
         Matrix4f matrix4f2 = matrixstack$entry.pose();
         Vector4f vector4f = matrix4f2.transform(new Vector4f(0,0,0,1f));
@@ -50,7 +52,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         float alpha = 0;
         Player player = Minecraft.getInstance().player;
         if(player!=null){
-            alpha = MathUtils.clamp(2 - animatable.distanceTo(player)/8,0,1);
+            alpha = Mth.clamp(2 - animatable.distanceTo(player)/8,0,1);
         }
         drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
 
@@ -58,7 +60,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         poseStack.popPose();
     }
 
-    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder,float alpha) {
+    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
         float sunRadius = 0.3f;
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, -sunRadius, 0, 0, 0,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, sunRadius,  0, 0, 1,alpha);

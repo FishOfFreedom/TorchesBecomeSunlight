@@ -5,6 +5,7 @@ import com.freefish.torchesbecomesunlight.server.entity.dialogueentity.DialogueE
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityFallingBlock;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceWallEntity;
+import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.SnowNova1;
@@ -75,6 +76,10 @@ public class EntityRegistry {
     public static final RegistryObject<EntityType<EntityCameraShake>> CAMERA_SHAKE = ENTITY_TYPE.register("camera_shake",
             () -> EntityType.Builder.<EntityCameraShake>of(EntityCameraShake::new, MobCategory.MISC).sized(1, 1).
             setUpdateInterval(Integer.MAX_VALUE).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "camera_shake").toString()));
+
+    public static final RegistryObject<EntityType<StompEntity>> STOMP_ENTITY = ENTITY_TYPE.register("stomp_entity",
+            () -> EntityType.Builder.<StompEntity>of(StompEntity::new, MobCategory.MISC).sized(1, 1).
+                    setUpdateInterval(Integer.MAX_VALUE).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "stomp_entity").toString()));
 
     public static final RegistryObject<EntityType<IceWallEntity>> ICE_WALL_ENTITY = ENTITY_TYPE.register("ice_wall",
             () -> EntityType.Builder.<IceWallEntity>of(IceWallEntity::new, MobCategory.MISC).sized(1, 1).

@@ -12,7 +12,8 @@ public class HalberdOTIModel extends GeoModel<HalberdOTIEntity> {
     public void setCustomAnimations(HalberdOTIEntity animatable, long instanceId, AnimationState<HalberdOTIEntity> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
         CoreGeoBone body = this.getAnimationProcessor().getBone("halber");
-        body.setRotZ(-180.0f * (float)(Math.PI) / 180.0f);
+        body.setRotX((animatable.getXRot() - 90) * (float)(Math.PI) / 180.0f);
+        body.setRotY(animatable.getYRot() * (float)(Math.PI) / 180.0f);
     }
 
     @Override

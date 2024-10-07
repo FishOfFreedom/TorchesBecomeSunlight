@@ -4,6 +4,7 @@ import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
 import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleData;
 import com.bobmowzie.mowziesmobs.client.particle.util.RibbonParticleData;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.particle.ParticleWindigoCrack;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -50,6 +51,13 @@ public class ParticleHandler {
     public static final RegistryObject<ParticleType<AdvancedParticleData>> ICE_WHIRLWIND = register("ice_whirlwind", AdvancedParticleData.DESERIALIZER);
     public static final RegistryObject<ParticleType<AdvancedParticleData>> SAN = register("san", AdvancedParticleData.DESERIALIZER);
 
+    public static final RegistryObject<ParticleType<ParticleWindigoCrack.WindigoCrackData>> WINDIGO_CRACK = REG.register("windigo_crack", () -> new ParticleType<ParticleWindigoCrack.WindigoCrackData>(false, ParticleWindigoCrack.WindigoCrackData.DESERIALIZER) {
+        @Override
+        public Codec<ParticleWindigoCrack.WindigoCrackData> codec() {
+            return ParticleWindigoCrack.WindigoCrackData.CODEC(WINDIGO_CRACK.get());
+        }
+    });
+
     public static final RegistryObject<ParticleType<ParticleCloud.CloudData>> CLOUD = REG.register("cloud_soft", () -> new ParticleType<ParticleCloud.CloudData>(false, ParticleCloud.CloudData.DESERIALIZER) {
         @Override
         public Codec<ParticleCloud.CloudData> codec() {
@@ -86,6 +94,8 @@ public class ParticleHandler {
         event.registerSpriteSet(ParticleHandler.RIBBON_STREAKS.get(), ParticleRibbon.Factory::new);
         event.registerSpriteSet(ParticleHandler.RIBBON_GLOW.get(), ParticleRibbon.Factory::new);
         event.registerSpriteSet(ParticleHandler.RIBBON_SQUIGGLE.get(), ParticleRibbon.Factory::new);
+
+        event.registerSpriteSet(ParticleHandler.WINDIGO_CRACK.get(), ParticleWindigoCrack.WindigoCrackFactory::new);
     }
 
     private static RegistryObject<SimpleParticleType> register(String key, boolean alwaysShow) {

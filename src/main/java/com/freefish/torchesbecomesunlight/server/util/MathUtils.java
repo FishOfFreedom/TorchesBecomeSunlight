@@ -25,18 +25,19 @@ public final class MathUtils {
         translateRotateGeckolib(geoBone, matrixStack);
     }
 
-    public static Vector3d getWorldPosFromModel(Entity entity, float entityYaw, GeoBone geoBone) {
+    public static Vec3 getWorldPosFromModel(Entity entity, float entityYaw, GeoBone geoBone) {
         PoseStack matrixStack = new PoseStack();
         matrixStack.translate(entity.getX(), entity.getY(), entity.getZ());
-        matrixStack.mulPose(quatFromRotationXYZ(0,   -entityYaw - 180, 180, true));
+        matrixStack.mulPose(MathUtils.quatFromRotationXYZ(0,   -entityYaw - 180, 180, true));
         matrixStack.scale(-1, -1, 1);
-        matrixStackFromModel(matrixStack, geoBone);
+        matrixStack.translate(0, -1.5f, 0);
+        MathUtils.matrixStackFromModel(matrixStack, geoBone);
         PoseStack.Pose matrixEntry = matrixStack.last();
         Matrix4f matrix4f = matrixEntry.pose();
 
         Vector4f vec = new Vector4f(0, 0, 0, 1);
         vec.mul(matrix4f);
-        return new Vector3d(vec.x, vec.y, vec.z);
+        return new Vec3(vec.x(), vec.y()+2, vec.z());
     }
 
     public static <T extends Entity> T getClosestEntity(Entity target, List<T> entities) {
@@ -81,13 +82,13 @@ public final class MathUtils {
     }
 
     public static void translateRotateGeckolib(GeoBone bone, PoseStack matrixStackIn) {
-        if(bone.getParent() != null)
-            matrixStackIn.translate((double)((bone.getRotX()-bone.getParent().getRotX() + bone.getPosX())/ 16.0F),
-                    (double)((bone.getRotY()-bone.getParent().getRotY() + bone.getPosY()) / 16.0F),
-                    (double)((bone.getRotZ()-bone.getParent().getRotZ() + bone.getPosZ()) / 16.0F));
+        GeoBone parent = bone.getParent();
+        if(parent != null)
+            matrixStackIn.translate((double)((bone.getPivotX()-parent.getPivotX())/ 16.0F),
+                                    (double)((bone.getPivotY()-parent.getPivotY()) / 16.0F),
+                                    (double)((bone.getPivotZ()-parent.getPivotZ()) / 16.0F));
         else
-            matrixStackIn.translate((double)(bone.getRotX() / 16.0F), (double)(bone.getRotY() / 16.0F), (double)(bone.getRotZ() / 16.0F));
-
+            matrixStackIn.translate((double)(bone.getPivotX() / 16.0F), (double)(bone.getPivotY() / 16.0F), (double)(bone.getPivotZ() / 16.0F));
         if (bone.getRotZ() != 0.0F) {
             matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
         }
@@ -99,11 +100,25 @@ public final class MathUtils {
         if (bone.getRotX() != 0.0F) {
             matrixStackIn.mulPose(Axis.XP.rotation(bone.getRotX()));
         }
+
         matrixStackIn.scale(bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
     }
 
     public static float fade(float i){
         i=i/2 + 0.5f;
         return (6*i*i*i*i*i-15*i*i*i*i+10*i*i*i - 0.5f)*2;
+    }
+
+    public static double wrapDegrees(double value) {
+        value %= 360.0;
+        if (value >= 180.0) {
+            value -= 360.0;
+        }
+
+        if (value < -180.0) {
+            value += 360.0;
+        }
+
+        return value;
     }
 }
