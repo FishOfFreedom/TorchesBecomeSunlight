@@ -1,0 +1,28 @@
+{
+  "message.hello_block.hello": "想挑战我？拿出你的武器来",
+  "message.test_item.hello": "当前模式是",
+  "message.obsidian_speed_show": "当前速度是",
+
+
+  "advancements.torchesbecomesunlight.root.title": "薪火,造炬成阳",
+  "advancements.torchesbecomesunlight.root.description": "感谢游玩薪火,造炬成阳",
+  "advancements.torchesbecomesunlight.winteroftheindected.title": "凛冬",
+  "advancements.torchesbecomesunlight.winteroftheindected.description": "与感染者们对话",
+
+  //item
+  "item.torchesbecomesunlight.test_item": "Test Item",
+  "item.torchesbecomesunlight.animation_item": "Animation Item",
+  "item.torchesbecomesunlight.patriot_egg": "Patriot Egg",
+  "item.torchesbecomesunlight.frost_nova_egg": "Frost Nova Egg",
+  "item.torchesbecomesunlight.pursuer_egg": "Pursuer Egg",
+  "item.torchesbecomesunlight.shield_guard_egg": "Shield Guard Egg",
+  "item.torchesbecomesunlight.mangler_egg": "Mangler Egg",
+
+  //entity
+  "entity.torchesbecomesunlight.frost_nova": "Frost Nova",
+  "entity.torchesbecomesunlight.man": "Man",
+  "entity.torchesbecomesunlight.patriot": "Patriot",
+  "entity.torchesbecomesunlight.shield_guard": "Shield Guard",
+  "entity.torchesbecomesunlight.mangler": "Mangler",
+  "entity.torchesbecomesunlight.pursuer": "Pursuer"
+}

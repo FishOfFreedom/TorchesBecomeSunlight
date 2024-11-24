@@ -1,0 +1,64 @@
+{
+  "giant_step": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/giant_step_1",
+      "torchesbecomesunlight:entity/patriot/giant_step_2","torchesbecomesunlight:entity/patriot/giant_step_3"],
+    "subtitle": "subtitles.torchesbecomesunlight.giant_step"
+  },
+  "patriot.axe_swept": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/axe_swept"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.axe_swept"
+  },
+  "patriot.axe_hit": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/axe_hit"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.axe_hit"
+  },
+  "patriot.hit": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/hit"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.hit"
+  },
+  "patriot.ground": {
+    "sounds": ["torchesbecomesunlight:entity/patriot/ground"],
+    "subtitle": "subtitles.torchesbecomesunlight.patriot.ground"
+  },
+  "snownova.ice_crystal": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_crystal" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_crystal"
+  },
+  "snownova.ice_whirlwind": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_whirlwind" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_whirlwind"
+  },
+  "snownova.ice_wind": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_wind" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_wind"
+  },
+  "snownova.ice_dash": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_dash" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_dash"
+  },
+  "snownova.ice_ground": {
+    "sounds": [ "torchesbecomesunlight:entity/snownova/ice_ground" ],
+    "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_ground"
+  },
+  "music.permafrost": {
+    "sounds": [
+      "torchesbecomesunlight:music/permafrost"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.permafrost",
+    "stream": true
+  },
+  "music.lullabye": {
+    "sounds": [
+      "torchesbecomesunlight:music/lullabye"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.lullabye",
+    "stream": true
+  },
+  "music.unyielding": {
+    "sounds": [
+      "torchesbecomesunlight:music/patriot"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.unyielding",
+    "stream": true
+  }
+}

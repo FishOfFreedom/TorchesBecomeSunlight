@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:torch"
+    },
+    "title": {
+      "translate": "advancements.torchesbecomesunlight.root.title"
+    },
+    "description": {
+      "translate": "advancements.torchesbecomesunlight.root.description"
+    },
+    "background": "minecraft:textures/block/stone.png",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "custom_test_name": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

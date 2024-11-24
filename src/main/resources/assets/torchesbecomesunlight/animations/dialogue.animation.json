@@ -1,0 +1,19 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation": {
+			"loop": true,
+			"bones": {
+				"group3": {
+					"position": [0, "math.sin(query.anim_time*150+100)*2", 0]
+				},
+				"group4": {
+					"position": [0, "math.sin(query.anim_time*150)*2", 0]
+				},
+				"group": {
+					"position": [0, "math.sin(query.anim_time*150+50)*2", 0]
+				}
+			}
+		}
+	}
+}
