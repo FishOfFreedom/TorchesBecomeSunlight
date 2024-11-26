@@ -1,0 +1,42 @@
+{
+  "message.hello_block.hello": "想挑战我？拿出你的武器来",
+  "message.test_item.hello": "当前模式是",
+  "message.obsidian_speed_show": "当前速度是",
+
+
+  "advancements.torchesbecomesunlight.root.title": "薪火,造炬成阳",
+  "advancements.torchesbecomesunlight.root.description": "感谢游玩薪火,造炬成阳",
+  "advancements.torchesbecomesunlight.winteroftheindected.title": "凛冬",
+  "advancements.torchesbecomesunlight.winteroftheindected.description": "与感染者们对话",
+
+  //item
+  "item.torchesbecomesunlight.test_item": "测试工具",
+  "item.torchesbecomesunlight.animation_item": "动画播放器",
+  "item.torchesbecomesunlight.patriot_egg": "生成 爱国者",
+  "item.torchesbecomesunlight.frost_nova_egg": "生成 霜星",
+  "item.torchesbecomesunlight.pursuer_egg": "生成 皇帝的利刃 追猎者",
+  "item.torchesbecomesunlight.shield_guard_egg": "生成 盾卫",
+  "item.torchesbecomesunlight.mangler_egg": "生成 裂兽",
+
+  //entity
+  "entity.torchesbecomesunlight.frost_nova": "霜星",
+  "entity.torchesbecomesunlight.man": "村民",
+  "entity.torchesbecomesunlight.patriot": "爱国者",
+  "entity.torchesbecomesunlight.shield_guard": "盾卫",
+  "entity.torchesbecomesunlight.mangler": "裂兽",
+  "entity.torchesbecomesunlight.pursuer": "皇帝的利刃 追猎者",
+
+  //dialogue
+  "dialogue.torchesbecomesunlight.snownova_meet_1": "有什么事吗.",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_1": "没事.",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_2": "(挑战)",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_3": "这附近有村庄吗?",
+
+  "dialogue.torchesbecomesunlight.pursuer_meet_2": "你的冷静救了你一命.记住,你什么都没有看到.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_3": "保持你的沉默.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_4": "伪冒皇帝的信物的人.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_5": "敬礼!",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1": "解释你的行程,外来者.在这片土地之上绝不容许任何威胁.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1_1": "我奉承皇帝的命令,前往无尽雪原调研精怪.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1_2": "我看你是欠揍了."
+}

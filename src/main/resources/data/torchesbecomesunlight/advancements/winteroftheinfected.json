@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:snow"
+    },
+    "title": {
+      "translate": "advancements.torchesbecomesunlight.winteroftheindected.title"
+    },
+    "description": {
+      "translate": "advancements.torchesbecomesunlight.winteroftheindected.description"
+    }
+  },
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "talk_with_the_infected": {
+      "trigger": "player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "torchesbecomesunlight:man"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "message.hello_block.hello": "想挑战我？拿出你的武器来",
+  "message.test_item.hello": "当前模式是",
+  "message.obsidian_speed_show": "当前速度是",
+
+
+  "advancements.torchesbecomesunlight.root.title": "Gathering,Torches Become Sunlight",
+  "advancements.torchesbecomesunlight.root.description": "Thank you for playing Gathering,Torches Become Sunlight",
+  "advancements.torchesbecomesunlight.winteroftheindected.title": "Winter",
+  "advancements.torchesbecomesunlight.winteroftheindected.description": "Talk to the infected",
+
+  //item
+  "item.torchesbecomesunlight.test_item": "Test Item",
+  "item.torchesbecomesunlight.animation_item": "Animation Item",
+  "item.torchesbecomesunlight.patriot_egg": "Patriot Egg",
+  "item.torchesbecomesunlight.frost_nova_egg": "Frost Nova Egg",
+  "item.torchesbecomesunlight.pursuer_egg": "Pursuer Egg",
+  "item.torchesbecomesunlight.shield_guard_egg": "Shield Guard Egg",
+  "item.torchesbecomesunlight.mangler_egg": "Mangler Egg",
+
+  //entity
+  "entity.torchesbecomesunlight.frost_nova": "Frost Nova",
+  "entity.torchesbecomesunlight.man": "Man",
+  "entity.torchesbecomesunlight.patriot": "Patriot",
+  "entity.torchesbecomesunlight.shield_guard": "Shield Guard",
+  "entity.torchesbecomesunlight.mangler": "Mangler",
+  "entity.torchesbecomesunlight.pursuer": "Pursuer",
+
+  //dialogue
+  "dialogue.torchesbecomesunlight.snownova_meet_1": "what's up?",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_1": "nothing.",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_2": "(Challenge)",
+  "dialogue.torchesbecomesunlight.snownova_meet_1_3": "is there a village near here?"
+}
