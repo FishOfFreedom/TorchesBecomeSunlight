@@ -7,6 +7,7 @@ import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
@@ -16,13 +17,15 @@ import java.util.function.Supplier;
 
 public class StartDialogueMessage {
     private Entity[] entities;
-    private int dialogueEntity;
+    private int dialogueEntityID;
+    private DialogueEntity dialogueEntity;
     private Dialogue dialogue;
 
     public StartDialogueMessage(){
     }
 
-    public StartDialogueMessage(Dialogue dialogue,int dialogueEntity,Entity ... entities) {
+    public StartDialogueMessage(Dialogue dialogue,DialogueEntity dialogueEntity,Entity ... entities) {
+        this.dialogueEntityID = dialogueEntity.getId();
         this.dialogueEntity = dialogueEntity;
         this.entities = entities;
         this.dialogue = dialogue;
@@ -40,13 +43,26 @@ public class StartDialogueMessage {
         }else {
             number = options.size();
         }
-        buf.writeVarInt(number);
+
+        List<String> temp = new ArrayList<>();
+        int tem = 0;
         for(int i= 0;i<number;i++){
-            buf.writeUtf(options.get(i).getContent());
+            DialogueTrigger dialogueTrigger = options.get(i);
+            if(message.dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()]instanceof LivingEntity livingEntity&& dialogueTrigger.isNoSend(livingEntity)){
+                tem += 1;
+            }
+            else
+                temp.add(options.get(i).getContent());
         }
+
+        buf.writeVarInt(number-tem);
+        for(String s:temp){
+            buf.writeUtf(s);
+        }
+
         buf.writeVarInt(message.dialogue.getDialogueTime());
 
-        buf.writeVarInt(message.dialogueEntity);
+        buf.writeVarInt(message.dialogueEntityID);
         buf.writeVarInt(message.entities.length);
         for(Entity entity: message.entities){
             buf.writeVarInt(entity.getId());
@@ -67,7 +83,7 @@ public class StartDialogueMessage {
 
         message.dialogue = new Dialogue(s1,options,null,number,dialogueTime);
 
-        message.dialogueEntity = buf.readVarInt();
+        message.dialogueEntityID = buf.readVarInt();
         int entityAmount = buf.readVarInt();
         Entity[] entities1 = new Entity[entityAmount];
         for(int i =0;i<entityAmount;i++){
@@ -82,7 +98,7 @@ public class StartDialogueMessage {
         public void accept(StartDialogueMessage StartDialogueMessage, Supplier<NetworkEvent.Context> contextSupplier) {
             final NetworkEvent.Context context = contextSupplier.get();
             context.enqueueWork(() -> {
-                Entity entity = Minecraft.getInstance().level.getEntity(StartDialogueMessage.dialogueEntity);
+                Entity entity = Minecraft.getInstance().level.getEntity(StartDialogueMessage.dialogueEntityID);
                 if(entity instanceof DialogueEntity dialogueEntity){
                     if(StartDialogueMessage.entities.length!=0)
                         dialogueEntity.setChatEntities(StartDialogueMessage.entities);

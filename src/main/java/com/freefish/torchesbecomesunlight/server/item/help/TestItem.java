@@ -4,6 +4,7 @@ import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.particle.BlackFlatParticle;
 import com.freefish.torchesbecomesunlight.client.particle.BladeParticle;
 import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
@@ -16,6 +17,7 @@ import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -31,6 +33,20 @@ public class TestItem extends Item {
 
     public TestItem(Properties pProperties) {
         super(pProperties);
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            if (!entity.level().isClientSide) {
+                MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+                if(effect!=null){
+                    //System.out.println(effect.getAmplifier());
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

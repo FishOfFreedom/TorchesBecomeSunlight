@@ -99,7 +99,7 @@ public class ParticleWindigoCrack extends TextureSheetParticle {
         }
 
         @Override
-        public Particle createParticle(WindigoCrackData typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(ParticleWindigoCrack.WindigoCrackData typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             ParticleWindigoCrack particle = new ParticleWindigoCrack(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, typeIn.getDuration(), typeIn.getSwirls());
             particle.pickSprite(spriteSet);
             return particle;
@@ -107,17 +107,17 @@ public class ParticleWindigoCrack extends TextureSheetParticle {
     }
 
     public static class WindigoCrackData implements ParticleOptions {
-        public static final Deserializer<WindigoCrackData> DESERIALIZER = new Deserializer<WindigoCrackData>() {
-            public WindigoCrackData fromCommand(ParticleType<WindigoCrackData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final ParticleOptions.Deserializer<ParticleWindigoCrack.WindigoCrackData> DESERIALIZER = new ParticleOptions.Deserializer<ParticleWindigoCrack.WindigoCrackData>() {
+            public ParticleWindigoCrack.WindigoCrackData fromCommand(ParticleType<WindigoCrackData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 float duration = (float) reader.readDouble();
                 reader.expect(' ');
                 boolean swirls = reader.readBoolean();
-                return new WindigoCrackData(duration, swirls);
+                return new ParticleWindigoCrack.WindigoCrackData(duration, swirls);
             }
 
-            public WindigoCrackData fromNetwork(ParticleType<WindigoCrackData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new WindigoCrackData(buffer.readFloat(), buffer.readBoolean());
+            public ParticleWindigoCrack.WindigoCrackData fromNetwork(ParticleType<ParticleWindigoCrack.WindigoCrackData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new ParticleWindigoCrack.WindigoCrackData(buffer.readFloat(), buffer.readBoolean());
             }
         };
 
@@ -143,7 +143,7 @@ public class ParticleWindigoCrack extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<WindigoCrackData> getType() {
+        public ParticleType<ParticleWindigoCrack.WindigoCrackData> getType() {
             return ParticleHandler.WINDIGO_CRACK.get();
         }
 

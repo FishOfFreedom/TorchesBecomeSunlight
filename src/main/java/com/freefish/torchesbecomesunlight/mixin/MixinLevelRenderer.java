@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.mixin;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -60,17 +61,17 @@ public abstract class MixinLevelRenderer{
 
     @Inject(method = "renderSky",at = @At("HEAD"), cancellable = true)
     public void renderDemonSky(PoseStack matrices, Matrix4f pProjectionMatrix, float pPartialTick, Camera pCamera, boolean pIsFoggy, Runnable pSkyFogSetup, CallbackInfo info){
-        if(ClientStorage.INSTANCE.demonRadio>30) {
+        if(ClientStorage.INSTANCE.demonRadio>=60&&ConfigHandler.CLIENT.demonRender.get()) {
             SkyRenderer.renderDemonSky(level, pPartialTick, matrices.last().pose(), pCamera, pProjectionMatrix, pSkyFogSetup);
             info.cancel();
         }
     }
 
-    @Inject(method = "renderSnowAndRain",at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderSnowAndRain",at = @At("TAIL"), cancellable = true)
     public void renderDemonWeather(LightTexture pLightTexture, float pPartialTick, double xIn, double yIn, double zIn, CallbackInfo info){
-        if(ClientStorage.INSTANCE.demonRadio<=80) {
-            SkyRenderer.demonWeather(level, pLightTexture, ticks, pPartialTick, xIn, yIn, zIn);
-            info.cancel();
+        float demon = ClientStorage.INSTANCE.getDemon(pPartialTick);
+        if(demon<=60&& ConfigHandler.CLIENT.demonRender.get()) {
+            SkyRenderer.demonWeather(level, pLightTexture, ticks, pPartialTick, xIn, yIn, zIn,info);
         }
     }
 }

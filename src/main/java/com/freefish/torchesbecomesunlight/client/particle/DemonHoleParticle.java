@@ -125,8 +125,8 @@ public class DemonHoleParticle extends Particle {
 
 
     public static class DemonHoleData implements ParticleOptions {
-        public static final Deserializer<DemonHoleData> DESERIALIZER = new Deserializer<DemonHoleData>() {
-            public DemonHoleData fromCommand(ParticleType<DemonHoleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<DemonHoleParticle.DemonHoleData> DESERIALIZER = new Deserializer<DemonHoleParticle.DemonHoleData>() {
+            public DemonHoleParticle.DemonHoleData fromCommand(ParticleType<DemonHoleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
@@ -135,11 +135,11 @@ public class DemonHoleParticle extends Particle {
                 float rotX = reader.readFloat();
                 reader.expect(' ');
                 float rotY = reader.readFloat();
-                return new DemonHoleData(duration,scale,rotX,rotY);
+                return new DemonHoleParticle.DemonHoleData(duration,scale,rotX,rotY);
             }
 
-            public DemonHoleData fromNetwork(ParticleType<DemonHoleData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new DemonHoleData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
+            public DemonHoleParticle.DemonHoleData fromNetwork(ParticleType<DemonHoleParticle.DemonHoleData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new DemonHoleParticle.DemonHoleData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
         };
 
@@ -171,7 +171,7 @@ public class DemonHoleParticle extends Particle {
         }
 
         @Override
-        public ParticleType<DemonHoleData> getType() {
+        public ParticleType<DemonHoleParticle.DemonHoleData> getType() {
             return ParticleHandler.DEMONHOLE.get();
         }
 
@@ -193,12 +193,12 @@ public class DemonHoleParticle extends Particle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<DemonHoleData> CODEC(ParticleType<DemonHoleData> particleType) {
+        public static Codec<DemonHoleData> CODEC(ParticleType<DemonHoleParticle.DemonHoleData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(DemonHoleData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(DemonHoleData::getScale),
-                            Codec.FLOAT.fieldOf("rotX").forGetter(DemonHoleData::getRotX),
-                            Codec.FLOAT.fieldOf("rotY").forGetter(DemonHoleData::getRotY)
+                            Codec.INT.fieldOf("duration").forGetter(DemonHoleParticle.DemonHoleData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(DemonHoleParticle.DemonHoleData::getScale),
+                            Codec.FLOAT.fieldOf("rotX").forGetter(DemonHoleParticle.DemonHoleData::getRotX),
+                            Codec.FLOAT.fieldOf("rotY").forGetter(DemonHoleParticle.DemonHoleData::getRotY)
                     ).apply(codecBuilder, DemonHoleData::new)
             );
         }

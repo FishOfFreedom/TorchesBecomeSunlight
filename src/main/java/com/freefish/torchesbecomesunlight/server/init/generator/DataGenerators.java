@@ -25,6 +25,7 @@ public class DataGenerators {
         DatapackBuiltinEntriesProvider registryProvider = new DataProvider(output, lookupProvider);
         CompletableFuture<HolderLookup.Provider> lookup = registryProvider.getRegistryProvider();
         generator.addProvider(event.includeServer(), registryProvider);
+        generator.addProvider(event.includeServer(), new DamageTypeProvider(packOutput, lookupProvider, existingFileHelper));
 
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
     }

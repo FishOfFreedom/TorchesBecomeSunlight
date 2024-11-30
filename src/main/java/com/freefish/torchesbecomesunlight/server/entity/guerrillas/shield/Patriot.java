@@ -6,8 +6,15 @@ import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
 import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
 import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
 import com.freefish.torchesbecomesunlight.client.particle.ParticleWindigoCrack;
+import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStone;
+import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
+import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
+import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
@@ -61,8 +68,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.List;
+import java.util.Optional;
 
-public class Patriot extends GuerrillasEntity {
+public class Patriot extends GuerrillasEntity implements IDialogue {
     public static final AnimationAct<Patriot> ATTACK1 = new AnimationAct<Patriot>("attack1",40){
         @Override
         public void start(Patriot entity) {
@@ -523,6 +531,7 @@ public class Patriot extends GuerrillasEntity {
     private int enhancedTime;
     public int time=0;
     public int timeSinceThrow;
+    private LivingEntity dialogueLivingEntity;
 
     private static final float[][] ATTACK_BLOCK_OFFSETS = {
             {-0.1F, -0.1F},
@@ -626,6 +635,19 @@ public class Patriot extends GuerrillasEntity {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
+        if(source.getDirectEntity() instanceof Player player&&getHasDialogue()){
+            Optional<Boolean> map = player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isCanDialogue);
+            if(map.isPresent()&&map.get()){
+                setDialogueEntity((LivingEntity) source.getDirectEntity());
+                Player player1 = MathUtils.getClosestEntity(this,level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(5)));
+                DialogueEntity dialogueEntity = new DialogueEntity(this,level(),getDialogue(),player1,this);
+                dialogueEntity.setPos(position());
+                level().addFreshEntity(dialogueEntity);
+                setDialogueEntity(player1);
+                return false;
+            }
+        }
+
         if(amount>getMaxHealth()/10&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = getMaxHealth()/10;
         Entity entitySource = source.getDirectEntity();
         if (entitySource != null){
@@ -1026,5 +1048,25 @@ public class Patriot extends GuerrillasEntity {
                 }
             }
         }
+    }
+
+    @Override
+    public Dialogue getDialogue() {
+        return DialogueStore.snownova_meet_1;
+    }
+
+    @Override
+    public LivingEntity getDialogueEntity() {
+        return dialogueLivingEntity;
+    }
+
+    @Override
+    public void setDialogueEntity(LivingEntity dialogueEntity) {
+        dialogueLivingEntity = dialogueEntity;
+    }
+
+    @Override
+    public boolean getHasDialogue() {
+        return getDialogue()!=null;
     }
 }

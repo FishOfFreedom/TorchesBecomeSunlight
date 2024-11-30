@@ -34,6 +34,7 @@ import net.minecraftforge.client.ForgeRenderTypes;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 
@@ -42,22 +43,13 @@ import static net.minecraft.client.renderer.LevelRenderer.getLightColor;
 @OnlyIn(value = Dist.CLIENT)
 public class SkyRenderer {
 
-    private static VertexBuffer starBuffer;
-
     public static final ResourceLocation EYES = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/eyes.png");
     public static final ResourceLocation DEMON = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/darkstream.png");
-            //new ResourceLocation[]{tem(1),tem(2),tem(3),tem(4),tem(5),
-            //tem(6),tem(7),tem(8),tem(9),tem(10)};
-
-    private static ResourceLocation tem(int i){
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/demon/TransparentRectangle"+i+".png");
-    }
 
     public static final float[] rainxs = new float[1024];
     public static final float[] rainzs = new float[1024];
 
     public SkyRenderer() {
-        this.createStars();
         for (int i = 0; i < 32; ++i) {
             for (int j = 0; j < 32; ++j) {
                 float f  = j - 16;
@@ -68,151 +60,39 @@ public class SkyRenderer {
             }
         }
     }
-    public static boolean renderSky(ClientLevel level, float partialTicks, PoseStack stack, Camera camera, Matrix4f projectionMatrix, Runnable setupFog) {
-        LevelRenderer levelRenderer = Minecraft.getInstance().levelRenderer;
 
-        setupFog.run();
-        Vec3 vec3 = level.getSkyColor(camera.getPosition(), partialTicks);
-        float f = (float) vec3.x();
-        float f1 = (float) vec3.y();
-        float f2 = (float) vec3.z();
-        FogRenderer.levelFogColor();
-        RenderSystem.depthMask(false);
-        RenderSystem.setShaderColor(f, f1, f2, 1.0F);
-        ShaderInstance shaderinstance = RenderSystem.getShader();
-        levelRenderer.skyBuffer.bind();
-        levelRenderer.skyBuffer.drawWithShader(stack.last().pose(), projectionMatrix, shaderinstance);
-        VertexBuffer.unbind();
-        RenderSystem.enableBlend();
+    private static void renderEyes(PoseStack poseStack , BufferBuilder bufferbuilder , float demonA,float rotX,float rotY,float f12,float start,float end){
+        if(demonA>= start) {
+            float scale;
+            if(demonA<=end)
+                scale = MathUtils.easeOutExpo((demonA - start)/(end-start));
+            else
+                scale = 1;
 
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        stack.pushPose();
-        float f11 = 1.0F - level.getRainLevel(partialTicks);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f11);
-        stack.mulPose(Axis.YP.rotationDegrees(-90.0F));
-        stack.mulPose(Axis.XP.rotationDegrees(level.getTimeOfDay(partialTicks) * 360.0F));
-        float f10 = 1.0F;
-        RenderSystem.setShaderColor(f10, f10, f10, f10);
-        RenderSystem.setShaderColor(f10, f10, f10, f10);
-        FogRenderer.setupNoFog();
-        starBuffer.bind();
-        starBuffer.drawWithShader(stack.last().pose(), projectionMatrix, GameRenderer.getPositionShader());
-        VertexBuffer.unbind();
-        setupFog.run();
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-        stack.popPose();
-        RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
-        double d0 = camera.getEntity().getEyePosition(partialTicks).y();
-        if (d0 < 0.0D) {
-            stack.pushPose();
-            stack.translate(0.0F, 12.0F, 0.0F);
-            levelRenderer.darkBuffer.bind();
-            levelRenderer.darkBuffer.drawWithShader(stack.last().pose(), projectionMatrix, shaderinstance);
-            VertexBuffer.unbind();
-            stack.popPose();
+            poseStack.pushPose();
+            Quaternionf quatX = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(rotX, 0, 0, false);
+            Quaternionf quatY = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(0, rotY, 0, false);
+            Matrix4f matrix4f1 = poseStack.last().pose();
+            matrix4f1.rotate(quatY);
+            matrix4f1.rotate(quatX);
+            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, -f12*scale).uv(0.0F, 0.0F).color(1, 1, 1, 1).endVertex();
+            bufferbuilder.vertex(matrix4f1, f12, 100.0F, -f12*scale).uv(1.0F, 0.0F).color(1, 1, 1, 1).endVertex();
+            bufferbuilder.vertex(matrix4f1, f12, 100.0F, f12*scale).uv(1.0F, 1.0F).color(1, 1, 1, 1).endVertex();
+            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, f12*scale).uv(0.0F, 1.0F).color(1, 1, 1, 1).endVertex();
+            poseStack.popPose();
         }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.depthMask(true);
-        return true;
     }
 
-    private static void renderEyes(Matrix4f view){
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(ForgeRenderTypes.getUnlitTranslucent(EYES));
-        PoseStack posestack = new PoseStack();
-        posestack.mulPoseMatrix(view);
-        PoseStack.Pose pose = posestack.last();
-        Matrix4f matrix4f = pose.pose();
-        Matrix3f matrix3f = pose.normal();
-        float l = 60.0F;
-        portalStatic.vertex(matrix4f, -l, 100.0F, -l).color(1,1,1,1).uv(0.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(240).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex(matrix4f,  l, 100.0F, -l).color(1,1,1,1).uv(1.0F, 0.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(240).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex(matrix4f,  l, 100.0F,  l).color(1,1,1,1).uv(1.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(240).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex(matrix4f, -l, 100.0F,  l).color(1,1,1,1).uv(0.0F, 1.0F).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(240).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-
-        multibuffersource$buffersource.endBatch();
-    }
-
-    // [VanillaCopy] LevelRenderer.createStars
-    private void createStars() {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-        if (starBuffer != null) {
-            starBuffer.close();
-        }
-
-        starBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-        BufferBuilder.RenderedBuffer renderedBuffer = this.drawStars(bufferbuilder);
-        starBuffer.bind();
-        starBuffer.upload(renderedBuffer);
-        VertexBuffer.unbind();
-    }
-
-    // [VanillaCopy] of LevelRenderer.drawStars but with double the number of them
-    private BufferBuilder.RenderedBuffer drawStars(BufferBuilder bufferBuilder) {
-        RandomSource random = RandomSource.create(10842L);
-
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-
-        // TF - 1500 -> 3000
-        for (int i = 0; i < 1500; ++i) {
-            double d0 = random.nextFloat() * 2.0F - 1.0F;
-            double d1 = random.nextFloat() * 2.0F - 1.0F;
-            double d2 = random.nextFloat() * 2.0F - 1.0F;
-            double d3 = 0.15F + random.nextFloat() * 0.1F;
-            double d4 = d0 * d0 + d1 * d1 + d2 * d2;
-            if (d4 < 1.0D && d4 > 0.01D) {
-                d4 = 1.0D / Math.sqrt(d4);
-                d0 *= d4;
-                d1 *= d4;
-                d2 *= d4;
-                double d5 = d0 * 100.0D;
-                double d6 = d1 * 100.0D;
-                double d7 = d2 * 100.0D;
-                double d8 = Math.atan2(d0, d2);
-                double d9 = Math.sin(d8);
-                double d10 = Math.cos(d8);
-                double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
-                double d12 = Math.sin(d11);
-                double d13 = Math.cos(d11);
-                double d14 = random.nextDouble() * Math.PI * 2.0D;
-                double d15 = Math.sin(d14);
-                double d16 = Math.cos(d14);
-
-                for (int j = 0; j < 4; ++j) {
-                    double d18 = ((j & 2) - 1) * d3;
-                    double d19 = ((j + 1 & 2) - 1) * d3;
-                    double d21 = d18 * d16 - d19 * d15;
-                    double d22 = d19 * d16 + d18 * d15;
-                    double d23 = d21 * d12 + 0.0D * d13;
-                    double d24 = 0.0D * d12 - d21 * d13;
-                    double d25 = d24 * d9 - d22 * d10;
-                    double d26 = d22 * d9 + d24 * d10;
-                    bufferBuilder.vertex(d5 + d25, d6 + d23, d7 + d26).endVertex();
-                }
-            }
-        }
-
-        return bufferBuilder.end();
-    }
-
-    private static final float TIME = 12500f;
-    private static final float FIXED_TIME = (float) (Mth.frac(TIME / 24000.0 - 0.25) * 2.0 + 0.5 - Math.cos(Mth.frac(TIME / 24000.0 - 0.25) * Math.PI) / 2.0) / 3.0F;
     private static Random random1 = new Random(1024);
 
     public static boolean renderDemonSky(ClientLevel level, float partialTicks, Matrix4f modelViewMatrix, Camera camera, Matrix4f matrix, Runnable setupFog) {
-        int demonRadio = ClientStorage.INSTANCE.demonRadio;
+        float demon = ClientStorage.INSTANCE.getDemon(partialTicks);
         float demonA;
-        if(demonRadio<40){
+        if(demon<60){
             demonA = 0;
         }
         else {
-            demonA = MathUtils.fade(((demonRadio+partialTicks-40)/81));
+            demonA = (demon - 60)/100;
         }
         Minecraft minecraft = Minecraft.getInstance();
         LevelRenderer levelRenderer = minecraft.levelRenderer;
@@ -220,6 +100,7 @@ public class SkyRenderer {
 
         FogType fogType = camera.getFluidInCamera();
         if (fogType != FogType.POWDER_SNOW && fogType != FogType.LAVA) {
+
             PoseStack poseStack = new PoseStack();
             poseStack.mulPoseMatrix(modelViewMatrix);
 
@@ -228,7 +109,6 @@ public class SkyRenderer {
             float h = (float) vec3.y;
             float i = (float) vec3.z;
             FogRenderer.levelFogColor();
-            Tesselator tesselator = Tesselator.getInstance();
             RenderSystem.depthMask(false);
             RenderSystem.setShaderColor(g, h, i, 1.0F);
             ShaderInstance shaderInstance = RenderSystem.getShader();
@@ -236,86 +116,60 @@ public class SkyRenderer {
             levelRenderer.skyBuffer.drawWithShader(poseStack.last().pose(), matrix, shaderInstance);
             VertexBuffer.unbind();
             RenderSystem.enableBlend();
-            float[] fs = level.effects().getSunriseColor(FIXED_TIME, partialTicks);
-            float j;
-            float l;
-            float p;
-            float q;
-            float r;
-            if (fs != null) {
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                poseStack.pushPose();
-                poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-                j = Mth.sin(level.getSunAngle(partialTicks)) < 0.0F ? 180.0F : 0.0F;
-                poseStack.mulPose(Axis.ZP.rotationDegrees(j));
-                poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
-                float k = fs[0];
-                l = fs[1];
-                float m = fs[2];
-                Matrix4f matrix4f3 = poseStack.last().pose();
-                BufferBuilder bufferBuilder = tesselator.getBuilder();
-                bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-                bufferBuilder.vertex(matrix4f3, 0.0F, 100.0F, 0.0F).color(k, l, m, fs[3]);
-
-                for (int o = 0; o <= 16; ++o) {
-                    p = (float) o * 6.2831855F / 16.0F;
-                    q = Mth.sin(p);
-                    r = Mth.cos(p);
-                    bufferBuilder.vertex(matrix4f3, q * 120.0F, r * 120.0F, -r * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F);
-                }
-
-                BufferUploader.drawWithShader(bufferBuilder.end());
-                poseStack.popPose();
-            }
 
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            poseStack.pushPose();
+
 
             BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, demonA);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 
-            float f12 = 160.0F;
+
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, EYES);
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-            Matrix4f matrix4f1 = poseStack.last().pose();
-            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, -f12).uv(0.0F, 0.0F).color(1,1,1,demonA).endVertex();
-            bufferbuilder.vertex(matrix4f1, f12, 100.0F, -f12).uv(1.0F, 0.0F) .color(1,1,1,demonA).endVertex();
-            bufferbuilder.vertex(matrix4f1, f12, 100.0F, f12).uv(1.0F, 1.0F)  .color(1,1,1,demonA).endVertex();
-            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, f12).uv(0.0F, 1.0F) .color(1,1,1,demonA).endVertex();
+
+            renderEyes(poseStack,bufferbuilder,demonA,0,0,120.0F,0.90f,1);
+            //renderEyes(poseStack,bufferbuilder,demonA,1,3.14f,25.0F,0.2f,0.4f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1,2.14f,25.0F,0.2f,0.4f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1,1.14f,20.0F,0.2f,0.4f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1,1.54f,28.0F,0.2f,0.4f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1,0.54f,28.0F,0.2f,0.4f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1.4f,0.5f,20.0F,0,0.2f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1.4f,0.7f,24.0F,0,0.2f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1.4f,1.2f,24.0F,0,0.2f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1.4f,1.9f,20.0F,0,0.2f);
+            //renderEyes(poseStack,bufferbuilder,demonA,1.4f,2.4f,20.0F,0,0.2f);
+
             BufferUploader.drawWithShader(bufferbuilder.end());
 
             float v = 1.0f;
             RenderSystem.setShaderColor(v, 0, 0, demonA);
             FogRenderer.setupNoFog();
-            starBuffer.bind();
-            starBuffer.drawWithShader(poseStack.last().pose(), matrix, GameRenderer.getPositionShader());
             VertexBuffer.unbind();
             setupFog.run();
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             RenderSystem.defaultBlendFunc();
-            poseStack.popPose();
+
             RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.depthMask(true);
         }
-
         return true;
     }
 
-    public static void demonWeather(ClientLevel level,LightTexture pLightTexture,int ticks, float pPartialTick, double pCamX, double pCamY, double pCamZ) {
-            int demonRadio = ClientStorage.INSTANCE.demonRadio;
-            float demonA = 1;
-            if(demonRadio>80){
+    public static void demonWeather(ClientLevel level,LightTexture pLightTexture,int ticks, float pPartialTick, double pCamX, double pCamY, double pCamZ, CallbackInfo info) {
+            float demonRadio = ClientStorage.INSTANCE.getDemon(pPartialTick);
+            float demonA;
+            if(demonRadio>60){
                 demonA = 0;
             }
             else {
-                demonA = MathUtils.fade(((81-demonRadio+pPartialTick)/81));
+                demonA = MathUtils.easeOutCubic(1 - demonRadio / 60);
             }
+
             pLightTexture.turnOnLightLayer();
             int i = Mth.floor(pCamX);
             int j = Mth.floor(pCamY);

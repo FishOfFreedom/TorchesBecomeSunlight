@@ -125,17 +125,17 @@ public class BlackHoleParticle extends Particle {
 
 
     public static class BlackHoleData implements ParticleOptions {
-        public static final Deserializer<BlackHoleData> DESERIALIZER = new Deserializer<BlackHoleData>() {
-            public BlackHoleData fromCommand(ParticleType<BlackHoleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<BlackHoleParticle.BlackHoleData> DESERIALIZER = new Deserializer<BlackHoleParticle.BlackHoleData>() {
+            public BlackHoleParticle.BlackHoleData fromCommand(ParticleType<BlackHoleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
                 float scale = reader.readFloat();
-                return new BlackHoleData(duration,scale);
+                return new BlackHoleParticle.BlackHoleData(duration,scale);
             }
 
-            public BlackHoleData fromNetwork(ParticleType<BlackHoleData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new BlackHoleData(buffer.readInt(),buffer.readFloat());
+            public BlackHoleParticle.BlackHoleData fromNetwork(ParticleType<BlackHoleParticle.BlackHoleData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new BlackHoleParticle.BlackHoleData(buffer.readInt(),buffer.readFloat());
             }
         };
 
@@ -161,7 +161,7 @@ public class BlackHoleParticle extends Particle {
         }
 
         @Override
-        public ParticleType<BlackHoleData> getType() {
+        public ParticleType<BlackHoleParticle.BlackHoleData> getType() {
             return ParticleHandler.BLACKHOLE.get();
         }
 
@@ -174,10 +174,10 @@ public class BlackHoleParticle extends Particle {
         public float getScale() {
             return this.scale;
         }
-        public static Codec<BlackHoleData> CODEC(ParticleType<BlackHoleData> particleType) {
+        public static Codec<BlackHoleData> CODEC(ParticleType<BlackHoleParticle.BlackHoleData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(BlackHoleData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(BlackHoleData::getScale)
+                            Codec.INT.fieldOf("duration").forGetter(BlackHoleParticle.BlackHoleData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(BlackHoleParticle.BlackHoleData::getScale)
                     ).apply(codecBuilder, BlackHoleData::new)
             );
         }

@@ -40,6 +40,26 @@
     "sounds": [ "torchesbecomesunlight:entity/snownova/ice_ground" ],
     "subtitle": "subtitles.torchesbecomesunlight.snownova.ice_ground"
   },
+  "pursuer.breath": {
+    "sounds": [ "torchesbecomesunlight:entity/pursuer/pursuer_breath" ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer.breath"
+  },
+  "pursuer.bigbomb": {
+    "sounds": [ "torchesbecomesunlight:entity/pursuer/cleanbigboom" ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer.bigboom"
+  },
+  "pursuer.shoot": {
+    "sounds": [ "torchesbecomesunlight:entity/pursuer/shoot" ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer.shoot"
+  },
+  "pursuer.space": {
+    "sounds": [ "torchesbecomesunlight:entity/pursuer/kongjian" ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer.space"
+  },
+  "pursuer.sword": {
+    "sounds": [ "torchesbecomesunlight:entity/pursuer/skulsrsword" ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer.sword"
+  },
   "music.permafrost": {
     "sounds": [
       "torchesbecomesunlight:music/permafrost"
@@ -59,6 +79,20 @@
       "torchesbecomesunlight:music/patriot"
     ],
     "subtitle": "subtitles.torchesbecomesunlight.unyielding",
+    "stream": true
+  },
+  "music.pursuer_1": {
+    "sounds": [
+      "torchesbecomesunlight:music/pursuer_1"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer_1",
+    "stream": true
+  },
+  "music.pursuer_2": {
+    "sounds": [
+      "torchesbecomesunlight:music/pursuer_2"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.pursuer_2",
     "stream": true
   }
 }

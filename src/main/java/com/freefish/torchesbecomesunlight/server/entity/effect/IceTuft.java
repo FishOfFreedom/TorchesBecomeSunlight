@@ -48,18 +48,24 @@ public class IceTuft extends EffectEntity implements GeoEntity {
     }
 
     private PlayState predicate(AnimationState<IceTuft> event) {
-        if(number==0)
-            event.getController().setAnimation(RawAnimation.begin().thenLoop("1"));
-        else if(number==1)
-            event.getController().setAnimation(RawAnimation.begin().thenLoop("2"));
-        else if(number==2)
-            event.getController().setAnimation(RawAnimation.begin().thenLoop("3"));
+        event.getController().setAnimation(RawAnimation.begin().thenLoop("2"));
         return PlayState.CONTINUE;
     }
 
     @Override
     public void tick() {
         super.tick();
+        if(tickCount==70&&!level().isClientSide&&caster!=null){
+            setCasterId(caster.getId());
+        }
+        if(tickCount==79&&getTypeNumber()==1){
+            if(level().isClientSide&&level().getEntity(getCasterId()) instanceof LivingEntity livingEntity) {
+                caster = livingEntity;
+            }
+            if(caster instanceof Pursuer pursuer){
+                pursuer.addDemonArea(100,position());
+            }
+        }
         if(level().isClientSide&&tickCount==79){
             sparkTuft();
         }
@@ -72,7 +78,7 @@ public class IceTuft extends EffectEntity implements GeoEntity {
     private void bomb(){
         if(caster instanceof Pursuer){
             float damage =(float) caster.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-            List<LivingEntity> nearByLivingEntities = getNearByLivingEntities(3);
+            List<LivingEntity> nearByLivingEntities = getNearByLivingEntities(8);
             for(LivingEntity hit:nearByLivingEntities){
                 if(hit == caster) continue;
                 hit.hurt(caster.damageSources().mobAttack(caster),damage);
@@ -81,10 +87,18 @@ public class IceTuft extends EffectEntity implements GeoEntity {
     }
 
     private void sparkTuft(){
-        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, Math.toRadians(-90), 0, 0, 50F, 1, 1, 1, 1, 1, 4, true, false, new ParticleComponent[]{
-                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 90f), false),
-                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
-        });
+        if(getTypeNumber()==0) {
+            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, Math.toRadians(-90), 0, 0, 50F, 1, 1, 1, 1, 1, 4, true, false, new ParticleComponent[]{
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 90f), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
+            });
+        }
+        else {
+            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, Math.toRadians(-90), 0, 0, 50F, 0,0,0, 1, 1, 4, true, false, new ParticleComponent[]{
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 90f), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
+            });
+        }
     }
 
     @Override
@@ -94,17 +108,20 @@ public class IceTuft extends EffectEntity implements GeoEntity {
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(CLASS,0);
         this.entityData.define(TYPE,0);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
         this.entityData.set(TYPE,pCompound.getInt("type"));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
         pCompound.putInt("type",this.entityData.get(TYPE));
     }
 

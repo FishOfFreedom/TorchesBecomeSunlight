@@ -94,8 +94,8 @@ public class ParticleCloud extends TextureSheetParticle {
     }
 
     public static class CloudData implements ParticleOptions {
-        public static final Deserializer<CloudData> DESERIALIZER = new Deserializer<CloudData>() {
-            public CloudData fromCommand(ParticleType<CloudData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final ParticleOptions.Deserializer<ParticleCloud.CloudData> DESERIALIZER = new ParticleOptions.Deserializer<ParticleCloud.CloudData>() {
+            public ParticleCloud.CloudData fromCommand(ParticleType<CloudData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 float r = (float) reader.readDouble();
                 reader.expect(' ');
@@ -108,15 +108,15 @@ public class ParticleCloud extends TextureSheetParticle {
                 int duration = reader.readInt();
                 reader.expect(' ');
                 float airDrag = (float) reader.readDouble();
-                return new CloudData(particleTypeIn, r, g, b, scale, duration, EnumCloudBehavior.CONSTANT, airDrag);
+                return new ParticleCloud.CloudData(particleTypeIn, r, g, b, scale, duration, EnumCloudBehavior.CONSTANT, airDrag);
             }
 
-            public CloudData fromNetwork(ParticleType<CloudData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new CloudData(particleTypeIn, buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), EnumCloudBehavior.CONSTANT, buffer.readFloat());
+            public ParticleCloud.CloudData fromNetwork(ParticleType<ParticleCloud.CloudData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new ParticleCloud.CloudData(particleTypeIn, buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), EnumCloudBehavior.CONSTANT, buffer.readFloat());
             }
         };
 
-        private final ParticleType<CloudData> type;
+        private final ParticleType<ParticleCloud.CloudData> type;
 
         private final float r;
         private final float g;
@@ -126,7 +126,7 @@ public class ParticleCloud extends TextureSheetParticle {
         private final EnumCloudBehavior behavior;
         private final float airDrag;
 
-        public CloudData(ParticleType<CloudData> type, float r, float g, float b, float scale, int duration, EnumCloudBehavior behavior, float airDrag) {
+        public CloudData(ParticleType<ParticleCloud.CloudData> type, float r, float g, float b, float scale, int duration, EnumCloudBehavior behavior, float airDrag) {
             this.type = type;
             this.r = r;
             this.g = g;
@@ -155,7 +155,7 @@ public class ParticleCloud extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<CloudData> getType() {
+        public ParticleType<ParticleCloud.CloudData> getType() {
             return type;
         }
 

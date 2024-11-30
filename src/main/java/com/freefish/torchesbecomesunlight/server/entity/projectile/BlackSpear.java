@@ -10,10 +10,13 @@ import com.freefish.torchesbecomesunlight.client.particle.DemonHoleParticle;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.PursuerEffectEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
+import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EffectEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
+import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -24,6 +27,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -84,10 +88,10 @@ public class BlackSpear extends EffectEntity implements GeoEntity {
         this.move(MoverType.SELF, this.getDeltaMovement());
         if (tickCount <= MAX_ACTIVE) {
             if (tickCount % 2 == 0&&!isHit) {
-                double ac = 1.8;
+                double ac = 1.5;
                 int type1 = getType1();
                 if(type1==2)ac-=0.32;
-                else if(type1==3) ac -= 0.4;
+                else if(type1==3) ac -= 0.2;
                 this.setDeltaMovement(this.getDeltaMovement().scale(ac));
             }
         }
@@ -118,38 +122,55 @@ public class BlackSpear extends EffectEntity implements GeoEntity {
         }
 
         if(tickCount == 1) reVec3 = new Vec3(getX(),getY(),getZ());
-        if(this.tickCount > getEtime()&&getType1()==3&&reVec3!=null){
+        if(this.tickCount > getEtime()-56&&getType1()==3&&reVec3!=null){
             doDemonAttack();
         }
 
         BlockState blockState = getBlockStateOn();
-        if (!blockState.isAir()) {
+        if (!blockState.isAir()&&!level().isClientSide) {
             if(getType1()==3) {
                 isHit=true;
                 setDeltaMovement(0, 0, 0);
             }
-            else
+            else {
+                if(getType1()==1) {
+                    IceTuft iceTuft = new IceTuft(EntityHandle.ICE_TUFT.get(), level());
+                    iceTuft.caster = caster;
+                    iceTuft.setYRot(2 * (float) Math.PI * random.nextFloat());
+                    BlockPos ground = MathUtils.getFirstBlockAbove(level(), blockPosition());
+                    if (ground != null) {
+                        iceTuft.setPos(ground.getX(), ground.getY() - 0.2, ground.getZ());
+                    } else {
+                        iceTuft.setPos(position());
+                    }
+                    iceTuft.setTypeNumber(1);
+                    level().addFreshEntity(iceTuft);
+                }
                 discard();
+            }
         }
     }
 
     private void doDemonAttack(){
         Vec3 line = reVec3.subtract(position()).normalize();
         List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(22),entity -> !(entity instanceof Pursuer));
-        for(LivingEntity livingEntity: list){
+        for (LivingEntity livingEntity : list) {
+            if (livingEntity instanceof Player player && player.isCreative()) continue;
             Vec3 subtract = livingEntity.position().subtract(position());
             double dot = line.dot(subtract);
-            if(dot>0) {
+            if (dot > 0) {
                 Vec3 line1 = line.scale(dot);
                 float len = (float) line1.subtract(subtract).length();
-                if (len<3){
-                    livingEntity.setDeltaMovement(0,0,0);
-                    livingEntity.setPos(livingEntity.xo,livingEntity.yo,livingEntity.zo);
-                    if(caster!=null) {
-                        AttributeInstance attribute = caster.getAttribute(Attributes.ATTACK_DAMAGE);
-                        if (attribute != null) {
-                            float damage = (float) attribute.getValue();
-                            livingEntity.hurt(this.damageSources().mobAttack(caster), damage);
+                if (len < 3) {
+                    livingEntity.setDeltaMovement(0, 0, 0);
+                    livingEntity.setPos(livingEntity.xo, livingEntity.yo, livingEntity.zo);
+                    if(tickCount%3==0) {
+                        if (caster != null) {
+                            AttributeInstance attribute = caster.getAttribute(Attributes.ATTACK_DAMAGE);
+                            if (attribute != null) {
+                                float damage = (float) attribute.getValue();
+                                livingEntity.hurt(DamageSourceHandle.demonAttack(caster), damage );
+                            }
                         }
                     }
                 }
@@ -158,24 +179,22 @@ public class BlackSpear extends EffectEntity implements GeoEntity {
     }
 
     private void doHurtTarget() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide&&!isHit) {
             float add = getType1()==3?0.35f:0f;
             List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(0.35+add));
             boolean flad = false;
             for (LivingEntity target : entities) {
-                //todo
                 if (target == caster) continue;
-                AttributeInstance attribute = target.getAttribute(Attributes.ATTACK_DAMAGE);
-                if(attribute!=null) {
-                    float damage = (float) attribute.getValue();
-                    flad = target.hurt(this.damageSources().mobAttack(caster), damage);
+                if (caster!=null) {
+                    AttributeInstance attribute = caster.getAttribute(Attributes.ATTACK_DAMAGE);
+                    if (attribute != null) {
+                        float damage = (float) attribute.getValue();
+                        flad = target.hurt(this.damageSources().mobAttack(caster), damage*0.8f);
+                    }
                 }
             }
             if(flad){
-                if(getType1()==3) {
-                }
-                else
-                    discard();
+                playSound(SoundHandle.SHOOT.get(), 1.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
             }
         }
     }

@@ -5,19 +5,14 @@ import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.blockentity.GemPolishingBlockEntityRenderer;
 import com.freefish.torchesbecomesunlight.client.render.blockentity.ShaderBlockRenderer;
 import com.freefish.torchesbecomesunlight.client.render.entity.*;
-import com.freefish.torchesbecomesunlight.client.render.enviroment.DemonRenderInfo;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.GemPolishingStationScreen;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.ModMenuTypes;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.PotScreen;
 import com.freefish.torchesbecomesunlight.client.render.projectile.*;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.ShieldGuard;
-import com.freefish.torchesbecomesunlight.server.entity.villager.Man;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.DimensionSpecialEffects;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
@@ -62,6 +57,6 @@ public class ClientEvent {
     @SubscribeEvent
     public static void registerDimEffects(RegisterDimensionSpecialEffectsEvent event) {
         new SkyRenderer();
-        event.register(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "name".toLowerCase(Locale.ROOT)), new DemonRenderInfo(128.0F, false, DimensionSpecialEffects.SkyType.NONE, false, false));
+        //event.register(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "name".toLowerCase(Locale.ROOT)), new DemonRenderInfo(128.0F, false, DimensionSpecialEffects.SkyType.NONE, false, false));
     }
 }

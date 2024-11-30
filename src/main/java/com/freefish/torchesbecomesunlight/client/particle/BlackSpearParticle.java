@@ -123,8 +123,8 @@ public class BlackSpearParticle extends Particle {
 
 
     public static class BlackSpearData implements ParticleOptions {
-        public static final Deserializer<BlackSpearData> DESERIALIZER = new Deserializer<BlackSpearData>() {
-            public BlackSpearData fromCommand(ParticleType<BlackSpearData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final ParticleOptions.Deserializer<BlackSpearParticle.BlackSpearData> DESERIALIZER = new ParticleOptions.Deserializer<BlackSpearParticle.BlackSpearData>() {
+            public BlackSpearParticle.BlackSpearData fromCommand(ParticleType<BlackSpearParticle.BlackSpearData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
@@ -133,11 +133,11 @@ public class BlackSpearParticle extends Particle {
                 float rotX = reader.readFloat();
                 reader.expect(' ');
                 float rotY = reader.readFloat();
-                return new BlackSpearData(duration, swirls,rotX,rotY);
+                return new BlackSpearParticle.BlackSpearData(duration, swirls,rotX,rotY);
             }
 
-            public BlackSpearData fromNetwork(ParticleType<BlackSpearData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new BlackSpearData(buffer.readInt(), buffer.readBoolean(),buffer.readFloat(),buffer.readFloat());
+            public BlackSpearParticle.BlackSpearData fromNetwork(ParticleType<BlackSpearParticle.BlackSpearData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new BlackSpearParticle.BlackSpearData(buffer.readInt(), buffer.readBoolean(),buffer.readFloat(),buffer.readFloat());
             }
         };
 
@@ -169,7 +169,7 @@ public class BlackSpearParticle extends Particle {
         }
 
         @Override
-        public ParticleType<BlackSpearData> getType() {
+        public ParticleType<BlackSpearParticle.BlackSpearData> getType() {
             return ParticleHandler.BLACK_SPEAR.get();
         }
 
@@ -193,12 +193,12 @@ public class BlackSpearParticle extends Particle {
             return this.rotY;
         }
 
-        public static Codec<BlackSpearData> CODEC(ParticleType<BlackSpearData> particleType) {
+        public static Codec<BlackSpearParticle.BlackSpearData> CODEC(ParticleType<BlackSpearParticle.BlackSpearData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(BlackSpearData::getDuration),
-                            Codec.BOOL.fieldOf("swirls").forGetter(BlackSpearData::getSwirls),
-                    Codec.FLOAT.fieldOf("rotX").forGetter(BlackSpearData::getRotX),
-                    Codec.FLOAT.fieldOf("rotY").forGetter(BlackSpearData::getRotY)
+                            Codec.INT.fieldOf("duration").forGetter(BlackSpearParticle.BlackSpearData::getDuration),
+                            Codec.BOOL.fieldOf("swirls").forGetter(BlackSpearParticle.BlackSpearData::getSwirls),
+                    Codec.FLOAT.fieldOf("rotX").forGetter(BlackSpearParticle.BlackSpearData::getRotX),
+                    Codec.FLOAT.fieldOf("rotY").forGetter(BlackSpearParticle.BlackSpearData::getRotY)
                     ).apply(codecBuilder, BlackSpearData::new)
             );
         }

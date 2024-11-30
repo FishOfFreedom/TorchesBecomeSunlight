@@ -11,9 +11,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
@@ -49,6 +51,7 @@ public class PursuerEffectEntity extends Entity {
         if(getLocate()) {
             List<LivingEntity> nearbyEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(24, 24, 24), e -> !(e instanceof Pursuer) && distanceTo(e) <= 24 + e.getBbWidth() / 2f && e.getY() <= getY() + 10);
             for (Entity entity : nearbyEntities) {
+                if(entity instanceof Player player&&player.isCreative()) continue;
                 float len = (float) entity.position().subtract(position()).length();
                 if (entity.isPickable() && !entity.noPhysics && len > 20) {
                     Vec3 motion = new Vec3(entity.getX()-entity.xo,0,entity.getY()-entity.yo);
@@ -65,6 +68,15 @@ public class PursuerEffectEntity extends Entity {
         {
             Entity entity = getOwner();
             if (entity instanceof Pursuer pursuer) {
+                if(tickCount%60==0){
+                    RandomSource random = pursuer.getRandom();
+                    LivingEntity target = pursuer.getTarget();
+                    if(target!=null) {
+                            Vec3 vec3 = new Vec3(0,0,7+random.nextFloat()*3).xRot(1+2*random.nextFloat()).yRot(random.nextFloat()*6).add(target.position());
+                        pursuer.shootBlackSpear(target,vec3,1);
+                    }
+                }
+
                 if(tickCount==1){
                     TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> pursuer),new SetDemonCentreMessage(pursuer.getId(),position()));
                 }

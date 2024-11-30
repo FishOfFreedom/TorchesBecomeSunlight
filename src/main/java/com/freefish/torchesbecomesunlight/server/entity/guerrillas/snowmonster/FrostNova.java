@@ -858,7 +858,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogue {
         toggleServerBlizzard(false);
     }
 
-    public void remove(RemovalReason removalReason) {
+    public void remove(Entity.RemovalReason removalReason) {
         super.remove(removalReason);
         toggleServerBlizzard(false);
     }

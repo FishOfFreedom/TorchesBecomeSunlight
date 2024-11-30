@@ -26,10 +26,19 @@ public class SoundHandle {
     public static final RegistryObject<SoundEvent> HIT = create("patriot.hit");
     public static final RegistryObject<SoundEvent> GROUND = create("patriot.ground");
 
+    //Pursuer
+    public static final RegistryObject<SoundEvent> BREATH = create("pursuer.breath");
+    public static final RegistryObject<SoundEvent> BIG_BOOM = create("pursuer.bigbomb");
+    public static final RegistryObject<SoundEvent> SWORD = create("pursuer.sword");
+    public static final RegistryObject<SoundEvent> SHOOT = create("pursuer.shoot");
+    public static final RegistryObject<SoundEvent> SPACE = create("pursuer.space");
+
     // Music
     public static final RegistryObject<SoundEvent> SNOWNOVA_LULLABYE = create("music.lullabye");
     public static final RegistryObject<SoundEvent> SNOWNOVA_PERMAFROST = create("music.permafrost");
     public static final RegistryObject<SoundEvent> PATRIOT_UNYIELDING = create("music.unyielding");
+    public static final RegistryObject<SoundEvent> PURSUER_1 = create("music.pursuer_1");
+    public static final RegistryObject<SoundEvent> PURSUER_2 = create("music.pursuer_2");
 
     private static RegistryObject<SoundEvent> create(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, name)));

@@ -15,6 +15,8 @@ import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueT
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.SpawnDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.SynDialogueDataMessage;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
+import com.freefish.torchesbecomesunlight.server.init.generator.CustomResourceKey;
 import com.freefish.torchesbecomesunlight.server.story.ProcessManage;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.quest.QuestBase;
@@ -26,6 +28,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -53,17 +56,17 @@ public class EventListener {
     public static void onEntityHurt(LivingHurtEvent event) {
         if (!event.isCanceled()) {
             LivingEntity entity = event.getEntity();
-            if (entity.level().isClientSide()) {
-                return;
-            }
+
             DamageSource source = event.getSource();
             Entity trueSource = source.getDirectEntity();
 
             if (trueSource instanceof Patriot patriot&&(patriot.getAnimation()==Patriot.PIERCE1||patriot.getAnimation()==Patriot.PIERCE2)) {
                 event.getEntity().invulnerableTime=1;
             }
-            else if (trueSource instanceof Pursuer pursuer&&(pursuer.getAnimation()==Pursuer.BATTACK2||pursuer.getAnimation()==Pursuer.BATTACK21||pursuer.getAnimation()==Pursuer.DEMON)) {
+            else if (trueSource instanceof Pursuer pursuer&&(pursuer.getAnimation()==Pursuer.BATTACK2||pursuer.getAnimation()==Pursuer.BATTACK21||pursuer.getAnimation()==Pursuer.SKILL)) {
                 event.getEntity().invulnerableTime=1;
+            }else if(event.getSource().is(CustomResourceKey.DEMON_ATTACK)){
+                event.getEntity().invulnerableTime=0;
             }
         }
     }
@@ -101,6 +104,7 @@ public class EventListener {
         original.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(old ->{
             event.getEntity().getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(storystate ->{
                 storystate.setStoryState(old.getStoryState());
+                storystate.setSeePatriot(old.isSeePatriot());
             });
         });
     }
@@ -121,11 +125,29 @@ public class EventListener {
             }
             if(level.isClientSide()){
                 //todo RenderDemon
+                ClientStorage.INSTANCE.update();
+
+                int skip = ClientStorage.INSTANCE.skipRadio;
+                if(ClientStorage.INSTANCE.isSkip&&skip<41){
+                    if(skip==40){
+                        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player,level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(5)));
+                        if(dialogueEntity!=null) {
+                            ServerNetwork.toServerMessage(new DialogueTriggerMessage(dialogueEntity.getId()));
+                            ClientStorage.INSTANCE.skipRadio = 0;
+                        }
+                    }
+                    ClientStorage.INSTANCE.skipRadio+=1;
+                }
+                else if(!ClientStorage.INSTANCE.isSkip&&skip>0){
+                    ClientStorage.INSTANCE.skipRadio-=1;
+                }
+
                 if(MathUtils.isInDemon(player)){
-                    if(ClientStorage.INSTANCE.demonRadio<120)ClientStorage.INSTANCE.demonRadio+=1;
+                    if(ClientStorage.INSTANCE.demonRadio<160)ClientStorage.INSTANCE.demonRadio+=1;
                 }
                 else
                     if(ClientStorage.INSTANCE.demonRadio>0)ClientStorage.INSTANCE.demonRadio-=1;
+
                 player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(data ->{
                     List<LivingEntity> livingEntities = level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(5),livingEntity ->
                             livingEntity instanceof IDialogue & livingEntity.distanceTo(player)<4+livingEntity.getBbWidth()/2&&livingEntity!=player);
@@ -189,7 +211,7 @@ public class EventListener {
 
         List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(5));
         DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player, entitiesOfClass);
-        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null) {
+        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null&& !dialogueEntity.getDialogue().getOptions().isEmpty()) {
             int len = dialogueEntity.getOptions();
             int number = dialogueEntity.getNumber();
             if (scrollAmount > 0) {
@@ -241,6 +263,7 @@ public class EventListener {
         if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null){
             if (event.getButton() == 2 && event.getAction() == 1) {
                 ServerNetwork.toServerMessage(new MiddelClickMessage(player.getId()));
+                dialogueEntity.setNumber(0);
                 event.setCanceled(true);
             }
         }

@@ -37,7 +37,7 @@ public class SkyStructures extends Structure {
     private final Optional<Heightmap.Types> projectStartToHeightmap;
     private final int maxDistanceFromCenter;
 
-    public SkyStructures(StructureSettings config,
+    public SkyStructures(Structure.StructureSettings config,
                          Holder<StructureTemplatePool> startPool,
                          Optional<ResourceLocation> startJigsawName,
                          int size,
@@ -81,7 +81,7 @@ public class SkyStructures extends Structure {
      * Use the biome tags for where to spawn the structure and users can datapack
      * it to spawn in specific biomes that aren't in the dimension they don't like if they wish.
      */
-    private static boolean extraSpawningChecks(GenerationContext context) {
+    private static boolean extraSpawningChecks(Structure.GenerationContext context) {
         // Grabs the chunk position we are at
         ChunkPos chunkpos = context.chunkPos();
 
@@ -96,7 +96,7 @@ public class SkyStructures extends Structure {
     }
 
     @Override
-    public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
+    public Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context) {
 
         // Check if the spot is valid for our structure. This is just as another method for cleanness.
         // Returning an empty optional tells the game to skip this spot as it will not generate the structure.
@@ -113,7 +113,7 @@ public class SkyStructures extends Structure {
         ChunkPos chunkPos = context.chunkPos();
         BlockPos blockPos = new BlockPos(chunkPos.getMinBlockX(), startY, chunkPos.getMinBlockZ());
 
-        Optional<GenerationStub> structurePiecesGenerator =
+        Optional<Structure.GenerationStub> structurePiecesGenerator =
                 JigsawPlacement.addPieces(
                         context, // Used for JigsawPlacement to get all the proper behaviors done.
                         this.startPool, // The starting pool to use to create the structure layout from

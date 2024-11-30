@@ -122,8 +122,8 @@ public class DemonParticle extends Particle {
 
 
     public static class DemonData implements ParticleOptions {
-        public static final Deserializer<DemonData> DESERIALIZER = new Deserializer<DemonData>() {
-            public DemonData fromCommand(ParticleType<DemonData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final ParticleOptions.Deserializer<DemonParticle.DemonData> DESERIALIZER = new ParticleOptions.Deserializer<DemonParticle.DemonData>() {
+            public DemonParticle.DemonData fromCommand(ParticleType<DemonData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
@@ -132,11 +132,11 @@ public class DemonParticle extends Particle {
                 float rotX = reader.readFloat();
                 reader.expect(' ');
                 float rotY = reader.readFloat();
-                return new DemonData(duration,scale,rotX,rotY);
+                return new DemonParticle.DemonData(duration,scale,rotX,rotY);
             }
 
-            public DemonData fromNetwork(ParticleType<DemonData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new DemonData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
+            public DemonParticle.DemonData fromNetwork(ParticleType<DemonParticle.DemonData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new DemonParticle.DemonData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
         };
 
@@ -168,7 +168,7 @@ public class DemonParticle extends Particle {
         }
 
         @Override
-        public ParticleType<DemonData> getType() {
+        public ParticleType<DemonParticle.DemonData> getType() {
             return ParticleHandler.DEMON.get();
         }
 
@@ -190,12 +190,12 @@ public class DemonParticle extends Particle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<DemonData> CODEC(ParticleType<DemonData> particleType) {
+        public static Codec<DemonData> CODEC(ParticleType<DemonParticle.DemonData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(DemonData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(DemonData::getScale),
-                            Codec.FLOAT.fieldOf("rotX").forGetter(DemonData::getRotX),
-                            Codec.FLOAT.fieldOf("rotY").forGetter(DemonData::getRotY)
+                            Codec.INT.fieldOf("duration").forGetter(DemonParticle.DemonData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(DemonParticle.DemonData::getScale),
+                            Codec.FLOAT.fieldOf("rotX").forGetter(DemonParticle.DemonData::getRotX),
+                            Codec.FLOAT.fieldOf("rotY").forGetter(DemonParticle.DemonData::getRotY)
                     ).apply(codecBuilder, DemonData::new)
             );
         }

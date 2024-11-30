@@ -15,11 +15,15 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.util.List;
 
 public class DialogueEntity extends Entity {
     private Entity[] chatEntities;
@@ -30,6 +34,7 @@ public class DialogueEntity extends Entity {
     private int optionNumber;
 
     private Entity locateEntity;
+    private Dialogue endDialogue;
 
     private int number;
     private int oldNumber;
@@ -78,16 +83,19 @@ public class DialogueEntity extends Entity {
 
         //update in Server
         if(!level().isClientSide&&getDialogue()!=null){
-            if(tickCount==1)
-                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new StartDialogueMessage(getDialogue(), this.getId(), getChatEntities()));
+            if(tickCount==1) {
+                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new StartDialogueMessage(getDialogue(), this, getChatEntities()));
+            }
 
             if(getSpeakTickCount() == getMaxSpeakTickCount()){
-                if(getDialogue().getOptions()!=null){
-                    idleTime++;
-                    if(idleTime>=getMaxSpeakTickCount()/2){
-                        idleTime = 0;
-                        startSpeakInServer(getDialogue().getNextDialogue(), getDialogue().getNextDialogue().getDialogueTime());
-                    };
+                if(getDialogue().getOptions()!=null&&!getDialogue().getOptions().isEmpty()){
+                    if(getDialogue().getNextDialogue() != null) {
+                        idleTime++;
+                        if (idleTime >= getMaxSpeakTickCount() / 2) {
+                            idleTime = 0;
+                            startSpeakInServer(getDialogue().getNextDialogue(), getDialogue().getNextDialogue().getDialogueTime());
+                        }
+                    }
                 }
                 else if(getDialogue().getNextDialogue() != null) {
                     startSpeakInServer(getDialogue().getNextDialogue(), getDialogue().getNextDialogue().getDialogueTime());
@@ -97,6 +105,10 @@ public class DialogueEntity extends Entity {
                 }
             }
         }else if(!level().isClientSide&&getDialogue()==null){
+            List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6));
+            for(LivingEntity livingEntity:list){
+                if(livingEntity instanceof IDialogue iDialogue) iDialogue.setDialogueEntity(null);
+            }
             kill();
         }
         //updateAll
@@ -166,7 +178,7 @@ public class DialogueEntity extends Entity {
         setDialogue(dialogue);
         setSpeakTickCount(time);
 
-        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new StartDialogueMessage(getDialogue(), this.getId()));
+        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new StartDialogueMessage(getDialogue(), this));
     }
 
     public void startSpeak(Dialogue dialogue ,int time){
@@ -176,6 +188,14 @@ public class DialogueEntity extends Entity {
 
     public int getNumber(){
         return number;
+    }
+
+    public Dialogue getEndDialogue() {
+        return endDialogue;
+    }
+
+    public void setEndDialogue(Dialogue endDialogue) {
+        this.endDialogue = endDialogue;
     }
 
     public void setNumber(int number){

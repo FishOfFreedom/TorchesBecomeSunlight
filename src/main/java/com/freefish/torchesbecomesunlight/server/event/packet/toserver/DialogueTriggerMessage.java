@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
 
+import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
@@ -18,30 +19,22 @@ import java.util.function.Supplier;
 
 public class DialogueTriggerMessage {
     private int entityID;
-    private Dialogue dialogue;
-    private int optionNumber;
 
     public DialogueTriggerMessage(){
 
     }
 
-    public DialogueTriggerMessage(int entityID , Dialogue dialogue, int optionNumber) {
+    public DialogueTriggerMessage(int entityID) {
         this.entityID = entityID;
-        this.dialogue = dialogue;
-        this.optionNumber = optionNumber;
     }
 
     public static void serialize(final DialogueTriggerMessage message, final FriendlyByteBuf buf) {
         buf.writeVarInt(message.entityID);
-        buf.writeVarInt(message.dialogue.getIndex());
-        buf.writeVarInt(message.optionNumber);
     }
 
     public static DialogueTriggerMessage deserialize(final FriendlyByteBuf buf) {
         final DialogueTriggerMessage message = new DialogueTriggerMessage();
         message.entityID = buf.readVarInt();
-        message.dialogue = DialogueStore.dialogueList.get(buf.readVarInt());
-        message.optionNumber = buf.readVarInt();
         return message;
     }
     public static class Handler implements BiConsumer<DialogueTriggerMessage, Supplier<NetworkEvent.Context>> {
@@ -52,12 +45,9 @@ public class DialogueTriggerMessage {
             context.enqueueWork(() -> {
                 if(player!=null){
                     Entity entity = player.level().getEntity(DialogueTriggerMessage.entityID);
-                    if (entity instanceof Mob mob) {
-                        Dialogue dialogue = DialogueTriggerMessage.dialogue;
-                        if(dialogue.getOptions()!=null){
-                            List<DialogueTrigger> options = dialogue.getOptions();
-                            DialogueTrigger dialogueTrigger = options.get(DialogueTriggerMessage.optionNumber);
-                            dialogueTrigger.trigger(mob);
+                    if (entity instanceof DialogueEntity dialogueEntity) {
+                        if(dialogueEntity.getEndDialogue()!=null) {
+                            dialogueEntity.startSpeakInServer(dialogueEntity.getEndDialogue(),dialogueEntity.getEndDialogue().getDialogueTime());
                         }
                     }
                 }

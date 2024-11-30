@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight;
 import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.event.ForgeClientEventL;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.ModMenuTypes;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.init.*;
 import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
@@ -26,7 +27,10 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -67,10 +71,21 @@ public class TorchesBecomeSunlight
 
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class,this::attachCapability);
 
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHandler.CLIENT_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.COMMON_CONFIG);
+
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
+        bus.addListener(this::onModConfigEvent);
         MinecraftForge.EVENT_BUS.register(this);
-        bus.addListener(this::addCreative);
+    }
+
+    @SubscribeEvent
+    public void onModConfigEvent(final ModConfigEvent event) {
+        final ModConfig config = event.getConfig();
+        if (config.getSpec() == ConfigHandler.COMMON_CONFIG) {
+
+        };
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -86,16 +101,6 @@ public class TorchesBecomeSunlight
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             bus.addListener(ForgeClientEventL::registerShaders);
         });
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
-
     }
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents

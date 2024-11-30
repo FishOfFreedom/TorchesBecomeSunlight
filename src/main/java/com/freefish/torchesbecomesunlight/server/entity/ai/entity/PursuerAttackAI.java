@@ -29,6 +29,8 @@ public class PursuerAttackAI extends Goal {
     private int timeSinceBlackHole;
     private int timeActInterval;
     private int timeSinceSkill;
+    private int timeSinceBackJump;
+    private int timeSinceTele;
 
     public PursuerAttackAI(Pursuer pursuer){
         this.pursuer = pursuer;
@@ -43,11 +45,13 @@ public class PursuerAttackAI extends Goal {
 
     @Override
     public void start() {
+        pursuer.setAggressive(true);
         this.repath = 0;
     }
 
     @Override
     public void stop() {
+        pursuer.setAggressive(false);
         this.pursuer.getNavigation().stop();
     }
 
@@ -60,8 +64,10 @@ public class PursuerAttackAI extends Goal {
         timeSinceRemote1++;timeSinceJump++;
         timeSinceFastMove++;timeSinceTele1++;
         timeActInterval++;timeSinceRemote2++;
+        timeSinceBackJump++;
         if(pursuer.getPredicate()!=0){
             timeSinceBlackHole++;
+            timeSinceTele++;
             if(pursuer.getHealth()<pursuer.getMaxHealth()/4)
                 timeSinceSkill++;
         }
@@ -81,7 +87,8 @@ public class PursuerAttackAI extends Goal {
             if (dist > 5 && timeSinceRemote1 >= 100) {
                 timeSinceRemote1 = 0;
                 AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.REMOTE_1);
-            }if (dist < 7 && timeSinceRemote2 >= 100) {
+            }
+            if (dist < 7 && timeSinceRemote2 >= 100) {
                 timeSinceRemote2 = 0;
                 AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.REMOTE_2);
             } else if (dist > 6 && timeSinceJump >= 160) {
@@ -91,15 +98,17 @@ public class PursuerAttackAI extends Goal {
                 timeSinceFastMove = 0;
                 AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.FASTMOVE);
             } else if (target.getY() - this.pursuer.getY() >= -1 && target.getY() - this.pursuer.getY() <= 3) {
-                if (dist < 12*12 && Math.abs(MathUtils.wrapDegrees(this.pursuer.getAngleBetweenEntities(target, this.pursuer) - this.pursuer.yBodyRot)) < 35.0D&&timeActInterval>30) {
+                if (dist < 12*12 && Math.abs(MathUtils.wrapDegrees(this.pursuer.getAngleBetweenEntities(target, this.pursuer) - this.pursuer.yBodyRot)) < 35.0D&&timeActInterval>40) {
                     timeActInterval=0;
                     double rand = random.nextDouble();
-                    if (rand >= 0.5)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.ATTACK_1);
-                    else if (rand >= 0.2)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.ATTACK_2);
-                    else {
+                    if(timeSinceBackJump>100&&rand<0.2){
+                        timeSinceBackJump = 0;
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.BACKJUMP);
+                    }
+                    else if (rand <= 0.5)
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.ATTACK_1);
+                    else {
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.ATTACK_2);
                     }
                 }
             }
@@ -123,22 +132,33 @@ public class PursuerAttackAI extends Goal {
                 if ( dist < 10 && timeSinceSkill >= 400) {
                     timeSinceSkill = 0;
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.SKILL);
+                } else if(dist > 9 && timeSinceFastMove >= 113 && !pursuer.isInDemon()) {
+                    timeSinceFastMove = 0;
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.FASTMOVE);
+                } else if (dist < 6 && timeSinceRemote2 >= 85) {
+                    timeSinceRemote2 = 0;
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.REMOTE_2);
                 } else if (dist > 6 && dist < 12 && timeSinceBlackHole >= 240) {
                     timeSinceBlackHole = 0;
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.BLACKHOLE);
                 } else if (dist > 6 && timeSinceJump >= 240) {
                     timeSinceJump = 0;
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.JUMP);
-                } else if (dist > 5 && timeSinceTele1 >= 220) {
-                    timeSinceTele1 = 0;
+                } else if (dist > 5 && timeSinceTele >= 220&& !pursuer.isInDemon()) {
+                    timeSinceTele = 0;timeSinceTele1 -= 50;
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.TELE);
+                }else if (dist > 5 && timeSinceTele1 >= 210) {
+                    timeSinceTele1 = 0;timeSinceTele -= 50;
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.TELE1);
-                } else if (dist > 9 && timeSinceFastMove >= 180) {
-                    timeSinceFastMove = 0;
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.FASTMOVE);
                 } else if (target.getY() - this.pursuer.getY() >= -1 && target.getY() - this.pursuer.getY() <= 3) {
-                    if (dist < 7D * 7D && Math.abs(MathUtils.wrapDegrees(this.pursuer.getAngleBetweenEntities(target, this.pursuer) - this.pursuer.yBodyRot)) < 35.0D) {
+                    if (dist < 4.5D * 4.5D && Math.abs(MathUtils.wrapDegrees(this.pursuer.getAngleBetweenEntities(target, this.pursuer) - this.pursuer.yBodyRot)) < 35.0D) {
                         double rand = random.nextDouble();
-                        if (rand > 0.8)
+
+                        if(timeSinceBackJump>100&&rand > 0.5&& !pursuer.isInDemon()){
+                            timeSinceBackJump = 0;
+                            AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.BACKJUMP);
+                        }
+                        else if (rand > 0.8)
                             AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.BATTACK1);
                         else if (rand > 0.6) {
                             AnimationActHandler.INSTANCE.sendAnimationMessage(this.pursuer, Pursuer.BATTACKM1);
@@ -165,7 +185,7 @@ public class PursuerAttackAI extends Goal {
                 this.targetX = target.getX();
                 this.targetY = target.getY();
                 this.targetZ = target.getZ();
-                this.repath = 4 + this.pursuer.getRandom().nextInt(7);
+                this.repath = 2 + this.pursuer.getRandom().nextInt(4);
                 if (dist > 1024D) {
                     this.repath += 10;
                 } else if (dist > 256D) {

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -62,10 +63,23 @@ public class BlackHoleEntity extends Entity implements GeoEntity {
     }
 
     private void linkEntity(){
-        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(11),livingEntity ->
-                livingEntity != owner&&livingEntity.distanceTo(this)<9+livingEntity.getBbWidth()/2);
+        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(13),livingEntity ->
+                livingEntity != owner&&livingEntity.distanceTo(this)<11);
         for(LivingEntity livingEntity:list){
-            Vec3 move = new Vec3(getX()-livingEntity.getX(),0,getZ()-livingEntity.getZ()).normalize().scale(0.1);
+            if(livingEntity instanceof Player player&&player.isCreative()) {
+                    continue;
+            }
+            float s = 0;
+            if(livingEntity instanceof Player player) {
+                s = 0.2f;
+            }
+
+            float scale = 1;
+            double length = livingEntity.distanceTo(this);
+            if(length>6.0){
+                scale = (float) (1 - (length - 6) / 5);
+            }
+            Vec3 move = new Vec3(getX()-livingEntity.getX(),0,getZ()-livingEntity.getZ()).normalize().scale((0.3-s)*scale);
             livingEntity.setDeltaMovement(getDeltaMovement().add(move));
         }
     }

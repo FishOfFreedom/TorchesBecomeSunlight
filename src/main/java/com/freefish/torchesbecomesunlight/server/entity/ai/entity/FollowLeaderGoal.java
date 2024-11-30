@@ -24,7 +24,7 @@ public class FollowLeaderGoal extends Goal {
         this.navigation = pTamable.getNavigation();
         this.startDistance = pStartDistance;
         this.stopDistance = pStopDistance;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
     public boolean canUse() {

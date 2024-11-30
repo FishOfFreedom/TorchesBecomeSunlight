@@ -8,38 +8,49 @@ import com.freefish.torchesbecomesunlight.client.particle.BlackSpearParticle;
 import com.freefish.torchesbecomesunlight.client.particle.BladeParticle;
 import com.freefish.torchesbecomesunlight.client.particle.DemonHoleParticle;
 import com.freefish.torchesbecomesunlight.client.particle.DemonParticle;
+import com.freefish.torchesbecomesunlight.mixin.IForceEffect;
 import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStone;
 import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.PursuerStartDialogueAI;
+import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueAI;
 import com.freefish.torchesbecomesunlight.server.entity.effect.*;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.util.EntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
-import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
-import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.PursuerAttackAI;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BlackSpear;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.IceBlade;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
 import com.freefish.torchesbecomesunlight.server.world.gen.biome.ModBiomes;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -64,10 +75,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Pursuer extends UrsusEntity implements IDialogue {
     public static final AnimationAct<Pursuer> BATTACK1 = new AnimationAct<Pursuer>("attackB1",17){
@@ -84,8 +92,8 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
 
             if(tick == 10) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-                entity.dashForward(0.9f,0);
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(4f,0);
             }
             else if (tick == 12) {
                 entity.doRangeAttack(4.5,140,damage,false);
@@ -111,14 +119,14 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
 
             if(tick == 8) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-                entity.dashForward(0.3f,0);
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(2f,0);
             }
             else if (tick == 10) {
                 entity.doRangeAttack(4,140,damage,false);
             }
             else if (tick == 13) {
-                entity.dashForward(0.7f,0);
+                entity.dashForward(3f,0);
             }
             else if (tick == 15) {
                 entity.doRangeAttack(4,140,damage,true);
@@ -142,7 +150,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
 
             if (tick == 6) {
-                entity.dashForward(1.2f,0);
+                entity.dashForward(5f,0);
             }
             else if (tick == 18) {
                 entity.doRangeAttack(5.5,140,damage*1.5f,true);
@@ -170,10 +178,12 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 entity.locateEntity();
             }
             if (tick == 12) {
-                Vec3 direction = new Vec3(0, 0.1, 0.8).yRot((float) ((-entity.getYRot()) / 180 * org.joml.Math.PI));
-                entity.setDeltaMovement(direction);
+                entity.dashForward(4f,0);
             }
             else if (tick == 19||tick==15) {
+                if(tick==15){
+                    entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+                }
                 entity.doRangeAttack(4,140,damage,false);
             }
         }
@@ -195,11 +205,11 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 entity.locateEntity();
             }
             if (tick == 16||tick==38) {
-                Vec3 direction = new Vec3(0, 0.1, 0.7).yRot((float) ((-entity.getYRot()) / 180 * org.joml.Math.PI));
-                entity.setDeltaMovement(direction);
+                entity.dashForward(4f,0);
             }
             else if (tick == 20||tick==42) {
-                entity.doRangeAttack(5.0,140,damage*1.5f,true);
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+                entity.doRangeAttack(3.5,140,damage*1.6f,true);
             }
         }
     };
@@ -226,6 +236,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             entity.locateEntity();
             entity.setYRot(entity.yRotO);
             if (tick == 30) {
+                entity.playSound(SoundHandle.BIG_BOOM.get(), 0.6F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
                 entity.bomb1(10);
             } else if (tick==18) {
                 Vec3 move = new Vec3(0, 1.9, 1.6).yRot((float) (-entity.yBodyRot / 180 * org.joml.Math.PI)).add(entity.position());
@@ -247,6 +258,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
 
             if (tick == 36){
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
                 entity.doRangeAttack(4,200,damage*2,true);
             }
             else if (tick == 40){
@@ -267,6 +279,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 entity.setYRot(entity.yRotO);
             }
             if (tick == 35){
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
                 entity.doRangeAttack(8,40,damage*2,true);
             }
             else if (tick == 39){
@@ -324,7 +337,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             RandomSource random = entity.getRandom();
             float damage =(float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
             LivingEntity target = entity.getTarget();
-            if(target!=null) {
+            if(target!=null&&(entity.getPredicate()==0||tick<19)) {
                 entity.lookAtEntity(target);
             }else {
                 entity.setYRot(entity.yRotO);
@@ -333,19 +346,19 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             if (tick == 18) {
                 float jumpLen;
                 if(target!=null){
-                    jumpLen = (float) target.position().subtract(entity.position()).length()/3.5f;
+                    jumpLen = (float) target.position().subtract(entity.position()).length()/4f;
                 }else {
                     jumpLen = 2;
                 }
-                Vec3 direction = new Vec3(0, 0.3, jumpLen).yRot((float) (-entity.getYRot() / 180 * org.joml.Math.PI));
+                Vec3 direction = new Vec3(0, Math.sqrt(jumpLen)*0.1, jumpLen).yRot((float) (-entity.getYRot() / 180 * org.joml.Math.PI));
                 entity.setDeltaMovement(direction);
             }
             if(tick==22){
                 entity.setDeltaMovement(entity.getDeltaMovement().scale(0.5));
             }
-            if(tick==25){
+            if(tick==30){
                 if(entity.getPredicate()!=0) {
-                    entity.doRangeAttack(5.5,140,damage*1.5f,true);
+                    entity.doRangeAttack(4,50,damage*1.5f,true);
                     AnimationActHandler.INSTANCE.sendAnimationMessage(entity, JUMPATTACK);
                 }
                 else {
@@ -374,15 +387,16 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
 
             if (tick == 13) {
-                entity.dashForward(0.9f,0);
+                entity.dashForward(4f,0);
             }
             else if (tick == 15) {
-                entity.doRangeAttack(5.5,140,damage*1.5f,true);
+                entity.doRangeAttack(4.5,140,damage*1.5f,true);
             }
             else if (tick == 40) {
-                entity.dashForward(1.2f,0);
-            }else if (tick == 42) {
-                entity.doRangeAttack(5.5,140,damage*1.5f,true);
+                entity.playSound(SoundHandle.SWORD.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(6f,0);
+            }else if (tick == 44||tick == 46) {
+                entity.doRangeAttack(5.5,40,damage*1.5f,true);
             }
         }
     };
@@ -402,6 +416,15 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 Vec3 direction = new Vec3(0, 0.3, -2-random.nextFloat()/2).yRot((float) (-entity.getYRot() / 180 * org.joml.Math.PI));
                 entity.setDeltaMovement(direction);
             }
+        }
+
+        @Override
+        public void stop(Pursuer entity) {
+            if(entity.getPredicate()!=0){
+                AnimationActHandler.INSTANCE.sendAnimationMessage(entity, REMOTE_4);
+            }
+            else
+                super.stop(entity);
         }
     };
     public static final AnimationAct<Pursuer> BATTACKM1 = new  AnimationAct<Pursuer>("Battackm1",36){
@@ -424,8 +447,8 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 Vec3 direction = new Vec3(0, 0.15+ran*0.1, 1.2+ran).yRot((float) ((-45-entity.getYRot()) / 180 * org.joml.Math.PI));
                 entity.setDeltaMovement(direction);
             }
-            else if (tick >= 16&&tick<=22&&tick%2==0) {
-                entity.doCycleAttack(3,damage);
+            else if (tick >= 12&&tick<=22&&tick%2==0) {
+                entity.doCycleAttack(4,damage);
             }
             else if(tick==25&&entity.random.nextFloat()<0.5){
                 AnimationActHandler.INSTANCE.sendAnimationMessage(entity,PIERCE);
@@ -448,11 +471,10 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 entity.locateEntity();
             }
             if(tick<=18&&target!=null&&(tick&2)==0){
-                entity.locateEntity(target,4,180);
+                entity.locateEntity(target,4,40);
             }
             if (tick == 5) {
-                Vec3 direction = new Vec3(0, 0.2, 2).yRot((float) ((-entity.getYRot()) / 180 * org.joml.Math.PI));
-                entity.setDeltaMovement(direction);
+                entity.dashForward(10f,0);
             }
             else if (tick == 20) {
                 entity.setLocateMobId(-1);
@@ -483,16 +505,15 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             if(tick<4){
                 entity.locateEntity();
             }
-            if (tick == 4||tick==14) {
-                Vec3 direction = new Vec3(0, 0.2, 1.1).yRot((float) ((-entity.getYRot()) / 180 * org.joml.Math.PI));
-                entity.setDeltaMovement(direction);
+            if (tick == 4||tick==10) {
+                entity.dashForward(8f,0);
             }
             else if (tick >= 8&&tick<=16&&tick%2==0) {
-                entity.doCycleAttack(3f,damage);
+                entity.doCycleAttack(4f,damage);
             }
         }
     };
-    public static final AnimationAct<Pursuer> PEACETOACT = new  AnimationAct<Pursuer>("peacetoact2",114){
+    public static final AnimationAct<Pursuer> PEACETOACT = new  AnimationAct<Pursuer>("peacetoact2",152){
         @Override
         public void tickUpdate(Pursuer entity) {
             int tick = entity.getAnimationTick();
@@ -516,11 +537,14 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                     BlackTuft.spawnBlackTuft(entity.level(),pee,pos,0,0);
                 }
             }
+            if(tick == 22){
+                entity.playSound(SoundHandle.BIG_BOOM.get(), 1.5F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
+            }
             if(tick == 10)
                 entity.setPredicate(1);
         }
     };
-    public static final AnimationAct<Pursuer> SKILL = new  AnimationAct<Pursuer>("peacetoact",216){
+    public static final AnimationAct<Pursuer> SKILL = new  AnimationAct<Pursuer>("peacetoact",272){//216
         @Override
         public void tickUpdate(Pursuer entity) {
             int tick = entity.getAnimationTick();
@@ -534,27 +558,32 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
             if(target!=null&&tick>=30&&tick<=150&&tick%15==0){
                 Vec3 vec3 = new Vec3(0,0,12+random.nextFloat()*4).xRot(0.2f+2.2f*random.nextFloat()).yRot(random.nextFloat()*6).add(target.position());
-                entity.shootBlackSpearSkill(target,vec3,165-tick);
+                entity.shootBlackSpearSkill(target,vec3,221-tick);
+            }
+            if(tick==145){
+                entity.playSound(SoundHandle.SPACE.get(), 1.6F, 1.0F);
             }
             tick+=7;
             if(tick>=30&&tick<=150&&tick%15==0){
                 Vec3 randomPos = new Vec3(0,0,4+random.nextFloat()*8).yRot(random.nextFloat()*6.28f).add(entity.position());
                 Vec3 vec3 = new Vec3(0,0,12+random.nextFloat()*4).xRot(0.2f+2.2f*random.nextFloat()).yRot(random.nextFloat()*6).add(randomPos);
-                entity.shootBlackSpear(randomPos,vec3,3,165-(tick-7));
+                entity.shootBlackSpear(randomPos,vec3,3,221-(tick-7));
             }
         }
     };
-    public static final AnimationAct<Pursuer> BLACKHOLE = new AnimationAct<Pursuer>("blackhole",117,2){
+    public static final AnimationAct<Pursuer> BLACKHOLE = new AnimationAct<Pursuer>("blackhole",125,2){
 
         @Override
         public void tickUpdate(Pursuer entity) {
             int tick = entity.getAnimationTick();
             float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
             LivingEntity target = entity.getTarget();
-            if(target!=null) {
-                entity.lookAtEntity(target);
+            if(tick>18) {
+                entity.getLookControl().setLookAt(entity.getSVec());
             }else {
-                entity.setYRot(entity.yRotO);
+                if(target!=null){
+                    entity.lookAtEntity(target);
+                }
             }
 
             if(tick<82) entity.locateEntity();
@@ -564,7 +593,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
             else if(tick==32){
                 BlackHoleEntity blackHoleEntity = new BlackHoleEntity(entity.level(), entity);
-                blackHoleEntity.setPos(entity.getSVec());
+                blackHoleEntity.setPos(entity.getSVec().add(0,-0.7,0));
                 entity.level().addFreshEntity(blackHoleEntity);
             }
             else if(tick == 82||tick==83){
@@ -577,10 +606,10 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 entity.setDeltaMovement(hunt);
             }
             else if(tick==96){
-                entity.doRangeTrueAttack(4,140,damage*7f,true);
+                entity.doRangeTrueAttack(5,140,damage,true);
             }
             else if(tick==105){
-                entity.doRangeTrueAttack(4,140,damage*9f,true);
+                entity.doRangeTrueAttack(5,140,damage*2f,true);
             }
         }
     };
@@ -596,6 +625,9 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                     Vec3 vec3 = new Vec3(target.getX()-entity.getX(),0,target.getZ()-entity.getZ()).normalize().scale(dist/9).add(0,random.nextBoolean()?0.7f:-0.7f,0);
                     vec3 = vec3.yRot((float) vec3.y);
                     entity.setSVec(vec3);
+                }
+                else {
+                    entity.setSVec(entity.position());
                 }
             }
             if(tick>1){
@@ -636,6 +668,14 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                     BlockPos firstBlockAbove = MathUtils.getFirstBlockAbove(entity.level(), new BlockPos((int) d0, (int) d1, (int) d2));
                     Vec3 vec3 = new Vec3(d0, firstBlockAbove != null ? firstBlockAbove.getY() : d1 + 7, d2);
                     entity.setSVec(vec3);
+                    //todo
+                    LivingEntity dialogueEntity = entity.getDialogueEntity();
+                    if(dialogueEntity!=null){
+                        Vec3 move = new Vec3(0, 0, -3).yRot((float) (-dialogueEntity.yBodyRot / 180 * org.joml.Math.PI)).add(dialogueEntity.position());
+                        BlockPos secondBlockAbove = MathUtils.getFirstBlockAbove(entity.level(), new BlockPos((int) move.x, (int) move.y, (int) move.z));
+                        Vec3 vec31 = new Vec3(move.x, secondBlockAbove != null ? secondBlockAbove.getY() : move.y, move.z);
+                        entity.setSVec(vec31);
+                    }
                 }
                 else {
                     Entity pee = entity.getPee();
@@ -645,7 +685,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                         entity.setSVec(vec3);
                     }
                     else {
-                        Vec3 vec3 = new Vec3(target.getX() - entity.getX(), 0, target.getZ() - entity.getZ()).normalize().scale(random.nextFloat() * 3 + 8);
+                        Vec3 vec3 = new Vec3(target.getX() - entity.getX(), 0, target.getZ() - entity.getZ()).normalize().scale(random.nextFloat() * 8 + 3);
                         vec3 = vec3.yRot(2 - random.nextFloat() * 4).add(target.getX(), target.getY() - 6, target.getZ());
                         BlockPos firstBlockAbove = MathUtils.getFirstBlockAbove(entity.level(), new BlockPos((int) vec3.x, (int) vec3.y, (int) vec3.z));
                         vec3 = new Vec3(vec3.x, firstBlockAbove != null ? firstBlockAbove.getY()-1 : vec3.y + 6, vec3.z);
@@ -661,15 +701,32 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             else {
                 entity.locateEntity();
             }
+
             if(tick==15&&target!=null){
-                if (entity.canSinceRemote3) {
+                float len = (float) target.position().subtract(entity.position()).length();
+                if (entity.canSinceRemote3||len<5) {
                     entity.canSinceRemote3 = false;
                     AnimationActHandler.INSTANCE.sendAnimationMessage(entity, Pursuer.BATTACKM2);
                 }
                 else {
-                    AnimationActHandler.INSTANCE.sendAnimationMessage(entity, Pursuer.REMOTE_3);
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(entity, Pursuer.REMOTE_4);
                 }
             }
+        }
+
+        //todo Story
+
+        @Override
+        public void stop(Pursuer entity) {
+            if(entity.getDialogueEntity() instanceof Player player)
+            {
+                Player player1 = MathUtils.getClosestEntity(entity, entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5)));
+                DialogueEntity dialogueEntity = new DialogueEntity(entity, entity.level(), DialogueStore.pursuer_meet_1, player1, entity);
+                dialogueEntity.setEndDialogue(DialogueStore.pursuer_meet_5);
+                dialogueEntity.setPos(entity.position());
+                entity.level().addFreshEntity(dialogueEntity);
+            }
+            super.stop(entity);
         }
     };
     public static final AnimationAct<Pursuer> TELE1 = new  AnimationAct<Pursuer>("tele1",51,2){
@@ -681,6 +738,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             entity.setYRot(entity.yRotO);
             if(tick==1) {
                 if(target==null) {
+                    entity.setSVec(entity.position());
                     stop(entity);
                 }
                 else {
@@ -705,6 +763,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     public static final AnimationAct<Pursuer> DEMON = new  AnimationAct<Pursuer>("demon",120,2){
         @Override
         public void start(Pursuer entity) {
+            entity.locateEntity();
             LivingEntity target = entity.getTarget();
             if(target instanceof Mob mob){
                 LivingEntity target1 = mob.getTarget();
@@ -727,10 +786,17 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             }
             if(tick==99) {
                 if (target != null && pee != null) {
-                    Vec3 targetPos = target.position().subtract(pee.position());
-                    float len = (float) targetPos.length();
-                    targetPos = targetPos.normalize().scale(len+4).add(pee.position());
-                    entity.setSVec(targetPos);
+                    Vec3 targetPos = target.position().add(new Vec3(0,0,4).yRot(6.28f*entity.random.nextFloat()));
+                    BlockPos newpos = MathUtils.getFirstBlockAbove(entity.level(),new BlockPos((int)targetPos.x,(int)targetPos.y,(int)targetPos.z));
+                    if(newpos!=null){
+                        entity.setSVec(new Vec3(targetPos.x, newpos.getY(),targetPos.z));
+                    }
+                    else {
+                        entity.setSVec(targetPos);
+                    }
+                }
+                else {
+                    entity.setSVec(entity.position());
                 }
             }
         }
@@ -746,6 +812,8 @@ public class Pursuer extends UrsusEntity implements IDialogue {
             super.stop(entity);
         }
     };
+
+    private final List<DemonCounter> demonCounterList = new ArrayList<>();
 
     private static final EntityDataAccessor<Integer> PREDICATE = SynchedEntityData.defineId(Pursuer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SX = SynchedEntityData.defineId(Pursuer.class, EntityDataSerializers.FLOAT);
@@ -764,8 +832,8 @@ public class Pursuer extends UrsusEntity implements IDialogue {
 
     @Override
     public AnimationAct[] getAnimations() {
-        return new AnimationAct[]{NO_ANIMATION,DEMON,REMOTE_4,SKILL,BATTACKM1,TELE,TELE1,REMOTE_3,BLACKHOLE,JUMP,FASTMOVE,PEACETOACT,JUMPATTACK,PIERCE
-                ,REMOTE_1,REMOTE_2,ATTACK_1,ATTACK_2,BATTACK21,BATTACK31,BACKJUMP,BATTACKM2,BATTACK1,BATTACK2,BATTACK3};
+        return new AnimationAct[]{NO_ANIMATION,DEMON,REMOTE_4,SKILL,BATTACK31,BLACKHOLE,PEACETOACT,BATTACKM1,TELE,TELE1,REMOTE_3,JUMP,FASTMOVE,JUMPATTACK,PIERCE
+                ,REMOTE_1,REMOTE_2,ATTACK_1,ATTACK_2,BATTACK21,BACKJUMP,BATTACKM2,BATTACK1,BATTACK2,BATTACK3};
     }
 
     public Pursuer(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -776,42 +844,93 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(2, new PursuerAttackAI(this));
-        //this.goalSelector.addGoal(1, new PursuerStartDialogueAI(this));
+        this.goalSelector.addGoal(3, new PursuerStartDialogueAI(this));
+        this.goalSelector.addGoal(1, new WhileDialogueAI(this));
 
-        //this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        //this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        //this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this , 0.3));
+        this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
+        this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal(this , 0.3));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
     }
 
     @Override
     public boolean hurt(DamageSource source, float damage) {
+        if(damage>getMaxHealth()/20&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) damage = getMaxHealth()/20;
         AnimationAct a = getAnimation();
-        if(a==FASTMOVE|a==DEMON|a==SKILL|a==PEACETOACT) return false;
+        if(a==FASTMOVE|a==DEMON|a==SKILL|a==PEACETOACT|a==REMOTE_2) return false;
+        if(getDialogueEntity()!=null&&getDialogueEntity().isAlive()) return false;
 
-        if(source.getDirectEntity() instanceof Player player&&getHasDialogue()){
-            Optional<Boolean> map = player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isCanDialogue);
-            if(map.isPresent()&&map.get()){
-                setDialogueEntity((LivingEntity) source.getDirectEntity());
-                Player player1 = MathUtils.getClosestEntity(this,level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(5)));
-                DialogueEntity dialogueEntity = new DialogueEntity(this,level(),getDialogue(),player1,this);
-                dialogueEntity.setPos(position());
-                level().addFreshEntity(dialogueEntity);
-                setDialogueEntity(player1);
-                return false;
-            }
+        //if(source.getDirectEntity() instanceof Player player&&getHasDialogue()){
+        //    Optional<Boolean> map = player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isCanDialogue);
+        //    if(map.isPresent()&&map.get()){
+        //        setDialogueEntity((LivingEntity) source.getDirectEntity());
+        //        Player player1 = MathUtils.getClosestEntity(this,level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(5)));
+        //        DialogueEntity dialogueEntity = new DialogueEntity(this,level(),getDialogue(),player1,this);
+        //        dialogueEntity.setEndDialogue(DialogueStore.pursuer_d_5);
+        //        dialogueEntity.setPos(position());
+        //        level().addFreshEntity(dialogueEntity);
+        //        setDialogueEntity(player1);
+        //        return false;
+        //    }
+        //}
+
+
+        if(isInDemon()){
+            damage*=0.2f;
         }
 
         return super.hurt(source, damage);
     }
 
     @Override
+    public SoundEvent getBossMusic() {
+        return SoundHandle.PURSUER_1.get();
+    }
+
+    @Override
+    public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
+        //MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+        //if(effect!=null){
+        //    int i = effect.getAmplifier()+1;
+        //    livingEntity.hurt(DamageSourceHandle.demonAttack(this),(damage/5)*i);
+        //}
+        if(isInDemon()){
+            livingEntity.hurt(DamageSourceHandle.demonAttack(this),damage/2);
+        }
+        return super.doHurtEntity(livingEntity, source, damage);
+    }
+
+    public boolean isInDemon(){
+        boolean flad = false;
+        for(int i = 0;i<demonCounterList.size();i++){
+            DemonCounter demonCounter = demonCounterList.get(i);
+            Vec3 pos = demonCounter.pos;
+            if(pos.subtract(position()).length()<9.5)
+                flad = true;
+        }
+        return flad;
+    }
+
+    private int targetIsLeave = 0;
+    private boolean isPlayerAttack = false;
+
+    @Override
     public void tick() {
         super.tick();
         int tick = getAnimationTick();
+
+        for(int i = 0;i<demonCounterList.size();i++){
+            DemonCounter demonCounter = demonCounterList.get(i);
+            demonCounter.update(level(),this);
+
+            if(demonCounter.disappear()){
+                demonCounterList.remove(i);
+                i -= 1;
+            }
+        }
 
         Entity locateEntity = getLocateMob();
         if(locateEntity instanceof LivingEntity){
@@ -820,7 +939,25 @@ public class Pursuer extends UrsusEntity implements IDialogue {
         }
 
         if(!level().isClientSide()) {
-            if (getHealth() <= getMaxHealth() / 4*3 && getPredicate() == 0&&getAnimation()!=PEACETOACT) setState(1);
+            if (getHealth() <= getMaxHealth() / 4*3 && getPredicate() == 0&&getAnimation()!=PEACETOACT) {
+                if(!isPlayerAttack){
+                    LivingEntity target = getTarget();
+                    if(target instanceof Player player){
+                        DialogueEntity dialogueEntity = new DialogueEntity(this, this.level(), DialogueStore.pursuer_d_1, player, this);
+                        dialogueEntity.setEndDialogue(DialogueStore.pursuer_d_5);
+                        dialogueEntity.setPos(this.position());
+                        this.level().addFreshEntity(dialogueEntity);
+                        this.setHealth(this.getMaxHealth() / 4 * 3 + 1);
+                        setTarget(null);
+                        isPlayerAttack = true;
+                    }
+                    else {
+                        setState(1);
+                    }
+                }
+                else
+                    setState(1);
+            }
             else if (getHealth() < getMaxHealth() / 4 && getPredicate() != 2) setState(2);
             //else if (getHealth() > getMaxHealth() / 4*3 && getPredicate() == 1) setState(0);
         }
@@ -830,6 +967,31 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 teleportTo((ServerLevel) level(), telePos.x, telePos.y, telePos.z, Set.of(), 0, 0);
             }
         }
+        if(!level().isClientSide){
+            LivingEntity target = getTarget();
+            if(target!=null){
+                boolean isLeave = getTargetMoveVec(target).dot(position().subtract(target.position()))<0;
+                if(isLeave&&targetIsLeave<101){
+                    if(targetIsLeave==99){
+                        addCollapsalEffect(target,160,0);
+                        targetIsLeave=0;
+                    }
+                    targetIsLeave++;
+                }
+                else if(!isLeave&&targetIsLeave>0){
+                    targetIsLeave--;
+                }
+            }
+        }
+
+        if (this.level().isClientSide) {
+            this.level().addParticle(ParticleTypes.SMOKE, this.getRandomX(0.7D), this.getY() + 1F, this.getRandomZ(0.7D), 0.0D, 0.07D, 0.0D);
+        }
+
+        if (tickCount % 210 == 0&&isAggressive()) {
+            playSound(SoundHandle.BREATH.get(), 1F, 1.1F + random.nextFloat() * 0.1f);
+        }
+
         addDemonWarn();
         addToState2FX();
         remoteFX();
@@ -873,12 +1035,6 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     }
 
     @Override
-    public void setTarget(@org.jetbrains.annotations.Nullable LivingEntity pTarget) {
-        setDialogueEntity(null);
-        super.setTarget(pTarget);
-    }
-
-    @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.entityData.set(PREDICATE,pCompound.getInt("predicate"));
@@ -905,6 +1061,37 @@ public class Pursuer extends UrsusEntity implements IDialogue {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        return EntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
+    }
+
+    @Override
+    public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        if (EntityUtils.isBeneficial(effectInstance.getEffect()))
+            super.forceAddEffect(effectInstance, entity);
+    }
+
+    @Override
+    public boolean canBeAffected(MobEffectInstance effectInstance) {
+        return EntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+    }
+
+    @Override
+    public boolean displayFireAnimation() {
+        return false;
+    }
+
+    @Override
+    protected boolean canBePushedByEntity(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -935,7 +1122,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
         return this.entityData.get(LOCATE_MOB_ID);
     }
 
-    private void shootBlackSpear(LivingEntity target,Vec3 vec3,int type) {
+    public void shootBlackSpear(LivingEntity target, Vec3 vec3, int type) {
         if (target==null) return;
         BlackSpear abstractarrow = new BlackSpear(level(),this,type);
         abstractarrow.setPos(vec3);
@@ -976,12 +1163,18 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     }
 
     private void bomb1(float r) {
-        playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
         float damage = (float) getAttribute(Attributes.ATTACK_DAMAGE).getValue();
         List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(10), livingEntity ->
                 !(livingEntity instanceof UrsusEntity)&&livingEntity.distanceTo(this)<r+livingEntity.getBbWidth()/2);
         for(LivingEntity entityHit:list) {
-            entityHit.hurt(damageSources().mobAttack(this), damage);
+            if(entityHit instanceof Player player&&player.position().subtract(position()).length()>5){
+                Vec3 targetMoveVec = getTargetMoveVec(player);
+                if(targetMoveVec.dot(position().subtract(player.position()))<0){
+                    continue;
+                }
+            }
+
+            doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
             if (entityHit instanceof Player player) {
                 ItemStack pPlayerItemStack = player.getUseItem();
                 if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -1031,15 +1224,20 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     private void bombFX(){
         if(getAnimation()==REMOTE_2){
             int tick = getAnimationTick();
+            if(tick==28){
+                addDemonArea(160,position());
+            }
             if(level().isClientSide) {
                 Vec3 sVec = getSVec();
                 if(tick==28) {
                     for (int i = 0; i < 9; i++) {
                         int len = (int) ((i+1)*6.28f);
                         for (int j = 0; j < len; j++) {
-                            Vec3 move = new Vec3(0, 0, 0.5 + i).yRot((float) 6.28 * j / len+random.nextFloat()*0.2f-0.1f);
-                            Vec3 vec3 = position().add(move);
-                            level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0f, 0f, 0f, (float) (10d + random.nextDouble() * 10d), 220, ParticleCloud.EnumCloudBehavior.CONSTANT, 1f), vec3.x, vec3.y+0.2, vec3.z, 0, 0.01, 0);
+                            if(random.nextBoolean()) {
+                                Vec3 move = new Vec3(0, 0, 0.5 + i).yRot((float) 6.28 * j / len + random.nextFloat() * 0.2f - 0.1f);
+                                Vec3 vec3 = position().add(move);
+                                level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0f, 0f, 0f, (float) (10d + random.nextDouble() * 10d), 20, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), vec3.x, vec3.y + 0.2, vec3.z, 0, 0.01, 0);
+                            }
                         }
                     }
                 }
@@ -1083,7 +1281,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                     Vec3 sVec = position();
                     for(int i=0;i<14;i++){
                         for(int j=0;j<10;j++){
-                            Vec3 vec3 = new Vec3(0, 0, 2).xRot((float) ((j/10f-0.5f) * org.joml.Math.PI)).yRot((float) ((i/7f) * org.joml.Math.PI));
+                            Vec3 vec3 = new Vec3(0, 0, 2).xRot((float) ((j/10f-0.5f) * org.joml.Math.PI)).yRot(random.nextFloat()+(float) ((i/7f) * org.joml.Math.PI));
                             Vec3 pos = vec3.scale(11).add(sVec);
                             if(random.nextBoolean())
                                 level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0, 0, 0, (float) (10d + random.nextDouble() * 10d), 15, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), pos.x, pos.y +1 , pos.z, -vec3.x, -vec3.y, -vec3.z);
@@ -1105,6 +1303,9 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     private void teleFX(){
         if((getAnimation()==TELE||getAnimation()==TELE1)){
             int tick = getAnimationTick();
+            if(getAnimation()==TELE1&&tick==30){
+                addDemonArea(100,position());
+            }
             if(level().isClientSide) {
                 if(tick==3||tick==1) {
                     Vec3 vec3 = new Vec3(0, 0, -0.5).yRot((float) (-getYRot() / 180 * org.joml.Math.PI)+random.nextFloat()).add(position());
@@ -1294,14 +1495,11 @@ public class Pursuer extends UrsusEntity implements IDialogue {
         if(getAnimation()==PEACETOACT){
             int tick = getAnimationTick();
             if(level().isClientSide){
-                if(tick==10){
-                    for (int i = 0; i < 6; i++) {
-                        float ran = random.nextFloat();
-                        for (int j = 0; j < 12; j++) {
-                            Vec3 vec3 = position();
-                            Vec3 move = new Vec3(0, 0.1, 1 + i / 10f).yRot((float) org.joml.Math.PI * 2 * j / 12 + ran);
-                            level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), random.nextFloat()*0.5f, 0f, 0f, (float) (10d + random.nextDouble() * 10d)
-                                    , 40, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), vec3.x, vec3.y + 0.4, vec3.z, move.x, move.y, move.z);
+                if(tick==22){
+                    for(int i=0;i<40;i++){
+                        for(int j=0;j<20;j++){
+                            Vec3 vec3 = new Vec3(0, 0, 1.6).xRot((float) ((j/20f-0.5f) * org.joml.Math.PI)).yRot((float) (random.nextFloat()*0.5+(i/20f) * org.joml.Math.PI));
+                            level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0, 0, 0, (float) (10d + random.nextDouble() * 10d), 60, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), getX(), getY(0.5) , getZ(), vec3.x, vec3.y, vec3.z);
                         }
                     }
                 }
@@ -1315,15 +1513,14 @@ public class Pursuer extends UrsusEntity implements IDialogue {
                 }
             }
             else {
-                if(tick==10){
+                if(tick==24){
                     EntityCameraShake.cameraShake(this.level(), this.position(), 20F, 0.03F, 100, 0);
                 }
-                //todo demonGround
-                //if(tick>=10&&tick<=70)
-                //    if((tick-10)%10==0)
-                //        spawnDemonGround((int)(tick/5f+2));
-                //if(tick==100)
-                //    spawnDemonGround(24);
+                if(tick==24&& ConfigHandler.COMMON.spawnDemon.get()) {
+                    ClientStorage.INSTANCE.demonRadio = 60;
+                    ClientStorage.INSTANCE.oldDemonRadio = 59;
+                    spawnDemonGround(10);
+                }
             }
         }
     }
@@ -1400,7 +1597,7 @@ public class Pursuer extends UrsusEntity implements IDialogue {
 
     @Override
     public Dialogue getDialogue() {
-        return DialogueStore.pursuer_meet_1;
+        return DialogueStore.pursuer_d_1;
     }
 
     @Override
@@ -1410,11 +1607,86 @@ public class Pursuer extends UrsusEntity implements IDialogue {
 
     @Override
     public void setDialogueEntity(LivingEntity dialogueEntity) {
+        setTarget(null);
         dialogueLivingEntity = dialogueEntity;
     }
 
     @Override
     public boolean getHasDialogue() {
         return getDialogue()!=null;
+    }
+
+    public void addDemonArea(int time,Vec3 pos){
+        demonCounterList.add(new DemonCounter(time,pos));
+    }
+
+    static class DemonCounter{
+        public DemonCounter(int time,Vec3 pos) {
+            this.time = time;
+            this.pos = pos;
+        }
+
+        int time;
+        Vec3 pos;
+
+        public void update(Level level,Pursuer pursuer){
+            time-=1;
+            if(level.isClientSide()&&pursuer.tickCount%7==0){
+                for (int i = 0; i < 9; i++) {
+                    int len = (int) ((i+1)*6.28f);
+                    for (int j = 0; j < len; j++) {
+                        if(pursuer.random.nextBoolean()) {
+                            Vec3 move = new Vec3(0, 0, 0.5 + i).yRot((float) 6.28 * j / len + pursuer.random.nextFloat() * 0.2f - 0.1f);
+                            Vec3 vec3 = pos.add(move);
+                            level.addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 0f, 0f, 0f, (float) (10d + pursuer.random.nextDouble() * 10d), 20, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), vec3.x, vec3.y + 0.2, vec3.z, 0, 0.01, 0);
+                        }
+                    }
+                }
+            }
+            if(!level.isClientSide){
+                if(pursuer.tickCount%10==0){
+                    List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class,pursuer.getBoundingBox().inflate(20),livingEntity ->
+                            livingEntity != pursuer&&livingEntity.position().subtract(pos).length()<9);
+                    for(LivingEntity livingEntity:list){
+                        if(livingEntity instanceof Player player&&player.isCreative()) continue;
+                        livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,1));
+                    }
+                }
+                if(pursuer.tickCount%50==0){
+                    List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class,pursuer.getBoundingBox().inflate(20),livingEntity ->
+                            livingEntity != pursuer&&livingEntity.position().subtract(pos).length()<9);
+                    for(LivingEntity livingEntity:list){
+                        if(livingEntity instanceof Player player&&player.isCreative()) continue;
+                        pursuer.addCollapsalEffect(livingEntity,160,0);
+                    }
+                }
+            }
+        }
+
+        public boolean disappear() {
+            return time == 0;
+        }
+    }
+
+    public void addCollapsalEffect(LivingEntity livingEntity,int time,int amplifier){
+        MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+        int addTime = 0;
+        int addAmplifier = 0;
+
+        if(effect!=null){
+            addAmplifier = effect.getAmplifier()+1;
+            addTime = effect.getDuration();
+        }
+        livingEntity.addEffect(new MobEffectInstance(EffectHandle.COLLAPSAL.get(),addTime+time,Math.min(4,amplifier+addAmplifier)));
+    }
+
+    @Override
+    public boolean hasBossBar() {
+        return true;
+    }
+
+    @Override
+    public BossEvent.BossBarColor bossBarColor() {
+        return BossEvent.BossBarColor.WHITE;
     }
 }

@@ -6,11 +6,14 @@ import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
+import java.util.EnumSet;
+
 public class WhileDialogueAI extends Goal {
     private final FreeFishEntity entity;
 
     public WhileDialogueAI(FreeFishEntity animatedEntity) {
         this.entity = animatedEntity;
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
     @Override

@@ -7,6 +7,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.PacketDistributor;
 
 public class PlayerStoryStone {
+    public boolean isSeePatriot() {
+        return isSeePatriot;
+    }
+
+    public void setSeePatriot(boolean seePatriot) {
+        isSeePatriot = seePatriot;
+    }
+
+    private boolean isSeePatriot;
+
     public boolean isCanDialogue;
 
     public boolean isCanDialogue() {
@@ -44,12 +54,14 @@ public class PlayerStoryStone {
         compoundTag.putInt("storystate",storyState);
         compoundTag.putInt("daloguetiem",dialogueTime);
         compoundTag.putBoolean("iscand",isCanDialogue);
+        compoundTag.putBoolean("isseepatriot",isSeePatriot);
     }
 
     public void loadNBTData(CompoundTag compoundTag){
         storyState = compoundTag.getInt("storystate");
         dialogueTime = compoundTag.getInt("daloguetiem");
         isCanDialogue = compoundTag.getBoolean("iscand");
+        isSeePatriot = compoundTag.getBoolean("isseepatriot");
     }
 
     public void increasing() {

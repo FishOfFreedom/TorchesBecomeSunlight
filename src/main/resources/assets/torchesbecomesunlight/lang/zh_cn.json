@@ -9,6 +9,9 @@
   "advancements.torchesbecomesunlight.winteroftheindected.title": "凛冬",
   "advancements.torchesbecomesunlight.winteroftheindected.description": "与感染者们对话",
 
+
+  "torchesbecomesunlight.skip": "长按跳过剧情",
+
   //item
   "item.torchesbecomesunlight.test_item": "测试工具",
   "item.torchesbecomesunlight.animation_item": "动画播放器",
@@ -26,6 +29,10 @@
   "entity.torchesbecomesunlight.mangler": "裂兽",
   "entity.torchesbecomesunlight.pursuer": "皇帝的利刃 追猎者",
 
+
+  //effect
+  "effect.torchesbecomesunlight.collapsal": "坍缩恐惧",
+
   //dialogue
   "dialogue.torchesbecomesunlight.snownova_meet_1": "有什么事吗.",
   "dialogue.torchesbecomesunlight.snownova_meet_1_1": "没事.",
@@ -38,5 +45,15 @@
   "dialogue.torchesbecomesunlight.pursuer_meet_5": "敬礼!",
   "dialogue.torchesbecomesunlight.pursuer_meet_1": "解释你的行程,外来者.在这片土地之上绝不容许任何威胁.",
   "dialogue.torchesbecomesunlight.pursuer_meet_1_1": "我奉承皇帝的命令,前往无尽雪原调研精怪.",
-  "dialogue.torchesbecomesunlight.pursuer_meet_1_2": "我看你是欠揍了."
+  "dialogue.torchesbecomesunlight.pursuer_meet_1_2": "我看你是欠揍了.",
+
+  "dialogue.torchesbecomesunlight.pursuer_d_1": "稍等,你竟然能够在精怪的碎片前保持冷静.",
+  "dialogue.torchesbecomesunlight.pursuer_d_2": "无尽雪原中威胁愈发严重,完成任务后皇帝将赏赐你丰厚的奖赏.",
+  "dialogue.torchesbecomesunlight.pursuer_d_3": "这是国家机密,当你愿意加入行程时,帝国将与你分享有关精怪的信息.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4": "皇帝胸襟博大,罚赏分明,对抵御精怪做出贡献的都是有功之人.",
+  "dialogue.torchesbecomesunlight.pursuer_d_5": "博卓卡斯替大尉?.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4_1": "好.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4_2": "你所谓的罚赏分明就是悬赏一位大尉?",
+  "dialogue.torchesbecomesunlight.pursuer_d_2_1": "无尽雪原,那里发生什么事了?",
+  "dialogue.torchesbecomesunlight.pursuer_d_2_2": "乌萨斯帝国怎么会用到我一个外人?"
 }

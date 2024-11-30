@@ -67,6 +67,6 @@ public class PursuerModel extends GeoModel<Pursuer> {
 
     @Override
     public ResourceLocation getAnimationResource(Pursuer animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.animation.json");
+        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.json");
     }
 }

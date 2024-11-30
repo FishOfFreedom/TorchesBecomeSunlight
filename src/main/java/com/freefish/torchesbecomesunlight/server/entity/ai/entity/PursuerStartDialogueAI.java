@@ -1,13 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity;
 
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 public class PursuerStartDialogueAI extends Goal {
     private Pursuer pursuer;
@@ -17,13 +16,12 @@ public class PursuerStartDialogueAI extends Goal {
 
     public PursuerStartDialogueAI(Pursuer pursuer){
         this.pursuer = pursuer;
-        this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
     public boolean canUse() {
         this.pendingTarget = this.pursuer.level().getNearestPlayer(this.pursuer,96);
         LivingEntity target = pursuer.getTarget();
-        return this.pendingTarget != null&target==null;
+        return this.pendingTarget != null&target==null&&pursuer.getDialogueEntity()==null;
     }
 
     public boolean canContinueToUse() {
@@ -37,8 +35,10 @@ public class PursuerStartDialogueAI extends Goal {
 
     public void tick() {
         if (this.pendingTarget != null) {
-            if(pursuer.isLookingAtMe(pendingTarget))
-                pursuer.setTarget(pendingTarget);
+            if(pursuer.isLookingAtMe(pendingTarget)) {
+                pursuer.setDialogueEntity(pendingTarget);
+                AnimationActHandler.INSTANCE.sendAnimationMessage(pursuer,Pursuer.TELE);
+            }
             this.pendingTarget = null;
         }
     }

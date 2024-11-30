@@ -21,7 +21,12 @@ public class CustomBossBar {
         customBossBars.put(ForgeRegistries.ENTITY_TYPES.getKey(EntityHandle.FROST_NOVA.get()), new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay.png"),
-                10, 32, 2, -3, -3, 256, 32, 25, ChatFormatting.WHITE));
+                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE));
+
+        customBossBars.put(ForgeRegistries.ENTITY_TYPES.getKey(EntityHandle.PURSUER.get()), new CustomBossBar(
+                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
+                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/pursuer_bar_overlay.png"),
+                10, 32, 13, -1, -23, 256, 64,  32, ChatFormatting.BLACK));
     }
 
     private final ResourceLocation baseTexture;

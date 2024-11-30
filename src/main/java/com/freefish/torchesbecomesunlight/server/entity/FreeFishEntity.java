@@ -5,6 +5,7 @@ import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueA
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.util.AnimationWalk;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -30,6 +31,7 @@ import java.util.List;
 public abstract class FreeFishEntity extends PathfinderMob {
     private static final byte MUSIC_PLAY_ID = 67;
     private static final byte MUSIC_STOP_ID = 68;
+    private static final byte MAKE_PARTICLE_ID = 60;
 
     private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this);
 
@@ -85,8 +87,19 @@ public abstract class FreeFishEntity extends PathfinderMob {
         }
         else if (id == MUSIC_STOP_ID) {
             BossMusicPlayer.stopBossMusic(this);
+        }if (id == MAKE_PARTICLE_ID) {
+            makeParticles();
         }
         else super.handleEntityEvent(id);
+    }
+
+    protected void makeParticles() {
+        for (int i = 0; i < 20; ++i) {
+            double d0 = this.random.nextGaussian() * 0.02D;
+            double d1 = this.random.nextGaussian() * 0.02D;
+            double d2 = this.random.nextGaussian() * 0.02D;
+            this.level().addParticle(ParticleTypes.POOF, this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), d0, d1, d2);
+        }
     }
 
     @Override
@@ -122,12 +135,13 @@ public abstract class FreeFishEntity extends PathfinderMob {
         super.setCustomName(name);
         this.bossInfo.setName(this.getDisplayName());
     }
+
     public boolean hasBossBar() {
         return false;
     }
 
     public void doRangeTrueAttack(double range, double arc,float damage,boolean isBreakingShield){
-        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range, 3, range), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
+        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
             float entityAttackingAngle = getYRot() % 360;
@@ -142,7 +156,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
                 if(!(entityHit instanceof Player player&& player.isCreative())) {
                     entityHit.actuallyHurt(damageSources().mobAttack(this), damage);
-                    entityHit.hurt(damageSources().mobAttack(this), 1);
+                    doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
                 }
             }
         }
@@ -158,7 +172,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
     }
 
     public void doRangeAttack(double range, double arc,float damage,float knockback,boolean isBreakingShield){
-        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range, 3, range), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
+        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
             float entityAttackingAngle = getYRot() % 360;
@@ -171,7 +185,8 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-                entityHit.hurt(damageSources().mobAttack(this),damage);
+
+                    doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
                 if(isBreakingShield&&entityHit instanceof Player player){
                     ItemStack pPlayerItemStack = player.getUseItem();
                     if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -186,11 +201,11 @@ public abstract class FreeFishEntity extends PathfinderMob {
     }
 
     public void doCycleAttack(float range,float damage){
-        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(range+1),livingEntity ->
+        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(range+5),livingEntity ->
                 !(livingEntity instanceof GuerrillasEntity)&&livingEntity.distanceTo(this)<range+livingEntity.getBbWidth()/2);
         for(LivingEntity entityHit:list) {
             if(entityHit == this) return;
-            entityHit.hurt(this.damageSources().mobAttack(this), damage);
+            doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
             if (entityHit instanceof Player player) {
                 ItemStack pPlayerItemStack = player.getUseItem();
                 if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -203,7 +218,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
 
     public boolean doRangeAttack(double range, double arc,float damage,boolean isBreakingShield){
         boolean flag = false;
-        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range, 3, range), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
+        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
             float entityAttackingAngle = getYRot() % 360;
@@ -216,7 +231,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-            flag = entityHit.hurt(damageSources().mobAttack(this),damage);
+            flag = doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
                 if(isBreakingShield&&entityHit instanceof Player player){
                     ItemStack pPlayerItemStack = player.getUseItem();
                     if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -234,13 +249,22 @@ public abstract class FreeFishEntity extends PathfinderMob {
         lookAt(livingEntity,30f,30f);
     }
 
-    public void dashForward(float speed,float yawOffset){
-        Vec3 direction = new Vec3(0, speed*0.1, speed).yRot((float) ((yawOffset-getYRot()) / 180 * org.joml.Math.PI));
+    public void dashForward(float maxLen,float yawOffset){
+        float jumpLen;
+        LivingEntity target = getTarget();
+        if(target!=null){
+            float dist = target.distanceTo(this);
+            if(dist<=maxLen) jumpLen = dist/4f;
+            else jumpLen = maxLen / 4;
+        } else {
+            jumpLen = 1;
+        }
+        Vec3 direction = new Vec3(0, Math.sqrt(jumpLen)*0.1, jumpLen).yRot((float) (yawOffset-getYRot() / 180 * org.joml.Math.PI));
         setDeltaMovement(direction);
     }
 
     public void doRangeAttack(double range, double arc, float damage, boolean isBreakingShield, MobEffectInstance effectInstance){
-        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range, 3, range), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
+        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
             float entityAttackingAngle = getYRot() % 360;
@@ -253,7 +277,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-                entityHit.hurt(damageSources().mobAttack(this),damage);
+                doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
                 entityHit.addEffect(effectInstance);
                 if(isBreakingShield&&entityHit instanceof Player player){
                     ItemStack pPlayerItemStack = player.getUseItem();
@@ -264,6 +288,10 @@ public abstract class FreeFishEntity extends PathfinderMob {
                 }
             }
         }
+    }
+
+    public boolean doHurtEntity(LivingEntity livingEntity,DamageSource source,float damage){
+        return livingEntity.hurt(source,damage);
     }
 //todo
     public void setForwardMotion(float speed) {

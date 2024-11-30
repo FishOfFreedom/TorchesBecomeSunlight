@@ -1,7 +1,9 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
 import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.shader.ShaderRegistry;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -21,6 +23,9 @@ import org.joml.Math;
 import org.joml.Vector3f;
 
 import java.util.Locale;
+
+import static com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes.DEMON_1;
+import static com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes.DEMON_BACK;
 
 public class BlackFlatParticle extends TextureSheetParticle {
     private Vec3 target;
@@ -51,8 +56,11 @@ public class BlackFlatParticle extends TextureSheetParticle {
     public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
         Vec3 vec3 = renderInfo.getPosition();
         float scale1 = 0.1f;
-        if(age>=lifetime-30&&age<lifetime-20){
-            scale1 = Math.lerp(0.1f,scale,MathUtils.easeOutExpo((age-(lifetime-30)+partialTicks)/10f));
+        if(age>=lifetime-76&&age<lifetime-66){
+            scale1 = Math.lerp(0.1f,scale,MathUtils.easeOutExpo((age-(lifetime-76)+partialTicks)/10f));
+        }
+        else if(age>=lifetime-66&&age<lifetime-20){
+            scale1 = scale;
         }
         else if(age>=lifetime-20){
             scale1 = Math.lerp(0,scale,MathUtils.easeOutExpo( 1 - (age-(lifetime-20)+partialTicks)/21f));
@@ -82,6 +90,7 @@ public class BlackFlatParticle extends TextureSheetParticle {
         float f4 = this.getV0();
         float f5 = this.getV1();
         int j = this.getLightColor(partialTicks);
+
         buffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(0, 0, 0, this.alpha).uv2(j).endVertex();
         buffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
         buffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
@@ -103,17 +112,17 @@ public class BlackFlatParticle extends TextureSheetParticle {
     }
 
     public static class BlackFlatData implements ParticleOptions {
-        public static final Deserializer<BlackFlatData> DESERIALIZER = new Deserializer<BlackFlatData>() {
-            public BlackFlatData fromCommand(ParticleType<BlackFlatData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<BlackFlatParticle.BlackFlatData> DESERIALIZER = new Deserializer<BlackFlatParticle.BlackFlatData>() {
+            public BlackFlatParticle.BlackFlatData fromCommand(ParticleType<BlackFlatParticle.BlackFlatData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
                 float scale = reader.readFloat();
-                return new BlackFlatData(duration,scale);
+                return new BlackFlatParticle.BlackFlatData(duration,scale);
             }
 
-            public BlackFlatData fromNetwork(ParticleType<BlackFlatData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new BlackFlatData(buffer.readInt(),buffer.readFloat());
+            public BlackFlatParticle.BlackFlatData fromNetwork(ParticleType<BlackFlatParticle.BlackFlatData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new BlackFlatParticle.BlackFlatData(buffer.readInt(),buffer.readFloat());
             }
         };
 
@@ -139,7 +148,7 @@ public class BlackFlatParticle extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<BlackFlatData> getType() {
+        public ParticleType<BlackFlatParticle.BlackFlatData> getType() {
             return ParticleHandler.BLACK_FLAT.get();
         }
 
@@ -152,11 +161,11 @@ public class BlackFlatParticle extends TextureSheetParticle {
         public float getScale() {
             return this.scale;
         }
-        public static Codec<BlackFlatData> CODEC(ParticleType<BlackFlatData> particleType) {
+        public static Codec<BlackFlatParticle.BlackFlatData> CODEC(ParticleType<BlackFlatParticle.BlackFlatData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(BlackFlatData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(BlackFlatData::getScale)
-                    ).apply(codecBuilder, BlackFlatData::new)
+                            Codec.INT.fieldOf("duration").forGetter(BlackFlatParticle.BlackFlatData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(BlackFlatParticle.BlackFlatData::getScale)
+                    ).apply(codecBuilder, BlackFlatParticle.BlackFlatData::new)
             );
         }
     }

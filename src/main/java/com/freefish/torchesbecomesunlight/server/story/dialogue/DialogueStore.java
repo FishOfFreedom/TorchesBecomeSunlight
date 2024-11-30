@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogue;
 
+import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStone;
+import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
@@ -42,6 +44,42 @@ public class DialogueStore {
     public static Dialogue state_1_1 = new Dialogue("是啊,再过几天就是收获的大日子了.", withoutTrigger(Arrays.asList("不赖啊","真不错")), state_1_2, 1,100);
     public static Dialogue state_1_0 = new Dialogue("今年的庄稼长得可真好,看起来收获的日子不远了吧?", null, state_1_1, 0,100);
 
+
+    public static Dialogue pursuer_d_3;
+    public static Dialogue pursuer_d_2;
+    public static Dialogue pursuer_d_1;
+    public static Dialogue pursuer_d_4;
+    public static Dialogue pursuer_d_5;
+    public static Dialogue pursuer_d_6;
+
+    static  {
+        //pursuer_d_6 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_6", null, null, 1,80);
+        pursuer_d_5 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_5", null, null, 1,80);
+        pursuer_d_4 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_4", genList(
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_1",0,null,null),
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_2",0,pursuer_d_5,null,null,(entity -> {
+                    if(entity instanceof Player player){
+                        return !player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isSeePatriot).get();
+                    }
+                    return true;
+                }))
+                ), null, 1,80);
+
+        pursuer_d_3 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_3", null, null, 1,80);
+        pursuer_d_2 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_2", genList(
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_2_1", 0, pursuer_d_3, null),
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_2_2", 0, pursuer_d_4, null),
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_meet_1_2", 1, entity -> {
+                    Player player = MathUtils.getClosestEntity(entity, entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5)));
+                    if (player != null && !player.isCreative() && entity instanceof Pursuer mob) {
+                        mob.setState(1);
+                        mob.setTarget(mob.getDialogueEntity());
+                    }
+                })), null, 1, 80);
+
+
+        pursuer_d_1 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_1", null, pursuer_d_2, 1,80);
+    }
     public static Dialogue pursuer_meet_5 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_meet_5", null, null, 1,80);
     public static Dialogue pursuer_meet_4 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_meet_4", null, null, 1,80);
     public static Dialogue pursuer_meet_3 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_meet_3", null, null, 1,80);

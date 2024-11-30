@@ -7,6 +7,7 @@ import com.freefish.torchesbecomesunlight.client.render.util.IceRenderer;
 import com.freefish.torchesbecomesunlight.client.shader.ShaderRegistry;
 import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
@@ -48,7 +49,7 @@ public enum ForgeClientEventL {
         if (event.isCanceled()) {
             return;
         }
-        int demonRadio = ClientStorage.INSTANCE.demonRadio;
+        float demonRadio = ClientStorage.INSTANCE.getDemon((float) event.getPartialTick());
         if(ClientStorage.INSTANCE.isBossActive()) {
             float nearness = 0.5f;
             float primordialBossAmount = 0.5f;
@@ -62,10 +63,11 @@ public enum ForgeClientEventL {
                 event.setFarPlaneDistance(64);
             }
         }
-        if(demonRadio>30) {
+
+        if(demonRadio>=60&&ConfigHandler.CLIENT.demonRender.get()) {
+            event.setNearPlaneDistance(Mth.lerp(Math.min(1,(demonRadio-60)/60f),event.getNearPlaneDistance(),8));
+            event.setFarPlaneDistance(Mth.lerp(Math.min(1,(demonRadio-60)/60f),event.getFarPlaneDistance(),16));
             event.setCanceled(true);
-            event.setNearPlaneDistance(16-(demonRadio-30)/9.0f);
-            event.setFarPlaneDistance(16);
         }
     }
 
@@ -76,11 +78,14 @@ public enum ForgeClientEventL {
             event.setGreen(0.6f);
             event.setBlue(0.6f);
         }
+
         int demonRadio = ClientStorage.INSTANCE.demonRadio;
-        if(demonRadio>0){
-            event.setRed(0);
-            event.setGreen(0);
-            event.setBlue(0);
+        if(demonRadio>61&&ConfigHandler.CLIENT.demonRender.get()){
+            float demon = ClientStorage.INSTANCE.getDemon((float) event.getPartialTick());
+            float min = Math.min(1, (demon - 62) / 60f);
+            event.setRed(  Mth.lerp(min,event.getRed(),0));
+            event.setGreen(Mth.lerp(min,event.getGreen(),0));
+            event.setBlue( Mth.lerp(min,event.getBlue(),0));
         }
     }
 
@@ -124,9 +129,21 @@ public enum ForgeClientEventL {
             return;
 
         player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(playerStoryStone -> {
+            int skipRadio = ClientStorage.INSTANCE.getSkip(1);
+
             List<DialogueEntity> entities = player.level().getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(5));
             DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player,entities);
             if(dialogueEntity != null) {
+                int wight = minecraft.getWindow().getGuiScaledWidth();
+                Font font = minecraft.font;
+                String s = Component.translatable("torchesbecomesunlight.skip").getString();
+                int wightFont = font.width(s);
+                int heighFont = font.lineHeight;
+
+                event.getGuiGraphics().setColor(1,1,1,1);
+                event.getGuiGraphics().fill(wight-wightFont, 0 ,wight-wightFont+ (int)(MathUtils.easeOutCubic((skipRadio/41f))*wightFont), heighFont , 0x08000000);
+                event.getGuiGraphics().drawString(font,s,wight-wightFont,0, 0xFFFFFF);
+
                 Dialogue dialogue = dialogueEntity.getDialogue();
                 if(dialogue != null) {
                     renderChatCenter(event,dialogueEntity);
