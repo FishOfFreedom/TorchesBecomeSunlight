@@ -9,7 +9,6 @@ import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEnt
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.util.AnimationWalk;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -37,13 +36,6 @@ import java.util.List;
 
 public class ShieldGuard extends GuerrillasEntity {
     public static final AnimationAct<ShieldGuard> ATTACK2 = new AnimationAct<ShieldGuard>("attack",33){
-        @Override
-        public void start(ShieldGuard entity) {
-            AnimationWalk walk = new AnimationWalk(
-                    new int[]{0,10,16,20,26,33},
-                    new float[]{0.06f,0.02f,0.08f,0.12f,0,0.03f});
-            entity.setAnimationWalk(walk);
-        }
 
         @Override
         public void tickUpdate(ShieldGuard entity) {
@@ -81,13 +73,6 @@ public class ShieldGuard extends GuerrillasEntity {
         }
     };
     public static final AnimationAct<ShieldGuard> SHIELD = new AnimationAct<ShieldGuard>("shield_attack",25){
-        @Override
-        public void start(ShieldGuard entity) {
-            AnimationWalk walk = new AnimationWalk(
-                    new int[]{0,7,10,12,16,18,25},
-                    new float[]{0,0.18f,0,0.4f,0,0.12f,0});
-            entity.setAnimationWalk(walk);
-        }
 
         @Override
         public void tickUpdate(ShieldGuard entity) {

@@ -1,36 +1,29 @@
 package com.freefish.torchesbecomesunlight;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistry;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.event.EventListener;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.event.ForgeClientEventL;
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.ModMenuTypes;
+import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.init.*;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
 import com.freefish.torchesbecomesunlight.server.entity.ai.attribute.AttributeRegistry;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
+import com.freefish.torchesbecomesunlight.server.init.generator.BiomeModifiersHandler;
 import com.freefish.torchesbecomesunlight.server.init.group.ModGroup;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.ModRecipes;
-import com.freefish.torchesbecomesunlight.server.world.structure.STStructures;
+import com.freefish.torchesbecomesunlight.server.world.structure.StructureHandle;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -38,6 +31,8 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
+import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,13 +42,15 @@ import java.util.UUID;
 public class TorchesBecomeSunlight
 {
     public static final String MOD_ID = "torchesbecomesunlight";
-    private static final Logger LOGGER = LogUtils.getLogger();
-    public static final Map<UUID, ResourceLocation> bossBarRegistryNames = new HashMap<>();
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final Map<UUID, Integer> bossBarRegistryNames = new HashMap<>();
 
     public static SimpleChannel NETWORK;
 
     public TorchesBecomeSunlight()
     {
+        GeckoLibUtil.addCustomBakedModelFactory(MOD_ID, new MowzieModelFactory());
+        GeckoLib.initialize();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ItemHandle.ITEMS.register(bus);
@@ -64,32 +61,27 @@ public class TorchesBecomeSunlight
         AttributeRegistry.ATTRIBUTES.register(bus);
         ParticleHandler.REG.register(bus);
         EffectHandle.POTIONS.register(bus);
-        STStructures.DEFERRED_REGISTRY_STRUCTURE.register(bus);
+        BiomeModifiersHandler.REG.register(bus);
         ModGroup.CREATIVE_MODE_TAB.register(bus);
+        StructureHandle.DEFERRED_REGISTRY_STRUCTURE.register(bus);
         ModRecipes.register(bus);
-        ModMenuTypes.register(bus);
-
-        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class,this::attachCapability);
+        MenuHandle.register(bus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHandler.CLIENT_CONFIG);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.COMMON_CONFIG);
 
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
-        bus.addListener(this::onModConfigEvent);
+        bus.addListener(CapabilityHandle::registerCapabilities);
+
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void onModConfigEvent(final ModConfigEvent event) {
-        final ModConfig config = event.getConfig();
-        if (config.getSpec() == ConfigHandler.COMMON_CONFIG) {
-
-        };
+        MinecraftForge.EVENT_BUS.register(new EventListener());
+        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityHandle::attachEntityCapability);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        SpawnHandler.registerSpawnPlacementTypes();
         event.enqueueWork(()->{
             ServerNetwork.initNetwork();
             MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
@@ -97,34 +89,11 @@ public class TorchesBecomeSunlight
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientLayerRegistry::onAddLayers);
         event.enqueueWork(()->{
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             bus.addListener(ForgeClientEventL::registerShaders);
         });
-    }
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-        }
-    }
-
-    public void attachCapability(AttachCapabilitiesEvent<Entity> event){
-        if(event.getObject() instanceof Player player){
-            if(!player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).isPresent()){
-                event.addCapability(new ResourceLocation(MOD_ID,"storystone"),new PlayerStoryStoneProvider());
-            }
-        }
-        if(event.getObject() instanceof LivingEntity livingEntity){
-            if(!livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).isPresent()){
-                event.addCapability(new ResourceLocation(MOD_ID,"frozen"),new FrozenCapabilityProvider());
-            }
-        }
     }
 
     public static <MSG> void sendMSGToAll(MSG message) {

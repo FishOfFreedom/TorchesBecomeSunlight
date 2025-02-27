@@ -1,10 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
-import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
-import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
-import com.freefish.torchesbecomesunlight.client.particle.BlackHoleParticle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -71,13 +70,13 @@ public class BlackHoleEntity extends Entity implements GeoEntity {
             }
             float s = 0;
             if(livingEntity instanceof Player player) {
-                s = 0.2f;
+                s = 0.26f;
             }
 
             float scale = 1;
             double length = livingEntity.distanceTo(this);
-            if(length>6.0){
-                scale = (float) (1 - (length - 6) / 5);
+            if(length>3.0){
+                scale = (float) (1 - (length - 3) / 8);
             }
             Vec3 move = new Vec3(getX()-livingEntity.getX(),0,getZ()-livingEntity.getZ()).normalize().scale((0.3-s)*scale);
             livingEntity.setDeltaMovement(getDeltaMovement().add(move));

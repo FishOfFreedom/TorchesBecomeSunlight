@@ -1,14 +1,12 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
@@ -19,19 +17,16 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
-import org.joml.Quaterniond;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -70,8 +65,8 @@ public class DemonParticle extends Particle {
         else if(age>=lifetime - grow){
             yScale = MathUtils.fade((lifetime-(age+partialTick))/grow);
         }
-        Quaternionf quatX = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
-        Quaternionf quatY = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
+        Quaternionf quatX = MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
+        Quaternionf quatY = MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
 
         float f = (float) (Mth.lerp((double) partialTick, this.xo, this.x) - vec3.x());
         float f1 = (float) (Mth.lerp((double) partialTick, this.yo, this.y) - vec3.y());

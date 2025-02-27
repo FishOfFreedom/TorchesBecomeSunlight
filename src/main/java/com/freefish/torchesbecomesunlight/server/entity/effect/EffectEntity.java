@@ -38,6 +38,25 @@ public abstract class EffectEntity extends Entity {
         return entityData.get(DATA_CASTER_ID);
     }
 
+    public LivingEntity getCaster(){
+        if(caster!=null){
+            return caster;
+        }
+        else {
+            if(level().getEntity(getCasterId()) instanceof LivingEntity livingEntity){
+                caster = livingEntity;
+                return caster;
+            }
+            else
+                return null;
+        }
+    }
+
+    public void setCaster(LivingEntity living){
+        setCasterId(living.getId());
+        caster = living;
+    }
+
     @Override
     public void tick() {
         this.baseTick();

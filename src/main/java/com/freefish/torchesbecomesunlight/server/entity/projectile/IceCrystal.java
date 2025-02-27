@@ -1,35 +1,30 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
-import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
-import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
-import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
-import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
+import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.damagesource.DamageSource;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -40,130 +35,210 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class IceCrystal extends Projectile implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private static final int MAX_ACTIVE = 400;
+
+    private int type1 = -1;
+    private Vec3[] trailPositions = new Vec3[16];
+    private int trailPointer = -1;
+
+    private static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(IceCrystal.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IS_HIT = SynchedEntityData.defineId(IceCrystal.class, EntityDataSerializers.BOOLEAN);
+
+    private final int[][] off = new int[][]{new int[]{3,0},new int[]{-3,0},new int[]{0,3},new int[]{0,-3}};
 
     public IceCrystal(EntityType<? extends IceCrystal> entityType, Level level) {
         super(entityType, level);
+        this.noPhysics = true;
     }
 
     public IceCrystal(Level level, LivingEntity caster) {
-        super(EntityHandle.ICE_CRYSTAL.get(), level);
+        this(EntityHandle.ICE_CRYSTAL.get(), level);
         setOwner(caster);
     }
 
     @Override
     protected void defineSynchedData() {
+        this.entityData.define(TYPE,0);
+        this.entityData.define(IS_HIT,false);
     }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        setType(compoundTag.getInt("type"));
+        setIsHit(compoundTag.getBoolean("ishit"));
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt("type",getType1());
+        compoundTag.putBoolean("ishit",isHit());
+    }
+    private int hitTime;
+
 
     @Override
     public void tick() {
-        super.tick();
-        Entity entity = this.getOwner();
-        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
-            this.move(MoverType.SELF, this.getDeltaMovement());
-
-            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
-                this.onHit(hitresult);
-            }
-
-            this.checkInsideBlocks();
-
-            if (this.tickCount >= MAX_ACTIVE) {
-                this.discard();
-            }
-        } else {
-            this.discard();
-        }
-        spawnRing();
-    }
-
-    @Override
-    protected void onHitEntity(EntityHitResult hitResult) {
-        super.onHitEntity(hitResult);
-        this.bomb(hitResult.getEntity());
-    }
-
-    @Override
-    protected void onHitBlock(BlockHitResult hitResult) {
-        super.onHitBlock(hitResult);
-        this.bomb(null);
-    }
-
-    private void bomb(@Nullable Entity entity){
-        if(entity instanceof LivingEntity livingEntity){
-            boolean flag = true;
-            if(entity instanceof Player player){
-                ItemStack pPlayerItemStack = player.getUseItem();
-                if(!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD))
-                    flag = false;
-            }
-            if (flag) {
-                livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data -> {
-                    data.setFrozen(livingEntity, 150);
+        if(tickCount==1){
+            if(level().isClientSide){
+                AdvancedParticleBase.spawnParticle(level(),ParticleHandler.RING_BIG.get(),xo,yo,zo,0,0,0,true,0,0,0,0,1,0,0,0,1,0,8,true,false,new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 16f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
+                });
+                AdvancedParticleBase.spawnParticle(level(),ParticleHandler.BURST_MESSY.get(),xo,yo,zo,0,0,0,true,0,0,0,0,1,0.5,0.5,0.5,1,0,12,true,false,new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 20f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
                 });
             }
         }
-        Entity caster = getOwner();
+        super.tick();
+        if(isHit()){
+            if(hitTime>=1){
+                discard();
+            }
+            if(hitTime==0){
+                if(level().isClientSide){
+                    AdvancedParticleBase.spawnParticle(level(),ParticleHandler.BURST_MESSY.get(),xo,yo,zo,0,0,0,true,0,0,0,0,1,1,1,1,1,0,8,true,false,new ParticleComponent[]{
+                            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 16f), false),
+                            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
+                    });
+                    //spawnIceParticle();
+                }
+                else {
+                    playSound(SoundHandle.ICE_CRYSTAL.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                    EntityCameraShake.cameraShake(this.level(), this.position(), 16F, 0.025F, 5, 15);
+                    //spawnIceParticle();
+                }
+            }
+            hitTime++;
+        }
 
-        if(caster instanceof FrostNova snowNova) {
-            int is1;
-            if(snowNova.getState()==1) is1 = 1;
-            else is1 = 0;
-            List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),hit ->
-                    !(hit instanceof GuerrillasEntity)&&hit.distanceTo(this)<2+is1+hit.getBbWidth()/2);
-            for(LivingEntity livingEntity:livingEntities){
-                    double damage = snowNova.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-                    livingEntity.hurt(DamageSourceHandle.SnowMonsterFrozen(snowNova),(float) damage);
+        this.move(MoverType.SELF, this.getDeltaMovement());
+
+        if(level().isClientSide){
+
+            Vec3 trailAt = this.position();
+            if (trailPointer == -1) {
+                Vec3 backAt = trailAt;
+                for (int i = 0; i < trailPositions.length; i++) {
+                    trailPositions[i] = backAt;
+                }
+            }
+            if (++this.trailPointer == this.trailPositions.length) {
+                this.trailPointer = 0;
+            }
+            this.trailPositions[this.trailPointer] = trailAt;
+        }
+
+        if(getType1()==2){
+            if(tickCount==27&&getOwner() instanceof FrostNova frostNova){
+                float speed = 40f;
+                LivingEntity target = frostNova.getTarget();
+                if(target!=null){
+                    double d0 = target.getX() - getX();
+                    double d2 = target.getZ() - getZ();
+                    float dist = (float) (org.joml.Math.sqrt(d0 * d0 + d2 * d2));
+                    float time = dist / speed;
+
+                    Vec3 targetMoveVec = frostNova.getTargetMoveVec(target).scale(time).add(target.position());
+
+                    Vec3 move = (new Vec3(targetMoveVec.x - getX(), target.getY(0.6) - getY(), targetMoveVec.z - getZ())).normalize().scale(2);
+
+                    this.shoot(move.x, move.y, move.z, 0);
+                }
             }
         }
-        playSound(SoundHandle.ICE_CRYSTAL.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
-        EntityCameraShake.cameraShake(this.level(), this.position(), 16F, 0.025F, 5, 15);
-        spawnIceParticle();
-        this.discard();
+
+        if (this.tickCount > 40) {
+            this.discard();
+        } else {
+            this.doHurtTarget();
+        }
+
+        BlockState blockState = getBlockStateOn();
+        if (!level().isClientSide()&&!blockState.isAir()&&!isHit()) {
+            setIsHit(true);
+        }
+
+        Vec3 vec3 = this.getDeltaMovement();
+        double d6 = vec3.y;
+        double d4 = vec3.horizontalDistance();
+
+        this.setXRot((float)(Mth.atan2(d6, d4) * (double)(180F / (float)Math.PI)));
+        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
+        spawnRing();
+    }
+
+    public Vec3 getTrailPosition(int pointer, float partialTick) {
+        if (this.isRemoved()) {
+            partialTick = 1.0F;
+        }
+        int i = this.trailPointer - pointer & 15;
+        int j = this.trailPointer - pointer - 1 & 15;
+        Vec3 d0 = this.trailPositions[j];
+        Vec3 d1 = this.trailPositions[i].subtract(d0);
+        return d0.add(d1.scale(partialTick)).add(getDeltaMovement());
+    }
+
+    public boolean hasTrail() {
+        return trailPointer != -1;
+    }
+
+    private void doHurtTarget() {
+        if(level().isClientSide() ) return;
+        if (!isHit()) {
+            List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(getDeltaMovement().length()+1));
+            boolean flad = false;
+            Entity caster = getOwner();
+            for (LivingEntity target : entities) {
+                if (target == caster) continue;
+                boolean flad1 = false;
+
+                Vec3 oldPosition = new Vec3(xo,yo,zo);
+                Vec3 position = position();
+                Vec3 totarget = target.position().add(0,Math.min(target.getBbHeight(),getY()-target.getY()),0).subtract(position);
+                Vec3 line = oldPosition.subtract(position).normalize();
+                float l = (float) line.dot(totarget);
+                if(l>=0) {
+                    Vec3 len = line.scale(l);
+                    float fa = (float) len.subtract(totarget).length();
+                    if(fa<=0.1+target.getBbWidth()) flad1 = true;
+                }
+
+                if (flad1 && caster instanceof LivingEntity living) {
+                    AttributeInstance attribute = living.getAttribute(Attributes.ATTACK_DAMAGE);
+                    if (attribute != null) {
+                        float damage = (float) attribute.getValue();
+                        float bei = (living instanceof FrostNova frostNova&&frostNova.getAnimation()==FrostNova.LULLABYE_2)?1.5f:1;
+
+                        if(target.hurt(this.damageSources().mobAttack(living), damage*bei)){
+                            flad=true;
+                            target.invulnerableTime=0;
+                            FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
+                            if(data!=null) data.setFrozen(target,60);
+                        }
+                    }
+                }
+            }
+            if(flad){
+                setIsHit(true);
+            }
+        }
     }
 
     private void spawnIceParticle(){
-        Vec3 vec3 = position();
-
-        int count1=0;
-        for(int i = 0;i<3;i++){
-            BlockPos blockpos2 = new BlockPos((int)vec3.x,(int)(vec3.y-i),(int)vec3.z);
-            BlockState blockState = level().getBlockState(blockpos2);
-            if(blockState.isAir()) count1++;
-        }
-        if(count1 == 3) return;
-        int count2=0;
-        for(int i = 0;i<3;i++){
-            BlockPos blockpos2 = new BlockPos((int)vec3.x,(int)(vec3.y-i),(int)vec3.z);
-            BlockState blockState = level().getBlockState(blockpos2);
-            if(blockState.isAir())
-                count2++;
-            else
-                break;
-        }
-        Vec3 finalVec = new Vec3(getX(), Math.ceil(vec3.y - count2 - 1), getZ());
-        if(getOwner() instanceof FrostNova snowNova&&snowNova.getState()==1) {
-            int time = 3 + random.nextInt(3);
-            for (int i = 0; i < time; i++) {
-                IceTuft iceTuft = new IceTuft(EntityHandle.ICE_TUFT.get(), level());
-                iceTuft.setYRot(2 * (float) Math.PI * random.nextFloat());
-                iceTuft.setPos(finalVec.add(3 - random.nextFloat() * 6, 0, 3 - random.nextFloat() * 6));
-                if (!level().isClientSide)
-                    level().addFreshEntity(iceTuft);
-            }
+        if(getOwner() instanceof FrostNova snowNova) {
+            IceTuft iceTuft = new IceTuft(EntityHandle.ICE_TUFT.get(), level());
+            iceTuft.caster = snowNova;
+            iceTuft.setPos(MathUtils.getFirstBlockAbove(level(),position().add(0,-4,0),4));
+            if (!level().isClientSide)
+                level().addFreshEntity(iceTuft);
         }
         if(level().isClientSide){
-            for(int i = 0;i<4;i++) {
-
-                Vec3 vec31 =finalVec.add(3-random.nextFloat()*6,0,3-random.nextFloat()*6);
-                level().addParticle(ParticleTypes.EXPLOSION,vec31.x,vec31.y,vec31.z,0,0,0);
-            }
         }
     }
 
@@ -182,30 +257,16 @@ public class IceCrystal extends Projectile implements GeoEntity {
         return false;
     }
 
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        } else if (this.level().isClientSide) {
-            return false;
-        } else {
-            this.markHurt();
-            Entity entity = source.getEntity();
-            if (entity != null) {
-
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<IceCrystal>(this, "Controller", 1, this::predicate));
     }
 
     private PlayState predicate(AnimationState<IceCrystal> event) {
-        event.getController().setAnimation(RawAnimation.begin().thenLoop("normal"));
+        if(getType1()==2)
+            event.getController().setAnimation(RawAnimation.begin().thenPlayAndHold("normal2"));
+        else
+            event.getController().setAnimation(RawAnimation.begin().thenLoop("normal"));
         return PlayState.CONTINUE;
     }
 
@@ -214,20 +275,58 @@ public class IceCrystal extends Projectile implements GeoEntity {
         return cache;
     }
 
+    public void setType(int type){
+        this.entityData.set(TYPE,type);
+        type1 = type;
+    }
+
+    public int getType1(){
+        if(type1!=-1) {
+            return type1;
+        }
+        type1 = this.entityData.get(TYPE);
+        return type1;
+    }
+
+    public boolean isHit(){
+        return this.entityData.get(IS_HIT);
+    }
+
+    public void setIsHit(boolean isHit){
+        this.entityData.set(IS_HIT,isHit);
+    }
+    @Override
+    public void lerpMotion(double pX, double pY, double pZ) {
+        this.setDeltaMovement(pX, pY, pZ);
+    }
+
+    public void shoot(double x, double y, double z, float inaccuracy) {
+        Vec3 vec3 = (new Vec3(x, y, z)).add(this.random.triangle(0.0D, 0.0172275D * (double) inaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) inaccuracy), this.random.triangle(0.0D, 0.0172275D * (double) inaccuracy));
+        this.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
+        this.setXRot((float) (Mth.atan2(vec3.y, d0) * (double) (180F / (float) Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
+    }
+
     public void spawnRing(){
-        if(level().isClientSide){
+        if(level().isClientSide&&tickCount%2==0){
             AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY(), getZ(), 0, 0, 0, false, Math.toRadians(getYRot()), -Math.toRadians(getXRot()), 0, 0, 4F, 1, 1, 1, 0.75, 1, 15, true, false, new ParticleComponent[]{
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0f), false),
-                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1f, 10f), false)
-            });
-            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.ARROW_HEAD.get(), xo, yo, zo, 0, 0, 0, false, 0, 0, 0, 0, 3.5F, 1, 1, 1, 0.75, 1, 2, true, false, new ParticleComponent[]{
-                    new ParticleComponent.Attractor(new Vec3[]{new Vec3(getX(), getY(), getZ())}, 0.5f, 0.2f, ParticleComponent.Attractor.EnumAttractorBehavior.LINEAR),
-                    new RibbonComponent(ParticleHandler.RIBBON_FLAT.get(), 10, 0, 0, 0, 0.12F, 1, 1, 1, 0.75, true, true, new ParticleComponent[]{
-                            new RibbonComponent.PropertyOverLength(RibbonComponent.PropertyOverLength.EnumRibbonProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1, 0))
-                    }),
-                    new ParticleComponent.FaceMotion(),
-                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0, 0, 1}, new float[]{0, 0.05f, 0.06f}), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1f, 10f), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.RED, ParticleComponent.KeyTrack.startAndEnd(  0.1f,0.8f ), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.GREEN, ParticleComponent.KeyTrack.startAndEnd(0.1f,0.8f ), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.BLUE, ParticleComponent.KeyTrack.startAndEnd( 0.1f,0.8f ), false)
             });
         }
+    }
+
+    public static void spawnWaitCrystal(Level level,Vec3 vec3,LivingEntity caster,LivingEntity targetWait){
+        IceCrystal iceCrystal = new IceCrystal(EntityHandle.ICE_CRYSTAL.get(),level);
+        iceCrystal.setOwner(caster);
+        iceCrystal.setType(2);
+        iceCrystal.setPos(vec3);
+        level.addFreshEntity(iceCrystal);
     }
 }

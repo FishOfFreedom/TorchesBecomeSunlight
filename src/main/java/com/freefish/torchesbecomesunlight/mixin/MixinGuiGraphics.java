@@ -32,14 +32,16 @@ public class MixinGuiGraphics {
         if (!pStack.isEmpty()) {
             this.pose.pushPose();
             LocalPlayer localplayer = this.minecraft.player;
-            MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
+            if(localplayer!=null) {
+                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
 
-            float f = 1;
-            if (effect!=null&& localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
-                int i1 = pY + Mth.floor(16.0F * (1.0F - f));
-                int j1 = i1 + Mth.ceil(16.0F * f);
-                this.fill(RenderType.guiOverlay(), pX, i1, pX + 16, j1, 0Xff000000);
-                info.cancel();
+                float f = 1;
+                if (effect != null && localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
+                    int i1 = pY + Mth.floor(16.0F * (1.0F - f));
+                    int j1 = i1 + Mth.ceil(16.0F * f);
+                    this.fill(RenderType.guiOverlay(), pX, i1, pX + 16, j1, 0Xff000000);
+                    info.cancel();
+                }
             }
             this.pose.popPose();
         }
@@ -50,9 +52,11 @@ public class MixinGuiGraphics {
     public void renderItemDemon(ItemStack pStack, int pX, int pY,CallbackInfo info){
         if (!pStack.isEmpty()) {
             LocalPlayer localplayer = this.minecraft.player;
-            MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
-            if (effect!=null&& localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
-                info.cancel();
+            if(localplayer!=null) {
+                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
+                if (effect != null && localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
+                    info.cancel();
+                }
             }
         }
     }

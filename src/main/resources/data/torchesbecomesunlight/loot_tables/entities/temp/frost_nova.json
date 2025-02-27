@@ -1,0 +1,36 @@
+{
+  "pools": [
+    {
+      "name": "winter_pass",
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "killed_by_player"
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "torchesbecomesunlight:winter_pass",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "winter_scratch",
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "killed_by_player"
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "torchesbecomesunlight:winter_scratch",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

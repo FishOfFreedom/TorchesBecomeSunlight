@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
@@ -16,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -27,7 +25,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeRenderTypes;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -63,13 +60,13 @@ public class BlackSpearParticle extends Particle {
         float f1 = (float) (Mth.lerp((double) partialTick, this.yo, this.y) - vec3.y());
         float f2 = (float) (Mth.lerp((double) partialTick, this.zo, this.z) - vec3.z());
         MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(ForgeRenderTypes.getUnlitTranslucent(TEXTURE));
+        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(FFRenderTypes.getGlowingEffect(TEXTURE));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
         Matrix3f matrix3f = posestack$pose.normal();
 
-        Quaternionf quatX = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
-        Quaternionf quatY = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
+        Quaternionf quatX = MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
+        Quaternionf quatY = MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
 
         float f8 = MathUtils.easeInQuint(((float)age+partialTick)/(lifetime+1));
         Vector3f[] avector3f;

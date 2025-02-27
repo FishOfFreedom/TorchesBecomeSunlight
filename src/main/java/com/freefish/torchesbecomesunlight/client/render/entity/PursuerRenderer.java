@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.entity;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.client.render.layer.DialogueIconLayer;
 import com.freefish.torchesbecomesunlight.client.render.model.PursuerModel;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
@@ -26,7 +25,7 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
 
     public PursuerRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new PursuerModel());
-        addRenderLayer(new DialogueIconLayer(this));
+        //addRenderLayer(new DialogueIconLayer(this));
     }
 
     @Override
@@ -38,7 +37,7 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
     public void render(Pursuer entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         int tick = entity.getAnimationTick();
         AnimationAct animation = entity.getAnimation();
-        if(((animation==Pursuer.TELE||animation==Pursuer.TELE1)&&tick>=8&&tick<20)||(animation==Pursuer.DEMON&&tick>=20&&tick<110))
+        if(((animation==Pursuer.TELE||animation==Pursuer.TELE1)&&tick>=8&&tick<20)||(animation==Pursuer.DEMON&&tick>=20&&tick<60))
             poseStack.scale(0,0.7f,0);
         else
             poseStack.scale(0.7f,0.7f,0.7f);
@@ -74,8 +73,8 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
             int animationTick = animatable.getAnimationTick();
             if(animationTick<20)
                 c = 1 - (animationTick+partialTick)/20;
-            else if(animationTick>=110){
-                c = (animationTick-110+partialTick)/10;
+            else if(animationTick>=60){
+                c = (animationTick-60+partialTick)/10;
             }
             c = Math.abs(c);
             return Color.ofRGB(c,c,c);
@@ -86,11 +85,8 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
     private void renderTrail(Pursuer entityIn, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, float trailA, int packedLightIn) {
         int samples = 0;
         int sampleSize = 10;
-        //float trailHeight = 0.5F;
-        //float trailZRot = 0;
-        //Vec3 topAngleVec = new Vec3(0, trailHeight, 0).zRot(trailZRot);
-        //Vec3 bottomAngleVec = new Vec3(0, -trailHeight, 0).zRot(trailZRot);
         Vec3[] drawFrom = entityIn.getTrailPosition(0, partialTicks);
+
         VertexConsumer vertexconsumer = bufferIn.getBuffer(FFRenderTypes.getGlowingEffect(TRAIL_TEXTURE));
         while (samples < sampleSize) {
             Vec3[] sample = entityIn.getTrailPosition(samples + 2, partialTicks);

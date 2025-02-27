@@ -14,8 +14,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        simpleBlockWithItem(BlockHandle.GEM_POLISHING_STATION.get(),
-                new ModelFile.UncheckedModelFile(modLoc("block/gem_polishing_station")));
 
         simpleBlockWithItem(BlockHandle.POT.get(),
                 new ModelFile.UncheckedModelFile(modLoc("block/pot")));

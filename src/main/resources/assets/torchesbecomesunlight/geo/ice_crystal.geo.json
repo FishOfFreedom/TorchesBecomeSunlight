@@ -16,8 +16,13 @@
 					"pivot": [0.4, -0.3, 0]
 				},
 				{
-					"name": "bone",
+					"name": "rot",
 					"parent": "main",
+					"pivot": [0.4, -0.3, 0]
+				},
+				{
+					"name": "bone",
+					"parent": "rot",
 					"pivot": [0.4, -0.3, 0],
 					"rotation": [0, -45, -45],
 					"cubes": [

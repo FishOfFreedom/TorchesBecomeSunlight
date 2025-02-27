@@ -16,17 +16,11 @@ import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimated
 public class PatriotAttackAI extends Goal {
     private final Patriot patriot;
 
-    private int repath;
-    private double targetX;
-    private double targetY;
-    private double targetZ;
-    private int timeNormalAttack;
     private int timeSinceRun;
     private int timeSinceStomp;
     private int timeSinceStrengthen;
     private int timeSinceHunt;
     private int timeSinceShield;
-    private int timeSincePropel;
 
     public PatriotAttackAI(Patriot patriot) {
         this.patriot = patriot;
@@ -41,11 +35,12 @@ public class PatriotAttackAI extends Goal {
 
     @Override
     public void start() {
-        this.repath = 0;
+        patriot.setAggressive(true);
     }
 
     @Override
     public void stop() {
+        patriot.setAggressive(false);
         this.patriot.getNavigation().stop();
     }
 
@@ -61,13 +56,12 @@ public class PatriotAttackAI extends Goal {
         timeSinceStrengthen++;
         timeSinceHunt++;
         timeSinceShield++;
-        timeSincePropel++;
 
         if(!(this.patriot.getAnimation() == NO_ANIMATION||patriot.getAnimation()==Patriot.RUN)) return;
         walk();
         if(patriot.getAnimation()==Patriot.RUN) return;
 
-        double dist = this.patriot.distanceToSqr(this.targetX, this.targetY, this.targetZ);
+        double dist = this.patriot.distanceTo(target);
 
         if(timeSinceStrengthen>=300){
             timeSinceStrengthen=0;
@@ -85,74 +79,38 @@ public class PatriotAttackAI extends Goal {
             timeSinceShield=0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.SHIELD);
         }
-        else if(dist < 14 &&timeSinceHunt>=320&&patriot.getHealth()<patriot.getMaxHealth()/2){
+        else if(dist < 14 &&timeSinceHunt>=320){
             timeSinceHunt=0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.HUNT);
         }
-        else if(dist >= 20 &&timeSinceRun>=180) {
-            targetX = targetY = targetZ = 0;
+        else if(dist >= 12 &&timeSinceRun>=180) {
             timeSinceRun = 0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, Patriot.RUN);
         } else if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
-            if (dist < 7D * 7D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
-                if(shouldFollowUp(3.5-timeNormalAttack*1.5)) {
-                    double rand = random.nextDouble();
-                    if(rand<0.2&&timeSinceShield<=260) rand+=0.2;
-                    if (rand >= 0.5)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.ATTACK1);
-                    else if (rand >= 0.2)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PIERCE2);
-                    else {
-                        timeSincePropel = 0;
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PROPEL1);
-                    }
+            if (dist < 4D  && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
+                double rand = random.nextDouble();
+                if (rand >= 0.6)
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.ATTACK1);
+                else if (rand >= 0.3)
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PIERCE2);
+                else {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.PROPEL1);
                 }
-
             }
         }
-    }
-
-    private boolean shouldFollowUp(double bonusRange) {
-        LivingEntity entityTarget = patriot.getTarget();
-        if (entityTarget != null && entityTarget.isAlive()) {
-            Vec3 targetMoveVec = entityTarget.getDeltaMovement();
-            Vec3 betweenEntitiesVec = patriot.position().subtract(entityTarget.position());
-            boolean targetComingCloser = targetMoveVec.dot(betweenEntitiesVec) < 0;
-            double targetDistance = patriot.distanceTo(entityTarget);
-            return targetDistance < bonusRange || (targetDistance <5 + bonusRange && targetComingCloser);
-        }
-        return false;
     }
 
     private void walk(){
         LivingEntity target = patriot.getTarget();
         if(target!=null) {
-            double dist = this.patriot.distanceToSqr(this.targetX, this.targetY, this.targetZ);
-            if (--this.repath <= 0 && (
-                    this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D ||
-                            target.distanceToSqr(this.targetX, this.targetY, this.targetZ) >= 1.0D) ||
-                    this.patriot.getNavigation().isDone()
-            ) {
-                this.targetX = target.getX();
-                this.targetY = target.getY();
-                this.targetZ = target.getZ();
-                this.repath = 4 + this.patriot.getRandom().nextInt(7);
-                if (dist > 1024D) {
-                    this.repath += 10;
-                } else if (dist > 256D) {
-                    this.repath += 5;
-                }
-                if (!moveMode(target)) {
-                    this.repath += 15;
-                }
-            }
+            moveMode(target);
         }
     }
 
     private boolean moveMode(LivingEntity target){
         if(patriot.getAnimation()==Patriot.RUN)
-            return this.patriot.getNavigation().moveTo(target, 0.8);
+            return this.patriot.getNavigation().moveTo(target, 0.45);
         else
-            return this.patriot.getNavigation().moveTo(target, 0.3);
+            return this.patriot.getNavigation().moveTo(target, 0.19);
     }
 }

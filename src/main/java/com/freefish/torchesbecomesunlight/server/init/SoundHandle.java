@@ -12,6 +12,12 @@ import net.minecraftforge.registries.RegistryObject;
 public class SoundHandle {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, TorchesBecomeSunlight.MOD_ID);
 
+    // GunKnight
+    public static final RegistryObject<SoundEvent> GLOWING = create("gunknight.glowing");
+    public static final RegistryObject<SoundEvent> MACHINE_GUN = create("gunknight.machinegun");
+    public static final RegistryObject<SoundEvent> SHOT_GUN = create("gunknight.shotgun");
+    public static final RegistryObject<SoundEvent> ARTILLERY = create("gunknight.artillery");
+
     // SnowNova
     public static final RegistryObject<SoundEvent> ICE_CRYSTAL = create("snownova.ice_crystal");
     public static final RegistryObject<SoundEvent> ICE_WHIRLWIND = create("snownova.ice_whirlwind");
@@ -38,6 +44,7 @@ public class SoundHandle {
     public static final RegistryObject<SoundEvent> SNOWNOVA_PERMAFROST = create("music.permafrost");
     public static final RegistryObject<SoundEvent> PATRIOT_UNYIELDING = create("music.unyielding");
     public static final RegistryObject<SoundEvent> PURSUER_1 = create("music.pursuer_1");
+    public static final RegistryObject<SoundEvent> GUN_KNIGHT_MUSIC = create("music.gun_knight");
     public static final RegistryObject<SoundEvent> PURSUER_2 = create("music.pursuer_2");
 
     private static RegistryObject<SoundEvent> create(String name) {

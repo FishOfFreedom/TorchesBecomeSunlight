@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.client.render.gui.screen;
 
 import com.freefish.torchesbecomesunlight.server.block.blockentity.PotBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
+import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ public class PotMenu extends AbstractContainerMenu {
     }
 
     public PotMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
-        super(ModMenuTypes.POT_MENU.get(), pContainerId);
+        super(MenuHandle.POT_MENU.get(), pContainerId);
         checkContainerSize(inv, 2);
         blockEntity = ((PotBlockEntity) entity);
         this.level = inv.player.level();

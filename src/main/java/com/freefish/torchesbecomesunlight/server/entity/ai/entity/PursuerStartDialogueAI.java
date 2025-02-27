@@ -21,7 +21,7 @@ public class PursuerStartDialogueAI extends Goal {
     public boolean canUse() {
         this.pendingTarget = this.pursuer.level().getNearestPlayer(this.pursuer,96);
         LivingEntity target = pursuer.getTarget();
-        return this.pendingTarget != null&target==null&&pursuer.getDialogueEntity()==null;
+        return this.pendingTarget != null&&!pendingTarget.isCreative()&&target==null&&pursuer.getDialogueEntity()==null;
     }
 
     public boolean canContinueToUse() {

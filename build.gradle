@@ -89,6 +89,13 @@ repositories {
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net/'
     }
+    maven {
+        name = "CurseForge"
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
     maven { url = 'https://maven.parchmentmc.org' }
     maven { url = 'https://repo.spongepowered.org/maven' }
 }
@@ -97,7 +104,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.5')
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.9')
+
+    runtimeOnly  fg.deobf("curse.maven:mob-battle-mod-268746:4748521")
+    runtimeOnly fg.deobf("curse.maven:eeeabs-mobs-921600:5931229")
 }
 
 tasks.named('processResources', ProcessResources).configure {

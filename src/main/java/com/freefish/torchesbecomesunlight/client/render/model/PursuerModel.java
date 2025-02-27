@@ -15,6 +15,10 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 public class PursuerModel extends GeoModel<Pursuer> {
+    private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/pursuer.geo.json");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/pursuer.png");
+    private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.json");
+
     @Override
     public void setCustomAnimations(Pursuer animatable, long instanceId, AnimationState<Pursuer> animationState) {
         CoreGeoBone head = this.getAnimationProcessor().getBone("head");
@@ -45,28 +49,26 @@ public class PursuerModel extends GeoModel<Pursuer> {
             sword.setHidden(false);
         }
 
-        //if(animatable.time != animatable.tickCount){
-        //    animatable.time = animatable.tickCount;
+
         CoreGeoBone swordLocate1 = this.getAnimationProcessor().getBone("swordlocate_1");
         CoreGeoBone swordLocate2 = this.getAnimationProcessor().getBone("swordlocate_2");
-        Vec3 vec31 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone)swordLocate1);
-        Vec3 vec32 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone)swordLocate2);
-        animatable.updateTrail(vec31,vec32);
-        //}
+        Vec3 vec31 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone) swordLocate1);
+        Vec3 vec32 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone) swordLocate2);
+        animatable.updateTrail(vec31, vec32);
     }
 
     @Override
     public ResourceLocation getModelResource(Pursuer animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/pursuer.geo.json");
+        return MODEL;
     }
 
     @Override
     public ResourceLocation getTextureResource(Pursuer animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/pursuer.png");
+        return TEXTURE;
     }
 
     @Override
     public ResourceLocation getAnimationResource(Pursuer animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.json");
+        return ANIMATION;
     }
 }

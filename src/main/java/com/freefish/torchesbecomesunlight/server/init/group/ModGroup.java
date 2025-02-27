@@ -5,8 +5,8 @@ import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -15,15 +15,12 @@ public class ModGroup {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TorchesBecomeSunlight.MOD_ID);
 
     public static final RegistryObject<CreativeModeTab> MOD_GROUP = CREATIVE_MODE_TAB.register("torches_become_sunlight",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.IRON_SWORD))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ItemHandle.TITLE.get()))
                     .title(Component.translatable("creativegroup.torchesbecomesunlight"))
                     .displayItems((parameters,output) ->{
-                        output.accept(ItemHandle.TEST_ITEM.get());
-                        output.accept(ItemHandle.Animation_ITEM.get());
-                        output.accept(ItemHandle.PATRIOT_EGG.get());
-                        output.accept(ItemHandle.SNOW_NOVA_EGG.get());
-                        output.accept(ItemHandle.PURSUER_EGG.get());
-                        output.accept(ItemHandle.SHIELD_GUARD_EGG.get());
-                        output.accept(ItemHandle.MANGLER_EGG.get());
+                        for (RegistryObject<Item> item : ItemHandle.ITEMS.getEntries()) {
+                            if(item == ItemHandle.TITLE) continue;
+                            output.accept(item.get());
+                        }
                     }).build());
 }

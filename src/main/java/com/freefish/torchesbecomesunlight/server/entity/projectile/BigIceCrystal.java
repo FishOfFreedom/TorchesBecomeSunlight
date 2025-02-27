@@ -1,12 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
-import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
-import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
 import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
@@ -57,6 +58,15 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
     }
 
     public void tick() {
+        if(tickCount==1){
+            if(level().isClientSide){
+                AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, org.joml.Math.toRadians(-90), 0, 0, 50F, 1, 1, 1, 1, 1, 20, true, false, new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 60f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0f), false)
+                });
+            }
+        }
+
         if (this.inGroundTime > 200) {
             removeIceFloor();
             kill();
@@ -83,9 +93,8 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
             List<LivingEntity> livingEntity = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),entity ->
                     !(entity instanceof GuerrillasEntity) && entity.distanceTo(this)<=3.5+entity.getBbWidth()/2);
             for(LivingEntity livingEntity1:livingEntity) {
-                livingEntity1.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(data ->{
-                    data.setFrozen(livingEntity1,200);
-                });
+                FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(livingEntity1, CapabilityHandle.FROZEN_CAPABILITY);
+                if(data!=null) data.setFrozen(livingEntity1,200);
             }
         }
 

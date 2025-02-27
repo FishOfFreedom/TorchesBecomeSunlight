@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
@@ -28,7 +28,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeRenderTypes;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -72,14 +71,14 @@ public class DemonHoleParticle extends Particle {
             fadecolor = (-(age+partialTick-(lifetime+1)))/21f;
         }
 
-        Quaternionf quatX = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
-        Quaternionf quatY = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
+        Quaternionf quatX = MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
+        Quaternionf quatY = MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
 
         float f = (float) (Mth.lerp((double) partialTick, this.xo, this.x) - vec3.x());
         float f1 = (float) (Mth.lerp((double) partialTick, this.yo, this.y) - vec3.y());
         float f2 = (float) (Mth.lerp((double) partialTick, this.zo, this.z) - vec3.z());
         MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(ForgeRenderTypes.getUnlitTranslucent(HOLE));
+        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(FFRenderTypes.getGlowingEffect(HOLE));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
         Matrix3f matrix3f = posestack$pose.normal();

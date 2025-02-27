@@ -1,14 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
-import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
-import com.bobmowzie.mowziesmobs.client.particle.util.RibbonComponent;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
 import com.freefish.torchesbecomesunlight.client.particle.BlackFlatParticle;
 import com.freefish.torchesbecomesunlight.client.particle.DemonHoleParticle;
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.PursuerEffectEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -17,7 +15,6 @@ import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -108,13 +105,13 @@ public class BlackSpear extends EffectEntity implements GeoEntity {
             Vec3 faceVec = new Vec3(0,0,5).xRot(f1).yRot(3.14f+f2).add(position());
             AdvancedParticleBase.spawnParticle(level(), ParticleHandler.PIXEL.get(), getX(), getY(), getZ(), 0, 0, 0, false, 0, 0, 0, 0, 3.5F, 1, 1, 1, 0.75, 1, eTime, true, false, new ParticleComponent[]{
                     new ParticleComponent.Attractor(new Vec3[]{faceVec}, 0.5f, 0.2f, ParticleComponent.Attractor.EnumAttractorBehavior.LINEAR),
-                    new RibbonComponent(ParticleHandler.RIBBON_FLAT.get(), 10, 0, 0, 0, 0.12F, 1, 1, 1, 0.75, true, true, new ParticleComponent[]{
+                    new RibbonComponent(ParticleHandler.RIBBON_FLAT.get(), 10, 0, 0, 0, 0.12F, 0,0,0, 0.75, true, true, new ParticleComponent[]{
                             new RibbonComponent.PropertyOverLength(RibbonComponent.PropertyOverLength.EnumRibbonProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(1, 0))
                     }),
                     new ParticleComponent.FaceMotion(),
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0, 0, 1}, new float[]{0, 0.05f, 0.06f}), false),
             });
-            level().addParticle(new DemonHoleParticle.DemonHoleData(30,3,(float) f2,f1),vec3.x,vec3.y,vec3.z,0,0,0);
+            level().addParticle(new DemonHoleParticle.DemonHoleData(  getType1()==3?getEtime()+30:  30,3,(float) f2,f1),vec3.x,vec3.y,vec3.z,0,0,0);
             if(getType1()==3){
                 Vec3 faceVec1 = new Vec3(0,0,22).xRot(f1).yRot(3.14f+f2).add(position());
                 level().addParticle(new BlackFlatParticle.BlackFlatData(getEtime()+30,3),vec3.x,vec3.y,vec3.z,faceVec1.x,faceVec1.y,faceVec1.z);
@@ -161,14 +158,14 @@ public class BlackSpear extends EffectEntity implements GeoEntity {
             if (dot > 0) {
                 Vec3 line1 = line.scale(dot);
                 float len = (float) line1.subtract(subtract).length();
-                if (len < 3) {
+                if (len < 2) {
                     livingEntity.setDeltaMovement(0, 0, 0);
                     livingEntity.setPos(livingEntity.xo, livingEntity.yo, livingEntity.zo);
                     if(tickCount%3==0) {
                         if (caster != null) {
                             AttributeInstance attribute = caster.getAttribute(Attributes.ATTACK_DAMAGE);
                             if (attribute != null) {
-                                float damage = (float) attribute.getValue();
+                                float damage = (float) attribute.getValue()/1.5f;
                                 livingEntity.hurt(DamageSourceHandle.demonAttack(caster), damage );
                             }
                         }

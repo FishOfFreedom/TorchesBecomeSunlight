@@ -13,10 +13,6 @@ public class FFRenderTypes extends RenderType{
     public static ResourceLocation DEMON_1 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon.png");
     public static ResourceLocation DEMON_BACK = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon_back.png");
 
-    private static ResourceLocation GALLRY = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/shader/gallry.png");
-    private static ResourceLocation NOSIC = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/shader/nosic.png");
-    private static ResourceLocation NOISE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/shader/noise.png");
-
     public FFRenderTypes(String pName, VertexFormat pFormat, VertexFormat.Mode pMode, int pBufferSize, boolean pAffectsCrumbling, boolean pSortOnUpload, Runnable pSetupState, Runnable pClearState) {
         super(pName, pFormat, pMode, pBufferSize, pAffectsCrumbling, pSortOnUpload, pSetupState, pClearState);
     }
@@ -32,28 +28,8 @@ public class FFRenderTypes extends RenderType{
         return create("glow_effect", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, rendertype$state);
     }
 
-    public static final RenderType PORTAL = create("starlight_portal", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, RenderType.CompositeState.builder()
-            .setShaderState(new ShaderStateShard(ShaderRegistry::getRenderTypeStarlightPortal))
-            .setTextureState(NO_TEXTURE)
-            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-            .setCullState(NO_CULL)
-            .setLightmapState(LIGHTMAP)
-            .setOverlayState(OVERLAY)
-            .createCompositeState(true));
-
-
     public static final RenderType DEMON = create("demon", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256, false, false,
             RenderType.CompositeState.builder().setShaderState(new ShaderStateShard(ShaderRegistry::getRenderTypeDemon)).setTextureState(RenderStateShard.MultiTextureStateShard.builder()
                     .add(DEMON_BACK, false, false)
                     .add(DEMON_1, false, false).build()).createCompositeState(false));
-
-    public static final RenderType HOLE = create("hole", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true,
-            RenderType.CompositeState.builder().setShaderState(new ShaderStateShard(ShaderRegistry::getRenderTypeHole)).setTextureState(RenderStateShard.MultiTextureStateShard.builder()
-                    .add(NOISE, false, false)
-                    .add(DEMON_1, false, false).build())
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .createCompositeState(true));
 }

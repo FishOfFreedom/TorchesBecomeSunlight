@@ -1,17 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.block.GemPolishingStationBlock;
 import com.freefish.torchesbecomesunlight.server.block.PotBlock;
-import com.freefish.torchesbecomesunlight.server.block.ShaderTestBlock;
-import com.freefish.torchesbecomesunlight.server.init.group.ModGroup;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -23,12 +19,6 @@ public class BlockHandle {
             DeferredRegister.create(ForgeRegistries.BLOCKS, TorchesBecomeSunlight.MOD_ID);
 
     public static final RegistryObject<Block> ORE_AND_ICE = registryBlock("ore_and_ice",() -> new WoolCarpetBlock(DyeColor.WHITE, BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.1F).sound(SoundType.GLASS).friction(0.98F)),false);
-    public static final RegistryObject<Block> SHADER = registryBlock("shader",() -> new ShaderTestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).noCollission().lightLevel((p_152690_) -> {
-        return 15;
-    }).strength(-1.0F, 3600000.0F).noLootTable().pushReaction(PushReaction.BLOCK)),true);
-
-    public static final RegistryObject<Block> GEM_POLISHING_STATION = registryBlock("gem_polishing_station",
-            () -> new GemPolishingStationBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),true);
 
     public static final RegistryObject<Block> POT = registryBlock("pot",
             () -> new PotBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),true);

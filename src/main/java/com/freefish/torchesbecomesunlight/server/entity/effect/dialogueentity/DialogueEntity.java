@@ -16,7 +16,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -105,9 +104,11 @@ public class DialogueEntity extends Entity {
                 }
             }
         }else if(!level().isClientSide&&getDialogue()==null){
-            List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6));
-            for(LivingEntity livingEntity:list){
-                if(livingEntity instanceof IDialogue iDialogue) iDialogue.setDialogueEntity(null);
+            Entity[] list = getChatEntities();
+            if(list!=null) {
+                for (Entity livingEntity : list) {
+                    if (livingEntity instanceof IDialogue iDialogue) iDialogue.setDialogueEntity(null);
+                }
             }
             kill();
         }

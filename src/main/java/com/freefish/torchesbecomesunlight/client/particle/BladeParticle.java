@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -64,8 +64,8 @@ public class BladeParticle extends TextureSheetParticle {
             alpha = 1 - (age-(lifetime-10)+pPartialTicks) /10f;
         }
 
-        Quaternionf quatX = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
-        Quaternionf quatY = com.bobmowzie.mowziesmobs.client.model.tools.MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
+        Quaternionf quatX = MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
+        Quaternionf quatY = MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
 
         Vec3 vec3 = pRenderInfo.getPosition();
         float f = (float)(Mth.lerp((double)pPartialTicks, this.xo, this.x) - vec3.x());

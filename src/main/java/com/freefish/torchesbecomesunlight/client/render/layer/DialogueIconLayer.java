@@ -1,8 +1,10 @@
 package com.freefish.torchesbecomesunlight.client.render.layer;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -47,8 +49,9 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         Matrix3f matrix3f = matrixstack$entry.normal();
         Player player = Minecraft.getInstance().player;
         if(player!=null){
-            player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(data->{
-                int dialogueTime = data.getDialogueTime();
+            PlayerCapability.IPlayerCapability data = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+            if(data!=null){
+                int dialogueTime = data.getDialogueNeedTime();
                 float alpha = 1;
                 VertexConsumer ivertexbuilder;
                 if(dialogueTime>40){
@@ -59,8 +62,8 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
                     ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[0],true));
                     alpha = dialogueTime /40f;
                 }
-                    drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
-            });
+                drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
+            }
         }
 
         bufferSource.getBuffer(renderType);
@@ -69,10 +72,12 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
 
     private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
         float sunRadius = 0.3f;
+        RenderSystem.enableBlend();
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, -sunRadius, 0, 0, 0,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, sunRadius,  0, 0, 1,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, sunRadius, sunRadius,   0, 1, 1,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, sunRadius, -sunRadius,  0, 1, 0,alpha);
+        RenderSystem.disableBlend();
     }
 
     public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {

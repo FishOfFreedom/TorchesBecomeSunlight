@@ -13,38 +13,24 @@ import java.util.function.Supplier;
 
 public class MessageUpdateBossBar {
     private UUID bossID;
-    private boolean remove;
-    private ResourceLocation registryName;
+    private int renderType;
 
     public MessageUpdateBossBar() {
 
     }
 
-    // Set entity to null to remove boss from the map
-    public MessageUpdateBossBar(UUID bossID, LivingEntity entity) {
+    public MessageUpdateBossBar(UUID bossID, int entity) {
         this.bossID = bossID;
-        if (entity != null) {
-            this.registryName = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-            this.remove = false;
-        }
-        else {
-            this.registryName = null;
-            this.remove = true;
-        }
+        this.renderType = entity;
     }
 
     public static void serialize(final MessageUpdateBossBar message, final FriendlyByteBuf buf) {
         buf.writeUUID(message.bossID);
-        buf.writeBoolean(message.remove);
-        if (!message.remove && message.registryName != null) buf.writeResourceLocation(message.registryName);
+        buf.writeInt(message.renderType);
     }
 
     public static MessageUpdateBossBar deserialize(final FriendlyByteBuf buf) {
-        final MessageUpdateBossBar message = new MessageUpdateBossBar();
-        message.bossID = buf.readUUID();
-        message.remove = buf.readBoolean();
-        if (!message.remove) message.registryName = buf.readResourceLocation();
-        return message;
+        return new MessageUpdateBossBar(buf.readUUID(), buf.readInt());
     }
 
     public static class Handler implements BiConsumer<MessageUpdateBossBar, Supplier<NetworkEvent.Context>> {
@@ -52,11 +38,11 @@ public class MessageUpdateBossBar {
         public void accept(final MessageUpdateBossBar message, final Supplier<NetworkEvent.Context> contextSupplier) {
             final NetworkEvent.Context context = contextSupplier.get();
             context.enqueueWork(() -> {
-                if (message.registryName == null) {
+                if (message.renderType == -1) {
                     TorchesBecomeSunlight.bossBarRegistryNames.remove(message.bossID);
                 }
                 else {
-                    TorchesBecomeSunlight.bossBarRegistryNames.put(message.bossID, message.registryName);
+                    TorchesBecomeSunlight.bossBarRegistryNames.put(message.bossID, message.renderType);
                 }
             });
             context.setPacketHandled(true);

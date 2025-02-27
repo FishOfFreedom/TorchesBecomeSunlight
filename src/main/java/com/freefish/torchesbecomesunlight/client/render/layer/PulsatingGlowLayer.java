@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.layer;
 
+import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
@@ -41,9 +43,8 @@ public class PulsatingGlowLayer<T extends LivingEntity & GeoEntity> extends GeoR
         super.render(poseStack, animatable, bakedModel, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
         if(predicate.test(animatable))
         {
-            RenderType glowRenderType = RenderType.eyes(textureLocation);
+            RenderType glowRenderType = FFRenderTypes.eyes(textureLocation);
             float glow = Math.max(minimumPulseAmount, Mth.cos(partialTick * pulseSpeed) * pulseAmount);
-
             getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, glow, glow, glow, glow);
         }
     }

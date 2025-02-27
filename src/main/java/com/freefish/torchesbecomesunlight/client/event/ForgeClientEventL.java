@@ -1,12 +1,22 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoArmorLayer;
+import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoFirstPersonRenderer;
+import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoPlayer;
+import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoRenderPlayer;
 import com.freefish.torchesbecomesunlight.client.render.gui.CustomBossBar;
-import com.freefish.torchesbecomesunlight.client.render.gui.NeedDialogue;
+import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerFirstPerson;
+import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerThirdPerson;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoBone;
 import com.freefish.torchesbecomesunlight.client.render.util.IceRenderer;
 import com.freefish.torchesbecomesunlight.client.shader.ShaderRegistry;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+import com.freefish.torchesbecomesunlight.client.util.render.MowzieRenderUtils;
+import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
+import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
@@ -20,6 +30,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -27,14 +40,21 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.event.GeoRenderEvent;
+import software.bernie.geckolib.renderer.GeoArmorRenderer;
+import software.bernie.geckolib.renderer.GeoRenderer;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -42,6 +62,98 @@ import java.util.List;
 public enum ForgeClientEventL {
     INSTANCE;
     private static final ResourceLocation DO = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/gui/dialogue_op.png");
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onHandRender(RenderHandEvent event) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        boolean shouldAnimate = false;
+        AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(player);
+        if (abilityCapability != null) shouldAnimate = abilityCapability.getActiveAbility() != null;
+        if (shouldAnimate) {
+            PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+            if (playerCapability != null) {
+                GeckoPlayer.GeckoPlayerFirstPerson geckoPlayer = GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON;
+                if (geckoPlayer != null) {
+                    ModelGeckoPlayerFirstPerson geckoFirstPersonModel = (ModelGeckoPlayerFirstPerson) geckoPlayer.getModel();
+                    GeckoFirstPersonRenderer firstPersonRenderer = (GeckoFirstPersonRenderer) geckoPlayer.getPlayerRenderer();
+
+                    if (geckoFirstPersonModel != null && firstPersonRenderer != null) {
+                        if (!geckoFirstPersonModel.isUsingSmallArms() && ((AbstractClientPlayer) player).getModelName().equals("slim")) {
+                            firstPersonRenderer.setSmallArms();
+                        }
+                        event.setCanceled(true);
+
+                        if (event.isCanceled()) {
+                            float delta = event.getPartialTick();
+                            float f1 = Mth.lerp(delta, player.xRotO, player.getXRot());
+                            firstPersonRenderer.renderItemInFirstPerson((AbstractClientPlayer) player, f1, delta, event.getHand(), event.getSwingProgress(), event.getItemStack(), event.getEquipProgress(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), geckoPlayer);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void renderLivingEvent(RenderLivingEvent.Pre<? extends LivingEntity, ? extends EntityModel<? extends LivingEntity>> event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (player == null) return;
+            float delta = event.getPartialTick();
+            AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(player);
+//        shouldAnimate = (player.ticksExisted / 20) % 2 == 0;
+            if (abilityCapability != null && abilityCapability.getActiveAbility() != null) {
+                PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
+                if (playerCapability != null) {
+                    GeckoPlayer.GeckoPlayerThirdPerson geckoPlayer = playerCapability.getGeckoPlayer();
+                    if (geckoPlayer != null) {
+                        ModelGeckoPlayerThirdPerson geckoPlayerModel = (ModelGeckoPlayerThirdPerson) geckoPlayer.getModel();
+                        GeckoRenderPlayer animatedPlayerRenderer = (GeckoRenderPlayer) geckoPlayer.getPlayerRenderer();
+
+                        if (geckoPlayerModel != null && animatedPlayerRenderer != null) {
+                            event.setCanceled(true);
+
+                            if (event.isCanceled()) {
+                                animatedPlayerRenderer.render((AbstractClientPlayer) event.getEntity(), event.getEntity().getYRot(), delta, event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), geckoPlayer);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START || event.player == null) {
+            return;
+        }
+        Player player = event.player;
+        PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if (playerCapability != null && event.side == LogicalSide.CLIENT) {
+            GeckoPlayer geckoPlayer = playerCapability.getGeckoPlayer();
+            if (geckoPlayer != null) geckoPlayer.tick();
+            if (player == Minecraft.getInstance().player) GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON.tick();
+        }
+    }
+
+    @SubscribeEvent
+    public void onGeoArmorRender(GeoRenderEvent.Armor.Pre geoRenderEvent){
+        LocalPlayer player = Minecraft.getInstance().player;
+        if(player!=null){
+            PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+            AbilityCapability.IAbilityCapability capability1 = CapabilityHandle.getCapability(player, CapabilityHandle.ABILITY_CAPABILITY);
+            if(capability!=null&&capability1!=null&&capability1.getActiveAbility()!=null){
+                GeckoPlayer.GeckoPlayerThirdPerson geckoPlayer = capability.getGeckoPlayer();
+                if(geckoPlayer!=null){
+                    if(geckoPlayer.getModel() instanceof ModelGeckoPlayerThirdPerson model){
+                        MathUtils.copyAnimation(model,geoRenderEvent.getRenderer());
+                    }
+                }
+            }
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void fogRender(ViewportEvent.RenderFog event) {
@@ -91,9 +203,7 @@ public enum ForgeClientEventL {
 
     public static void registerShaders(final RegisterShadersEvent e) {
         try {
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rendertype_starlight_portal"), DefaultVertexFormat.BLOCK), ShaderRegistry::setRenderTypeStarlightPortal);
             e.registerShader(new ShaderInstance(e.getResourceProvider(), new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rendertype_demon"), DefaultVertexFormat.POSITION), ShaderRegistry::setRenderTypeDemon);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rendertype_hole"), DefaultVertexFormat.BLOCK), ShaderRegistry::setRenderTypeHole);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -101,23 +211,22 @@ public enum ForgeClientEventL {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderBossBar(CustomizeGuiOverlayEvent.BossEventProgress event){
-        ResourceLocation bossRegistryName = TorchesBecomeSunlight.bossBarRegistryNames.getOrDefault(event.getBossEvent().getId(), null);
-        if (bossRegistryName == null) return;
+        int bossRegistryName = TorchesBecomeSunlight.bossBarRegistryNames.getOrDefault(event.getBossEvent().getId(), -1);
+        if (bossRegistryName == -1) return;
         CustomBossBar customBossBar = CustomBossBar.customBossBars.getOrDefault(bossRegistryName, null);
         if (customBossBar == null) return;
 
         event.setCanceled(true);
-        customBossBar.renderBossBar(event);
+        customBossBar.renderBossBar(event,bossRegistryName);
     }
 
     @SubscribeEvent
     public void onPostRenderLiving(RenderLivingEvent.Post event) {
         LivingEntity entity = event.getEntity();
-        entity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(frozenCapability -> {
-            if(frozenCapability.isFrozen){
-                IceRenderer.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), frozenCapability.frozenTicks);
-            }
-        });
+        FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(entity, CapabilityHandle.FROZEN_CAPABILITY);
+        if(data!=null&&data.getFrozen()){
+            IceRenderer.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), data.getFrozenTick());
+        }
     }
 
     @SubscribeEvent
@@ -127,31 +236,34 @@ public enum ForgeClientEventL {
 
         if(player == null || !minecraft.isWindowActive())
             return;
+        //todo skip
+        int skipRadio = ClientStorage.INSTANCE.getSkip(1);
 
-        player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(playerStoryStone -> {
-            int skipRadio = ClientStorage.INSTANCE.getSkip(1);
-
-            List<DialogueEntity> entities = player.level().getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(5));
-            DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player,entities);
-            if(dialogueEntity != null) {
-                int wight = minecraft.getWindow().getGuiScaledWidth();
-                Font font = minecraft.font;
-                String s = Component.translatable("torchesbecomesunlight.skip").getString();
-                int wightFont = font.width(s);
-                int heighFont = font.lineHeight;
-
-                event.getGuiGraphics().setColor(1,1,1,1);
-                event.getGuiGraphics().fill(wight-wightFont, 0 ,wight-wightFont+ (int)(MathUtils.easeOutCubic((skipRadio/41f))*wightFont), heighFont , 0x08000000);
-                event.getGuiGraphics().drawString(font,s,wight-wightFont,0, 0xFFFFFF);
-
-                Dialogue dialogue = dialogueEntity.getDialogue();
-                if(dialogue != null) {
-                    renderChatCenter(event,dialogueEntity);
-                    if(dialogue.getOptions() != null && !dialogue.getOptions().isEmpty() && dialogueEntity.getFloatScale()==20)
-                        renderOptionsCenter(event,dialogueEntity);
-                }
+        List<DialogueEntity> entities = player.level().getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(9));
+        DialogueEntity dialogueEntity = null;
+        for (DialogueEntity dialogueEntity1 :entities){
+            if(dialogueEntity1.getChatEntities()!=null&&dialogueEntity1.getChatEntities().length!=0&&dialogueEntity1.getChatEntities()[0]==player){
+                dialogueEntity = dialogueEntity1;
             }
-        });
+        }
+        if(dialogueEntity != null) {
+            int wight = minecraft.getWindow().getGuiScaledWidth();
+            Font font = minecraft.font;
+            String s = Component.translatable("torchesbecomesunlight.skip").getString();
+            int wightFont = font.width(s);
+            int heighFont = font.lineHeight;
+
+            event.getGuiGraphics().setColor(1,1,1,1);
+            event.getGuiGraphics().fill(wight-wightFont, 0 ,wight-wightFont+ (int)(MathUtils.easeOutCubic((skipRadio/41f))*wightFont), heighFont , 0x08000000);
+            event.getGuiGraphics().drawString(font,s,wight-wightFont,0, 0xFFFFFF);
+
+            Dialogue dialogue = dialogueEntity.getDialogue();
+            if(dialogue != null) {
+                renderChatCenter(event,dialogueEntity);
+                if(dialogue.getOptions() != null && !dialogue.getOptions().isEmpty() && dialogueEntity.getFloatScale()==20)
+                    renderOptionsCenter(event,dialogueEntity);
+            }
+        }
     }
 
     @SubscribeEvent

@@ -1,4 +1,20 @@
 {
+  "gunknight.glowing": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/glowing"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.glowing"
+  },
+  "gunknight.artillery": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/artillery"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.artillery"
+  },
+  "gunknight.machinegun": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/machinegun"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.machinegun"
+  },
+  "gunknight.shotgun": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/shotgun"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.shotgun"
+  },
   "giant_step": {
     "sounds": ["torchesbecomesunlight:entity/patriot/giant_step_1",
       "torchesbecomesunlight:entity/patriot/giant_step_2","torchesbecomesunlight:entity/patriot/giant_step_3"],
@@ -86,6 +102,13 @@
       "torchesbecomesunlight:music/pursuer_1"
     ],
     "subtitle": "subtitles.torchesbecomesunlight.pursuer_1",
+    "stream": true
+  },
+  "music.gun_knight": {
+    "sounds": [
+      "torchesbecomesunlight:music/malihirmam_benevolentes"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.malihirmam_benevolentes",
     "stream": true
   },
   "music.pursuer_2": {

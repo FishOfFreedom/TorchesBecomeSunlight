@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "torchesbecomesunlight.refmap.json",
   "mixins": [
-    "LivingEntityMixin"
+    "MixinStructureTemplatePool"
   ],
   "client": [
     "MixinLevelRenderer",

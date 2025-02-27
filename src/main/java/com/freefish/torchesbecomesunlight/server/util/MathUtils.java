@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.util;
 
+import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerThirdPerson;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoBone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.core.*;
@@ -18,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.joml.*;
 import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 import java.lang.Math;
 import java.util.ArrayList;
@@ -142,13 +145,17 @@ public final class MathUtils {
 
     public static void translateRotateGeckolib(GeoBone bone, PoseStack matrixStackIn) {
         GeoBone parent = bone.getParent();
-        if(parent != null)
-            matrixStackIn.translate((double)((bone.getPivotX()-parent.getPivotX())/ 16.0F),
-                                    (double)((bone.getPivotY()-parent.getPivotY()) / 16.0F),
-                                    (double)((bone.getPivotZ()-parent.getPivotZ()) / 16.0F));
-        else {
-            matrixStackIn.translate((double) -(bone.getPosX() / 16.0F), (double) (bone.getPosY() / 16.0F), (double) (bone.getPosZ() / 16.0F));
+        if(parent != null) {
+            matrixStackIn.translate((double) ((bone.getPivotX() - parent.getPivotX() - bone.getPosX()) / 16.0F),
+                    (double) ((bone.getPivotY() - parent.getPivotY() + bone.getPosY()) / 16.0F),
+                    (double) ((bone.getPivotZ() - parent.getPivotZ() + bone.getPosZ()) / 16.0F));
         }
+        else {
+            matrixStackIn.translate((double) ((bone.getPivotX() - bone.getPosX()) / 16.0F),
+                    (double) ((bone.getPivotY() + bone.getPosY()) / 16.0F),
+                    (double) ((bone.getPivotZ() + bone.getPosZ()) / 16.0F));
+        }
+
         if (bone.getRotZ() != 0.0F) {
             matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
         }
@@ -233,16 +240,26 @@ public final class MathUtils {
     public static Vec3 getFirstBlockAbove(Level world, Vec3 pos,int limit) {
         BlockPos posCurrent = null;
         int y1 = (int) pos.y;
-        int x1 = (int) pos.y;
-        int z1 = (int) pos.y;
+        int x1 = (int) pos.x;
+        int z1 = (int) pos.z;
         for (int y = y1 + 1; y < y1 + limit; y++) {
             posCurrent = new BlockPos(x1, y, z1);
             if (world.getBlockState(posCurrent).isAir() &&
                     world.getBlockState(posCurrent.above()).isAir() &&
                     !world.getBlockState(posCurrent.below()).isAir()) {
-                return new Vec3(pos.x,posCurrent.getY(),pos.z);
+                return new Vec3(pos.x,posCurrent.getY()+0.5,pos.z);
             }
         }
         return pos;
+    }
+
+    public static void copyAnimation(ModelGeckoPlayerThirdPerson model, GeoArmorRenderer geo){
+        //GeoBone bodyBone = geo.getRightArmBone();
+        //MowzieGeoBone mowzieBodyBone = model.bipedRightArm();
+        //if(bodyBone!=null&&mowzieBodyBone!=null){
+        //    bodyBone.setRotX(mowzieBodyBone.getRotX());
+        //    bodyBone.setRotY(mowzieBodyBone.getRotY());
+        //    bodyBone.setRotZ(mowzieBodyBone.getRotZ());
+        //}
     }
 }

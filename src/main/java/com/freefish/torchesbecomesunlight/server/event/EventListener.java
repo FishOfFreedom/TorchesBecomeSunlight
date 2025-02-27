@@ -1,78 +1,95 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.capability.frozen.FrozenCapabilityProvider;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
-import com.freefish.torchesbecomesunlight.server.command.GetStoryStateCommand;
-import com.freefish.torchesbecomesunlight.server.command.SetStoryStateCommand;
+import com.freefish.torchesbecomesunlight.mixin.MixinStructureTemplatePool;
+import com.freefish.torchesbecomesunlight.server.ability.Ability;
+import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
+import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
+import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.effect.Collapsal;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
-import com.freefish.torchesbecomesunlight.server.event.packet.toserver.SpawnDialogueEntity;
-import com.freefish.torchesbecomesunlight.server.event.packet.toserver.SynDialogueDataMessage;
-import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.init.generator.CustomResourceKey;
-import com.freefish.torchesbecomesunlight.server.story.ProcessManage;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.quest.QuestBase;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.quest.TalkWithEntity;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
-public class EventListener {
-
+public final class EventListener {
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onEntityHurt(LivingHurtEvent event) {
-        if (!event.isCanceled()) {
-            LivingEntity entity = event.getEntity();
-
-            DamageSource source = event.getSource();
-            Entity trueSource = source.getDirectEntity();
-
-            if (trueSource instanceof Patriot patriot&&(patriot.getAnimation()==Patriot.PIERCE1||patriot.getAnimation()==Patriot.PIERCE2)) {
-                event.getEntity().invulnerableTime=1;
-            }
-            else if (trueSource instanceof Pursuer pursuer&&(pursuer.getAnimation()==Pursuer.BATTACK2||pursuer.getAnimation()==Pursuer.BATTACK21||pursuer.getAnimation()==Pursuer.SKILL)) {
-                event.getEntity().invulnerableTime=1;
-            }else if(event.getSource().is(CustomResourceKey.DEMON_ATTACK)){
-                event.getEntity().invulnerableTime=0;
+    public void spawnEntityLimit(MobSpawnEvent.FinalizeSpawn event){
+        Mob entity = event.getEntity();
+        if(event.getSpawnType()== MobSpawnType.NATURAL) {
+            ServerLevel level = (ServerLevel) event.getLevel();
+            if (entity instanceof FrostNova) {
+                level.getEntities().getAll().forEach(entity1 -> {
+                    if (entity1 instanceof FrostNova) {
+                        event.setSpawnCancelled(true);
+                    }
+                });
+            } else if (entity instanceof Patriot) {
+                level.getEntities().getAll().forEach(entity1 -> {
+                    if (entity1 instanceof Patriot) {
+                        event.setSpawnCancelled(true);
+                    }
+                });
+            } else if (entity instanceof Pursuer) {
+                level.getEntities().getAll().forEach(entity1 -> {
+                    if (entity1 instanceof Pursuer) {
+                        event.setSpawnCancelled(true);
+                    }
+                });
             }
         }
     }
 
-    @SubscribeEvent()
-    public static void onEffectAdded(MobEffectEvent.Added event) {
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onEntityHurt(LivingHurtEvent event) {
+        if (!event.isCanceled()) {
+            LivingEntity entity = event.getEntity();
+
+            if(event.getSource().is(CustomResourceKey.DEMON_ATTACK)){
+                entity.invulnerableTime=0;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity entity = event.getEntity();
         MobEffect effect = event.getEffectInstance().getEffect();
         if(effect instanceof Collapsal && entity instanceof Player player){
@@ -86,119 +103,105 @@ public class EventListener {
     }
 
     @SubscribeEvent
-    public static void registerCommand(RegisterCommandsEvent event){
-        GetStoryStateCommand.register(event.getDispatcher());
-        SetStoryStateCommand.register(event.getDispatcher());
+    public void registerCommand(RegisterCommandsEvent event){
     }
 
     @SubscribeEvent
-    public static void registerCapability(RegisterCapabilitiesEvent event){
-        event.register(PlayerStoryStoneProvider.class);
-        event.register(FrozenCapability.class);
-    }
-
-    @SubscribeEvent
-    public static void playerClone(PlayerEvent.Clone event) {
+    public void playerClone(PlayerEvent.Clone event) {
         Player original = event.getOriginal();
         original.revive();
-        original.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(old ->{
-            event.getEntity().getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(storystate ->{
-                storystate.setStoryState(old.getStoryState());
-                storystate.setSeePatriot(old.isSeePatriot());
-            });
-        });
     }
 
     @SubscribeEvent
-    public static void playerTick(LivingEvent.LivingTickEvent event){
-        if(event.getEntity() instanceof Player player){
-            Level level = player.level();
-            QuestBase questBase = ProcessManage.INSTANCE.getCurrentTask(player);
-            if(questBase instanceof TalkWithEntity talkWithEntity) {
-                List<LivingEntity> entitiesOfClass = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().deflate(4), talkWithEntity::isTalkEntity);
-                for(LivingEntity entity:entitiesOfClass){
-                    if(entity.distanceTo(player)<=3){
-                        if(level.isClientSide)
-                            level.addParticle(ParticleTypes.SMOKE,entity.getX(),entity.getY()+1,entity.getZ(),0,0,0);
+    public void playerTick(TickEvent.PlayerTickEvent event){
+        if (event.phase == TickEvent.Phase.START || event.player == null) {
+            return;
+        }
+        Player player = event.player;
+        Level level = player.level();
+
+        if(level.isClientSide()){
+            //todo RenderDemon
+            ClientStorage.INSTANCE.update();
+
+            int skip = ClientStorage.INSTANCE.skipRadio;
+            if(ClientStorage.INSTANCE.isSkip&&skip<41){
+                if(skip==40){
+                    DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player,level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(5)));
+                    if(dialogueEntity!=null) {
+                        ServerNetwork.toServerMessage(new DialogueTriggerMessage(dialogueEntity.getId()));
+                        ClientStorage.INSTANCE.skipRadio = 0;
                     }
                 }
+                ClientStorage.INSTANCE.skipRadio+=1;
             }
-            if(level.isClientSide()){
-                //todo RenderDemon
-                ClientStorage.INSTANCE.update();
+            else if(!ClientStorage.INSTANCE.isSkip&&skip>0){
+                ClientStorage.INSTANCE.skipRadio-=1;
+            }
 
-                int skip = ClientStorage.INSTANCE.skipRadio;
-                if(ClientStorage.INSTANCE.isSkip&&skip<41){
-                    if(skip==40){
-                        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player,level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(5)));
-                        if(dialogueEntity!=null) {
-                            ServerNetwork.toServerMessage(new DialogueTriggerMessage(dialogueEntity.getId()));
-                            ClientStorage.INSTANCE.skipRadio = 0;
+            if(MathUtils.isInDemon(player)){
+                if(ClientStorage.INSTANCE.demonRadio<160)ClientStorage.INSTANCE.demonRadio+=1;
+            }
+            else
+                if(ClientStorage.INSTANCE.demonRadio>0)ClientStorage.INSTANCE.demonRadio-=1;
+        }
+
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null) capability.tick(event);
+    }
+
+    @SubscribeEvent
+    public void livingTick(LivingEvent.LivingTickEvent event){
+        LivingEntity livingEntity = event.getEntity();
+        FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
+        if(frozen!=null){
+            if(frozen.getFrozen()) frozen.tickFrozen(livingEntity);
+        }
+
+        if (event.getEntity() != null) {
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            AbilityCapability.IAbilityCapability abilityCapability = CapabilityHandle.getCapability(entity, CapabilityHandle.ABILITY_CAPABILITY);
+            if (abilityCapability != null) {
+                abilityCapability.tick(entity);
+                Ability activeAbility = abilityCapability.getActiveAbility();
+                if(activeAbility != null&& entity instanceof Player player){
+                    if (activeAbility instanceof PlayerAbility playerAbility) {
+                        if(playerAbility.heldItemMainHandOverride()==null){
+                            AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
+                        }
+                        else {
+                            if(!player.getMainHandItem().equals(playerAbility.heldItemMainHandOverride(),false))
+                                AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
                         }
                     }
-                    ClientStorage.INSTANCE.skipRadio+=1;
                 }
-                else if(!ClientStorage.INSTANCE.isSkip&&skip>0){
-                    ClientStorage.INSTANCE.skipRadio-=1;
-                }
-
-                if(MathUtils.isInDemon(player)){
-                    if(ClientStorage.INSTANCE.demonRadio<160)ClientStorage.INSTANCE.demonRadio+=1;
-                }
-                else
-                    if(ClientStorage.INSTANCE.demonRadio>0)ClientStorage.INSTANCE.demonRadio-=1;
-
-                player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(data ->{
-                    List<LivingEntity> livingEntities = level.getEntitiesOfClass(LivingEntity.class,player.getBoundingBox().inflate(5),livingEntity ->
-                            livingEntity instanceof IDialogue & livingEntity.distanceTo(player)<4+livingEntity.getBbWidth()/2&&livingEntity!=player);
-                    boolean flad = false;
-                    int f1 = data.getDialogueTime();
-                    for(LivingEntity livingEntity:livingEntities){
-                        if(isLookingAtMe(livingEntity,player))
-                            flad = true;
-                    }
-                    if(flad&&f1<50) data.setDialogueTime(f1+1);
-                    if(!flad&&f1>0) data.setDialogueTime(f1-1);
-                    boolean canDialogue = data.isCanDialogue();
-                    if(f1>=40){
-                        if(!canDialogue){
-                            data.setCanDialogue(true);
-                            ServerNetwork.toServerMessage(new SynDialogueDataMessage(player.getId(), data));
-                        }
-                    }
-                    else {
-                        if(canDialogue){
-                            data.setCanDialogue(false);
-                            ServerNetwork.toServerMessage(new SynDialogueDataMessage(player.getId(), data));
-                        }
-                    }
-                });
             }
         }
-        LivingEntity livingEntity = event.getEntity();
-        livingEntity.getCapability(FrozenCapabilityProvider.FROZEN_CAPABILITY).ifPresent(frozenCapability -> {
-            if(frozenCapability.isFrozen){
-                frozenCapability.tickFrozen(livingEntity);
-            }
-        });
     }
 
     @SubscribeEvent
-    public static void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
+    public void onJoinWorld(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof Player) {
+            AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability((LivingEntity) event.getEntity());
+            if (abilityCapability != null) abilityCapability.instanceAbilities((LivingEntity) event.getEntity());
+        }
+
+        if (event.getEntity() instanceof Player) {
+            PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability((Player) event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
+            if (playerCapability != null) playerCapability.addedToWorld(event);
+        }
+    }
+
+    @SubscribeEvent
+    public void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
         if (event.getHand() == InteractionHand.OFF_HAND  && event.getTarget() != null) {
             Entity target = event.getTarget();
             Player player = event.getEntity();
-            QuestBase questBase = ProcessManage.INSTANCE.getCurrentTask(player);
-            if(questBase instanceof TalkWithEntity talkWithEntity) {
-                if(talkWithEntity.isTalkEntity(target)){
-                    ProcessManage.INSTANCE.nextTask(player);
-                }
-            }
         }
     }
 
     @SubscribeEvent
-    public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+    public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         if (event.isCanceled()) return;
 
         double scrollAmount = event.getScrollDelta();
@@ -230,27 +233,8 @@ public class EventListener {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void startDialogue(PlayerInteractEvent.EntityInteractSpecific event) {
-        Player player = event.getEntity();
-        Level level = player.level();
-        if(level.isClientSide) {
-            player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).ifPresent(data->{
-                int dialogueTime = data.getDialogueTime();
-                if(dialogueTime>=40){
-                    Entity target = event.getTarget();
-                    if(target instanceof IDialogue iDialogue){
-                        //todo don
-                        //ServerNetwork.toServerMessage(new SpawnDialogueEntity(player.getId(),iDialogue.getDialogue(),player,(LivingEntity)iDialogue));
-                        //event.setCanceled(true);
-                    }
-                }
-            });
-        }
-    }
-
     @SubscribeEvent
-    public static void onMiddleClick(InputEvent.MouseButton event) {
+    public void onMiddleClick(InputEvent.MouseButton event) {
         if (event.isCanceled()) return;
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
@@ -258,8 +242,13 @@ public class EventListener {
         if(player == null) return;
 
         Level level = player.level();
-        List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(5));
-        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player, entitiesOfClass);
+        List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(9));
+        DialogueEntity dialogueEntity = null;
+        for (DialogueEntity dialogueEntity1 :entities){
+            if(dialogueEntity1.getChatEntities()!=null&&dialogueEntity1.getChatEntities().length!=0&&dialogueEntity1.getChatEntities()[0]==player){
+                dialogueEntity = dialogueEntity1;
+            }
+        }
         if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null){
             if (event.getButton() == 2 && event.getAction() == 1) {
                 ServerNetwork.toServerMessage(new MiddelClickMessage(player.getId()));
@@ -268,14 +257,4 @@ public class EventListener {
             }
         }
     }
-
-    private static boolean isLookingAtMe(LivingEntity livingEntity,Player pPlayer) {
-        Vec3 vec3 = pPlayer.getViewVector(1.0F).normalize();
-        Vec3 vec31 = new Vec3(livingEntity.getX() - pPlayer.getX(), livingEntity.getEyeY() - pPlayer.getEyeY(), livingEntity.getZ() - pPlayer.getZ());
-        double d0 = vec31.length();
-        vec31 = vec31.normalize();
-        double d1 = vec3.dot(vec31);
-        return d1 > 1D - 0.025D / d0 ? pPlayer.hasLineOfSight(livingEntity) : false;
-    }
-
 }

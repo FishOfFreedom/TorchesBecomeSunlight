@@ -1,0 +1,20 @@
+{
+  "pools": [
+    {
+      "name": "gun",
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "killed_by_player"
+        }
+      ],
+      "entries": [
+        {
+          "type": "item",
+          "name": "torchesbecomesunlight:gun",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

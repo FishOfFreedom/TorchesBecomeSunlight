@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityFallingBlock;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
@@ -71,67 +75,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
         }
 
         if(inGround && !isFirstOnGround){
-            Vec3 vector3d = position();
-            EntityCameraShake.cameraShake(level(), vector3d, 25, 0.1f, 0, 20);
-            if(level().isClientSide) {
-                playSound(SoundEvents.GENERIC_EXPLODE, 3, 1F + random.nextFloat() * 0.1F);
-                for(int j = 0;j<8;j++) {
-                    for (int i = 0; i < 36-j*4; i++) {
-                        Vec3 bomb = vector3d.add(new Vec3(4-j/2.0, j*0.5, 0).yRot((float) Math.PI / (18-j*2) * i+random.nextFloat()*0.1f));
-                        level().addParticle(ParticleTypes.EXPLOSION, bomb.x, bomb.y, bomb.z, 1.0D, 0.1D, 0.0D);
-                    }
-                }
-            }
-            Entity shooter = getOwner();
-            if(shooter instanceof LivingEntity) {
-                LivingEntity living = (LivingEntity) shooter;
-                float damage = (float) living.getAttribute(Attributes.ATTACK_DAMAGE).getValue()/2;
-                List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(10));
-                for (LivingEntity livingEntity : livingEntities) {
-                    if (livingEntity.distanceToSqr(this) > 25 || Math.abs(livingEntity.getY() - getY()) > 3)
-                        continue;
-                    if(livingEntity instanceof GuerrillasEntity)
-                        continue;
-                    float d = 1.0f - (float) distanceToSqr(livingEntity)/25.0f;
-                    Vec3 vector3d1 = livingEntity.position().subtract(this.position()).normalize();
-                    livingEntity.setDeltaMovement(vector3d1.scale(d).add(0,0.5,0));
-                    livingEntity.hurt(damageSources().trident(this,shooter), damage*d);
-                }
-            }
-            //for(int i = 0;i<3;i++){
-            //    BlockPos blockPos = new BlockPos((int)vector3d.x,(int)vector3d.y,(int)vector3d.z);
-            //    BlockState blockState = level().getBlockState(blockPos);
-            //    if(blockState.isAir()||blockState.isCollisionShapeFullBlock(level(),blockPos))
-            //        break;
-            //    else
-            //        vector3d = vector3d.add(0,1,0);
-            //}
-            for (int i1 = 1; i1 <= 10; i1++) {
-                double spread = Math.PI * 2;
-                int arcLen = Mth.ceil(i1 * spread * 2);
-                for (int i = 0; i < arcLen; i++) {
-                    double theta = (i / (arcLen - 1.0) - 0.5) * spread;
-                    double vx = Math.cos(theta);
-                    double vz = Math.sin(theta);
-                    double px = vector3d.x + vx * i1;
-                    double pz = vector3d.z + vz * i1;
-                    float factor = 1 - i1 / (float) 5;
-                    int hitY = (int)(vector3d.y-0.5);
-                    if (random.nextBoolean()) {
-                        int hitX = Mth.floor(px);
-                        int hitZ = Mth.floor(pz);
-                        BlockPos pos = new BlockPos(hitX, hitY, hitZ);
-                        BlockPos abovePos = new BlockPos(pos).above();
-                        BlockState block = level().getBlockState(pos);
-                        BlockState blockAbove = level().getBlockState(abovePos);
-                        if (!block.isAir() && block.isRedstoneConductor(level(), pos) && !block.hasBlockEntity() && !blockAbove.blocksMotion()) {
-                            EntityFallingBlock fallingBlock = new EntityFallingBlock(EntityHandle.FALLING_BLOCK.get(), level(), block, (float) (0.4 + factor * 0.2));
-                            fallingBlock.setPos(hitX + 0.5, hitY + 1, hitZ + 0.5);
-                            level().addFreshEntity(fallingBlock);
-                        }
-                    }
-                }
-            }
+            groundFX();
             isFirstOnGround = true;
         }
         if(this.tickCount > 200) {
@@ -143,6 +87,82 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
         }
 
         super.tick();
+    }
+
+    private void groundFX(){
+        Vec3 vector3d = position();
+        EntityCameraShake.cameraShake(level(), vector3d, 25, 0.1f, 0, 20);
+        Vec3 move = new Vec3(getDeltaMovement().x,0,getDeltaMovement().z);
+
+        if(level().isClientSide) {
+            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, org.joml.Math.toRadians(-90), 0, 0, 50F, 1, 1, 1, 1, 1, 12, true, false, new ParticleComponent[]{
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 80f), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
+            });
+
+            playSound(SoundEvents.GENERIC_EXPLODE, 3, 1F + random.nextFloat() * 0.1F);
+            for(int j = 0;j<6;j++) {
+                for (int i = 0; i < 6; i++) {
+                    if(random.nextBoolean()) {
+                        Vec3 vec = new Vec3(0, 0, 2+random.nextFloat()*2).xRot(3.14f * j / 6).yRot(3.14f * i / 6);
+                        level().addParticle(ParticleTypes.EXPLOSION, vec.x + getX(), vec.y + getY(), vec.z + getZ(), 1.0D, 0.1D, 0.0D);
+                    }
+                }
+            }
+            for(int i=0;i<20;i++){
+                for(int j=0;j<10;j++){
+                    Vec3 vec3 = new Vec3(0, 0, random.nextFloat()+j/10f).xRot((float) ((0.1+j/25f+random.nextFloat()*0.1) * org.joml.Math.PI)).yRot((float) (random.nextFloat()*0.5+(i/10f) * org.joml.Math.PI));
+                    level().addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 1,1,1, (float) (10d + random.nextDouble() * 15d), 60-j*3, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), getX(), getY(0.5) , getZ(), vec3.x, vec3.y, vec3.z);
+                }
+            }
+        }
+
+        Entity shooter = getOwner();
+        if(shooter instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) shooter;
+            float damage = (float) living.getAttribute(Attributes.ATTACK_DAMAGE).getValue()/2;
+            List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(6));
+            for (LivingEntity livingEntity : livingEntities) {
+                if (livingEntity.distanceToSqr(this) > 25 || Math.abs(livingEntity.getY() - getY()) > 3)
+                    continue;
+                if(livingEntity instanceof GuerrillasEntity)
+                    continue;
+                float d = 1.0f - (float) distanceToSqr(livingEntity)/25.0f;
+                Vec3 vector3d1 = livingEntity.position().subtract(this.position()).normalize();
+                livingEntity.setDeltaMovement(vector3d1.scale(d).add(0,0.5,0));
+                livingEntity.hurt(damageSources().trident(this,shooter), damage*d);
+            }
+        }
+
+        for (int i1 = 1; i1 <= 6; i1++) {
+            double spread = Math.PI * 2;
+            int arcLen = Mth.ceil(i1 * spread * 2);
+            for (int i = 0; i < arcLen; i++) {
+                double theta = (i / (arcLen - 1.0) - 0.5) * spread;
+                double vx = Math.cos(theta);
+                double vz = Math.sin(theta);
+                double px = vector3d.x + vx * i1;
+                double pz = vector3d.z + vz * i1;
+                float factor = 1 - i1 / (float) 5;
+                int hitY = (int)(vector3d.y-0.5);
+                if (random.nextBoolean()) {
+                    int hitX = Mth.floor(px);
+                    int hitZ = Mth.floor(pz);
+
+                    float dist = (float) move.dot(new Vec3(hitX-getX(),0,hitZ-getZ()));
+
+                    BlockPos pos = new BlockPos(hitX, hitY, hitZ);
+                    BlockPos abovePos = new BlockPos(pos).above();
+                    BlockState block = level().getBlockState(pos);
+                    BlockState blockAbove = level().getBlockState(abovePos);
+                    if (!block.isAir() && block.isRedstoneConductor(level(), pos) && !block.hasBlockEntity() && !blockAbove.blocksMotion()) {
+                        EntityFallingBlock fallingBlock = new EntityFallingBlock(EntityHandle.FALLING_BLOCK.get(), level(), block, (float) (0.4 + factor * 0.2));
+                        fallingBlock.setPos(hitX + 0.5, hitY + 1, hitZ + 0.5);
+                        level().addFreshEntity(fallingBlock);
+                    }
+                }
+            }
+        }
     }
 
     protected ItemStack getPickupItem() {

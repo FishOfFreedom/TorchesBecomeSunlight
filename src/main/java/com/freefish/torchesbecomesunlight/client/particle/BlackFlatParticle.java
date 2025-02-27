@@ -1,9 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.freefish.torchesbecomesunlight.client.shader.ShaderRegistry;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -16,6 +14,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -23,9 +22,6 @@ import org.joml.Math;
 import org.joml.Vector3f;
 
 import java.util.Locale;
-
-import static com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes.DEMON_1;
-import static com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes.DEMON_BACK;
 
 public class BlackFlatParticle extends TextureSheetParticle {
     private Vec3 target;
@@ -45,6 +41,7 @@ public class BlackFlatParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.scale = scale;
         this.target = new Vec3(toX, toY, toZ);
+        this.setBoundingBox(new AABB(x - 1, y, z - 1, x + 1, y + 10, z + 1));
         setSprite(sprite.get(lifetime,lifetime));
     }
 

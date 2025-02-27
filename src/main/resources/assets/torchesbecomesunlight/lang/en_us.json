@@ -1,34 +1,92 @@
 {
-  "message.hello_block.hello": "想挑战我？拿出你的武器来",
-  "message.test_item.hello": "当前模式是",
-  "message.obsidian_speed_show": "当前速度是",
+  "message.hello_block.hello": "Do you want to challenge me? Reveal your weapon to me.",
+  "message.test_item.hello": "The current mode is",
+  "message.obsidian_speed_show": "The current speed is",
 
 
-  "advancements.torchesbecomesunlight.root.title": "Gathering,Torches Become Sunlight",
-  "advancements.torchesbecomesunlight.root.description": "Thank you for playing Gathering,Torches Become Sunlight",
+  "advancements.torchesbecomesunlight.root.title": "Gathering Torches Become Sunlight",
+  "advancements.torchesbecomesunlight.root.description": "Thank you for playing Gathering Torches Become Sunlight",
   "advancements.torchesbecomesunlight.winteroftheindected.title": "Winter",
   "advancements.torchesbecomesunlight.winteroftheindected.description": "Talk to the infected",
 
+  //
+  "subtitles.torchesbecomesunlight.snownova.ice_crystal": "Ice crystal",
+  "subtitles.torchesbecomesunlight.snownova.ice_whirlwind": "explosion",
+  "subtitles.torchesbecomesunlight.snownova.ice_wind": "whirlwind",
+  "subtitles.torchesbecomesunlight.snownova.ice_dash": "thump",
+  "subtitles.torchesbecomesunlight.snownova.ice_ground": "shake the ground",
+  "subtitles.torchesbecomesunlight.giant_step": "footstep",
+  "subtitles.torchesbecomesunlight.patriot.axe_swept": "thump",
+  "subtitles.torchesbecomesunlight.patriot.axe_hit": "thump",
+  "subtitles.torchesbecomesunlight.patriot.hit": "thump",
+  "subtitles.torchesbecomesunlight.patriot.ground": "shake the ground",
+  "subtitles.torchesbecomesunlight.pursuer.breath": "breath sounds",
+  "subtitles.torchesbecomesunlight.pursuer.bigboom": "collapse",
+  "subtitles.torchesbecomesunlight.pursuer.shoot": "collision",
+  "subtitles.torchesbecomesunlight.pursuer.space": "tear space",
+  "subtitles.torchesbecomesunlight.pursuer.sword": "knife",
+
+  "subtitles.torchesbecomesunlight.music.permafrost": "permafrost",
+  "subtitles.torchesbecomesunlight.music.lullabye": "lullabye",
+  "subtitles.torchesbecomesunlight.music.unyielding": "unyielding",
+  "subtitles.torchesbecomesunlight.music.pursuer_1": "pursuer",
+  "subtitles.torchesbecomesunlight.music.pursuer_2": "pursuer",
+
+  "torchesbecomesunlight.skip": "Press and hold to skip the story",
+  "creativegroup.torchesbecomesunlight": "Torches Become Sunlight",
+
+  //key
+  "key.torchesbecomesunlight.general": "The key of the Torches Become Sunlight",
+  "key.torchesbecomesunlight.skip_dialogue": "Skip the plot",
+
   //item
-  "item.torchesbecomesunlight.test_item": "Test Item",
-  "item.torchesbecomesunlight.animation_item": "Animation Item",
-  "item.torchesbecomesunlight.patriot_egg": "Patriot Egg",
-  "item.torchesbecomesunlight.frost_nova_egg": "Frost Nova Egg",
-  "item.torchesbecomesunlight.pursuer_egg": "Pursuer Egg",
-  "item.torchesbecomesunlight.shield_guard_egg": "Shield Guard Egg",
-  "item.torchesbecomesunlight.mangler_egg": "Mangler Egg",
+  "item.torchesbecomesunlight.test_item": "Test tool",
+  "item.torchesbecomesunlight.animation_item": "Animation player",
+  "item.torchesbecomesunlight.patriot_egg": "Spawn patriot",
+  "item.torchesbecomesunlight.frost_nova_egg": "Spawn frost nova",
+  "item.torchesbecomesunlight.pursuer_egg": "Spawn pursuer",
+  "item.torchesbecomesunlight.shield_guard_egg": "Spawn shield guard",
+  "item.torchesbecomesunlight.mangler_egg": "Spawn mangler",
+  "item.torchesbecomesunlight.machete": "machete",
+  "text.torchesbecomesunlight.machete": "自十一世纪三十年代后“皇帝的利刃”所列装的制式军刀，长而近乎平直，重量夸张，常人难以自如使用，但是却拥有着恐怖的威力，是乌萨斯工业的结晶，拥有着天然矿粗制武器难以比拟的破坏力，当他出现在你面前时，往往便意味着你的生命进入了倒计时",
 
   //entity
-  "entity.torchesbecomesunlight.frost_nova": "Frost Nova",
-  "entity.torchesbecomesunlight.man": "Man",
-  "entity.torchesbecomesunlight.patriot": "Patriot",
-  "entity.torchesbecomesunlight.shield_guard": "Shield Guard",
-  "entity.torchesbecomesunlight.mangler": "Mangler",
-  "entity.torchesbecomesunlight.pursuer": "Pursuer",
+  "entity.torchesbecomesunlight.frost_nova": "frost nova",
+  "entity.torchesbecomesunlight.man": "man",
+  "entity.torchesbecomesunlight.patriot": "patriot",
+  "entity.torchesbecomesunlight.shield_guard": "shield guard",
+  "entity.torchesbecomesunlight.mangler": "mangler",
+  "entity.torchesbecomesunlight.pursuer": "pursuer",
+
+
+  //effect
+  "effect.torchesbecomesunlight.collapsal": "collapsal",
 
   //dialogue
-  "dialogue.torchesbecomesunlight.snownova_meet_1": "what's up?",
+  "dialogue.torchesbecomesunlight.snownova_meet_1": "what's up.",
   "dialogue.torchesbecomesunlight.snownova_meet_1_1": "nothing.",
   "dialogue.torchesbecomesunlight.snownova_meet_1_2": "(Challenge)",
-  "dialogue.torchesbecomesunlight.snownova_meet_1_3": "is there a village near here?"
+  "dialogue.torchesbecomesunlight.snownova_meet_1_3": "Is there a village near here?",
+
+  "dialogue.torchesbecomesunlight.pursuer_meet_2":   "Your composure saved your life. Remember, you didn't see anything.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_3":   "Keep your silence.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_4":   "It is a capital offense to fake the emperor's token.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_5":   "Salute!",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1":   "Explain your itinerary immediately. The Empire tolerates no potential threat.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1_1": "I have been ordered by His Majesty to investigate the ghost in the endless snowy fields.",
+  "dialogue.torchesbecomesunlight.pursuer_meet_1_2": "I think you deserve a beating.",
+
+  "dialogue.torchesbecomesunlight.pursuer_d_1":   "Wait a minute. In this fog, you're still calm.",
+  "dialogue.torchesbecomesunlight.pursuer_d_2":   "Would you like to enlist in the snowfields? Your incredible willpower will be of great help to Usas in his fight against the spirit Crutches.",
+  "dialogue.torchesbecomesunlight.pursuer_d_3":   "Pointless sharing only amplifies fear, and after you join the journey, the Empire will share all the information with you.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4":   "The emperor was generous, the punishment was clear, and those who made contributions to the resistance against evil spirits were meritorious.",
+  "dialogue.torchesbecomesunlight.pursuer_d_5":   "And hunt down a decorated captain?",
+  "dialogue.torchesbecomesunlight.pursuer_d_6":   "......",
+  "dialogue.torchesbecomesunlight.pursuer_d_7":   "Your presence is a potential threat to the Empire",
+  "dialogue.torchesbecomesunlight.pursuer_d_8":   "That's what you're on your deathbed for.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4_1": "Yes.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4_2": "Let me think about it.",
+  "dialogue.torchesbecomesunlight.pursuer_d_4_3": "The so-called punishment is clearly to take away the last grain of rice from the farmer and squeeze the last drop of blood from the ore patient?",
+  "dialogue.torchesbecomesunlight.pursuer_d_2_1": "Endless Snow fields. What is that place?",
+  "dialogue.torchesbecomesunlight.pursuer_d_2_2": "Why would the Usath Empire need me, an outsider?"
 }

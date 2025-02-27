@@ -11,19 +11,24 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 public class SnowNovaModel extends GeoModel<FrostNova> {
+    private static final ResourceLocation MODEL =  new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/snownova.geo.json");
+    public static final ResourceLocation TEXTURE =  new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/snownova.png");
+    private static final ResourceLocation ANIMATION =  new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/snownova.animation.json");
+
+
     @Override
     public ResourceLocation getModelResource(FrostNova object) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/snownova.geo.json");
+        return MODEL;
     }
 
     @Override
     public ResourceLocation getTextureResource(FrostNova object) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/snownova.png");
+        return TEXTURE;
     }
 
     @Override
     public ResourceLocation getAnimationResource(FrostNova animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/snownova.animation.json");
+        return ANIMATION;
     }
 
     @Override

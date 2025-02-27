@@ -1,11 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogue;
 
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStone;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
+import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
+import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,10 +27,14 @@ public class DialogueStore {
 
     public static Dialogue NONE = new Dialogue("",null,null,0,100);
 
-    public static Dialogue dialogue3 = new Dialogue("may be you should end dialogue.",null,null,0,40);
-    public static Dialogue dialogue2 = new Dialogue("this is third dialogue!!!", withoutTrigger(Arrays.asList("hello","end")), dialogue3, 1,100);
-    public static Dialogue dialogue1 = new Dialogue("this is second dialogue!!!", withoutTrigger(Arrays.asList("hello","end","goodbye")), dialogue2, 0,100);
-    public static Dialogue dialogue = new Dialogue("hello,this is torchesbecomesunlight", null, dialogue1, 0,200);
+    public static Dialogue dialogue3 = new Dialogue("少废话,滚一边去.",null,null,0,100);
+    public static Dialogue dialogue2 = new Dialogue("什么?!还敢跟我顶嘴?不知道欠税在帝国是什么罪行吗?", null, dialogue3, 0,100);
+    public static Dialogue dialogue1 = new Dialogue("这个......纠察官姥爷,今年荒年,我们这糊口的粮食都不够了,就求求您宽限宽限吧,真的只有这么多了.", null, dialogue2, 1,100);
+    public static Dialogue dialogue = new Dialogue("规矩都懂吧,我们也不是第一次来了,赶紧交税.", null, dialogue1, 0,100);
+
+    private static Dialogue daily_3 = new Dialogue("dialogue.torchesbecomesunlight.daily_3", null, null, 1,100);
+    private static Dialogue daily_2 = new Dialogue("dialogue.torchesbecomesunlight.daily_2", null, daily_3, 1,100);
+    public static Dialogue daily_1 = new Dialogue("dialogue.torchesbecomesunlight.daily_1", null, daily_2, 0,100);
 
 
 
@@ -51,15 +57,20 @@ public class DialogueStore {
     public static Dialogue pursuer_d_4;
     public static Dialogue pursuer_d_5;
     public static Dialogue pursuer_d_6;
+    public static Dialogue pursuer_d_7;
+    public static Dialogue pursuer_d_8;
 
     static  {
-        //pursuer_d_6 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_6", null, null, 1,80);
-        pursuer_d_5 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_5", null, null, 1,80);
+        pursuer_d_8 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_8", null, null, 1,80);
+        pursuer_d_7 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_7", null, pursuer_d_8, 1,80);
+        pursuer_d_6 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_6", null, pursuer_d_7, 1,80);
+        pursuer_d_5 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_5", null, pursuer_d_6, 1,80);
         pursuer_d_4 = new Dialogue("dialogue.torchesbecomesunlight.pursuer_d_4", genList(
                 new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_1",0,null,null),
-                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_2",0,pursuer_d_5,null,null,(entity -> {
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_2",0,null,null),
+                new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_d_4_3",0,pursuer_d_5,null,null,(entity -> {
                     if(entity instanceof Player player){
-                        return !player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isSeePatriot).get();
+                        return false;
                     }
                     return true;
                 }))
@@ -88,7 +99,7 @@ public class DialogueStore {
             genList(new DialogueTrigger("dialogue.torchesbecomesunlight.pursuer_meet_1_1",0,pursuer_meet_4,null,entity -> {
                         if(entity instanceof Player player){
                             ItemStack mainHandItem = player.getMainHandItem();
-                            if(mainHandItem.is(Items.GOLD_BLOCK)){
+                            if(mainHandItem.is(ItemHandle.URSUS_MACHETE.get())){
                                 return pursuer_meet_5;
                             }
                         }
@@ -101,7 +112,7 @@ public class DialogueStore {
                         }
                     }))
             , pursuer_meet_2, 1,100);
-
+//frost_nova
     public static Dialogue snownova_meet_2 = new Dialogue(entity -> (entity instanceof GuerrillasEntity guerrillas?guerrillas.findVillage():"no"),null,null,1,100);
     public static Dialogue snownova_meet_1 = new Dialogue("dialogue.torchesbecomesunlight.snownova_meet_1",
             genList(new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_1",0,null),
@@ -109,7 +120,12 @@ public class DialogueStore {
             entity -> {
                 Player player = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(Player.class,entity.getBoundingBox().inflate(5)));
                 if(player!=null&&!player.isCreative()) {
-                    if (entity instanceof FrostNova snowNova && !snowNova.level().isClientSide) {
+                    if (entity instanceof FrostNova snowNova) {
+                        snowNova.waitAct = snowNova.getDialogueEntity();
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
+                    }
+                    else if (entity instanceof Patriot snowNova) {
+                        snowNova.waitAct = snowNova.getDialogueEntity();
                         AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
                     }
                 }

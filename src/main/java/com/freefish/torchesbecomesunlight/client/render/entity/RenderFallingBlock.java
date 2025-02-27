@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.entity;
 
-import com.bobmowzie.mowziesmobs.client.model.tools.MathUtils;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityFallingBlock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;

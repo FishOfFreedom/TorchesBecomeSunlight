@@ -1,51 +1,70 @@
 package com.freefish.torchesbecomesunlight.server.entity;
 
 import com.freefish.torchesbecomesunlight.client.sound.BossMusicPlayer;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueAI;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
-import com.freefish.torchesbecomesunlight.server.util.AnimationWalk;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
+import java.util.UUID;
 
 public abstract class FreeFishEntity extends PathfinderMob {
     private static final byte MUSIC_PLAY_ID = 67;
     private static final byte MUSIC_STOP_ID = 68;
     private static final byte MAKE_PARTICLE_ID = 60;
 
-    private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this);
-
     @OnlyIn(Dist.CLIENT)
     public int time = -1;
 
+    private static final UUID HEALTH_CONFIG_MODIFIER_UUID = UUID.fromString("45ba79ba-88db-4a47-f126-b7a7e107e253");
+    private static final UUID ATTACK_CONFIG_MODIFIER_UUID = UUID.fromString("c7e8da2d-1c58-1725-c277-0d3ebece4a62");
+
     public FreeFishEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+
+        ConfigHandler.CombatConfig combatConfig = getCombatConfig();
+        if (combatConfig != null) {
+            AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
+            if (maxHealthAttr != null) {
+                double difference = maxHealthAttr.getBaseValue() * getCombatConfig().healthMultiplier.get() - maxHealthAttr.getBaseValue();
+                maxHealthAttr.addTransientModifier(new AttributeModifier(HEALTH_CONFIG_MODIFIER_UUID, "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                this.setHealth(this.getMaxHealth());
+            }
+
+            AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
+            if (attackDamageAttr != null) {
+                double difference = attackDamageAttr.getBaseValue() * getCombatConfig().attackMultiplier.get() - attackDamageAttr.getBaseValue();
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ATTACK_CONFIG_MODIFIER_UUID, "Attack config multiplier", difference, AttributeModifier.Operation.ADDITION));
+            }
+        }
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (tickCount % 4 == 0) bossInfo.update();
         if(!level().isClientSide){
         }
         if (!level().isClientSide && getBossMusic() != null) {
@@ -102,40 +121,6 @@ public abstract class FreeFishEntity extends PathfinderMob {
         }
     }
 
-    @Override
-    public void die(DamageSource pDamageSource) {
-        super.die(pDamageSource);
-        if (!this.isRemoved()) {
-            bossInfo.update();
-        }
-    }
-
-    @Override
-    public void startSeenByPlayer(ServerPlayer player) {
-        super.startSeenByPlayer(player);
-        this.bossInfo.addPlayer(player);
-    }
-
-    @Override
-    public void stopSeenByPlayer(ServerPlayer player) {
-        super.stopSeenByPlayer(player);
-        this.bossInfo.removePlayer(player);
-    }
-
-    @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        if (this.hasCustomName()) {
-            this.bossInfo.setName(this.getDisplayName());
-        }
-    }
-
-    @Override
-    public void setCustomName(Component name) {
-        super.setCustomName(name);
-        this.bossInfo.setName(this.getDisplayName());
-    }
-
     public boolean hasBossBar() {
         return false;
     }
@@ -171,7 +156,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
         setYRot((float)(Mth.atan2(getX()-entity.getX(), entity.getZ()-getZ()) * (double)(180F / (float)Math.PI)));
     }
 
-    public void doRangeAttack(double range, double arc,float damage,float knockback,boolean isBreakingShield){
+    public void doRangeKnockBack(double range, double arc,float knockback){
         List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
         for (LivingEntity entityHit : entitiesHit) {
             float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
@@ -185,17 +170,9 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-
-                    doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
-                if(isBreakingShield&&entityHit instanceof Player player){
-                    ItemStack pPlayerItemStack = player.getUseItem();
-                    if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
-                        player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                        this.level().broadcastEntityEvent(player, (byte)30);
-                    }
-                }
                 Vec3 direction = new Vec3(0, knockback*0.1, knockback).yRot((float) ((-getYRot()) / 180 * org.joml.Math.PI));
                 entityHit.setDeltaMovement(entityHit.getDeltaMovement().x + direction.x, entityHit.getDeltaMovement().y+ direction.y, entityHit.getDeltaMovement().z + direction.z);
+                entityHit.move(MoverType.SELF,entityHit.getDeltaMovement());
             }
         }
     }
@@ -231,11 +208,14 @@ public abstract class FreeFishEntity extends PathfinderMob {
             float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
             float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
             if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-            flag = doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
+                if(doHurtEntity(entityHit,damageSources().mobAttack(this),damage)) {
+                    flag = true;
+                }
                 if(isBreakingShield&&entityHit instanceof Player player){
                     ItemStack pPlayerItemStack = player.getUseItem();
                     if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
                         player.getCooldowns().addCooldown(Items.SHIELD, 100);
+                        player.stopUsingItem();
                         this.level().broadcastEntityEvent(player, (byte)30);
                     }
                 }
@@ -261,33 +241,6 @@ public abstract class FreeFishEntity extends PathfinderMob {
         }
         Vec3 direction = new Vec3(0, Math.sqrt(jumpLen)*0.1, jumpLen).yRot((float) (yawOffset-getYRot() / 180 * org.joml.Math.PI));
         setDeltaMovement(direction);
-    }
-
-    public void doRangeAttack(double range, double arc, float damage, boolean isBreakingShield, MobEffectInstance effectInstance){
-        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
-        for (LivingEntity entityHit : entitiesHit) {
-            float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90) % 360);
-            float entityAttackingAngle = getYRot() % 360;
-            if (entityHitAngle < 0) {
-                entityHitAngle += 360;
-            }
-            if (entityAttackingAngle < 0) {
-                entityAttackingAngle += 360;
-            }
-            float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
-            float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
-            if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
-                doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
-                entityHit.addEffect(effectInstance);
-                if(isBreakingShield&&entityHit instanceof Player player){
-                    ItemStack pPlayerItemStack = player.getUseItem();
-                    if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
-                        player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                        this.level().broadcastEntityEvent(player, (byte)30);
-                    }
-                }
-            }
-        }
     }
 
     public boolean doHurtEntity(LivingEntity livingEntity,DamageSource source,float damage){
@@ -335,6 +288,14 @@ public abstract class FreeFishEntity extends PathfinderMob {
         return true;
     }
 
+    protected ConfigHandler.SpawnConfig getSpawnConfig() {
+        return null;
+    }
+
+    protected ConfigHandler.CombatConfig getCombatConfig() {
+        return null;
+    }
+
     @Override
     public void push(Entity entityIn) {
         if (!this.isSleeping()) {
@@ -368,5 +329,9 @@ public abstract class FreeFishEntity extends PathfinderMob {
                 }
             }
         }
+    }
+
+    public static boolean spawnPredicate(EntityType type, LevelAccessor world, MobSpawnType reason, BlockPos spawnPos, RandomSource rand) {
+        return true;
     }
 }

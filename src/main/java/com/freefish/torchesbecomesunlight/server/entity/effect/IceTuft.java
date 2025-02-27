@@ -1,14 +1,15 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
-import com.bobmowzie.mowziesmobs.client.particle.ParticleHandler;
-import com.bobmowzie.mowziesmobs.client.particle.util.AdvancedParticleBase;
-import com.bobmowzie.mowziesmobs.client.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,19 +28,12 @@ import java.util.List;
 
 public class IceTuft extends EffectEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private int number;
 
     private static final EntityDataAccessor<Integer> CLASS = SynchedEntityData.defineId(IceTuft.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(IceTuft.class, EntityDataSerializers.INT);
 
     public IceTuft(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        number = random.nextInt(3);
-    }
-
-    public IceTuft(EntityType<?> pEntityType, Level pLevel,LivingEntity owner) {
-        this(pEntityType, pLevel);
-        caster = owner;
     }
 
     @Override
@@ -63,7 +57,7 @@ public class IceTuft extends EffectEntity implements GeoEntity {
                 caster = livingEntity;
             }
             if(caster instanceof Pursuer pursuer){
-                pursuer.addDemonArea(100,position());
+                pursuer.addDemonArea(160,position(),6);
             }
         }
         if(level().isClientSide&&tickCount==79){
@@ -78,10 +72,16 @@ public class IceTuft extends EffectEntity implements GeoEntity {
     private void bomb(){
         if(caster instanceof Pursuer){
             float damage =(float) caster.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-            List<LivingEntity> nearByLivingEntities = getNearByLivingEntities(8);
+            List<LivingEntity> nearByLivingEntities = getNearByLivingEntities(5.5);
             for(LivingEntity hit:nearByLivingEntities){
                 if(hit == caster) continue;
                 hit.hurt(caster.damageSources().mobAttack(caster),damage);
+                if(getTypeNumber()==0){
+                    FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(hit, CapabilityHandle.FROZEN_CAPABILITY);
+                    if(data!=null){
+                        data.setFrozen(hit, 150);
+                    }
+                }
             }
         }
     }

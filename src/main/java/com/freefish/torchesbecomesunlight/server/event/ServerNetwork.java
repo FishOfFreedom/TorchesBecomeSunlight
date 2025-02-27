@@ -25,18 +25,17 @@ public class ServerNetwork {
                 .clientAcceptedVersions(VERSION::equals)
                 .serverAcceptedVersions(VERSION::equals)
                 .simpleChannel();
+
         registerMessage(AnimationActMessage.class, AnimationActMessage::serialize, AnimationActMessage::deserialize, new AnimationActMessage.Handler());
-        registerMessage(SetStoryStatePacket.class, SetStoryStatePacket::serialize, SetStoryStatePacket::deserialize, new SetStoryStatePacket.Handler());
         registerMessage(StartDialogueMessage.class, StartDialogueMessage::serialize, StartDialogueMessage::deserialize, new StartDialogueMessage.Handler());
         registerMessage(DialogueTriggerMessage.class, DialogueTriggerMessage::serialize, DialogueTriggerMessage::deserialize, new DialogueTriggerMessage.Handler());
         registerMessage(MessageUpdateBossBar.class, MessageUpdateBossBar::serialize, MessageUpdateBossBar::deserialize, new MessageUpdateBossBar.Handler());
-        registerMessage(SetDialogueMessage.class, SetDialogueMessage::serialize, SetDialogueMessage::deserialize, new SetDialogueMessage.Handler());
-        registerMessage(UpdateBossBlizzard.class, UpdateBossBlizzard::serialize, UpdateBossBlizzard::deserialize, new UpdateBossBlizzard.Handler());
-        registerMessage(SpawnDialogueEntity.class, SpawnDialogueEntity::serialize, SpawnDialogueEntity::deserialize, new SpawnDialogueEntity.Handler());
         registerMessage(SetDemonCentreMessage.class, SetDemonCentreMessage::serialize, SetDemonCentreMessage::deserialize, new SetDemonCentreMessage.Handler());
-        registerMessage(SynDialogueDataMessage.class, SynDialogueDataMessage::serialize, SynDialogueDataMessage::deserialize, new SynDialogueDataMessage.Handler());
+        registerMessage(MessageUseAbility.class, MessageUseAbility::serialize, MessageUseAbility::deserialize, new MessageUseAbility.Handler());
+        registerMessage(MessageInterruptAbility.class, MessageInterruptAbility::serialize, MessageInterruptAbility::deserialize, new MessageInterruptAbility.Handler());
         registerMessage(MiddelClickMessage.class, MiddelClickMessage::serialize, MiddelClickMessage::deserialize, new MiddelClickMessage.Handler());
         registerMessage(SynNumberEntity.class, SynNumberEntity::serialize, SynNumberEntity::deserialize, new SynNumberEntity.Handler());
+        registerMessage(SynCapabilityMessage.class, SynCapabilityMessage::serialize, SynCapabilityMessage::deserialize, new SynCapabilityMessage.Handler());
     }
 
     private static  <MSG> void registerMessage(final Class<MSG> clazz, final BiConsumer<MSG, FriendlyByteBuf> encoder, final Function<FriendlyByteBuf, MSG> decoder, final BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {

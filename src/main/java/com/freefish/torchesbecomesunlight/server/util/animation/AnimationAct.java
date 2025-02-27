@@ -38,6 +38,7 @@ public class  AnimationAct<T extends AnimatedEntity>{
     }
 
     public void start(T entity){
+        entity.getNavigation().stop();
     }
 
     public void stop(T entity){

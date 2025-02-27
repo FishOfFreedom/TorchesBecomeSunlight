@@ -68,7 +68,7 @@ public class PursuerEffectEntity extends Entity {
         {
             Entity entity = getOwner();
             if (entity instanceof Pursuer pursuer) {
-                if(tickCount%60==0){
+                if(tickCount%100==0){
                     RandomSource random = pursuer.getRandom();
                     LivingEntity target = pursuer.getTarget();
                     if(target!=null) {
@@ -88,8 +88,6 @@ public class PursuerEffectEntity extends Entity {
                     damageAmount -=2;
                     List<BlackTuft> nearbyEntities = level().getEntitiesOfClass(BlackTuft.class, getBoundingBox().inflate(24, 24, 24));
                     for (BlackTuft blackTuft : nearbyEntities) {
-                        if(random.nextFloat()>damageAmount/10f+0.2)
-                            blackTuft.kill();
                     }
                 }
                 if (health <=  maxHealth/ 2&&getLocate()) setLocate(false);

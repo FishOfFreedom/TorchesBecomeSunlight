@@ -1,9 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStone;
-import com.freefish.torchesbecomesunlight.server.capability.story.PlayerStoryStoneProvider;
+
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -57,14 +55,16 @@ public class MiddelClickMessage {
                                 LivingEntity entity = (LivingEntity)dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()];
                                 dialogueTrigger.trigger(entity);
                             }
+
                             if(dialogueTrigger.getNextDialogue()!=null){
                                 Entity chatEntity = dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()];
                                 dialogueTrigger.chooseDialogue(chatEntity);
                                 dialogueEntity.startSpeakInServer(dialogueTrigger.getNextDialogue(), dialogueTrigger.getNextDialogue().getDialogueTime());
                             }
-                            else if (dialogueEntity.getDialogue().getNextDialogue() != null) {
-                                dialogueEntity.startSpeakInServer(dialogueEntity.getDialogue().getNextDialogue(), dialogueEntity.getDialogue().getNextDialogue().getDialogueTime());
-                            }else {
+                            //else if (dialogueEntity.getDialogue().getNextDialogue() != null) {
+                            //    dialogueEntity.startSpeakInServer(dialogueEntity.getDialogue().getNextDialogue(), dialogueEntity.getDialogue().getNextDialogue().getDialogueTime());
+                            //}
+                            else {
                                 dialogueEntity.startSpeak(null, 100);
                             }
                             //dialogueEntity.setNumber(0);

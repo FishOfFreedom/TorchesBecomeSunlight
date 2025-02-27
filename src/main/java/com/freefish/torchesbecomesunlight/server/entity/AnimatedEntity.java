@@ -1,13 +1,16 @@
 package com.freefish.torchesbecomesunlight.server.entity;
 
+import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IAwardEntity;
+import com.freefish.torchesbecomesunlight.server.entity.ursus.UrsusEntity;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
-import com.freefish.torchesbecomesunlight.server.util.AnimationWalk;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -18,17 +21,19 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
+
 public abstract class AnimatedEntity extends FreeFishEntity implements IAnimatedEntity, GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private float playerXo;
     private float playerZo;
+    private Vec3 playerPosO;
     private int animationTick;
-    private AnimationWalk animationWalk;
     private AnimationAct animation = NO_ANIMATION;
     private final AnimationController<AnimatedEntity> animationController = new AnimationController<AnimatedEntity>(this, "Controller", 5, this::predicate);
 
-    protected <T extends GeoEntity> PlayState predicate(AnimationState<T> animationState) {
+    protected  <T extends GeoEntity> PlayState predicate(AnimationState<T> animationState) {
         if(getAnimation() != NO_ANIMATION)
             animationState.setAnimation(getAnimation().getRawAnimation());
         else
@@ -50,18 +55,18 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         if (getAnimation() != NO_ANIMATION) {
             animationTick++;
             if(!level().isClientSide()) {
-                if(animationWalk!=null){
-                    float t = animationWalk.tickWalk(animationTick);
-                    if(t != 0&&(getTarget() == null ||  (getTarget()!=null&&getTarget().distanceTo(this) > 1.8F+getTarget().getBbWidth()/2)))
-                        move(MoverType.SELF, new Vec3(0, 0, t).yRot((float) (-this.yBodyRot / 180 * Math.PI)));
-                }
                 getAnimation().tickUpdate(this);
                 if(getAnimationTick() >= getAnimation().getDuration())
                     getAnimation().stop(this);
 
                 LivingEntity target = getTarget();
                 if(target instanceof Player player){
-                    //todo AI
+
+                    float f1 = (float) target.getX() - playerXo;
+                    float f3 = (float) target.getZ() - playerZo;
+
+                    this.playerPosO = new Vec3(f1,0,f3).scale(20);
+
                     playerXo = (float) player.getX();
                     playerZo = (float) player.getZ();
                 }
@@ -72,21 +77,44 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         }
     }
 
+    public void bomb1(float r,float damage) {
+        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(r+2), livingEntity ->
+                 livingEntity!=this&&livingEntity.distanceTo(this)<r+livingEntity.getBbWidth()/2);
+        for(LivingEntity entityHit:list) {
+            if(entityHit instanceof Player player&&player.position().subtract(position()).length()>(r/2)){
+                Vec3 targetMoveVec = getTargetMoveVec(player);
+                if(targetMoveVec.dot(position().subtract(player.position()))<0){
+                    continue;
+                }
+            }
+
+            doHurtEntity(entityHit,damageSources().mobAttack(this),damage);
+            if (entityHit instanceof Player player) {
+                ItemStack pPlayerItemStack = player.getUseItem();
+                if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
+                    player.getCooldowns().addCooldown(Items.SHIELD, 100);
+                    player.stopUsingItem();
+                    level().broadcastEntityEvent(player, (byte) 30);
+                }
+            }
+        }
+    }
+
     @Override
     public boolean hurt(DamageSource source, float damage) {
         boolean attack = super.hurt(source, damage);
         if (attack) {
             if (getHealth() <= 0.0F) {
-                //todo
-                if(this instanceof FrostNova snowNova){
-                    if(!snowNova.getIsFirst()) {
-                        setHealth(1);
-                        snowNova.setIsFirst(true);
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this, FrostNova.LULLABYE_1);
-                        return false;
+                if(this instanceof IAwardEntity iAwardEntity){
+                    AnimationAct awardAnimation = iAwardEntity.getAwardAnimation();
+                    if(awardAnimation!=null&&iAwardEntity.getIsAward()==source.getEntity()){
+                        setHealth(getMaxHealth());
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(this, awardAnimation);
                     }
+                    else if(getDeathAnimation()!=null)
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(this, getDeathAnimation());
                 }
-                if(getDeathAnimation()!=null)
+                else if(getDeathAnimation()!=null)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this, getDeathAnimation());
             }
         }
@@ -133,7 +161,6 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
                 return;
             }
         }
-        if(animationWalk != null) animationWalk=null;
         this.animation = animation;
         animation.start(this);
         setAnimationTick(0);
@@ -154,9 +181,6 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         return cache;
     }
 
-    public void setAnimationWalk(AnimationWalk animationWalk) {
-        this.animationWalk = animationWalk;
-    }
 //todo FrostNova is Influente
     public float getTargetMove(LivingEntity target){
         float f1,f2;
@@ -172,13 +196,12 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
 
     public Vec3 getTargetMoveVec(LivingEntity target){
         float f1,f3;
-        if(target instanceof Player) {
-            f1 = (float) target.getX() - playerXo;
-            f3 = (float) target.getZ() - playerZo;
+        if(target instanceof Player&&playerPosO!=null) {
+            return playerPosO;
         }else {
             f1 = (float) (target.getX() - target.xo);
             f3 = (float) (target.getZ() - target.zo);
+            return new Vec3(f1,0,f3).scale(20);
         }
-        return new Vec3(f1,0,f3).scale(20);
     }
 }

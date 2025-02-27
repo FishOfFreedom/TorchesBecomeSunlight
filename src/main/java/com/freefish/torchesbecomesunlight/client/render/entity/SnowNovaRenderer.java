@@ -12,7 +12,8 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 public class SnowNovaRenderer extends GeoEntityRenderer<FrostNova> {
     public SnowNovaRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new SnowNovaModel());
-        addRenderLayer(new DialogueIconLayer(this));
+        addRenderLayer(new DialogueIconLayer<>(this));
+        //addRenderLayer(new DialogueScreenLayer<>(this));
     }
 
     @Override

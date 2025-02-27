@@ -9,7 +9,4 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class AttributeRegistry {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, TorchesBecomeSunlight.MOD_ID);
-
-    public static final RegistryObject<Attribute> ARMOR_DURABILITY = ATTRIBUTES.register("armor_durability",
-            () -> new RangedAttribute("attribute.name.generic.max_health", 0.0, 0.0, 1024.0).setSyncable(true));
 }
