@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight;
 
 import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistry;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
+import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.event.EventListener;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
@@ -84,7 +85,6 @@ public class TorchesBecomeSunlight
         SpawnHandler.registerSpawnPlacementTypes();
         event.enqueueWork(()->{
             ServerNetwork.initNetwork();
-            MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
         });
     }
 
@@ -92,7 +92,8 @@ public class TorchesBecomeSunlight
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientLayerRegistry::onAddLayers);
         event.enqueueWork(()->{
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-            bus.addListener(ForgeClientEventL::registerShaders);
+            bus.addListener(ShaderHandle::registerShaders);
+            MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
         });
     }
 

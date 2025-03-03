@@ -62,7 +62,8 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
                     ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[0],true));
                     alpha = dialogueTime /40f;
                 }
-                drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
+                if(alpha>0.05)
+                    drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
             }
         }
 

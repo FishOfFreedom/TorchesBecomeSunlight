@@ -36,9 +36,6 @@ public abstract class FreeFishEntity extends PathfinderMob {
     private static final byte MUSIC_STOP_ID = 68;
     private static final byte MAKE_PARTICLE_ID = 60;
 
-    @OnlyIn(Dist.CLIENT)
-    public int time = -1;
-
     private static final UUID HEALTH_CONFIG_MODIFIER_UUID = UUID.fromString("45ba79ba-88db-4a47-f126-b7a7e107e253");
     private static final UUID ATTACK_CONFIG_MODIFIER_UUID = UUID.fromString("c7e8da2d-1c58-1725-c277-0d3ebece4a62");
 

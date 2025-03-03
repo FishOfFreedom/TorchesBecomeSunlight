@@ -1,7 +1,5 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
-import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.mixin.MixinStructureTemplatePool;
 import com.freefish.torchesbecomesunlight.server.ability.Ability;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
@@ -19,35 +17,23 @@ import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelCli
 import com.freefish.torchesbecomesunlight.server.init.generator.CustomResourceKey;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public final class EventListener {
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -189,72 +175,6 @@ public final class EventListener {
         if (event.getEntity() instanceof Player) {
             PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability((Player) event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
             if (playerCapability != null) playerCapability.addedToWorld(event);
-        }
-    }
-
-    @SubscribeEvent
-    public void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
-        if (event.getHand() == InteractionHand.OFF_HAND  && event.getTarget() != null) {
-            Entity target = event.getTarget();
-            Player player = event.getEntity();
-        }
-    }
-
-    @SubscribeEvent
-    public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
-        if (event.isCanceled()) return;
-
-        double scrollAmount = event.getScrollDelta();
-        Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
-
-        if(player == null) return;
-
-        Level level = player.level();
-
-        List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(5));
-        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player, entitiesOfClass);
-        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null&& !dialogueEntity.getDialogue().getOptions().isEmpty()) {
-            int len = dialogueEntity.getOptions();
-            int number = dialogueEntity.getNumber();
-            if (scrollAmount > 0) {
-                if (number >= len - 1)
-                    dialogueEntity.setNumber(0);
-                else
-                    dialogueEntity.setNumber(dialogueEntity.getNumber() + 1);
-            } else if (scrollAmount < 0) {
-                if (number <= 0)
-                    dialogueEntity.setNumber(len - 1);
-                else
-                    dialogueEntity.setNumber(dialogueEntity.getNumber() - 1);
-            }
-            dialogueEntity.resetFloat();
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public void onMiddleClick(InputEvent.MouseButton event) {
-        if (event.isCanceled()) return;
-        Minecraft minecraft = Minecraft.getInstance();
-        Player player = minecraft.player;
-
-        if(player == null) return;
-
-        Level level = player.level();
-        List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(9));
-        DialogueEntity dialogueEntity = null;
-        for (DialogueEntity dialogueEntity1 :entities){
-            if(dialogueEntity1.getChatEntities()!=null&&dialogueEntity1.getChatEntities().length!=0&&dialogueEntity1.getChatEntities()[0]==player){
-                dialogueEntity = dialogueEntity1;
-            }
-        }
-        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null){
-            if (event.getButton() == 2 && event.getAction() == 1) {
-                ServerNetwork.toServerMessage(new MiddelClickMessage(player.getId()));
-                dialogueEntity.setNumber(0);
-                event.setCanceled(true);
-            }
         }
     }
 }
