@@ -1060,13 +1060,13 @@ public class Pursuer extends UrsusEntity implements IDialogue {
     }
 
     @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
-        return false;
+    protected PathNavigation createNavigation(Level level) {
+        return new FFPathNavigateGround(this, level);
     }
 
     @Override
-    protected PathNavigation createNavigation(Level level) {
-        return new FFPathNavigateGround(this, level);
+    public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
+        return false;
     }
 
     @Override

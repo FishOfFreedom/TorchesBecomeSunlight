@@ -41,7 +41,6 @@ public class VillageAddEvent {
         MixinStructureTemplatePool poolAccess = (MixinStructureTemplatePool)pool;
         if(!(poolAccess.getRawTemplates() instanceof ArrayList))
             poolAccess.setRawTemplates(new ArrayList<>(poolAccess.getRawTemplates()));
-
         SinglePoolElement addedElement = SinglePoolElement.single(toAdd.toString()).apply(StructureTemplatePool.Projection.RIGID);
         poolAccess.getRawTemplates().add(Pair.of(addedElement, 1));
         poolAccess.getTemplates().add(addedElement);

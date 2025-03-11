@@ -132,7 +132,7 @@ public class FrozenCapability {
 
     public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
     {
-        private final LazyOptional<FrozenCapability.IFrozenCapability> instance = LazyOptional.of(FrozenCapability.FrozenCapabilityImp::new);
+        private final LazyOptional<IFrozenCapability> instance = LazyOptional.of(FrozenCapabilityImp::new);
 
         @Override
         public CompoundTag serializeNBT() {

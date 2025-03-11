@@ -15,8 +15,8 @@ public final class ConfigHandler {
 
     private static final String LANG_PREFIX = "config." + TorchesBecomeSunlight.MOD_ID + ".";
 
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+    private static final Builder COMMON_BUILDER = new Builder();
+    private static final Builder CLIENT_BUILDER = new Builder();
 
     public static ForgeConfigSpec COMMON_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
@@ -30,7 +30,7 @@ public final class ConfigHandler {
     }
 
     public static class Common {
-        private Common(final ForgeConfigSpec.Builder builder) {
+        private Common(final Builder builder) {
             builder.push("server");
 
             MOBS = new Mobs(builder);
@@ -44,11 +44,11 @@ public final class ConfigHandler {
 
         public final GlobalSettingConfig GLOBALSETTING;
 
-        public final ForgeConfigSpec.BooleanValue spawnDemon;
+        public final BooleanValue spawnDemon;
     }
 
     public static class Client {
-        private Client(final ForgeConfigSpec.Builder builder) {
+        private Client(final Builder builder) {
             builder.push("client");
             this.demonRender = builder.comment("close demonRender, which may look bad with certain shaders.")
                     .translation(LANG_PREFIX + "demonRender")
@@ -56,11 +56,11 @@ public final class ConfigHandler {
             builder.pop();
         }
 
-        public final ForgeConfigSpec.BooleanValue demonRender;
+        public final BooleanValue demonRender;
     }
 
     public static class CombatConfig {
-        CombatConfig(final ForgeConfigSpec.Builder builder, float healthMultiplier, float attackMultiplier) {
+        CombatConfig(final Builder builder, float healthMultiplier, float attackMultiplier) {
             builder.push("attribute_config");
             this.healthMultiplier = builder.comment("Regulate mob health by this value")
                     .translation(LANG_PREFIX + "health_multiplier")
@@ -77,7 +77,7 @@ public final class ConfigHandler {
     }
 
     public static class SpawnConfig {
-        SpawnConfig(final ForgeConfigSpec.Builder builder, int spawnRate) {
+        SpawnConfig(final Builder builder, int spawnRate) {
             builder.comment("Regulate mob spawning");
             builder.push("spawn_config");
             this.spawnRate = builder.comment("Regulate spawn rate, 0 to disable spawning")
@@ -90,7 +90,7 @@ public final class ConfigHandler {
     }
 
     public static class Mobs {
-        Mobs(final ForgeConfigSpec.Builder builder) {
+        Mobs(final Builder builder) {
             builder.push("mobs");
             GUN_KNIGHT = new GunKnight(builder);
             PATRIOT = new Patriot(builder);
@@ -109,7 +109,7 @@ public final class ConfigHandler {
     }
 
     public static class GunKnight {
-        GunKnight(final ForgeConfigSpec.Builder builder) {
+        GunKnight(final Builder builder) {
             builder.push("gun_knight");
             combatConfig = new CombatConfig(builder, 1, 1);
 
@@ -132,7 +132,7 @@ public final class ConfigHandler {
     }
 
     public static class FrostNova {
-        FrostNova(final ForgeConfigSpec.Builder builder) {
+        FrostNova(final Builder builder) {
             builder.push("frost_nova");
             combatConfig = new CombatConfig(builder, 1, 1);
             damageConfig = new GeneralDamageCap(builder,0.1);
@@ -147,7 +147,7 @@ public final class ConfigHandler {
     }
 
     public static class Patriot {
-        Patriot(final ForgeConfigSpec.Builder builder) {
+        Patriot(final Builder builder) {
             builder.push("patriot");
             combatConfig = new CombatConfig(builder, 1, 1);
 
@@ -167,7 +167,7 @@ public final class ConfigHandler {
     }
 
     public static class Pursuer {
-        Pursuer(final ForgeConfigSpec.Builder builder) {
+        Pursuer(final Builder builder) {
             builder.push("pursuer");
             combatConfig = new CombatConfig(builder, 1, 1);
             damageConfig = new GeneralDamageCap(builder,0.1);
@@ -184,7 +184,7 @@ public final class ConfigHandler {
     }
 
     public static class GenerationConfig {
-        GenerationConfig(final ForgeConfigSpec.Builder builder, float heightMin, float heightMax) {
+        GenerationConfig(final Builder builder, float heightMin, float heightMax) {
             builder.comment("Regulate spawning structure");
             builder.push("structure_generation_config");
             this.heightMax = builder.comment("Maximum height for generation placement. -65 to ignore")
@@ -202,16 +202,16 @@ public final class ConfigHandler {
     }
 
     public static class GeneralDamageCap {
-        public GeneralDamageCap(final ForgeConfigSpec.Builder builder,double damageCapPercentage) {
+        public GeneralDamageCap(final Builder builder,double damageCapPercentage) {
             this.damageCap = builder.comment("Set damage limit percentage (based on max health)")
                     .defineInRange("damage limit percentage", damageCapPercentage, 0.01D, 1D);
         }
 
-        public final ForgeConfigSpec.DoubleValue damageCap;
+        public final DoubleValue damageCap;
     }
 
     public static class GlobalSettingConfig {
-        public GlobalSettingConfig(final ForgeConfigSpec.Builder builder) {
+        public GlobalSettingConfig(final Builder builder) {
             builder.push("global_setting");
             this.damageCap = builder.comment("Whether living can talk(experiment)")
                     .define("Enable living can talk", false);

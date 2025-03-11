@@ -6,6 +6,7 @@ import net.minecraft.world.entity.ai.behavior.OneShot;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -18,10 +19,12 @@ public class SetWalkFromPosBehavior {
             return (level, villager, gameTime) -> {
                Optional<GlobalPos> memory = villager.getBrain().getMemory(globalPosMemory);
                if(memory.isPresent()){
-                  System.out.println(1);
                   GlobalPos pos = memory.get();
-                  walkTarget.set(new WalkTarget(pos.pos(),speed,100));
-                  return true;
+                  if(villager.position().distanceTo(new Vec3(pos.pos().getX(),pos.pos().getY(),pos.pos().getZ()))>10) {
+                     walkTarget.set(new WalkTarget(pos.pos(), speed, 1));
+                     return true;
+                  }
+                  else return false;
                }
                else
                   return false;

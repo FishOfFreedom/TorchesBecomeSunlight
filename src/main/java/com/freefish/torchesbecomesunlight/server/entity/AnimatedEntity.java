@@ -135,7 +135,7 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         }
         if (this.deathTime >= deathDuration && !this.level().isClientSide()) {
             this.level().broadcastEntityEvent(this, (byte)60);
-            this.remove(Entity.RemovalReason.KILLED);
+            this.remove(RemovalReason.KILLED);
         }
     }
 

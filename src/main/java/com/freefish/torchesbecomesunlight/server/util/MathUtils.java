@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.server.util;
 import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerThirdPerson;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoBone;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
@@ -31,8 +32,43 @@ public final class MathUtils {
     public static final float TAU = (float) (2 * StrictMath.PI);
     public static final float PI = (float) StrictMath.PI;
 
-    public static double fade(double t) {
-        return t * t * t * (t * (t * 6 - 15) + 10);
+    public static void matrixStackFromModel(Vector3f vector3f,PoseStack matrixStack, GeoBone geoBone) {
+        GeoBone parent = geoBone.getParent();
+        if (parent != null) matrixStackFromModel(vector3f,matrixStack, parent);
+        translateRotateGeckolib(vector3f,geoBone, matrixStack);
+    }
+
+    public static Pair<Vector3f,PoseStack> getModelPosFromModel(GeoBone geoBone) {
+        PoseStack matrixStack = new PoseStack();
+        Vector3f vector3f = new Vector3f();
+
+        matrixStackFromModel(vector3f,matrixStack, geoBone);
+
+        return new Pair<>(vector3f,matrixStack);
+    }
+
+    public static void translateRotateGeckolib(Vector3f vector3f,GeoBone bone, PoseStack matrixStackIn) {
+        GeoBone parent = bone.getParent();
+        if(parent != null) {
+            matrixStackIn.translate((double) ((bone.getPivotX() - parent.getPivotX() - bone.getPosX()) / 16.0F),
+                    (double) ((bone.getPivotY() - parent.getPivotY() + bone.getPosY()) / 16.0F),
+                    (double) ((bone.getPivotZ() - parent.getPivotZ() + bone.getPosZ()) / 16.0F));
+        }
+        else {
+            matrixStackIn.translate((double) ((bone.getPivotX() - bone.getPosX()) / 16.0F),
+                    (double) ((bone.getPivotY() + bone.getPosY()) / 16.0F),
+                    (double) ((bone.getPivotZ() + bone.getPosZ()) / 16.0F));
+        }
+        if (bone.getRotZ() != 0.0F) {
+            matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
+        }
+        if (bone.getRotY() != 0.0F) {
+            matrixStackIn.mulPose(Axis.YP.rotation(bone.getRotY()));
+        }
+        if (bone.getRotX() != 0.0F) {
+            matrixStackIn.mulPose(Axis.XP.rotation(bone.getRotX()));
+        }
+        vector3f.add(bone.getRotX(),bone.getRotY(),bone.getRotZ());
     }
 
     public static void matrixStackFromModel(PoseStack matrixStack, GeoBone geoBone) {

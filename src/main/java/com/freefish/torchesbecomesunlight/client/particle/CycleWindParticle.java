@@ -55,7 +55,7 @@ public class CycleWindParticle extends Particle {
     }
 
     public static void spawnParticle(Level level, Entity entity){
-        level.addParticle(new CycleWindParticle.CycleWindData(entity.getId()),entity.getX(),entity.getY(),entity.getZ(),0,0,0);
+        level.addParticle(new CycleWindData(entity.getId()),entity.getX(),entity.getY(),entity.getZ(),0,0,0);
     }
 
     public void tick() {
@@ -150,15 +150,15 @@ public class CycleWindParticle extends Particle {
 
 
     public static class CycleWindData implements ParticleOptions {
-        public static final Deserializer<CycleWindParticle.CycleWindData> DESERIALIZER = new Deserializer<CycleWindParticle.CycleWindData>() {
-            public CycleWindParticle.CycleWindData fromCommand(ParticleType<CycleWindData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<CycleWindData> DESERIALIZER = new Deserializer<CycleWindData>() {
+            public CycleWindData fromCommand(ParticleType<CycleWindData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
-                return new CycleWindParticle.CycleWindData(duration);
+                return new CycleWindData(duration);
             }
 
-            public CycleWindParticle.CycleWindData fromNetwork(ParticleType<CycleWindParticle.CycleWindData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new CycleWindParticle.CycleWindData(buffer.readInt());
+            public CycleWindData fromNetwork(ParticleType<CycleWindData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new CycleWindData(buffer.readInt());
             }
         };
 
@@ -181,7 +181,7 @@ public class CycleWindParticle extends Particle {
         }
 
         @Override
-        public ParticleType<CycleWindParticle.CycleWindData> getType() {
+        public ParticleType<CycleWindData> getType() {
             return ParticleHandler.CYCLE_WIND.get();
         }
 
@@ -190,9 +190,9 @@ public class CycleWindParticle extends Particle {
             return this.locateEntity;
         }
 
-        public static Codec<CycleWindData> CODEC(ParticleType<CycleWindParticle.CycleWindData> particleType) {
+        public static Codec<CycleWindData> CODEC(ParticleType<CycleWindData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("locate").forGetter(CycleWindParticle.CycleWindData::getLocateEntity)
+                            Codec.INT.fieldOf("locate").forGetter(CycleWindData::getLocateEntity)
                     ).apply(codecBuilder, CycleWindData::new)
             );
         }

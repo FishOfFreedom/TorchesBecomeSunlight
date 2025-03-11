@@ -1,6 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.entity.villager;
 
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
+import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
 import com.freefish.torchesbecomesunlight.server.entity.villager.villager.UrsusVillagerGoalPackages;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
@@ -9,10 +11,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -22,18 +24,20 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -49,7 +53,8 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
     private int body_type = -1;
     private int head_type = -1;
 
-    private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.HOME,MemoryModuleType.WALK_TARGET);
+    private static final ImmutableList<MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(MemoryModuleType.HOME,MemoryModuleType.WALK_TARGET,MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,MemoryModuleType.PATH,
+            MemoryModuleType.LOOK_TARGET,MemoryModuleType.NEAREST_LIVING_ENTITIES,MemoryModuleType.DOORS_TO_CLOSE,MemoryModuleType.MEETING_POINT);
     private static final ImmutableList<SensorType<? extends Sensor<? super UrsusVillager>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES);
     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<UrsusVillager, Holder<PoiType>>> POI_MEMORIES = ImmutableMap.of(MemoryModuleType.HOME, (ursusVillager, poiType) -> poiType.is(PoiTypes.HOME));
 
@@ -57,8 +62,13 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
     public static final RawAnimation IDLE_ = RawAnimation.begin().then("idle", Animation.LoopType.LOOP);
     private LivingEntity dialogueLivingEntity;
 
+    private Activity activity = null;
+
     public UrsusVillager(EntityType<? extends AnimatedEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
+        this.getNavigation().setCanFloat(true);
+
         if(!level().isClientSide){
             setHead(getRandom().nextInt(3));
             setBody(getRandom().nextInt(3));
@@ -122,8 +132,10 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
     private void registerBrainGoals(Brain<UrsusVillager> pVillagerBrain) {
         pVillagerBrain.setSchedule(Schedule.VILLAGER_DEFAULT);
 
-        pVillagerBrain.addActivity(Activity.IDLE, UrsusVillagerGoalPackages.getIdlePackage(0.5F));
-        pVillagerBrain.addActivity(Activity.REST, UrsusVillagerGoalPackages.getRestPackage(0.5F));
+        pVillagerBrain.addActivity(Activity.CORE,UrsusVillagerGoalPackages.getCorePackage());
+
+        pVillagerBrain.addActivity(Activity.IDLE, UrsusVillagerGoalPackages.getIdlePackage(0.18F));
+        pVillagerBrain.addActivity(Activity.REST, UrsusVillagerGoalPackages.getRestPackage(0.18F));
 
         pVillagerBrain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         pVillagerBrain.setDefaultActivity(Activity.IDLE);
@@ -133,10 +145,35 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
 
     @Override
     protected void customServerAiStep() {
+        Brain<UrsusVillager> brain1 = this.getBrain();
         this.level().getProfiler().push("ursusVillagerBrain");
-        this.getBrain().tick((ServerLevel)this.level(), this);
+        brain1.tick((ServerLevel)this.level(), this);
         this.level().getProfiler().pop();
+        Optional<Activity> activeNonCoreActivity = brain1.getActiveNonCoreActivity();
+        if(activeNonCoreActivity.isPresent()){
+            Activity activity1 = activeNonCoreActivity.get();
+            if(activity1 != this.activity){
+                this.activityChange(activity1);
+            }
+        }
+
+        GlobalPos pos = getBrain().getMemory(MemoryModuleType.MEETING_POINT).orElse(null);
+        if(pos!=null&&tickCount%5==0){
+            System.out.println(pos.pos());
+        }
+
         super.customServerAiStep();
+    }
+
+    @Override
+    @NotNull
+    protected BodyRotationControl createBodyControl() {
+        return new FFBodyRotationControl(this);
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new FFPathNavigateGround(this, level);
     }
 
     @Override
@@ -148,9 +185,12 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.25f);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4f)
+                .add(Attributes.ARMOR, 2f)
+                .add(Attributes.MOVEMENT_SPEED, 1f);
     }
+
     public boolean removeWhenFarAway(double pDistanceToClosestPlayer) {
         return false;
     }
@@ -222,5 +262,17 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
             this.head_type = this.entityData.get(HEAD);
             return head_type;
         }
+    }
+
+    public void activityChange(Activity activity) {
+        Brain<UrsusVillager> brain1 = getBrain();
+        if(activity==Activity.REST){
+            Optional<GlobalPos> memory = brain1.getMemory(MemoryModuleType.HOME);
+            GlobalPos pos = memory.orElse((GlobalPos) null);
+            if(pos!=null){
+                brain1.setMemory(MemoryModuleType.WALK_TARGET,new WalkTarget(pos.pos(),0.18f,1));
+            }
+        }
+        this.activity = activity;
     }
 }

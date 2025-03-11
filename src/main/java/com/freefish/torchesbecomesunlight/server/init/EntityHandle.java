@@ -14,6 +14,7 @@ import com.freefish.torchesbecomesunlight.server.entity.projectile.*;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.entity.villager.FemaleVillager;
 import com.freefish.torchesbecomesunlight.server.entity.villager.MaleVillager;
+import com.freefish.torchesbecomesunlight.server.entity.villager.UrsusVillager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -36,12 +37,12 @@ public class EntityHandle {
 
     public static final RegistryObject<EntityType<MaleVillager>> MALE = ENTITY_TYPE.register("male_villager",
             () -> EntityType.Builder.<MaleVillager>of(MaleVillager::new, MobCategory.CREATURE)
-                    .sized(0.5F, 2F)
+                    .sized(0.5F, 1.8F)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "male_villager").toString()));
 
     public static final RegistryObject<EntityType<FemaleVillager>> FEMALE = ENTITY_TYPE.register("female_villager",
             () -> EntityType.Builder.<FemaleVillager>of(FemaleVillager::new, MobCategory.CREATURE)
-                    .sized(0.5F, 2F)
+                    .sized(0.5F, 1.8F)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "female_villager").toString()));
 
     public static final RegistryObject<EntityType<DialogueEntity>> DIALOGUE = ENTITY_TYPE.register("dialogue",
@@ -142,8 +143,8 @@ public class EntityHandle {
     @SubscribeEvent
     public static void onCreateAttributes(EntityAttributeCreationEvent event){
         event.put(EntityHandle.FROST_NOVA.get(), FrostNova.createAttributes().build());
-        event.put(EntityHandle.MALE.get(), MaleVillager.createAttributes().build());
-        event.put(EntityHandle.FEMALE.get(), MaleVillager.createAttributes().build());
+        event.put(EntityHandle.MALE.get(), UrsusVillager.createAttributes().build());
+        event.put(EntityHandle.FEMALE.get(), UrsusVillager.createAttributes().build());
         event.put(EntityHandle.PATRIOT.get(), Patriot.createAttributes().build());
         event.put(EntityHandle.GUN_KNIGHT_PATRIOT.get(), GunKnightPatriot.createAttributes().build());
         event.put(EntityHandle.PURSUER.get(), Pursuer.createAttributes().build());

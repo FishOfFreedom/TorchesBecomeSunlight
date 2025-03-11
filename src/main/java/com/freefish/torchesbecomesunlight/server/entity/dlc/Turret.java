@@ -124,7 +124,7 @@ public class Turret extends Mob implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
-        if(tickCount==1){
+        if(tickCount==1&&level().isClientSide){
             AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY() + 0.5, getZ(), 0, 0.01, 0, false, 0, org.joml.Math.toRadians(-90), 0, 0, 50F, 1, 1, 1, 1, 1, 8, true, false, new ParticleComponent[]{
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.easeInCubic(0f, 120f), false),
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.easeInCubic(1f, 0.3f), false)
@@ -242,7 +242,7 @@ public class Turret extends Mob implements GeoEntity {
         }
         if (this.tickCount >= 710 && !this.level().isClientSide() && !this.isRemoved()) {
             this.level().broadcastEntityEvent(this, (byte)60);
-            this.remove(Entity.RemovalReason.KILLED);
+            this.remove(RemovalReason.KILLED);
         }
     }
 

@@ -109,17 +109,17 @@ public class BlackFlatParticle extends TextureSheetParticle {
     }
 
     public static class BlackFlatData implements ParticleOptions {
-        public static final Deserializer<BlackFlatParticle.BlackFlatData> DESERIALIZER = new Deserializer<BlackFlatParticle.BlackFlatData>() {
-            public BlackFlatParticle.BlackFlatData fromCommand(ParticleType<BlackFlatParticle.BlackFlatData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<BlackFlatData> DESERIALIZER = new Deserializer<BlackFlatData>() {
+            public BlackFlatData fromCommand(ParticleType<BlackFlatData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
                 float scale = reader.readFloat();
-                return new BlackFlatParticle.BlackFlatData(duration,scale);
+                return new BlackFlatData(duration,scale);
             }
 
-            public BlackFlatParticle.BlackFlatData fromNetwork(ParticleType<BlackFlatParticle.BlackFlatData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new BlackFlatParticle.BlackFlatData(buffer.readInt(),buffer.readFloat());
+            public BlackFlatData fromNetwork(ParticleType<BlackFlatData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new BlackFlatData(buffer.readInt(),buffer.readFloat());
             }
         };
 
@@ -145,7 +145,7 @@ public class BlackFlatParticle extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<BlackFlatParticle.BlackFlatData> getType() {
+        public ParticleType<BlackFlatData> getType() {
             return ParticleHandler.BLACK_FLAT.get();
         }
 
@@ -158,11 +158,11 @@ public class BlackFlatParticle extends TextureSheetParticle {
         public float getScale() {
             return this.scale;
         }
-        public static Codec<BlackFlatParticle.BlackFlatData> CODEC(ParticleType<BlackFlatParticle.BlackFlatData> particleType) {
+        public static Codec<BlackFlatData> CODEC(ParticleType<BlackFlatData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(BlackFlatParticle.BlackFlatData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(BlackFlatParticle.BlackFlatData::getScale)
-                    ).apply(codecBuilder, BlackFlatParticle.BlackFlatData::new)
+                            Codec.INT.fieldOf("duration").forGetter(BlackFlatData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(BlackFlatData::getScale)
+                    ).apply(codecBuilder, BlackFlatData::new)
             );
         }
     }

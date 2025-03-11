@@ -4,6 +4,8 @@ package com.freefish.torchesbecomesunlight.client.event;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.particle.*;
 import com.freefish.torchesbecomesunlight.client.render.entity.*;
+import com.freefish.torchesbecomesunlight.client.render.entity.village.ManRenderer;
+import com.freefish.torchesbecomesunlight.client.render.entity.village.WomanRenderer;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
 import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.PotScreen;

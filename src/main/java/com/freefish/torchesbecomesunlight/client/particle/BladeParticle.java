@@ -116,8 +116,8 @@ public class BladeParticle extends TextureSheetParticle {
 
 
     public static class BladeData implements ParticleOptions {
-        public static final Deserializer<BladeParticle.BladeData> DESERIALIZER = new Deserializer<BladeParticle.BladeData>() {
-            public BladeParticle.BladeData fromCommand(ParticleType<BladeData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<BladeData> DESERIALIZER = new Deserializer<BladeData>() {
+            public BladeData fromCommand(ParticleType<BladeData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
@@ -128,11 +128,11 @@ public class BladeParticle extends TextureSheetParticle {
                 float rotY = reader.readFloat();
                 reader.expect(' ');
                 float hw = reader.readFloat();
-                return new BladeParticle.BladeData(duration,scale,rotX,rotY,hw);
+                return new BladeData(duration,scale,rotX,rotY,hw);
             }
 
-            public BladeParticle.BladeData fromNetwork(ParticleType<BladeParticle.BladeData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new BladeParticle.BladeData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
+            public BladeData fromNetwork(ParticleType<BladeData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new BladeData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
         };
 
@@ -167,7 +167,7 @@ public class BladeParticle extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<BladeParticle.BladeData> getType() {
+        public ParticleType<BladeData> getType() {
             return ParticleHandler.BLADE.get();
         }
 
@@ -193,13 +193,13 @@ public class BladeParticle extends TextureSheetParticle {
         public float getHw() {
             return this.hw;
         }
-        public static Codec<BladeData> CODEC(ParticleType<BladeParticle.BladeData> particleType) {
+        public static Codec<BladeData> CODEC(ParticleType<BladeData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(BladeParticle.BladeData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(BladeParticle.BladeData::getScale),
-                            Codec.FLOAT.fieldOf("rotX").forGetter(BladeParticle.BladeData::getRotX),
-                            Codec.FLOAT.fieldOf("rotY").forGetter(BladeParticle.BladeData::getRotY),
-                            Codec.FLOAT.fieldOf("hw").forGetter(BladeParticle.BladeData::getHw)
+                            Codec.INT.fieldOf("duration").forGetter(BladeData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(BladeData::getScale),
+                            Codec.FLOAT.fieldOf("rotX").forGetter(BladeData::getRotX),
+                            Codec.FLOAT.fieldOf("rotY").forGetter(BladeData::getRotY),
+                            Codec.FLOAT.fieldOf("hw").forGetter(BladeData::getHw)
                     ).apply(codecBuilder, BladeData::new)
             );
         }

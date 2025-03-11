@@ -1,4 +1,4 @@
-package com.freefish.torchesbecomesunlight.client.render.entity;
+package com.freefish.torchesbecomesunlight.client.render.entity.village;
 
 import com.freefish.torchesbecomesunlight.client.render.layer.VillagerHeadLayer;
 import com.freefish.torchesbecomesunlight.client.render.model.WomanModel;

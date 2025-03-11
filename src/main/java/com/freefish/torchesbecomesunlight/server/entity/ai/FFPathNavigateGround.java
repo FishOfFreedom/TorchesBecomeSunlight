@@ -159,12 +159,7 @@ public class FFPathNavigateGround extends GroundPathNavigation {
         return true;
     }
 
-    /**
-     * 检查指定的实体是否可以安全地步行到指定位置。
-     *
-     * @param posVec31
-     * @param posVec32
-     */
+
     @Override
     protected boolean canMoveDirectly(Vec3 posVec31, Vec3 posVec32) {
         return true;
