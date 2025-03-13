@@ -32,22 +32,68 @@ public final class MathUtils {
     public static final float TAU = (float) (2 * StrictMath.PI);
     public static final float PI = (float) StrictMath.PI;
 
+    /**
+     * @Date 2025/3/13 14:16
+     * @Description 用于geckolib到普通实体的旋转
+     */
+    public static Pair<Vector3f,PoseStack> getModelPosFromModel(PoseStack matrixStack,GeoBone geoBone) {
+        Vector3f vector3f = new Vector3f();
+        matrixStackFromModel(vector3f,matrixStack, geoBone);
+        return new Pair<>(vector3f,matrixStack);
+    }
     public static void matrixStackFromModel(Vector3f vector3f,PoseStack matrixStack, GeoBone geoBone) {
         GeoBone parent = geoBone.getParent();
         if (parent != null) matrixStackFromModel(vector3f,matrixStack, parent);
         translateRotateGeckolib(vector3f,geoBone, matrixStack);
     }
-
-    public static Pair<Vector3f,PoseStack> getModelPosFromModel(GeoBone geoBone) {
-        PoseStack matrixStack = new PoseStack();
-        Vector3f vector3f = new Vector3f();
-
-        matrixStackFromModel(vector3f,matrixStack, geoBone);
-
-        return new Pair<>(vector3f,matrixStack);
+    public static void translateRotateGeckolib(Vector3f vector3f,GeoBone bone, PoseStack matrixStackIn) {
+        GeoBone parent = bone.getParent();
+        if(parent != null) {
+            matrixStackIn.translate((double) ((-(bone.getPivotX() - parent.getPivotX()) - bone.getPosX()) / 16.0F),
+                    (double) ((-(bone.getPivotY() - parent.getPivotY()) - bone.getPosY() )/ 16.0F),
+                    (double) ((bone.getPivotZ() - parent.getPivotZ() + bone.getPosZ()) / 16.0F));
+        }
+        else {
+            matrixStackIn.translate((double) (-(bone.getPivotX() - bone.getPosX()) / 16.0F),
+                    (double) (-(bone.getPivotY() + bone.getPosY()) / 16.0F),
+                    (double) ((bone.getPivotZ() + bone.getPosZ()) / 16.0F));
+        }
+        if (bone.getRotZ() != 0.0F) {
+            matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
+        }
+        if (bone.getRotY() != 0.0F) {
+            matrixStackIn.mulPose(Axis.YP.rotation(-bone.getRotY()));
+        }
+        if (bone.getRotX() != 0.0F) {
+            matrixStackIn.mulPose(Axis.XP.rotation(-bone.getRotX()));
+        }
+        vector3f.add(bone.getRotX(),bone.getRotY(),bone.getRotZ());
     }
 
-    public static void translateRotateGeckolib(Vector3f vector3f,GeoBone bone, PoseStack matrixStackIn) {
+    /**
+     * @Date 2025/3/13 14:16
+     * @Description 获取geckolib一个GeoBone在世界坐标中的位置
+     */
+    public static Vec3 getWorldPosFromModel(Entity entity, float entityYaw, GeoBone geoBone) {
+        PoseStack matrixStack = new PoseStack();
+        matrixStack.translate(entity.getX(), entity.getY(), entity.getZ());
+        matrixStack.mulPose(MathUtils.quatFromRotationXYZ(0,   -entityYaw - 180, 180, true));
+        matrixStack.scale(-1, -1, 1);
+        matrixStack.translate(0, -1.5f, 0);
+        MathUtils.matrixStackFromModel(matrixStack, geoBone);
+        PoseStack.Pose matrixEntry = matrixStack.last();
+        Matrix4f matrix4f = matrixEntry.pose();
+
+        Vector4f vec = new Vector4f(0, 0, 0, 1);
+        vec.mul(matrix4f);
+        return new Vec3(vec.x(), vec.y()+1.5, vec.z());
+    }
+    public static void matrixStackFromModel(PoseStack matrixStack, GeoBone geoBone) {
+        GeoBone parent = geoBone.getParent();
+        if (parent != null) matrixStackFromModel(matrixStack, parent);
+        translateRotateGeckolib(geoBone, matrixStack);
+    }
+    public static void translateRotateGeckolib(GeoBone bone, PoseStack matrixStackIn) {
         GeoBone parent = bone.getParent();
         if(parent != null) {
             matrixStackIn.translate((double) ((bone.getPivotX() - parent.getPivotX() - bone.getPosX()) / 16.0F),
@@ -59,24 +105,27 @@ public final class MathUtils {
                     (double) ((bone.getPivotY() + bone.getPosY()) / 16.0F),
                     (double) ((bone.getPivotZ() + bone.getPosZ()) / 16.0F));
         }
+
         if (bone.getRotZ() != 0.0F) {
             matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
         }
+
         if (bone.getRotY() != 0.0F) {
             matrixStackIn.mulPose(Axis.YP.rotation(bone.getRotY()));
         }
+
         if (bone.getRotX() != 0.0F) {
             matrixStackIn.mulPose(Axis.XP.rotation(bone.getRotX()));
         }
-        vector3f.add(bone.getRotX(),bone.getRotY(),bone.getRotZ());
-    }
 
-    public static void matrixStackFromModel(PoseStack matrixStack, GeoBone geoBone) {
-        GeoBone parent = geoBone.getParent();
-        if (parent != null) matrixStackFromModel(matrixStack, parent);
-        translateRotateGeckolib(geoBone, matrixStack);
+        matrixStackIn.scale(bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
     }
-
+    /**
+     * @Date 2025/3/13 14:20
+     * @Description 填充群系
+     * @Param
+     * @Return Void
+     */
     public static int fill(ServerLevel serverLevel, BlockPos pFrom, BlockPos pTo, Holder.Reference<Biome> pBiome) {
         BlockPos blockpos = quantize(pFrom);
         BlockPos blockpos1 = quantize(pTo);
@@ -123,21 +172,6 @@ public final class MathUtils {
         return QuartPos.toBlock(QuartPos.fromBlock(pValue));
     }
 
-    public static Vec3 getWorldPosFromModel(Entity entity, float entityYaw, GeoBone geoBone) {
-        PoseStack matrixStack = new PoseStack();
-        matrixStack.translate(entity.getX(), entity.getY(), entity.getZ());
-        matrixStack.mulPose(MathUtils.quatFromRotationXYZ(0,   -entityYaw - 180, 180, true));
-        matrixStack.scale(-1, -1, 1);
-        matrixStack.translate(0, -1.5f, 0);
-        MathUtils.matrixStackFromModel(matrixStack, geoBone);
-        PoseStack.Pose matrixEntry = matrixStack.last();
-        Matrix4f matrix4f = matrixEntry.pose();
-
-        Vector4f vec = new Vector4f(0, 0, 0, 1);
-        vec.mul(matrix4f);
-        return new Vec3(vec.x(), vec.y()+1.5, vec.z());
-    }
-
     public static <T extends Entity> T getClosestEntity(Entity target, List<T> entities) {
         T closestEntity = null;
         double closestDistanceSq = Double.MAX_VALUE;
@@ -177,34 +211,6 @@ public final class MathUtils {
             z *= ((float)Math.PI / 180F);
         }
         return (new Quaternionf()).rotationXYZ(x, y, z);
-    }
-
-    public static void translateRotateGeckolib(GeoBone bone, PoseStack matrixStackIn) {
-        GeoBone parent = bone.getParent();
-        if(parent != null) {
-            matrixStackIn.translate((double) ((bone.getPivotX() - parent.getPivotX() - bone.getPosX()) / 16.0F),
-                    (double) ((bone.getPivotY() - parent.getPivotY() + bone.getPosY()) / 16.0F),
-                    (double) ((bone.getPivotZ() - parent.getPivotZ() + bone.getPosZ()) / 16.0F));
-        }
-        else {
-            matrixStackIn.translate((double) ((bone.getPivotX() - bone.getPosX()) / 16.0F),
-                    (double) ((bone.getPivotY() + bone.getPosY()) / 16.0F),
-                    (double) ((bone.getPivotZ() + bone.getPosZ()) / 16.0F));
-        }
-
-        if (bone.getRotZ() != 0.0F) {
-            matrixStackIn.mulPose(Axis.ZP.rotation(bone.getRotZ()));
-        }
-
-        if (bone.getRotY() != 0.0F) {
-            matrixStackIn.mulPose(Axis.YP.rotation(bone.getRotY()));
-        }
-
-        if (bone.getRotX() != 0.0F) {
-            matrixStackIn.mulPose(Axis.XP.rotation(bone.getRotX()));
-        }
-
-        matrixStackIn.scale(bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
     }
 
     public static float fade(float i){

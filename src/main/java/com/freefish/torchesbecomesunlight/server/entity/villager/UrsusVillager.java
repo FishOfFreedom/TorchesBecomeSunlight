@@ -7,11 +7,11 @@ import com.freefish.torchesbecomesunlight.server.entity.villager.villager.UrsusV
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -63,6 +63,51 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogue 
     private LivingEntity dialogueLivingEntity;
 
     private Activity activity = null;
+
+    public static final AnimationAct<UrsusVillager> ATTACK = new AnimationAct<UrsusVillager>("attack_4",30) {
+        @Override
+        public void tickUpdate(UrsusVillager entity) {
+            int tick = entity.getAnimationTick();
+            LivingEntity target = entity.getTarget();
+            float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+            entity.locateEntity();
+
+            if (target != null) {
+                entity.getLookControl().setLookAt(target);
+                if (target.distanceTo(entity) <= 1.6 + target.getBbWidth() / 2) {
+                    if (tick == 4) {
+                        target.hurt(entity.damageSources().mobAttack(entity), damage);
+                    }
+                }
+            }
+        }
+    };
+
+    public static final AnimationAct<UrsusVillager> ATTACK1 = new AnimationAct<UrsusVillager>("attack_3",26) {
+        @Override
+        public void tickUpdate(UrsusVillager entity) {
+            int tick = entity.getAnimationTick();
+            LivingEntity target = entity.getTarget();
+            float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+            entity.locateEntity();
+
+            if (target != null) {
+                entity.getLookControl().setLookAt(target);
+                if (target.distanceTo(entity) <= 1.6 + target.getBbWidth() / 2) {
+                    if (tick == 4) {
+                        target.hurt(entity.damageSources().mobAttack(entity), damage);
+                    }
+                }
+            }
+        }
+    };
+
+    private static final AnimationAct[] ANIMATIONACTS = new AnimationAct[]{ATTACK,ATTACK1};
+
+    @Override
+    public AnimationAct[] getAnimations() {
+        return ANIMATIONACTS;
+    }
 
     public UrsusVillager(EntityType<? extends AnimatedEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);

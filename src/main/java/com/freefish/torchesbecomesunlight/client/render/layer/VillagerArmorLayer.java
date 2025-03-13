@@ -15,9 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
@@ -62,12 +60,43 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
                 if(model2 instanceof HumanoidModel<?> model){
                     model.riding = false;
                     model.young = false;
-                    poseStack.translate(0, 1.5, 0);
-                    poseStack.mulPose(MathUtils.quatFromRotationXYZ(0, 0, 180, true));
-                    poseStack.mulPose(MathUtils.quatFromRotationXYZ(0, Mth.lerp(partialTick, entity.yRotO, entity.getYRot())+180, 0, true));
-                    setPartVisibility(model, pSlot,poseStack,geoModel);
+                    poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(0, 0, 180, true));
+                    poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(0, Mth.lerp(partialTick, entity.yRotO, entity.getYRot())+180, 0, true));
+                    poseStack.pushPose();
+                    model.setAllVisible(false);
 
+                    switch (pSlot) {
+                        case HEAD:
+                            Pair<Vector3f, PoseStack> head = MathUtils.getModelPosFromModel(poseStack,geoModel.bipedHead());
+                            model.head.visible = true;
+                            model.hat.visible = true;
+                            break;
+                        case RIGHT_ARM:
+                            Pair<Vector3f, PoseStack> rightArm = MathUtils.getModelPosFromModel(poseStack,geoModel.bipedRightArm());
+                            poseStack.last().pose().translate(0.3f,-0.1f,0f);
+                            model.rightArm.visible = true;
+                            break;
+                        case LEFT_ARM:
+                            Pair<Vector3f, PoseStack> leftArm = MathUtils.getModelPosFromModel(poseStack,geoModel.bipedLeftArm());
+                            poseStack.last().pose().translate(-0.3f,-0.1f,0f);
+                            model.leftArm.visible = true;
+                            break;
+                        case RIGHT_BOOT:
+                            Pair<Vector3f, PoseStack> rightBoot = MathUtils.getModelPosFromModel(poseStack,geoModel.bipedRightLeg());
+                            poseStack.last().pose().translate(0.125f,-1.125f,0f);
+
+                            model.rightLeg.visible = true;
+                            break;
+                        case LEFT_BOOT:
+                            Pair<Vector3f, PoseStack> leftBoot = MathUtils.getModelPosFromModel(poseStack,geoModel.bipedLeftLeg());
+                            poseStack.last().pose().translate(-0.125f,-1.125f,0f);
+
+                            model.leftLeg.visible = true;
+                            break;
+                    }
                     this.renderModel(poseStack, bufferSource, pPackedLight, model, 1.0F, 1.0F, 1.0F, this.getArmorResource(entity, itemstack, equipmentSlot, null));
+
+                    poseStack.popPose();
                 }
             }
         }
@@ -119,78 +148,6 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
             case RIGHT_ARM, LEFT_ARM -> EquipmentSlot.CHEST;
             default -> EquipmentSlot.FEET;
         };
-    }
-
-    protected void setPartVisibility(HumanoidModel pModel, ArmorType pSlot, PoseStack poseStack, ManModel geckoModel) {
-        pModel.setAllVisible(false);
-
-        switch (pSlot) {
-            case HEAD:
-                Pair<Vector3f, PoseStack> head = MathUtils.getModelPosFromModel(geckoModel.bipedHead());
-
-                Matrix4f headPose = head.getSecond().last().pose();
-                Vector4f headVec4 = new Vector4f(0,0,0,1f);
-                Vector3f headRot = head.getFirst();
-                headVec4.mul(headPose);
-                poseStack.last().pose().translate(-headVec4.x,-(headVec4.y-1.5f),-headVec4.z);
-                poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(-headRot.x, -headRot.y, -headRot.z, false));
-                pModel.head.visible = true;
-                pModel.hat.visible = true;
-                break;
-            case RIGHT_ARM:
-                Pair<Vector3f, PoseStack> rightArm = MathUtils.getModelPosFromModel(geckoModel.bipedRightArm());
-
-                Matrix4f rightArmPose = rightArm.getSecond().last().pose();
-                Vector4f rightArmVec4 = new Vector4f(0,0,0,1f);
-                Vector3f rightArmRot = rightArm.getFirst();
-                rightArmVec4.mul(rightArmPose);
-                poseStack.last().pose().translate(rightArmVec4.x-0.375f,-(rightArmVec4.y-1.34f),rightArmVec4.z);
-                poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(-rightArmRot.x, -rightArmRot.y, -rightArmRot.z, false));
-                pModel.rightArm.visible = true;
-                break;
-            case LEFT_ARM:
-                Pair<Vector3f, PoseStack> leftArm = MathUtils.getModelPosFromModel(geckoModel.bipedLeftArm());
-
-                Matrix4f leftArmPose = leftArm.getSecond().last().pose();
-                Vector4f leftArmVec4 = new Vector4f(0,0,0,1f);
-                Vector3f leftArmRot = leftArm.getFirst();
-                leftArmVec4.mul(leftArmPose);
-                poseStack.last().pose().translate(leftArmVec4.x+0.375f,-(leftArmVec4.y-1.34f),leftArmVec4.z);
-                poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(-leftArmRot.x, -leftArmRot.y, -leftArmRot.z, false));
-                pModel.leftArm.visible = true;
-                break;
-            case RIGHT_BOOT:
-                Pair<Vector3f, PoseStack> rightBoot = MathUtils.getModelPosFromModel(geckoModel.bipedRightLeg());
-
-                Matrix4f rightBootPose = rightBoot.getSecond().last().pose();
-                Vector4f rightBootVec4 = new Vector4f(0,0,0,1f);
-                Vector3f rightBootRot = rightBoot.getFirst();
-                rightBootVec4.mul(rightBootPose);
-                poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(-rightBootRot.x, -rightBootRot.y, -rightBootRot.z, false));
-                Vector3f RLtem=new Vector3f(0,-1.15f,0);
-                RLtem.rotate(MathUtils.quatFromRotationXYZ(-rightBootRot.x, -rightBootRot.y, -rightBootRot.z, false));
-                poseStack.last().pose().translate(RLtem.x,-(RLtem.y+1.15f),RLtem.z);
-
-                poseStack.last().pose().translate(rightBootVec4.x-0.125f,-(rightBootVec4.y-0.375f),rightBootVec4.z);
-                pModel.rightLeg.visible = true;
-                break;
-            case LEFT_BOOT:
-                Pair<Vector3f, PoseStack> leftBoot = MathUtils.getModelPosFromModel(geckoModel.bipedLeftLeg());
-
-                Matrix4f leftBootPose = leftBoot.getSecond().last().pose();
-                Vector4f leftBootVec4 = new Vector4f(0,0,0,1f);
-                Vector3f leftBootRot = leftBoot.getFirst();
-                leftBootVec4.mul(leftBootPose);
-                poseStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(-leftBootRot.x, -leftBootRot.y, -leftBootRot.z, false));
-                Vector3f LLtem=new Vector3f(0,-1.15f,0);
-                LLtem.rotate(MathUtils.quatFromRotationXYZ(-leftBootRot.x, -leftBootRot.y, -leftBootRot.z, false));
-                poseStack.last().pose().translate(LLtem.x,-(LLtem.y+1.15f),LLtem.z);
-
-                poseStack.last().pose().translate(leftBootVec4.x+0.125f,-(leftBootVec4.y-0.375f),leftBootVec4.z);
-                pModel.leftLeg.visible = true;
-                break;
-        }
-
     }
 
     private enum ArmorType{
