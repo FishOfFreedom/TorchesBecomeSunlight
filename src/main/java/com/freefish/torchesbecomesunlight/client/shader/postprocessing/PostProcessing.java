@@ -1,24 +1,19 @@
 package com.freefish.torchesbecomesunlight.client.shader.postprocessing;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.CopyDepthColorTarget;
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.ProxyTarget;
+import com.freefish.torchesbecomesunlight.client.shader.shader.RenderUtils;
+import com.freefish.torchesbecomesunlight.mixin.BlendModeMixin;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowdragmc.shimmer.ShimmerConstants;
-import com.lowdragmc.shimmer.client.rendertarget.CopyDepthColorTarget;
-import com.lowdragmc.shimmer.client.rendertarget.ProxyTarget;
-import com.lowdragmc.shimmer.client.shader.RenderUtils;
-import com.lowdragmc.shimmer.core.IParticleEngine;
-import com.lowdragmc.shimmer.core.mixins.BlendModeMixin;
-import com.lowdragmc.shimmer.platform.Services;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.shaders.BlendMode;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -44,7 +39,7 @@ import java.util.function.Consumer;
 public class PostProcessing implements ResourceManagerReloadListener {
 
     private static final Map<String, PostProcessing> POST_PROCESSING_MAP = new HashMap<>();
-    public static final PostProcessing BLOOM_UNREAL = new PostProcessing("bloom_unreal", new ResourceLocation(ShimmerConstants.MOD_ID, "shaders/post/bloom_unreal.json"));
+    public static final PostProcessing BLOOM_UNREAL = new PostProcessing("bloom_unreal", new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "shaders/post/bloom_unreal.json"));
 
     public static AtomicBoolean enableBloomFilter = new AtomicBoolean(false);
     private static final Minecraft mc = Minecraft.getInstance();
@@ -56,7 +51,6 @@ public class PostProcessing implements ResourceManagerReloadListener {
     private final ResourceLocation shader;
     private final List<Consumer<MultiBufferSource>> postEntityDrawFilter = Lists.newArrayList();
     private final List<Consumer<MultiBufferSource>> postEntityDrawForce = Lists.newArrayList();
-    private final Map<ParticleRenderType, IPostParticleType> particleTypeMap = Maps.newHashMap();
     private boolean hasParticle;
 
     private PostProcessing(String name, ResourceLocation shader) {
@@ -122,14 +116,13 @@ public class PostProcessing implements ResourceManagerReloadListener {
                 postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
             }
         } catch (IOException e) {
-            ShimmerConstants.LOGGER.error("load post: [{}] post chain: [{}] failed!", this.name, shader, e);
             loadFailed = true;
         }
         return postChain;
     }
 
     public void renderPost(@NotNull PostChain postChain, RenderTarget post, RenderTarget output) {
-        RenderTarget target = postChain.getTempTarget("shimmer:input");
+        RenderTarget target = postChain.getTempTarget("torchesbecomesunlight:input");
         if (target instanceof ProxyTarget) {
             ((ProxyTarget) target).setParent(post);
         }
@@ -137,12 +130,12 @@ public class PostProcessing implements ResourceManagerReloadListener {
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         postChain.process(mc.getFrameTime());
-        RenderUtils.fastBlit(postChain.getTempTarget("shimmer:output"), output);
+        RenderUtils.fastBlit(postChain.getTempTarget("torchesbecomesunlight:output"), output);
         BlendModeMixin.setLastApplied(lastBlendMode);
     }
 
     public boolean allowPost() {
-        return !(this == PostProcessing.BLOOM_UNREAL) || Services.PLATFORM.isBloomEnable();
+        return true;
     }
 
     public void renderParticlePost() {
@@ -155,60 +148,15 @@ public class PostProcessing implements ResourceManagerReloadListener {
             PostChain postChain = getPostChain();
 
             if (postChain == null) return;
-
-            if (true) {
+            if (allowPost()) {
                 renderPost(postChain, postTarget, mainTarget);
             } else {
                 RenderUtils.fastBlit(postTarget, mainTarget);
             }
-
             postTarget.clear(Minecraft.ON_OSX);
             mainTarget.bindWrite(false);
         }
     }
-
-    public void postParticle(ParticleOptions particleOptions, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-        if (mc.particleEngine instanceof IParticleEngine) {
-            ((IParticleEngine) mc.particleEngine).createPostParticle(this, particleOptions, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
-        }
-    }
-
-    public void postParticle(ParticleOptions particleOptions, int viewDistanceSqr, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-        if (mc.particleEngine instanceof IParticleEngine) {
-            Camera camera = mc.gameRenderer.getMainCamera();
-            if (camera.getPosition().distanceToSqr(pX, pY, pZ) > viewDistanceSqr) return;
-            ((IParticleEngine) mc.particleEngine).createPostParticle(this, particleOptions, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
-        }
-    }
-
-    public void postParticle(Particle particle) {
-        if (mc.particleEngine instanceof IParticleEngine) {
-            mc.particleEngine.add(particle);
-        }
-    }
-
-    public ParticleRenderType getParticleType(ParticleRenderType renderType) {
-        return particleTypeMap.computeIfAbsent(renderType, type -> new IPostParticleType() {
-            @Override
-            public ParticleRenderType getParent() {
-                return type;
-            }
-
-            @Override
-            public PostProcessing getPost() {
-                return PostProcessing.this;
-            }
-
-            @Override
-            public String toString() {
-                return "POST_WRAPPED_" + type.toString();
-            }
-        });
-    }
-
-	public static List<IPostParticleType> getBlockBloomPostParticleTypes(){
-		return List.copyOf(getBlockBloom().particleTypeMap.values());
-	}
 
     @Override
     public void onResourceManagerReload(@Nullable ResourceManager pResourceManager) {

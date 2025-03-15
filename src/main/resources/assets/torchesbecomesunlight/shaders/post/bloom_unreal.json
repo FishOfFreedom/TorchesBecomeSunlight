@@ -1,0 +1,224 @@
+{
+  "targets": [
+    {
+      "name": "torchesbecomesunlight:filter_temp",
+      "blit": true,
+      "scaleSize": {
+        "width": 1,
+        "height": 1
+      }
+    },
+    {
+      "name": "swap2a",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.5,
+        "height": 0.5
+      }
+    },
+    {
+      "name": "swap4a",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.25,
+        "height": 0.25
+      }
+    },
+    {
+      "name": "swap8a",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.125,
+        "height": 0.125
+      }
+    },
+    {
+      "name": "swap16a",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.0625,
+        "height": 0.0625
+      }
+    },
+    {
+      "name": "swap2b",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.5,
+        "height": 0.5
+      }
+    },
+    {
+      "name": "swap4b",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.25,
+        "height": 0.25
+      }
+    },
+    {
+      "name": "swap8b",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.125,
+        "height": 0.125
+      }
+    },
+    {
+      "name": "swap16b",
+      "bilinear": true,
+      "scaleSize": {
+        "width": 0.0625,
+        "height": 0.0625
+      }
+    }
+  ],
+  "passes": [
+    {
+      "name": "torchesbecomesunlight:filter_bloom_color",
+      "intarget": "torchesbecomesunlight:input",
+      "outtarget": "torchesbecomesunlight:filter_temp",
+      "auxtargets": [
+        {"id": "minecraft:main", "name": "MainSampler"}
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "torchesbecomesunlight:filter_temp",
+      "outtarget": "swap2a",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [3]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap2a",
+      "outtarget": "swap2b",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [3]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap2b",
+      "outtarget": "swap4a",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [5]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap4a",
+      "outtarget": "swap4b",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [5]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap4b",
+      "outtarget": "swap8a",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [7]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap8a",
+      "outtarget": "swap8b",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [7]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap8b",
+      "outtarget": "swap16a",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [9]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:seperable_blur",
+      "intarget": "swap16a",
+      "outtarget": "swap16b",
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        },
+        {
+          "name": "Radius",
+          "values": [9]
+        }
+      ]
+    },
+    {
+      "name": "torchesbecomesunlight:unreal_composite",
+      "intarget": "torchesbecomesunlight:composite_source",
+      "outtarget": "torchesbecomesunlight:output",
+      "auxtargets": [
+        {"id":"torchesbecomesunlight:filter_temp", "name":"HighLight"},
+        {"id":"swap2b", "name":"BlurTexture1"},
+        {"id":"swap4b", "name":"BlurTexture2"},
+        {"id":"swap8b", "name":"BlurTexture3"},
+        {"id":"swap16b", "name":"BlurTexture4"}
+      ],
+      "uniforms": [
+        {
+          "name": "BloomRadius",
+          "values": [1.0]
+        }
+      ]
+    }
+  ]
+}

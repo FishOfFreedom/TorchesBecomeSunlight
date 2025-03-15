@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight;
 import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistry;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
 import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
+import com.freefish.torchesbecomesunlight.compat.oculus.ForgeOculusHandle;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.init.village.MemoryModuleTypeHandle;
 import com.freefish.torchesbecomesunlight.server.event.EventListener;
@@ -105,5 +106,9 @@ public class TorchesBecomeSunlight
         for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
             NETWORK.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
+    }
+
+    public static boolean underShaderPack() {
+        return ForgeOculusHandle.INSTANCE!=null && ForgeOculusHandle.INSTANCE.underShaderPack();
     }
 }

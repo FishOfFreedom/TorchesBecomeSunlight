@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.mixin;
 
-import com.lowdragmc.shimmer.TracedGLState;
+import com.freefish.torchesbecomesunlight.TracedGLState;
 import com.mojang.blaze3d.platform.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

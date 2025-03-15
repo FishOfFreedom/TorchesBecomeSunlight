@@ -2,13 +2,22 @@
   "required": true,
   "package": "com.freefish.torchesbecomesunlight.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.freefish.torchesbecomesunlight.mixin.TBSMixinPlugin",
   "refmap": "torchesbecomesunlight.refmap.json",
   "mixins": [
     "MixinStructureTemplatePool"
   ],
   "client": [
     "MixinLevelRenderer",
-    "MixinGuiGraphics"
+    "MixinGuiGraphics",
+    "BlendModeMixin",
+    "ForgeParticleEngineMixin",
+    "GLStateManagerMixin",
+    "GameRendererMixin",
+    "MainTargetMixin",
+    "PostChainMixin",
+    "PostPassMixin",
+    "RenderTargetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

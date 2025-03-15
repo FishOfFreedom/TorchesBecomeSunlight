@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.mixin;
 
-import com.lowdragmc.shimmer.core.IMainTarget;
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.IMainTarget;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

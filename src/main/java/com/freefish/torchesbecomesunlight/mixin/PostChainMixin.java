@@ -1,11 +1,10 @@
 package com.freefish.torchesbecomesunlight.mixin;
 
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.ProxyTarget;
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.ScaleTextureTarget;
+import com.freefish.torchesbecomesunlight.client.shader.rendertarget.SelectRenderTarget;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.lowdragmc.shimmer.client.rendertarget.ProxyTarget;
-import com.lowdragmc.shimmer.client.rendertarget.ScaleTextureTarget;
-import com.lowdragmc.shimmer.client.rendertarget.SelectRenderTarget;
-import com.lowdragmc.shimmer.platform.Services;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.Minecraft;
@@ -47,7 +46,7 @@ public abstract class PostChainMixin {
     public void shimmer$addTempTarget(String pName, float sw, float sh) {
         RenderTarget rendertarget = new ScaleTextureTarget(sw, sh, screenWidth, screenHeight, true, Minecraft.ON_OSX);
         rendertarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        if (Services.PLATFORM.isStencilEnabled(screenTarget)) { Services.PLATFORM.enableStencil(rendertarget); }
+        if (screenTarget.isStencilEnabled()) { rendertarget.enableStencil(); }
         this.customRenderTargets.put(pName, rendertarget);
         this.fullSizedTargets.add(rendertarget);
     }
@@ -89,13 +88,13 @@ public abstract class PostChainMixin {
     @Inject(method = "getRenderTarget", at = @At(value = "HEAD"), cancellable = true)
     private void injectGetRenderTarget(String pTarget, CallbackInfoReturnable<RenderTarget> cir) {
         if (pTarget != null) {
-            if (pTarget.equals("shimmer:input")) {
+            if (pTarget.equals("torchesbecomesunlight:input")) {
                 cir.setReturnValue(customRenderTargets.computeIfAbsent(pTarget, k -> new ProxyTarget(screenTarget)));
-            } else if (pTarget.equals("shimmer:output")) {
+            } else if (pTarget.equals("torchesbecomesunlight:output")) {
                 if (!customRenderTargets.containsKey(pTarget)) {
                     addTempTarget(pTarget, screenWidth, screenHeight);
                 }
-            } else if (pTarget.equals("shimmer:composite_source")) {
+            } else if (pTarget.equals("torchesbecomesunlight:composite_source")) {
                 cir.setReturnValue(new SelectRenderTarget());
             }
         }

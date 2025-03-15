@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.mixin;
 
-import com.lowdragmc.shimmer.client.postprocessing.PostProcessing;
+import com.freefish.torchesbecomesunlight.client.shader.postprocessing.PostProcessing;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.renderer.PostPass;
 import org.spongepowered.asm.mixin.Final;
