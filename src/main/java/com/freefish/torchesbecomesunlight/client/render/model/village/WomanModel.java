@@ -1,8 +1,7 @@
-package com.freefish.torchesbecomesunlight.client.render.model;
+package com.freefish.torchesbecomesunlight.client.render.model.village;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.villager.FemaleVillager;
-import com.freefish.torchesbecomesunlight.server.entity.villager.MaleVillager;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
@@ -10,7 +9,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
-public class WomanModel extends GeoModel<FemaleVillager> {
+public class WomanModel extends GeoBipedModel<FemaleVillager> {
     private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/female_villager.geo.json");
     public static final ResourceLocation TEXTURE_1 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/villager/female_1.png");
     public static final ResourceLocation TEXTURE_2 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/villager/female_2.png");
@@ -59,10 +58,5 @@ public class WomanModel extends GeoModel<FemaleVillager> {
 
         rightEye.setPosX(headYaw * 0.017453292F);
         leftEye.setPosX(headYaw * 0.017453292F);
-    }
-
-    @Override
-    public void applyMolangQueries(FemaleVillager animatable, double animTime) {
-        super.applyMolangQueries(animatable, animTime);
     }
 }

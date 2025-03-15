@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.layer;
 
-import com.freefish.torchesbecomesunlight.client.render.model.ManModel;
+import com.freefish.torchesbecomesunlight.client.render.model.village.GeoBipedModel;
 import com.freefish.torchesbecomesunlight.server.entity.villager.UrsusVillager;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -46,7 +46,7 @@ public class VillagerItemLayer<T extends UrsusVillager> extends GeoRenderLayer<T
 
     private void renderArmWithItem(LivingEntity entity, ItemStack itemStack, ItemDisplayContext transformType, HumanoidArm side, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn,float partialTick) {
         GeoModel<T> geoModel = getGeoModel();
-        if (!itemStack.isEmpty()&&geoModel instanceof ManModel) {
+        if (!itemStack.isEmpty()&&geoModel instanceof GeoBipedModel<T>) {
             String boneName = side == HumanoidArm.RIGHT ? "RightItem" : "LeftItem";
             matrixStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(0, 0, 180, true));
             matrixStack.last().pose().rotate(MathUtils.quatFromRotationXYZ(0, Mth.lerp(partialTick, entity.yRotO, entity.getYRot())+180, 0, true));

@@ -26,7 +26,6 @@ public class OneBehavior {
                if (!pCanSetWalkTarget.test(villager)) {
                   return false;
                } else {
-                  System.out.println(1);
                   globalPos.set(GlobalPos.of(level.dimension(),villager.blockPosition()));
                   return true;
                }

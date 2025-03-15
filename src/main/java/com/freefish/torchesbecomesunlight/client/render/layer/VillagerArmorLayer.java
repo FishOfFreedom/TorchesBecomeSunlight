@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.layer;
 
-import com.freefish.torchesbecomesunlight.client.render.model.ManModel;
+import com.freefish.torchesbecomesunlight.client.render.model.village.GeoBipedModel;
 import com.freefish.torchesbecomesunlight.server.entity.villager.UrsusVillager;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.google.common.collect.Maps;
@@ -49,12 +49,13 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
     }
 
     protected void renderArmorPiece(PoseStack poseStack, MultiBufferSource bufferSource,float partialTick, T entity, ArmorType pSlot, int pPackedLight, HumanoidModel model1) {
+        if(!entity.isArmor()) return;
         EquipmentSlot equipmentSlot = armorToEquipment(pSlot);
         ItemStack itemstack = entity.getItemBySlot(equipmentSlot);
         Item $$9 = itemstack.getItem();
         poseStack.pushPose();
         if ($$9 instanceof ArmorItem armoritem) {
-            ManModel geoModel = (ManModel) getGeoModel();
+            GeoBipedModel geoModel = (GeoBipedModel) getGeoModel();
             if (armoritem.getEquipmentSlot() == equipmentSlot) {
                 net.minecraft.client.model.Model model2 = getArmorModelHook(entity, itemstack, equipmentSlot, model1);
                 if(model2 instanceof HumanoidModel<?> model){

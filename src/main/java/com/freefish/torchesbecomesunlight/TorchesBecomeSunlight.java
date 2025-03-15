@@ -4,7 +4,7 @@ import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistr
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
 import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.init.MemoryModuleTypeHandle;
+import com.freefish.torchesbecomesunlight.server.init.village.MemoryModuleTypeHandle;
 import com.freefish.torchesbecomesunlight.server.event.EventListener;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.event.ForgeClientEventL;
@@ -17,13 +17,12 @@ import com.freefish.torchesbecomesunlight.server.init.generator.BiomeModifiersHa
 import com.freefish.torchesbecomesunlight.server.init.group.ModGroup;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.ModRecipes;
+import com.freefish.torchesbecomesunlight.server.init.village.SensorTypeHandle;
 import com.freefish.torchesbecomesunlight.server.world.structure.StructureHandle;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -69,6 +68,7 @@ public class TorchesBecomeSunlight
         ModGroup.CREATIVE_MODE_TAB.register(bus);
         StructureHandle.DEFERRED_REGISTRY_STRUCTURE.register(bus);
         MemoryModuleTypeHandle.MEMORY_MODULES.register(bus);
+        SensorTypeHandle.SENSOR_TYPES.register(bus);
         ModRecipes.register(bus);
         MenuHandle.register(bus);
 

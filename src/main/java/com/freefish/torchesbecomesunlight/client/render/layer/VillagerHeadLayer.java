@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.render.layer;
 
-import com.freefish.torchesbecomesunlight.client.render.model.ManModel;
-import com.freefish.torchesbecomesunlight.client.render.model.WomanModel;
+import com.freefish.torchesbecomesunlight.client.render.model.village.ManModel;
+import com.freefish.torchesbecomesunlight.client.render.model.village.WomanModel;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.entity.villager.MaleVillager;
 import com.freefish.torchesbecomesunlight.server.entity.villager.UrsusVillager;
@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
