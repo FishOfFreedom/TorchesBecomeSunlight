@@ -14,7 +14,7 @@ import com.freefish.torchesbecomesunlight.server.entity.ai.entity.PursuerStartDi
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueAI;
 import com.freefish.torchesbecomesunlight.server.entity.effect.*;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
@@ -73,7 +73,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class Pursuer extends UrsusEntity implements IDialogue {
+public class Pursuer extends UrsusEntity implements IDialogueEntity {
     public static final AnimationAct<Pursuer> BATTACK1 = new AnimationAct<Pursuer>("attackB1",17){
 
         @Override

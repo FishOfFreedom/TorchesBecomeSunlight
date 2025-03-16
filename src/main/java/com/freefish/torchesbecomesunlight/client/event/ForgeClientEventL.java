@@ -196,7 +196,10 @@ public enum ForgeClientEventL {
         int bossRegistryName = TorchesBecomeSunlight.bossBarRegistryNames.getOrDefault(event.getBossEvent().getId(), -1);
         if (bossRegistryName == -1) return;
         CustomBossBar customBossBar = CustomBossBar.customBossBars.getOrDefault(bossRegistryName, null);
-        if (customBossBar == null) return;
+
+        if(bossRegistryName == 3&& !customBossBar.getConfigOpenCustom().get()) event.setCanceled(true);
+
+        if (customBossBar == null || !customBossBar.getConfigOpenCustom().get()) return;
 
         event.setCanceled(true);
         customBossBar.renderBossBar(event,bossRegistryName);

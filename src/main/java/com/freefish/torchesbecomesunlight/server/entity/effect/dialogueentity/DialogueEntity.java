@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.SynNumberEntity;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -15,14 +16,11 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-
-import java.util.List;
 
 public class DialogueEntity extends Entity {
     private Entity[] chatEntities;
@@ -107,7 +105,7 @@ public class DialogueEntity extends Entity {
             Entity[] list = getChatEntities();
             if(list!=null) {
                 for (Entity livingEntity : list) {
-                    if (livingEntity instanceof IDialogue iDialogue) iDialogue.setDialogueEntity(null);
+                    if (livingEntity instanceof IDialogueEntity iDialogue) iDialogue.setDialogueEntity(null);
                 }
             }
             kill();

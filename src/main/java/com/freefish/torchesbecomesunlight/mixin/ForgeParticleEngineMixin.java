@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.mixin;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.TracedGLState;
+import com.freefish.torchesbecomesunlight.client.particle.TBSParticleRenderType;
 import com.freefish.torchesbecomesunlight.client.shader.postprocessing.PostProcessing;
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -25,7 +26,7 @@ public abstract class ForgeParticleEngineMixin{
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/particle/ParticleRenderType;begin(Lcom/mojang/blaze3d/vertex/BufferBuilder;Lnet/minecraft/client/renderer/texture/TextureManager;)V"))
     private ParticleRenderType injectRenderPre(ParticleRenderType particlerendertype, BufferBuilder bufferBuilder, TextureManager textureManager) {
-        if(!TorchesBecomeSunlight.underShaderPack()){
+        if(!TorchesBecomeSunlight.underShaderPack()&&particlerendertype == TBSParticleRenderType.BLOOM){
             PostProcessing postProcessing = PostProcessing.BLOOM_UNREAL;
             postProcessing.getPostTarget(false).bindWrite(false);
             postProcessing.hasParticle();

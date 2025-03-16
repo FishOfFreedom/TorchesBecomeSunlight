@@ -1,15 +1,14 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
-public class FFWaterAvoidingRandomStrollGoal<T extends PathfinderMob & IDialogue> extends RandomStrollGoal {
+public class FFWaterAvoidingRandomStrollGoal<T extends PathfinderMob & IDialogueEntity> extends RandomStrollGoal {
     public static final float PROBABILITY = 0.001F;
     protected final float probability;
     T mob;

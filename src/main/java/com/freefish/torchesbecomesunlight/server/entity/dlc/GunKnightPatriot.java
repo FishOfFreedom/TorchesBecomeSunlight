@@ -13,8 +13,7 @@ import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake
 import com.freefish.torchesbecomesunlight.server.entity.effect.FXEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.SacredRealmEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.Bullet;
@@ -72,9 +71,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class GunKnightPatriot extends AnimatedEntity implements IDialogue , RangedAttackMob {
+public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob {
     public static final AnimationAct<GunKnightPatriot> ATTACK1 = new AnimationAct<GunKnightPatriot>("attack_1",44){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {

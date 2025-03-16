@@ -14,7 +14,7 @@ import com.freefish.torchesbecomesunlight.server.entity.ai.entity.snownova.SnowN
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BigIceCrystal;
@@ -75,9 +75,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
-public class FrostNova extends GuerrillasEntity implements IDialogue {
+public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     private static final EntityDataAccessor<Float> TARGET_X = SynchedEntityData.defineId(FrostNova.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TARGET_Y = SynchedEntityData.defineId(FrostNova.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TARGET_Z = SynchedEntityData.defineId(FrostNova.class, EntityDataSerializers.FLOAT);

@@ -1,13 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-public class FFRandomLookAroundGoal<T extends PathfinderMob & IDialogue> extends Goal {
+public class FFRandomLookAroundGoal<T extends PathfinderMob & IDialogueEntity> extends Goal {
     private final T mob;
     private double relX;
     private double relZ;

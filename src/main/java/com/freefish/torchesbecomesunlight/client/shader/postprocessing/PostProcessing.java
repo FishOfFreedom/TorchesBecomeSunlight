@@ -195,49 +195,4 @@ public class PostProcessing implements ResourceManagerReloadListener {
     public void hasParticle() {
         hasParticle = true;
     }
-
-    public static Set<BlockState> BLOOM_BLOCK = new HashSet<>();
-    public static Set<Fluid> BLOOM_FLUID = new HashSet<>();
-    public static Set<ResourceLocation> BLOOM_PARTICLE = new HashSet<>();
-    private static final ThreadLocal<Boolean> BLOCK_BLOOM = ThreadLocal.withInitial(()->false);
-    private static final ThreadLocal<Boolean> FLUID_BLOOM = ThreadLocal.withInitial(()->false);
-
-    public static boolean isBlockBloom() {
-        return BLOCK_BLOOM.get();
-    }
-
-    public static boolean isFluidBloom() {
-        return FLUID_BLOOM.get();
-    }
-
-    public static void setupBloom(BlockState blockState, FluidState fluidState) {
-        if (BLOOM_BLOCK.contains(blockState)) {
-            BLOCK_BLOOM.set(true);
-        } else {
-            BLOCK_BLOOM.set(false);
-        }
-        Fluid fluid = fluidState.getType();
-        if (BLOOM_FLUID.contains(fluid) || (fluid instanceof FlowingFluid flowingFluid && BLOOM_FLUID.contains(flowingFluid.getSource()))) {
-            FLUID_BLOOM.set(true);
-        } else {
-            FLUID_BLOOM.set(false);
-        }
-    }
-
-    public static void forceBloomBlock(Runnable runnable) {
-        BLOCK_BLOOM.set(true);
-        runnable.run();
-        BLOCK_BLOOM.set(false);
-    }
-
-    public static void forceBloomFluid(Runnable runnable) {
-        FLUID_BLOOM.set(true);
-        runnable.run();
-        FLUID_BLOOM.set(false);
-    }
-
-    public static void cleanBloom() {
-        BLOCK_BLOOM.set(false);
-        FLUID_BLOOM.set(false);
-    }
 }

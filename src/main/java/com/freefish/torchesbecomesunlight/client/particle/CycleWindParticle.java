@@ -136,7 +136,7 @@ public class CycleWindParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return TBSParticleRenderType.BLOOM;
     }
 
     @OnlyIn(Dist.CLIENT)

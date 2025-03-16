@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.render.gui;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
@@ -13,6 +14,7 @@ import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class CustomBossBar {
     public static Map<Integer, CustomBossBar> customBossBars = new HashMap<>();
@@ -20,27 +22,27 @@ public class CustomBossBar {
         customBossBars.put(0, new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay.png"),
-                10, 32, 13, -5, -22, 256, 64, 36, ChatFormatting.WHITE,183.0F));
+                10, 32, 13, -5, -22, 256, 64, 36, ChatFormatting.WHITE,183.0F, ConfigHandler.COMMON.MOBS.FROSTNOVA.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(1, new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/pursuer_bar_overlay.png"),
-                10, 32, 17, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F));
+                10, 32, 17, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.PURSUER.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(2, new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/patriot_bar_overlay.png"),
-                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F));
+                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.PATRIOT.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(3, new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base_2.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay_2.png"),
-                10, 32, -6, -5, -22, 256, 64, 10, ChatFormatting.WHITE,73.0F));
+                10, 32, -6, -5, -22, 256, 64, 10, ChatFormatting.WHITE,73.0F,ConfigHandler.COMMON.MOBS.FROSTNOVA.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(4, new CustomBossBar(
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/gun_patriot_bar_overlay.png"),
-                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F));
+                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.GUN_KNIGHT.customBossBarConfig.isOpenCustombossbar));
     }
 
     private final ResourceLocation baseTexture;
@@ -60,7 +62,9 @@ public class CustomBossBar {
 
     private final ChatFormatting textColor;
 
-    public CustomBossBar(ResourceLocation baseTexture, ResourceLocation overlayTexture, int baseHeight, int baseTextureHeight, int baseOffsetY, int overlayOffsetX, int overlayOffsetY, int overlayWidth, int overlayHeight, int verticalIncrement, ChatFormatting textColor,float trueWidth) {
+    private final Supplier<Boolean> configOpenCustom;
+
+    public CustomBossBar(ResourceLocation baseTexture, ResourceLocation overlayTexture, int baseHeight, int baseTextureHeight, int baseOffsetY, int overlayOffsetX, int overlayOffsetY, int overlayWidth, int overlayHeight, int verticalIncrement, ChatFormatting textColor,float trueWidth,Supplier<Boolean> supplier) {
         this.baseTexture = baseTexture;
         this.overlayTexture = overlayTexture;
         this.hasOverlay = overlayTexture != null;
@@ -74,6 +78,7 @@ public class CustomBossBar {
         this.verticalIncrement = verticalIncrement;
         this.trueWidth = trueWidth;
         this.textColor = textColor;
+        this.configOpenCustom = supplier;
     }
 
     public ResourceLocation getBaseTexture() {
@@ -123,6 +128,11 @@ public class CustomBossBar {
     public ChatFormatting getTextColor() {
         return textColor;
     }
+
+    public Supplier<Boolean> getConfigOpenCustom() {
+        return configOpenCustom;
+    }
+
 
     public void renderBossBar(CustomizeGuiOverlayEvent.BossEventProgress event,int type) {
         GuiGraphics guiGraphics = event.getGuiGraphics();

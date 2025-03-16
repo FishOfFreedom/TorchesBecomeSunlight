@@ -3,7 +3,7 @@ package com.freefish.torchesbecomesunlight.server.capability;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoPlayer;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -44,8 +44,7 @@ public class PlayerCapability {
     }
 
     public static class PlayerCapabilityImp implements IPlayerCapability {
-        int dialogueNeedTime;
-
+        private int dialogueNeedTime;
 
         @OnlyIn(Dist.CLIENT)
         private GeckoPlayer.GeckoPlayerThirdPerson geckoPlayer;
@@ -68,21 +67,13 @@ public class PlayerCapability {
             }
         }
 
-        public int getDialogueNeedTime() {
-            return dialogueNeedTime;
-        }
-
-        public void setDialogueNeedTime(int dialogueNeedTime) {
-            this.dialogueNeedTime = dialogueNeedTime;
-        }
-
         public void tick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
             Level level = player.level();
 
             if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get()){
                 List<LivingEntity> livingEntities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(5), livingEntity ->
-                        livingEntity instanceof IDialogue & livingEntity.distanceTo(player) < 4 + livingEntity.getBbWidth() / 2 && livingEntity != player);
+                        livingEntity instanceof IDialogueEntity & livingEntity.distanceTo(player) < 4 + livingEntity.getBbWidth() / 2 && livingEntity != player);
                 boolean flad = false;
                 int f1 = this.getDialogueNeedTime();
                 for (LivingEntity livingEntity : livingEntities) {
@@ -103,6 +94,15 @@ public class PlayerCapability {
         @Override
         public void deserializeNBT(CompoundTag compound) {
         }
+
+        public int getDialogueNeedTime() {
+            return dialogueNeedTime;
+        }
+
+        public void setDialogueNeedTime(int dialogueNeedTime) {
+            this.dialogueNeedTime = dialogueNeedTime;
+        }
+
     }
 
     public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>

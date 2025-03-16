@@ -76,6 +76,18 @@ public final class ConfigHandler {
         public final DoubleValue attackMultiplier;
     }
 
+    public static class CustomBossBarConfig {
+        CustomBossBarConfig(final Builder builder) {
+            builder.push("bossbar");
+            this.isOpenCustombossbar = builder.comment("Enable custom bossbar")
+                    .translation(LANG_PREFIX + "bossbar")
+                    .define("Enable or not",true);
+            builder.pop();
+        }
+
+        public final BooleanValue isOpenCustombossbar;
+    }
+
     public static class SpawnConfig {
         SpawnConfig(final Builder builder, int spawnRate) {
             builder.comment("Regulate mob spawning");
@@ -112,7 +124,7 @@ public final class ConfigHandler {
         GunKnight(final Builder builder) {
             builder.push("gun_knight");
             combatConfig = new CombatConfig(builder, 1, 1);
-
+            customBossBarConfig = new CustomBossBarConfig(builder);
             generationConfig = new GenerationConfig(builder,
                     50, 100
             );
@@ -125,6 +137,7 @@ public final class ConfigHandler {
         }
 
         public final CombatConfig combatConfig;
+        public final CustomBossBarConfig customBossBarConfig;
         public final GenerationConfig generationConfig;
         public final SpawnConfig spawnConfig;
         public final GeneralDamageCap damageConfig;
@@ -135,12 +148,14 @@ public final class ConfigHandler {
         FrostNova(final Builder builder) {
             builder.push("frost_nova");
             combatConfig = new CombatConfig(builder, 1, 1);
+            customBossBarConfig = new CustomBossBarConfig(builder);
             damageConfig = new GeneralDamageCap(builder,0.1);
             spawnConfig = new SpawnConfig(builder,1);
             builder.pop();
         }
 
         public final CombatConfig combatConfig;
+        public final CustomBossBarConfig customBossBarConfig;
 
         public final SpawnConfig spawnConfig;
         public final GeneralDamageCap damageConfig;
@@ -150,7 +165,7 @@ public final class ConfigHandler {
         Patriot(final Builder builder) {
             builder.push("patriot");
             combatConfig = new CombatConfig(builder, 1, 1);
-
+            customBossBarConfig = new CustomBossBarConfig(builder);
             isFrontalAttack = builder.comment("If 'true' disable frontal attack").define("nullify a frontal attack", true);
 
             damageConfig = new GeneralDamageCap(builder,0.1);
@@ -159,6 +174,7 @@ public final class ConfigHandler {
         }
 
         public final CombatConfig combatConfig;
+        public final CustomBossBarConfig customBossBarConfig;
 
         public final SpawnConfig spawnConfig;
         public final GeneralDamageCap damageConfig;
@@ -170,6 +186,7 @@ public final class ConfigHandler {
         Pursuer(final Builder builder) {
             builder.push("pursuer");
             combatConfig = new CombatConfig(builder, 1, 1);
+            customBossBarConfig = new CustomBossBarConfig(builder);
             damageConfig = new GeneralDamageCap(builder,0.1);
             spawnConfig = new SpawnConfig(builder,1);
 
@@ -177,6 +194,7 @@ public final class ConfigHandler {
         }
 
         public final CombatConfig combatConfig;
+        public final CustomBossBarConfig customBossBarConfig;
 
         public final SpawnConfig spawnConfig;
 

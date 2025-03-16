@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class FFLookAtPlayerGoal<T extends PathfinderMob & IDialogue> extends Goal {
+public class FFLookAtPlayerGoal<T extends PathfinderMob & IDialogueEntity> extends Goal {
     public static final float DEFAULT_PROBABILITY = 0.02F;
     protected final T mob;
     @Nullable

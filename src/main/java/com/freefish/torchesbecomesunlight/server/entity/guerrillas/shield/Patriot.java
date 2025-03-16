@@ -10,7 +10,7 @@ import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonCompon
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IDialogue;
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
@@ -66,9 +66,8 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
-public class Patriot extends GuerrillasEntity implements IDialogue {
+public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     public static final AnimationAct<Patriot> ATTACK1 = new AnimationAct<Patriot>("attack1",40){
         @Override
         public void tickUpdate(Patriot entity) {
