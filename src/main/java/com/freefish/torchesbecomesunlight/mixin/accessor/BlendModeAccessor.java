@@ -1,4 +1,4 @@
-package com.freefish.torchesbecomesunlight.mixin;
+package com.freefish.torchesbecomesunlight.mixin.accessor;
 
 import com.mojang.blaze3d.shaders.BlendMode;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @implNote BlendModeMixin
  */
 @Mixin(BlendMode.class)
-public interface BlendModeMixin {
+public interface BlendModeAccessor {
     @Accessor
     static void setLastApplied(BlendMode mode) {}
     @Accessor

@@ -1,0 +1,9 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:apple"
+  ],
+  "values": {
+    "FRUIT": 1
+  }
+}

@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.PotMenu;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -15,8 +15,8 @@ public class MenuHandle {
     public static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(ForgeRegistries.MENU_TYPES, TorchesBecomeSunlight.MOD_ID);
 
-    public static final RegistryObject<MenuType<PotMenu>> POT_MENU =
-            registerMenuType("pot_menu", PotMenu::new);
+    public static final RegistryObject<MenuType<StewPotMenu>> STEW_POT_MENU =
+            registerMenuType("stew_pot_menu", StewPotMenu::new);
 
 
     private static <T extends AbstractContainerMenu>RegistryObject<MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {

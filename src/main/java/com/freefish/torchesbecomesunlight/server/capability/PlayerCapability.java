@@ -35,10 +35,6 @@ public class PlayerCapability {
 
         void addedToWorld(EntityJoinLevelEvent event);
 
-        int getDialogueNeedTime();
-
-        void setDialogueNeedTime(int dialogueNeedTime);
-
         @OnlyIn(Dist.CLIENT)
         GeckoPlayer.GeckoPlayerThirdPerson getGeckoPlayer();
     }
@@ -70,19 +66,6 @@ public class PlayerCapability {
         public void tick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
             Level level = player.level();
-
-            if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get()){
-                List<LivingEntity> livingEntities = level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(5), livingEntity ->
-                        livingEntity instanceof IDialogueEntity & livingEntity.distanceTo(player) < 4 + livingEntity.getBbWidth() / 2 && livingEntity != player);
-                boolean flad = false;
-                int f1 = this.getDialogueNeedTime();
-                for (LivingEntity livingEntity : livingEntities) {
-                    if (isLookingAtMe(livingEntity, player))
-                        flad = true;
-                }
-                if (flad && f1 < 50) this.setDialogueNeedTime(f1 + 1);
-                if (!flad && f1 > 0) this.setDialogueNeedTime(f1 - 1);
-            }
         }
 
         @Override
@@ -94,15 +77,6 @@ public class PlayerCapability {
         @Override
         public void deserializeNBT(CompoundTag compound) {
         }
-
-        public int getDialogueNeedTime() {
-            return dialogueNeedTime;
-        }
-
-        public void setDialogueNeedTime(int dialogueNeedTime) {
-            this.dialogueNeedTime = dialogueNeedTime;
-        }
-
     }
 
     public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>

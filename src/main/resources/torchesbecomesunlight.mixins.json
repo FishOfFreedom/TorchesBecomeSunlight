@@ -5,12 +5,13 @@
   "plugin": "com.freefish.torchesbecomesunlight.mixin.TBSMixinPlugin",
   "refmap": "torchesbecomesunlight.refmap.json",
   "mixins": [
+    "accessor.RecipeManagerAccessor",
     "MixinStructureTemplatePool"
   ],
   "client": [
     "MixinLevelRenderer",
     "MixinGuiGraphics",
-    "BlendModeMixin",
+    "accessor.BlendModeAccessor",
     "ForgeParticleEngineMixin",
     "GLStateManagerMixin",
     "GameRendererMixin",

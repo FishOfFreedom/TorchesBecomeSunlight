@@ -17,12 +17,13 @@ import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.init.generator.BiomeModifiersHandler;
 import com.freefish.torchesbecomesunlight.server.init.group.ModGroup;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.init.recipe.ModRecipes;
+import com.freefish.torchesbecomesunlight.server.init.recipe.RecipesHandle;
 import com.freefish.torchesbecomesunlight.server.init.village.SensorTypeHandle;
 import com.freefish.torchesbecomesunlight.server.world.structure.StructureHandle;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -51,6 +52,8 @@ public class TorchesBecomeSunlight
 
     public static SimpleChannel NETWORK;
 
+    public static final RecipeBookType RECIPE_TYPE_COOKING = RecipeBookType.create("STEW");
+
     public TorchesBecomeSunlight()
     {
         GeckoLibUtil.addCustomBakedModelFactory(MOD_ID, new MowzieModelFactory());
@@ -70,7 +73,7 @@ public class TorchesBecomeSunlight
         StructureHandle.DEFERRED_REGISTRY_STRUCTURE.register(bus);
         MemoryModuleTypeHandle.MEMORY_MODULES.register(bus);
         SensorTypeHandle.SENSOR_TYPES.register(bus);
-        ModRecipes.register(bus);
+        RecipesHandle.register(bus);
         MenuHandle.register(bus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHandler.CLIENT_CONFIG);

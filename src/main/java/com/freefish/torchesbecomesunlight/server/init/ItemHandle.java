@@ -3,10 +3,13 @@ package com.freefish.torchesbecomesunlight.server.init;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.item.armor.DeerHelmetItem;
 import com.freefish.torchesbecomesunlight.server.item.armor.WinterScratchItem;
+import com.freefish.torchesbecomesunlight.server.item.food.CustomFoodProperties;
+import com.freefish.torchesbecomesunlight.server.item.food.TBSFood;
 import com.freefish.torchesbecomesunlight.server.item.help.AnimationItem;
 import com.freefish.torchesbecomesunlight.server.item.weapon.*;
 import com.freefish.torchesbecomesunlight.server.item.help.TestItem;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -79,11 +82,11 @@ public class ItemHandle {
 
     public static final RegistryObject<Item> THIGH_MEAT =
             ITEMS.register("thigh_meat", () ->
-                    new Item(new Item.Properties()));
+                    new Item(new Item.Properties().food(CustomFoodProperties.THIGH_MEAT)));
 
     public static final RegistryObject<Item> COOKED_THIGH_MEAT =
             ITEMS.register("cooked_thigh_meat", () ->
-                    new Item(new Item.Properties()));
+                    new TBSFood(new Item.Properties()));
 
     public static final RegistryObject<Item> MACHETE =
             ITEMS.register("machete", () ->

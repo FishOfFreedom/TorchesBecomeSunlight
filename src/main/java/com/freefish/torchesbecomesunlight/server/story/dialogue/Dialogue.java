@@ -4,6 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class Dialogue {
     public int getIndex() {
@@ -28,7 +29,7 @@ public class Dialogue {
 
     private final List<DialogueTrigger> options;
 
-    private final DMessage dMessage;
+    private final Function<Entity,String> dMessage;
 
     public Dialogue(String message, List<DialogueTrigger> options, Dialogue nextDialogue,int speakerNumber,int dialogueTime) {
         this.message = message;
@@ -42,7 +43,7 @@ public class Dialogue {
         dMessage = null;
     }
 
-    public Dialogue(DMessage dMessage, List<DialogueTrigger> options, Dialogue nextDialogue,int speakerNumber,int dialogueTime) {
+    public Dialogue(Function<Entity,String> dMessage, List<DialogueTrigger> options, Dialogue nextDialogue,int speakerNumber,int dialogueTime) {
         this.message = "";
         this.options = options;
         this.nextDialogue = nextDialogue;
@@ -68,7 +69,7 @@ public class Dialogue {
 
     public String  trigger(Entity entity) {
         if (this.dMessage != null) {
-            String trigger = this.dMessage.trigger(entity);
+            String trigger = this.dMessage.apply(entity);
             setMessage(trigger);
             return trigger;
         }
@@ -82,7 +83,3 @@ public class Dialogue {
     }
 }
 
-@FunctionalInterface
-interface DMessage {
-    String trigger(Entity entity);
-}

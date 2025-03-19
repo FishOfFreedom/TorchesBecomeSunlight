@@ -1,8 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield;
 
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
 import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
@@ -14,6 +16,7 @@ import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
@@ -66,6 +69,8 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore.genList;
 
 public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     public static final AnimationAct<Patriot> ATTACK1 = new AnimationAct<Patriot>("attack1",40){
@@ -678,8 +683,8 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     @Override
     public boolean hurt(DamageSource source, float amount) {
 
-        if(source.getDirectEntity() instanceof Player player&&getHasDialogue()){
-            PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(source.getDirectEntity() instanceof Player&&getHasDialogue()){
+            DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(this, CapabilityHandle.DIALOGUE_CAPABILITY);
             if(capability!=null&&capability.getDialogueNeedTime()>40){
                 setDialogueEntity((LivingEntity) source.getDirectEntity());
                 Player player1 = MathUtils.getClosestEntity(this,level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(5)));
@@ -1032,7 +1037,26 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
 
     @Override
     public Dialogue getDialogue() {
-        return DialogueStore.snownova_meet_1;
+        Dialogue snownova_meet_2 = new Dialogue(entity -> (entity instanceof GuerrillasEntity guerrillas?guerrillas.findVillage():"no"),null,null,1,100);
+
+        Dialogue snownova_meet_1 = new Dialogue("dialogue.torchesbecomesunlight.snownova_meet_1hliafv啊打发嗯阿风啊jhajflafjaj阿达哈尔福德lfliafihaflej打法饿啊fclaujfh啊方法liafh",
+                genList(new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_1",0,null),
+                        new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_2",1,
+                                entity -> {
+                                    Player player = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(Player.class,entity.getBoundingBox().inflate(5)));
+                                    if(player!=null&&!player.isCreative()) {
+                                        if (entity instanceof FrostNova snowNova) {
+                                            snowNova.waitAct = snowNova.getDialogueEntity();
+                                            AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
+                                        }
+                                        else if (entity instanceof Patriot snowNova) {
+                                            snowNova.waitAct = snowNova.getDialogueEntity();
+                                            AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
+                                        }
+                                    }
+                                }),new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_3",0,snownova_meet_2,null)), null, 1,100);
+
+        return snownova_meet_1;
     }
 
     @Override

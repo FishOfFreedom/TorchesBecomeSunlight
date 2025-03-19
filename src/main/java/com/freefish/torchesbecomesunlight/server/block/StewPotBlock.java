@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
-import com.freefish.torchesbecomesunlight.server.block.blockentity.PotBlockEntity;
+import com.freefish.torchesbecomesunlight.server.block.blockentity.StewPotBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,10 +22,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-public class PotBlock extends BaseEntityBlock {
+public class StewPotBlock extends BaseEntityBlock {
     public static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
-    public PotBlock(Properties pProperties) {
+    public StewPotBlock(Properties pProperties) {
         super(pProperties);
     }
 
@@ -43,8 +43,8 @@ public class PotBlock extends BaseEntityBlock {
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof PotBlockEntity) {
-                ((PotBlockEntity) blockEntity).drops();
+            if (blockEntity instanceof StewPotBlockEntity) {
+                //((CrockPotBlockEntity) blockEntity).drops();
             }
         }
 
@@ -55,8 +55,8 @@ public class PotBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if(entity instanceof PotBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (PotBlockEntity)entity, pPos);
+            if(entity instanceof StewPotBlockEntity) {
+                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (StewPotBlockEntity)entity, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
@@ -68,7 +68,7 @@ public class PotBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new PotBlockEntity(pPos, pState);
+        return new StewPotBlockEntity(pPos, pState);
     }
 
     @Nullable
@@ -77,8 +77,7 @@ public class PotBlock extends BaseEntityBlock {
         if(pLevel.isClientSide()) {
             return null;
         }
-
-        return createTickerHelper(pBlockEntityType, BlockEntityHandle.POT.get(),
-                (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1, pPos, pState1));
+        return createTickerHelper(pBlockEntityType, BlockEntityHandle.STEW_POT.get(),
+                StewPotBlockEntity::cookingTick);
     }
 }

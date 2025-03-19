@@ -2,17 +2,15 @@ package com.freefish.torchesbecomesunlight.client.render.layer;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
+import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -47,24 +45,22 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         poseStack1.translate(vector4f.x,vector4f.y,vector4f.z);
         Matrix4f matrix4f = poseStack1.last().pose();
         Matrix3f matrix3f = matrixstack$entry.normal();
-        Player player = Minecraft.getInstance().player;
-        if(player!=null){
-            PlayerCapability.IPlayerCapability data = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
-            if(data!=null){
-                int dialogueTime = data.getDialogueNeedTime();
-                float alpha = 1;
-                VertexConsumer ivertexbuilder;
-                if(dialogueTime>40){
-                    int time = (animatable.tickCount)%7;
-                    ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[time],true));
-                }
-                else {
-                    ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[0],true));
-                    alpha = dialogueTime /40f;
-                }
-                if(alpha>0.05)
-                    drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
+
+        DialogueCapability.IDialogueCapability data = CapabilityHandle.getCapability(animatable, CapabilityHandle.DIALOGUE_CAPABILITY);
+        if(data!=null){
+            int dialogueTime = data.getDialogueNeedTime();
+            float alpha = 1;
+            VertexConsumer ivertexbuilder;
+            if(dialogueTime>40){
+                int time = (animatable.tickCount)%7;
+                ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[time],true));
             }
+            else {
+                ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE[0],true));
+                alpha = dialogueTime /40f;
+            }
+            if(alpha>0.05)
+                drawSun(matrix4f, matrix3f, ivertexbuilder,alpha);
         }
 
         bufferSource.getBuffer(renderType);

@@ -4,24 +4,18 @@ import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.shader.rendertarget.CopyDepthColorTarget;
 import com.freefish.torchesbecomesunlight.client.shader.rendertarget.ProxyTarget;
 import com.freefish.torchesbecomesunlight.client.shader.shader.RenderUtils;
-import com.freefish.torchesbecomesunlight.mixin.BlendModeMixin;
+import com.freefish.torchesbecomesunlight.mixin.accessor.BlendModeAccessor;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.shaders.BlendMode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,12 +120,12 @@ public class PostProcessing implements ResourceManagerReloadListener {
         if (target instanceof ProxyTarget) {
             ((ProxyTarget) target).setParent(post);
         }
-        BlendMode lastBlendMode = BlendModeMixin.getLastApplied();
+        BlendMode lastBlendMode = BlendModeAccessor.getLastApplied();
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         postChain.process(mc.getFrameTime());
         RenderUtils.fastBlit(postChain.getTempTarget("torchesbecomesunlight:output"), output);
-        BlendModeMixin.setLastApplied(lastBlendMode);
+        BlendModeAccessor.setLastApplied(lastBlendMode);
     }
 
     public boolean allowPost() {

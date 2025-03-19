@@ -4,15 +4,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 public class DialogueTrigger{
     private String content = "";
     private final int number;
-    private final DialogueTriggerAction action;
+    private final Consumer<LivingEntity> action;
     private Dialogue nextDialogue;
-    private final DDialogue dDialogue;
-    private final CDialogue cDialogue;
+    private final Function<Entity,Dialogue> dDialogue;
+    private final Function<Entity,Boolean> cDialogue;
 
-    public DialogueTrigger(String content,int number,DialogueTriggerAction action) {
+    public DialogueTrigger(String content,int number,Consumer<LivingEntity> action) {
         this.content = content;
         this.number = number;
         this.action = action;
@@ -21,7 +24,7 @@ public class DialogueTrigger{
         cDialogue = null;
     }
 
-    public DialogueTrigger(String content,int number,Dialogue nextDialogue,DialogueTriggerAction action) {
+    public DialogueTrigger(String content,int number,Dialogue nextDialogue,Consumer<LivingEntity> action) {
         this.content = content;
         this.number = number;
         this.action = action;
@@ -30,7 +33,7 @@ public class DialogueTrigger{
         cDialogue = null;
     }
 
-    public DialogueTrigger(String content,int number,Dialogue nextDialogue,DialogueTriggerAction action,DDialogue dDialogue) {
+    public DialogueTrigger(String content,int number,Dialogue nextDialogue,Consumer<LivingEntity> action,Function<Entity,Dialogue> dDialogue) {
         this.content = content;
         this.number = number;
         this.action = action;
@@ -39,7 +42,7 @@ public class DialogueTrigger{
         cDialogue = null;
     }
 
-    public DialogueTrigger(String content,int number,Dialogue nextDialogue,DialogueTriggerAction action,DDialogue dDialogue,CDialogue cDialogue) {
+    public DialogueTrigger(String content,int number,Dialogue nextDialogue,Consumer<LivingEntity> action,Function<Entity,Dialogue> dDialogue,Function<Entity,Boolean> cDialogue) {
         this.content = content;
         this.number = number;
         this.action = action;
@@ -66,35 +69,20 @@ public class DialogueTrigger{
 
     public void trigger(LivingEntity entity) {
         if (this.action != null) {
-            this.action.trigger(entity);
+            this.action.accept(entity);
         }
     }
 
     public boolean isNoSend(LivingEntity entity) {
         if (this.cDialogue != null) {
-            return this.cDialogue.trigger(entity);
+            return this.cDialogue.apply(entity);
         }
         return false;
     }
 
     public void chooseDialogue(Entity entity) {
         if (this.dDialogue != null) {
-            nextDialogue = dDialogue.trigger(entity);
+            nextDialogue = dDialogue.apply(entity);
         }
     }
-}
-
-@FunctionalInterface
-interface DialogueTriggerAction {
-    void trigger(LivingEntity entity);
-}
-
-@FunctionalInterface
-interface DDialogue {
-    Dialogue trigger(Entity entity);
-}
-
-@FunctionalInterface
-interface CDialogue {
-    boolean trigger(LivingEntity entity);
 }

@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.block.PotBlock;
+import com.freefish.torchesbecomesunlight.server.block.StewPotBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -20,8 +20,8 @@ public class BlockHandle {
 
     public static final RegistryObject<Block> ORE_AND_ICE = registryBlock("ore_and_ice",() -> new WoolCarpetBlock(DyeColor.WHITE, BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.1F).sound(SoundType.GLASS).friction(0.98F)),false);
 
-    public static final RegistryObject<Block> POT = registryBlock("pot",
-            () -> new PotBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),true);
+    public static final RegistryObject<Block> STEW_POT = registryBlock("stew_pot",
+            () -> new StewPotBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),true);
 
 
     private static <T extends Block> RegistryObject<T> registryBlock(String name, Supplier<T> block, boolean isEntity) {

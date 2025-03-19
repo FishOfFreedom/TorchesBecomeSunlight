@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,6 +16,7 @@ public class CapabilityHandle {
     public static final Capability<AbilityCapability.IAbilityCapability> ABILITY_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<PlayerCapability.IPlayerCapability> PLAYER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
     public static final Capability<FrozenCapability.IFrozenCapability> FROZEN_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
+    public static final Capability<DialogueCapability.IDialogueCapability> DIALOGUE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.register(AbilityCapability.IAbilityCapability.class);
@@ -29,6 +31,10 @@ public class CapabilityHandle {
                 e.addCapability(PlayerCapability.ID, new PlayerCapability.Provider());
             }
             e.addCapability(FrozenCapability.ID, new FrozenCapability.Provider());
+
+            if(e.getObject() instanceof IDialogueEntity){
+                e.addCapability(DialogueCapability.ID, new DialogueCapability.Provider());
+            }
         }
     }
 

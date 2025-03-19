@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster;
 
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
 import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
@@ -872,8 +873,8 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                 cycleTime = -1;
         }
 
-        if(pSource.getDirectEntity() instanceof Player player&&getHasDialogue()){
-            PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(pSource.getDirectEntity() instanceof Player&&getHasDialogue()){
+            DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(this, CapabilityHandle.DIALOGUE_CAPABILITY);
             if(capability!=null&&capability.getDialogueNeedTime()>40){
                 if(pSource.getDirectEntity()instanceof Player player1){
                     setDialogueEntity(player1);

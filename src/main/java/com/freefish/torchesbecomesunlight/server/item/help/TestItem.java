@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
@@ -20,6 +21,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -57,7 +59,9 @@ public class TestItem extends Item {
             }
             else {
                 if(mode==Mode.MOVE) {
-
+                    Item item = ItemHandle.COOKED_THIGH_MEAT.get();
+                    ItemStack itemStack = new ItemStack(item);
+                    FoodProperties foodProperties = item.getFoodProperties(itemStack, player);
                 }
                 else if(mode==Mode.CLEAN_ENTITY){
                     List<Entity> entities = level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(6));

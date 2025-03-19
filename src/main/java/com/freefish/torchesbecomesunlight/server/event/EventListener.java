@@ -3,10 +3,8 @@ package com.freefish.torchesbecomesunlight.server.event;
 import com.freefish.torchesbecomesunlight.server.ability.Ability;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
-import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
+import com.freefish.torchesbecomesunlight.server.capability.*;
+import com.freefish.torchesbecomesunlight.server.command.TBSCommand;
 import com.freefish.torchesbecomesunlight.server.effect.Collapsal;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
@@ -15,14 +13,17 @@ import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
 import com.freefish.torchesbecomesunlight.server.init.generator.CustomResourceKey;
+import com.freefish.torchesbecomesunlight.server.item.food.TBSFood;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -90,6 +91,7 @@ public final class EventListener {
 
     @SubscribeEvent
     public void registerCommand(RegisterCommandsEvent event){
+        TBSCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -163,6 +165,9 @@ public final class EventListener {
                 }
             }
         }
+
+        DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.DIALOGUE_CAPABILITY);
+        if(capability!=null) capability.tick(event);
     }
 
     @SubscribeEvent
@@ -175,6 +180,29 @@ public final class EventListener {
         if (event.getEntity() instanceof Player) {
             PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability((Player) event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
             if (playerCapability != null) playerCapability.addedToWorld(event);
+        }
+    }
+
+    @SubscribeEvent
+    public void onFoodEaten(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        Player player = (Player) event.getEntity();
+
+        ItemStack usedItem = event.getItem();
+        if (!usedItem.isEdible() && usedItem.getItem() != Items.CAKE)
+            return;
+        if(usedItem.getItem() instanceof TBSFood tbsFood){
+            eat(usedItem,tbsFood,player);
+        }
+    }
+
+    public void eat(ItemStack foodStack,TBSFood tbsFood, Player player) {
+        CompoundTag tag = foodStack.getOrCreateTag();
+        if(tag.contains("bao")){
+            int bao = tag.getInt("bao");
+            player.getFoodData().eat(bao,1);
         }
     }
 }

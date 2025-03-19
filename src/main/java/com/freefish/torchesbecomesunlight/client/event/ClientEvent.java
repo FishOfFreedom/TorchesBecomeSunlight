@@ -7,8 +7,9 @@ import com.freefish.torchesbecomesunlight.client.render.entity.*;
 import com.freefish.torchesbecomesunlight.client.render.entity.village.ManRenderer;
 import com.freefish.torchesbecomesunlight.client.render.entity.village.WomanRenderer;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
+import com.freefish.torchesbecomesunlight.client.render.gui.recipebook.RecipeCategories;
 import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.PotScreen;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotScreen;
 import com.freefish.torchesbecomesunlight.client.render.projectile.*;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleRibbon;
@@ -20,6 +21,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -54,7 +56,7 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityHandle.TURRET.get(), TurretRenderer::new);
         event.registerEntityRenderer(EntityHandle.FX_ENTITY.get(), VoidRenderer::new);
 
-        MenuScreens.register(MenuHandle.POT_MENU.get(), PotScreen::new);
+        MenuScreens.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -84,6 +86,11 @@ public class ClientEvent {
         event.registerSpriteSet(ParticleHandler.BLACK_FLAT.get(), BlackFlatParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.CYCLE_WIND.get(), CycleWindParticle.Factory::new);
         event.registerSpecial(ParticleHandler.TESLA_BULB_LIGHTNING.get(),new TeslaBulbLightningParticle.Factory());
+    }
+
+    @SubscribeEvent
+    public static void onRegisterRecipeBookCategories(RegisterRecipeBookCategoriesEvent event) {
+        RecipeCategories.init(event);
     }
 
     @SubscribeEvent
