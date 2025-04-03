@@ -25,24 +25,15 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
     private final CookingPotRecipeBookTab tab;
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
-    private final ItemStack container;
     private final float experience;
     private final int cookTime;
 
-    public StewPotRecipe(ResourceLocation id, String group,@Nullable CookingPotRecipeBookTab tab, NonNullList<Ingredient> inputItems, ItemStack output, ItemStack container, float experience, int cookTime) {
+    public StewPotRecipe(ResourceLocation id, String group,@Nullable CookingPotRecipeBookTab tab, NonNullList<Ingredient> inputItems, ItemStack output, float experience, int cookTime) {
         this.id = id;
         this.group = group;
         this.tab = tab;
         this.inputItems = inputItems;
         this.output = output;
-
-        if (!container.isEmpty()) {
-            this.container = container;
-        } else if (!output.getCraftingRemainingItem().isEmpty()) {
-            this.container = output.getCraftingRemainingItem();
-        } else {
-            this.container = ItemStack.EMPTY;
-        }
 
         this.experience = experience;
         this.cookTime = cookTime;
@@ -71,10 +62,6 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
     @Override
     public ItemStack getResultItem(RegistryAccess access) {
         return this.output;
-    }
-
-    public ItemStack getOutputContainer() {
-        return this.container;
     }
 
     @Override
@@ -133,8 +120,7 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
         if (!getGroup().equals(that.getGroup())) return false;
         if (tab != that.tab) return false;
         if (!inputItems.equals(that.inputItems)) return false;
-        if (!output.equals(that.output)) return false;
-        return container.equals(that.container);
+        return (output.equals(that.output));
     }
 
     public static class Serializer implements RecipeSerializer<StewPotRecipe>
@@ -154,10 +140,9 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
                 final String tabKeyIn = GsonHelper.getAsString(json, "recipe_book_tab", null);
                 final CookingPotRecipeBookTab tabIn = CookingPotRecipeBookTab.findByName(tabKeyIn);
                 final ItemStack outputIn = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(json, "result"), true);
-                ItemStack container = GsonHelper.isValidNode(json, "container") ? CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(json, "container"), true) : ItemStack.EMPTY;
                 final float experienceIn = GsonHelper.getAsFloat(json, "experience", 0.0F);
                 final int cookTimeIn = GsonHelper.getAsInt(json, "cookingtime", 200);
-                return new StewPotRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, container, experienceIn, cookTimeIn);
+                return new StewPotRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, experienceIn, cookTimeIn);
             }
         }
 
@@ -187,10 +172,9 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
             }
 
             ItemStack outputIn = buffer.readItem();
-            ItemStack container = buffer.readItem();
             float experienceIn = buffer.readFloat();
             int cookTimeIn = buffer.readVarInt();
-            return new StewPotRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, container, experienceIn, cookTimeIn);
+            return new StewPotRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, experienceIn, cookTimeIn);
         }
 
         @Override
@@ -204,7 +188,6 @@ public class StewPotRecipe implements Recipe<RecipeWrapper> {
             }
 
             buffer.writeItem(recipe.output);
-            buffer.writeItem(recipe.container);
             buffer.writeFloat(recipe.experience);
             buffer.writeVarInt(recipe.cookTime);
         }

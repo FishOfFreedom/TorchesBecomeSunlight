@@ -4,8 +4,8 @@ import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotMenu;
 import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
-import com.freefish.torchesbecomesunlight.server.init.recipe.StewPotRecipe;
-import com.freefish.torchesbecomesunlight.server.init.recipe.RecipesHandle;
+import com.freefish.torchesbecomesunlight.server.init.recipe.*;
+import com.freefish.torchesbecomesunlight.server.item.food.DishAttribute;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -43,10 +44,12 @@ import java.util.List;
 import java.util.Optional;
 public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
     public static final int OUTPUT_SLOT = 9;
-    public static final int INVENTORY_SIZE = OUTPUT_SLOT + 1;
+    public static final int DECORATE_SHOT = 3;
+    public static final int INVENTORY_SIZE = OUTPUT_SLOT + DECORATE_SHOT + 1;
 
     private final ItemStackHandler inventory;
     private final LazyOptional<IItemHandler> inputHandler;
+    private final LazyOptional<IItemHandler> decorateHandler;
     private final LazyOptional<IItemHandler> outputHandler;
 
     private int cookTime;
@@ -64,6 +67,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         super(BlockEntityHandle.STEW_POT.get(), pos, state);
         this.inventory = createHandler();
         this.inputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.UP));
+        this.decorateHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.WEST));
         this.outputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.DOWN));
         this.mealContainerStack = ItemStack.EMPTY;
         this.cookingPotData = createIntArray();
@@ -184,12 +188,12 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
             if (resultStack.isEmpty()) {
                 return false;
             } else {
-                ItemStack storedMealStack = inventory.getStackInSlot(OUTPUT_SLOT);
+                ItemStack storedMealStack = inventory.getStackInSlot(OUTPUT_SLOT+DECORATE_SHOT);
                 if (storedMealStack.isEmpty()) {
                     return true;
                 } else if (!ItemStack.isSameItem(storedMealStack, resultStack)) {
                     return false;
-                } else if (storedMealStack.getCount() + resultStack.getCount() <= inventory.getSlotLimit(OUTPUT_SLOT)) {
+                } else if (storedMealStack.getCount() + resultStack.getCount() <= inventory.getSlotLimit(OUTPUT_SLOT+DECORATE_SHOT)) {
                     return true;
                 } else {
                     return storedMealStack.getCount() + resultStack.getCount() <= resultStack.getMaxStackSize();
@@ -203,22 +207,24 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
     private boolean processCooking(StewPotRecipe recipe, StewPotBlockEntity cookingPot) {
         if (level == null) return false;
 
-        ++cookTime;
         cookTimeTotal = recipe.getCookTime();
+        ItemStack storedMealStack = inventory.getStackInSlot(OUTPUT_SLOT+DECORATE_SHOT);
+
         if (cookTime < cookTimeTotal) {
+            ++cookTime;
             return false;
         }
 
-        cookTime = 0;
-        mealContainerStack = recipe.getOutputContainer();
-        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
-        ItemStack storedMealStack = inventory.getStackInSlot(OUTPUT_SLOT);
         if (storedMealStack.isEmpty()) {
-            inventory.setStackInSlot(OUTPUT_SLOT, resultStack.copy());
-        } else if (ItemStack.isSameItem(storedMealStack, resultStack)) {
-            storedMealStack.grow(resultStack.getCount());
+            cookTime = 0;
+            ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
+            inventory.setStackInSlot(OUTPUT_SLOT+DECORATE_SHOT, resultStack.copy());
+        }else {
+            return false;
         }
         cookingPot.setRecipeUsed(recipe);
+
+        decorateFinalFood();
 
         for (int i = 0; i < OUTPUT_SLOT; ++i) {
             ItemStack slotStack = inventory.getStackInSlot(i);
@@ -228,7 +234,27 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
             if (!slotStack.isEmpty())
                 slotStack.shrink(1);
         }
+
         return true;
+    }
+
+    private void decorateFinalFood(){
+        FoodValues foodValues = FoodValues.create();
+        for (int i = 0; i < OUTPUT_SLOT; ++i) {
+            ItemStack slotStack = inventory.getStackInSlot(i);
+            FoodValues foodValuesTemp = FoodValuesDefinition.getFoodValues(slotStack, level);
+            for(FoodCategory category:FoodCategory.values()){
+                foodValues.add(category,foodValuesTemp.get(category));
+            }
+            for(MobEffect effect:foodValuesTemp.getEffects()){
+                foodValues.putEffect(effect);
+            }
+        }
+
+        DishAttribute dishAttribute = new DishAttribute(foodValues,1);
+        ItemStack finalDish = inventory.getStackInSlot(OUTPUT_SLOT + DECORATE_SHOT);
+        CompoundTag orCreateTag = finalDish.getOrCreateTag();
+        orCreateTag.put("tbsdish",dishAttribute.save());
     }
 
     protected void ejectIngredientRemainder(ItemStack remainderStack) {
@@ -281,13 +307,13 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public ItemStack getMeal() {
-        return inventory.getStackInSlot(OUTPUT_SLOT);
+        return inventory.getStackInSlot(OUTPUT_SLOT+DECORATE_SHOT);
     }
 
     public NonNullList<ItemStack> getDroppableInventory() {
         NonNullList<ItemStack> drops = NonNullList.create();
         for (int i = 0; i < INVENTORY_SIZE; ++i) {
-            if (i != OUTPUT_SLOT) {
+            if (i != OUTPUT_SLOT+DECORATE_SHOT) {
                 drops.add(inventory.getStackInSlot(i));
             }
         }
@@ -314,8 +340,10 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         if (cap.equals(ForgeCapabilities.ITEM_HANDLER)) {
             if (side == null || side.equals(Direction.UP)) {
                 return inputHandler.cast();
-            } else {
+            } else if(side.equals(Direction.DOWN)) {
                 return outputHandler.cast();
+            } else {
+                return decorateHandler.cast();
             }
         }
         return super.getCapability(cap, side);
@@ -326,6 +354,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         super.setRemoved();
         inputHandler.invalidate();
         outputHandler.invalidate();
+        decorateHandler.invalidate();
     }
 
     @Override
@@ -338,7 +367,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         {
             @Override
             protected void onContentsChanged(int slot) {
-                if (slot >= 0 && slot < OUTPUT_SLOT) {
+                if (slot >= 0 && slot < OUTPUT_SLOT+DECORATE_SHOT) {
                     checkNewRecipe = true;
                 }
                 inventoryChanged();

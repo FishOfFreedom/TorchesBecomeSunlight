@@ -27,7 +27,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
     protected final Level level;
 
     public StewPotMenu(final int windowId, final Inventory playerInventory, final FriendlyByteBuf data) {
-        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(4));
+        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(5));
     }
 
     public StewPotMenu(final int windowId, final Inventory playerInventory, final StewPotBlockEntity blockEntity, ContainerData cookingPotDataIn) {
@@ -52,14 +52,23 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
             }
         }
 
+        // Decorate
+        inputStartX = 6;
+        inputStartY = -19;
+        for (int row = 0; row < 3; ++row) {
+            this.addSlot(new SlotItemHandler(inventory, 9+row,
+                    inputStartX,
+                    inputStartY + (row * borderSlotSize)));
+        }
+
         // Output
-        this.addSlot(new CookingPotResultSlot(playerInventory.player, blockEntity, inventory, 9, 124, 55));
+        this.addSlot(new CookingPotResultSlot(playerInventory.player, blockEntity, inventory, 12, 124, 55));
 
         // Main Player Inventory
         int startPlayerInvY = startY * 4 + 12;
         for (int row = 0; row < 3; ++row) {
             for (int column = 0; column < 9; ++column) {
-                this.addSlot(new Slot(playerInventory, 9 + (row * 9) + column, startX + (column * borderSlotSize),
+                this.addSlot(new Slot(playerInventory, 12 + (row * 9) + column, startX + (column * borderSlotSize),
                         startPlayerInvY + (row * borderSlotSize)));
             }
         }
@@ -90,7 +99,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         int indexMealDisplay = 9;
-        int indexOutput = 9;
+        int indexOutput = 12;
         int startPlayerInv = indexOutput + 1;
         int endPlayerInv = startPlayerInv + 36;
         ItemStack slotStackCopy = ItemStack.EMPTY;
@@ -144,7 +153,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
 
     @Override
     public void clearCraftingContent() {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 12; i++) {
             this.inventory.setStackInSlot(i, ItemStack.EMPTY);
         }
     }
@@ -156,7 +165,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
 
     @Override
     public int getResultSlotIndex() {
-        return 7;
+        return 12;
     }
 
     @Override
@@ -166,12 +175,12 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
 
     @Override
     public int getGridHeight() {
-        return 2;
+        return 4;
     }
 
     @Override
     public int getSize() {
-        return 7;
+        return 13;
     }
 
     @Override

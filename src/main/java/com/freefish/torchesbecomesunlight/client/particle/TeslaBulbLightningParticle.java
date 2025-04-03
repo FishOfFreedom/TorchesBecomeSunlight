@@ -12,6 +12,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
@@ -87,7 +88,7 @@ public class TeslaBulbLightningParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return TBSParticleRenderType.BLOOM;
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -17,7 +17,7 @@ public class GunKnightPatriotRenderer extends GeoEntityRenderer<GunKnightPatriot
     public GunKnightPatriotRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new GunKnightPatriotModel());
         addRenderLayer(new DialogueIconLayer(this));
-        addRenderLayer(new PulsatingGlowLayer<GunKnightPatriot>(this, GunKnightPatriotModel.TEXTURE_GLOW, 0.1F, 1.0F, 0.25F,GunKnightPatriot::changeHalberd));
+        addRenderLayer(new PulsatingGlowLayer<GunKnightPatriot>(this, GunKnightPatriotModel.TEXTURE_GLOW, 0.1F, 1.0F, 0.25F,gunKnightPatriot -> true));
     }
 
     @Override

@@ -105,16 +105,7 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         boolean attack = super.hurt(source, damage);
         if (attack) {
             if (getHealth() <= 0.0F) {
-                if(this instanceof IAwardEntity iAwardEntity){
-                    AnimationAct awardAnimation = iAwardEntity.getAwardAnimation();
-                    if(awardAnimation!=null&&iAwardEntity.getIsAward()==source.getEntity()){
-                        setHealth(getMaxHealth());
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this, awardAnimation);
-                    }
-                    else if(getDeathAnimation()!=null)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this, getDeathAnimation());
-                }
-                else if(getDeathAnimation()!=null)
+                if(getDeathAnimation()!=null)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this, getDeathAnimation());
             }
         }

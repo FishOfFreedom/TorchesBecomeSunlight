@@ -1,19 +1,27 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
+import static com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils.getMobEffects;
+
 public class FoodValues {
     private static final FoodCategory[] CATEGORIES = FoodCategory.values();
     private final float[] values = new float[CATEGORIES.length];
+    private final Set<MobEffect> effects = new HashSet<>();
     private int size;
 
     private FoodValues() {
@@ -71,6 +79,18 @@ public class FoodValues {
         return Math.max(values[category.ordinal()], 0.0F);
     }
 
+    public void putEffect(MobEffect mobEffect){
+        this.effects.add(mobEffect);
+    }
+
+    public Set<MobEffect> getEffects() {
+        return effects;
+    }
+
+    public float[] getFoodValues() {
+        return values;
+    }
+
     public boolean has(FoodCategory category) {
         if (category == null) {
             return false;
@@ -88,6 +108,17 @@ public class FoodValues {
         }
         boolean hasOldValue = this.has(category);
         values[category.ordinal()] = value;
+        if (!hasOldValue) {
+            size++;
+        }
+    }
+
+    public void add(FoodCategory category, float value) {
+        if (category == null) {
+            return;
+        }
+        boolean hasOldValue = this.has(category);
+        values[category.ordinal()] += value;
         if (!hasOldValue) {
             size++;
         }
@@ -124,12 +155,15 @@ public class FoodValues {
         return builder.build();
     }
 
-    public static FoodValues fromJson(JsonElement json) {
+    public static FoodValues fromJson(JsonElement json, JsonElement jsonArray) {
         if (json == null || json.isJsonNull()) {
             throw new JsonSyntaxException("Json cannot be null");
         }
         if (!json.isJsonObject()) {
             throw new JsonSyntaxException("Expected food value to be an object, was " + GsonHelper.getType(json));
+        }
+        if (!jsonArray.isJsonArray()) {
+            throw new JsonSyntaxException("Expected food effect to be an array, was " + GsonHelper.getType(json));
         }
         final FoodValues foodValues = create();
         JsonObject obj = json.getAsJsonObject();
@@ -143,6 +177,12 @@ public class FoodValues {
             }
             foodValues.put(FoodCategory.valueOf(category), entry.getValue().getAsFloat());
         });
+
+        JsonArray jsonEffects = jsonArray.getAsJsonArray();
+        jsonEffects.forEach(entry -> {
+            foodValues.putEffect(getMobEffects(entry.getAsString()));
+        });
+
         return foodValues;
     }
 
@@ -160,6 +200,12 @@ public class FoodValues {
             float value = buffer.readFloat();
             foodValues.put(category, value);
         }
+
+        var effectTag = buffer.readNbt();
+        for(String key: effectTag.getAllKeys()){
+            foodValues.putEffect(getMobEffects(effectTag.getString(key)));
+        }
+
         return foodValues;
     }
 
@@ -170,5 +216,12 @@ public class FoodValues {
             buffer.writeEnum(entry.getKey());
             buffer.writeFloat(entry.getValue());
         });
+        CompoundTag effectTag = new CompoundTag();
+        int i = 0;
+        for(MobEffect mobEffect:effects){
+            effectTag.putString(String.valueOf(i), ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString());
+            i++;
+        }
+        buffer.writeNbt(effectTag);
     }
 }

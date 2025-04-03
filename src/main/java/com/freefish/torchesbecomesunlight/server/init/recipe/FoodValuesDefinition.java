@@ -1,17 +1,22 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -112,6 +117,12 @@ public class FoodValuesDefinition implements Recipe<Container> {
         });
     }
 
+    @Nonnull
+    public static FoodValuesDefinition getFoodDefinition(ItemStack stack, Level level) {
+        var allDefs = level.getRecipeManager().getRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get(), new SimpleContainer(stack), level);
+        return allDefs.stream().filter(FoodValuesDefinition::isItem).findFirst().get();
+    }
+
     public static Set<ItemStack> getMatchedItems(FoodCategory category, Level level) {
         // make vanilla items and Crock Pot mod items at the top of the collection
         var builder = ImmutableSortedSet.orderedBy(
@@ -159,7 +170,7 @@ public class FoodValuesDefinition implements Recipe<Container> {
     public static class Serializer implements RecipeSerializer<FoodValuesDefinition> {
         @Override
         public FoodValuesDefinition fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            var foodValues = FoodValues.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "values"));
+            var foodValues = FoodValues.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "values"),GsonHelper.getAsJsonArray(serializedRecipe, "effects"));
             if (serializedRecipe.has("items") && serializedRecipe.has("tags")) {
                 throw new JsonParseException("A food value definition entry needs either tags or items, not both");
             } else if (serializedRecipe.has("items") || serializedRecipe.has("tags")) {
@@ -182,7 +193,8 @@ public class FoodValuesDefinition implements Recipe<Container> {
                 names.add(buffer.readResourceLocation());
             }
             var foodValues = FoodValues.fromNetwork(buffer);
-            return new FoodValuesDefinition(recipeId, names, foodValues, isItem);
+
+            return new FoodValuesDefinition(recipeId , names, foodValues, isItem);
         }
 
         @Override

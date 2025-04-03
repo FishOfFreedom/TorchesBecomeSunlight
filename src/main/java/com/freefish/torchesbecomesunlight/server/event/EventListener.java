@@ -12,7 +12,11 @@ import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.F
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.DialogueTriggerMessage;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.init.generator.CustomResourceKey;
+import com.freefish.torchesbecomesunlight.server.init.recipe.FoodCategory;
+import com.freefish.torchesbecomesunlight.server.init.recipe.FoodValues;
+import com.freefish.torchesbecomesunlight.server.item.food.DishAttribute;
 import com.freefish.torchesbecomesunlight.server.item.food.TBSFood;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
@@ -20,8 +24,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -35,6 +43,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 public final class EventListener {
     @SubscribeEvent(priority = EventPriority.LOW)
@@ -181,6 +190,11 @@ public final class EventListener {
             PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability((Player) event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
             if (playerCapability != null) playerCapability.addedToWorld(event);
         }
+
+        if(event.getEntity() instanceof LivingEntity){
+            FrozenCapability.IFrozenCapability playerCapability = CapabilityHandle.getCapability(event.getEntity(), CapabilityHandle.FROZEN_CAPABILITY);
+            if (playerCapability != null) playerCapability.joinWorld(event);
+        }
     }
 
     @SubscribeEvent
@@ -193,16 +207,24 @@ public final class EventListener {
         ItemStack usedItem = event.getItem();
         if (!usedItem.isEdible() && usedItem.getItem() != Items.CAKE)
             return;
-        if(usedItem.getItem() instanceof TBSFood tbsFood){
-            eat(usedItem,tbsFood,player);
-        }
+        //if(usedItem.getItem() instanceof TBSFood tbsFood){
+        eat(usedItem,usedItem.getItem(),player);
+        //}
     }
 
-    public void eat(ItemStack foodStack,TBSFood tbsFood, Player player) {
+    public void eat(ItemStack foodStack, Item tbsFood, Player player) {
         CompoundTag tag = foodStack.getOrCreateTag();
-        if(tag.contains("bao")){
-            int bao = tag.getInt("bao");
-            player.getFoodData().eat(bao,1);
+        if(!player.level().isClientSide&& tag.contains("tbsdish")){
+            CompoundTag bao = tag.getCompound("tbsdish");
+            DishAttribute dishAttribute = new DishAttribute(bao);
+            FoodValues foodValues = dishAttribute.getFoodValues();
+            FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(player,CapabilityHandle.FROZEN_CAPABILITY);
+            if(data!=null){
+                data.onEffectUpdated(player,foodValues.get(FoodCategory.MEAT),foodValues.get(FoodCategory.FISH),foodValues.get(FoodCategory.EGG),foodValues.get(FoodCategory.VEGGIE));
+                if(player.hasEffect(EffectHandle.FULL_OF_ENERGY.get()))
+                    data.setCanDeleteDish(false);
+                player.forceAddEffect(new MobEffectInstance(EffectHandle.FULL_OF_ENERGY.get(),240,1),player);
+            }
         }
     }
 }

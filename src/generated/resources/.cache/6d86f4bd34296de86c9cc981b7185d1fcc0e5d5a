@@ -1,5 +1,3 @@
-// 1.20.1	2024-11-21T08:46:20.7597437	Block States: torchesbecomesunlight
-b848b7c9d33c7167f0eddb8f51abb1746ce536a7 assets/torchesbecomesunlight/blockstates/gem_polishing_station.json
-3a8b6d06f1a7d42dc21fd83cf4efe8719400aa1f assets/torchesbecomesunlight/blockstates/pot.json
-70a3491f16f88647b83269aefe5b15b0d04061e1 assets/torchesbecomesunlight/models/item/gem_polishing_station.json
-6987356787860335e35dbed65c607b84e82390fc assets/torchesbecomesunlight/models/item/pot.json
+// 1.20.1	2025-03-30T00:21:23.430208	Block States: torchesbecomesunlight
+9a657fd16422276d71c42ffde27f47e42f868886 assets/torchesbecomesunlight/blockstates/stew_pot.json
+9c98d00261c86d47b9c8534cb184ace308b95db0 assets/torchesbecomesunlight/models/item/stew_pot.json

@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 
 public enum AbilityHandler {
     INSTANCE;
-
     public static final AbilityType<Player, UseHalberdAbility> USE_HALBERD_ABILITY = new AbilityType<>("use_halberd_ability", UseHalberdAbility::new);
 
     public static final AbilityType<Player, ? extends PlayerAbility>[] PLAYER_ABILITIES = new AbilityType[] {

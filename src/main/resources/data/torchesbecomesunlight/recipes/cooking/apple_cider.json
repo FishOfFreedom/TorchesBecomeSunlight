@@ -11,10 +11,16 @@
     },
     {
       "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:sugar"
     }
   ],
   "recipe_book_tab": "meals",
   "result": {
-    "item": "torchesbecomesunlight:halberd"
+    "item": "minecraft:apple"
   }
 }

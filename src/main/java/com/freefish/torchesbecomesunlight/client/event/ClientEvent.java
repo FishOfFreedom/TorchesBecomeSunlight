@@ -32,6 +32,7 @@ public class ClientEvent {
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(EntityHandle.FROST_NOVA.get(), SnowNovaRenderer::new);
         event.registerEntityRenderer(EntityHandle.SHIELD_GUARD.get(), ShieldGuardRenderer::new);
+        event.registerEntityRenderer(EntityHandle.SAINT_GUARD.get(), SaintGuardRenderer::new);
         event.registerEntityRenderer(EntityHandle.MANGLER.get(), ManglerRenderer::new);
         event.registerEntityRenderer(EntityHandle.MALE.get(), ManRenderer::new);
         event.registerEntityRenderer(EntityHandle.FEMALE.get(), WomanRenderer::new);
@@ -85,6 +86,7 @@ public class ClientEvent {
         event.registerSpriteSet(ParticleHandler.BLADE.get(), BladeParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.BLACK_FLAT.get(), BlackFlatParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.CYCLE_WIND.get(), CycleWindParticle.Factory::new);
+        event.registerSpriteSet(ParticleHandler.WIND.get(), WindParticle.Factory::new);
         event.registerSpecial(ParticleHandler.TESLA_BULB_LIGHTNING.get(),new TeslaBulbLightningParticle.Factory());
     }
 

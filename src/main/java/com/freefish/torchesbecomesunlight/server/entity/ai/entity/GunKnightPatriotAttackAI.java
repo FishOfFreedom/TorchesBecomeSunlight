@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity;
 
 
+import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
@@ -34,7 +35,7 @@ public class GunKnightPatriotAttackAI extends Goal {
     @Override
     public boolean canUse() {
         LivingEntity target = this.patriot.getTarget();
-        return target != null && target.isAlive();
+        return target != null && target.isAlive()&& patriot.getSpawnState()!= ITwoStateEntity.State.TWO;
     }
 
     @Override

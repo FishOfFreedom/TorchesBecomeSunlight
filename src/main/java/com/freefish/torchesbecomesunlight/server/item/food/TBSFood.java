@@ -5,7 +5,7 @@ import net.minecraft.world.item.Item;
 
 public class TBSFood extends Item {
     public TBSFood(Properties pProperties) {
-        super(pProperties.food(new FoodProperties.Builder().build()));
+        super(pProperties.food(new FoodProperties.Builder().build()).stacksTo(1));
     }
 
     @Override

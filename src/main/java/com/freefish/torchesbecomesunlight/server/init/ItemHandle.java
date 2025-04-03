@@ -6,6 +6,7 @@ import com.freefish.torchesbecomesunlight.server.item.armor.WinterScratchItem;
 import com.freefish.torchesbecomesunlight.server.item.food.CustomFoodProperties;
 import com.freefish.torchesbecomesunlight.server.item.food.TBSFood;
 import com.freefish.torchesbecomesunlight.server.item.help.AnimationItem;
+import com.freefish.torchesbecomesunlight.server.item.help.TwoStateSpawnEggItem;
 import com.freefish.torchesbecomesunlight.server.item.weapon.*;
 import com.freefish.torchesbecomesunlight.server.item.help.TestItem;
 import net.minecraft.network.chat.Component;
@@ -98,7 +99,11 @@ public class ItemHandle {
 
     public static final RegistryObject<SpawnEggItem> GUN_PATRIOT_EGG =
             ITEMS.register("gun_patriot_egg", () ->
-                    new ForgeSpawnEggItem(EntityHandle.GUN_KNIGHT_PATRIOT, 0X6d5f20, 0Xf30f0f, new Item.Properties()));
+                    new TwoStateSpawnEggItem(EntityHandle.GUN_KNIGHT_PATRIOT, 0X6d5f20, 0Xf30f0f, new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> SAINT_GUARD_EGG =
+            ITEMS.register("saint_guard_egg", () ->
+                    new ForgeSpawnEggItem(EntityHandle.SAINT_GUARD, 0X6d5f20, 0Xf30f0f, new Item.Properties()));
 
     public static final RegistryObject<SpawnEggItem> SNOW_NOVA_EGG =
             ITEMS.register("frost_nova_egg", () ->

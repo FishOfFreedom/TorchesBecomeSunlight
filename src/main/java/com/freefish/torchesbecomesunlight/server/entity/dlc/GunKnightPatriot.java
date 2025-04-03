@@ -1,6 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
+import com.freefish.torchesbecomesunlight.server.entity.ai.entity.HalberdKnightPatriotAttackAI;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
@@ -40,7 +44,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -55,10 +58,10 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -72,7 +75,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob {
+public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , ITwoStateEntity {
     public static final AnimationAct<GunKnightPatriot> ATTACK1 = new AnimationAct<GunKnightPatriot>("attack_1",44){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
@@ -280,12 +283,22 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             entity.setYRot(entity.yRotO);
         }
     };
-    public static final AnimationAct<GunKnightPatriot> STATE_2 = new AnimationAct<GunKnightPatriot>("1to2",169){
+    public static final AnimationAct<GunKnightPatriot> STATE_2 = new AnimationAct<GunKnightPatriot>("1to2",120){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
+            if(tick<10){
+                entity.setHealth(entity.getMaxHealth()*(tick+1)/10f);
+            }
             entity.locateEntity();
             entity.setYRot(entity.yRotO);
+        }
+
+        @Override
+        public void stop(GunKnightPatriot entity) {
+            entity.setSpawnState(State.TWO);
+            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),new InitClientEntityMessage(entity,InitClientEntityMessage.InitDataType.ISTWOSTATE));
+            super.stop(entity);
         }
     };
     public static final AnimationAct<GunKnightPatriot> SHIELD = new AnimationAct<GunKnightPatriot>("shield_attack",25){
@@ -478,27 +491,48 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     };
     public static final AnimationAct<GunKnightPatriot> DIE = new AnimationAct<GunKnightPatriot>("death",45,1);
 
+    public static final AnimationAct<GunKnightPatriot> WIND_MILL = new AnimationAct<GunKnightPatriot>("skill_halberd_1",205){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            entity.setYRot(entity.yRotO);
+            int tick = entity.getAnimationTick();
+            entity.locateEntity();
+            if (tick == 17){
+                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
+                stompEntity.setPos(entity.position());
+                entity.level().addFreshEntity(stompEntity);
+            }
+        }
+    };
+
     private static final AnimationAct[] ANIMATIONS = {
-            NO_ANIMATION,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
+            NO_ANIMATION,WIND_MILL
+            ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
             ,GUN1TO2,GUN1TO3,GUN3TO1,GUN2TO1,ATTACK1,ATTACK2,ATTACK3,SHIELD,STATE_2,STOMP,ARTILLERY_1,SHOTGUN_1,MACHINE_GUN_1,SKILL_LOOP,SKILL_END,DIE
     };
 
-    public boolean isCanBeAttacking = false;
-
-    @OnlyIn(Dist.CLIENT)
-    public Vec3[] clientVectors;
-
-    public int time=0;
-    private LivingEntity dialogueLivingEntity;
-
-    private final List<DemonCounter> demonCounterList = new ArrayList<>();
+    private static ParticleComponent.KeyTrack SUN = new ParticleComponent.KeyTrack(new float[] {0,1,1,0}, new float[] {0,0.25f,0.75f, 1});
 
     private static final EntityDataAccessor<Float> TARGET_POSX = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TARGET_POSY = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TARGET_POSZ = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> IS_GLOWING = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> PREDICATE = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> GUN_MODE = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IS_RUN = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.BOOLEAN);
+
+    @OnlyIn(Dist.CLIENT)
+    public Vec3[] clientVectors;
+
+    private final AnimationController<GunKnightPatriot> animationController1 = new AnimationController<GunKnightPatriot>(this, "HandController", 5, this::basicHandAnimation);
+    private final AnimationController<GunKnightPatriot> animationController2 = new AnimationController<GunKnightPatriot>(this, "GunController", 5, this::basicGunAnimation);
+    private final AnimationController<GunKnightPatriot> animationController3 = new AnimationController<GunKnightPatriot>(this, "Wind", 5, this::wingAnimation);
+
+    public int time=0;
+    private LivingEntity dialogueLivingEntity;
+    private final List<DemonCounter> demonCounterList = new ArrayList<>();
+    public boolean isCanBeAttacking = false;
+    private State spawnState = State.NATURE;
+    private int holyBulletAmount = 0;
 
     private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this,4);
 
@@ -512,6 +546,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(2, new GunKnightPatriotAttackAI(this));
+        this.goalSelector.addGoal(2, new HalberdKnightPatriotAttackAI(this));
 
         //this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
         //this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
@@ -523,22 +558,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     @Override
-    public boolean hasBossBar() {
-        return true;
-    }
-
-    @Override
-    public BossEvent.BossBarColor bossBarColor() {
-        return BossEvent.BossBarColor.WHITE;
-    }
-
-    private int holyBulletAmount = 0;
-
-    private static ParticleComponent.KeyTrack SUN = new ParticleComponent.KeyTrack(new float[] {0,1,1,0}, new float[] {0,0.25f,0.75f, 1});
-
-    @Override
     public void tick() {
         super.tick();
+        if(tickCount == 1&&!level().isClientSide)
+            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this),new InitClientEntityMessage(this,InitClientEntityMessage.InitDataType.ISTWOSTATE));
 
         for(int i = 0;i<demonCounterList.size();i++){
             DemonCounter demonCounter = demonCounterList.get(i);
@@ -589,6 +612,140 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
+        if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
+        Entity entitySource = source.getDirectEntity();
+
+        if(getAnimation()==STATE_2) return false;
+
+        if (entitySource != null){
+            return attackWithShield(source, amount);
+        }
+        else if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return super.hurt(source, amount);
+        }
+        return false;
+    }
+
+    @Override
+    public AnimationAct getDeathAnimation() {
+        if(getSpawnState()!=State.NATURE){
+            return DIE;
+        }else {
+            setHealth(1);
+            return STATE_2;
+        }
+    }
+
+    public boolean attackWithShield(DamageSource source, float amount){
+        Entity entitySource = source.getDirectEntity();
+        if (entitySource != null) {
+            if (!isCanBeAttacking&&isAggressive()&&ConfigHandler.COMMON.MOBS.GUN_KNIGHT.isFrontalAttack.get()) {
+                int arc = 60;
+                float entityHitAngle = (float) ((Math.atan2(entitySource.getZ() - getZ(), entitySource.getX() - getX()) * (180 / Math.PI) - 90) % 360);
+                float entityAttackingAngle = getYRot() % 360;
+                if (entityHitAngle < 0) {
+                    entityHitAngle += 360;
+                }
+                if (entityAttackingAngle < 0) {
+                    entityAttackingAngle += 360;
+                }
+                if(Math.abs(entityAttackingAngle-entityHitAngle)<arc) {
+                    playSound(SoundEvents.SHIELD_BREAK,0.4f,2); //playSound(MMSounds.ENTITY_WROUGHT_UNDAMAGED.get(), 0.4F, 2);
+                    if(getAnimation()==NO_ANIMATION&&entitySource == getTarget()&&entitySource.distanceTo(this)<3+getTarget().getBbWidth()/2)
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(this,SHIELD);
+                    return false;
+                }
+                else
+                    return super.hurt(source, amount);
+            } else {
+                playSound(SoundEvents.SHIELD_BLOCK,0.4f,2); //playSound(MMSounds.ENTITY_WROUGHT_UNDAMAGED.get(), 0.4F, 2);
+                return super.hurt(source, amount);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(TARGET_POSX, 0f);
+        this.entityData.define(TARGET_POSY, 0f);
+        this.entityData.define(TARGET_POSZ, 0f);
+        this.entityData.define(IS_GLOWING, false);
+        this.entityData.define(GUN_MODE,0);
+        this.entityData.define(IS_RUN,false);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        Vector3f vector3f = getTargetPos();
+        compound.putFloat("targetPosX",vector3f.x);
+        compound.putFloat("targetPosY",vector3f.y);
+        compound.putFloat("targetPosZ",vector3f.z);
+        compound.putInt("gunmod", getGunMod());
+        compound.putBoolean("aggressiveg", isGlowing());
+        compound.putBoolean("isrun", isRun());
+        addAdditionalSpawnState(compound);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        float x = compound.getFloat("targetPosX");
+        float y = compound.getFloat("targetPosY");
+        float z = compound.getFloat("targetPosZ");
+        setTargetPos(new Vec3(x,y,z));
+        setGunMod(compound.getInt("gunmod"));
+        setIsGlowing(compound.getBoolean("aggressiveg"));
+        setIsRun(compound.getBoolean("isrun"));
+        readAddAdditionalSpawnState(compound);
+    }
+
+    @Override
+    public SoundEvent getBossMusic() {
+        return SoundHandle.GUN_KNIGHT_MUSIC.get();
+    }
+
+    @Override
+    public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
+        return false;
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new FFPathNavigateGround(this, level);
+    }
+
+    @Override
+    @NotNull
+    protected BodyRotationControl createBodyControl() {
+        return new FFBodyRotationControl(this);
+    }
+
+    @Override
+    public boolean canCollideWith(Entity pEntity) {
+        return false;
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 2F;
+    }
+
+    @Override
+    public boolean hasBossBar() {
+        return true;
+    }
+
+    @Override
+    public BossEvent.BossBarColor bossBarColor() {
+        return BossEvent.BossBarColor.WHITE;
+    }
+
+    @Override
     public void die(DamageSource pDamageSource) {
         super.die(pDamageSource);
         if (!this.isRemoved()) {
@@ -622,89 +779,76 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.bossInfo.setName(this.getDisplayName());
     }
 
-    public void reloadHolyBullet(int amount){
-        this.holyBulletAmount = amount;
-    }
-
-    public void consumeHolyBullet(int consume){
-        if(this.holyBulletAmount>0){
-            this.holyBulletAmount-=consume;
-            if(this.holyBulletAmount<=0){
-                setIsGlowing(false);
-            }
-        }
-        else {
-            setIsGlowing(false);
-        }
+    @Override
+    public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
-        if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
-        Entity entitySource = source.getDirectEntity();
-        if (entitySource != null){
-            return attackWithShield(source, amount);
-        }
-        else if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            return super.hurt(source, amount);
-        }
-        return false;
+    public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
+        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
+            super.forceAddEffect(effectInstance, entity);
     }
 
-    public boolean attackWithShield(DamageSource source, float amount){
-        Entity entitySource = source.getDirectEntity();
-        if (entitySource != null) {
-            if (!isCanBeAttacking&&isAggressive()&&ConfigHandler.COMMON.MOBS.GUN_KNIGHT.isFrontalAttack.get()) {
-                int arc = 60;
-                float entityHitAngle = (float) ((Math.atan2(entitySource.getZ() - getZ(), entitySource.getX() - getX()) * (180 / Math.PI) - 90) % 360);
-                float entityAttackingAngle = getYRot() % 360;
-                if (entityHitAngle < 0) {
-                    entityHitAngle += 360;
-                }
-                if (entityAttackingAngle < 0) {
-                    entityAttackingAngle += 360;
-                }
-                if(Math.abs(entityAttackingAngle-entityHitAngle)<arc) {
-                    playSound(SoundEvents.SHIELD_BREAK,0.4f,2); //playSound(MMSounds.ENTITY_WROUGHT_UNDAMAGED.get(), 0.4F, 2);
-                    if(getAnimation()==NO_ANIMATION&&entitySource == getTarget()&&entitySource.distanceTo(this)<3+getTarget().getBbWidth()/2)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(this,SHIELD);
-                    return false;
-                }
-                else
-                    return super.hurt(source, amount);
-            } else {
-                playSound(SoundEvents.SHIELD_BLOCK,0.4f,2); //playSound(MMSounds.ENTITY_WROUGHT_UNDAMAGED.get(), 0.4F, 2);
-                return super.hurt(source, amount);
-            }
-        }
+    @Override
+    public boolean canBeAffected(MobEffectInstance effectInstance) {
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+    }
+
+    @Override
+    public boolean displayFireAnimation() {
         return false;
     }
 
     @Override
-    public AnimationAct getDeathAnimation() {
-        return STATE_2;
-    }
-
-    @Override
-    public boolean canCollideWith(Entity pEntity) {
+    protected boolean canBePushedByEntity(Entity entity) {
         return false;
     }
 
     @Override
-    public float getStepHeight() {
-        return 2F;
+    public boolean isPushedByFluid() {
+        return false;
     }
 
     @Override
-    protected PathNavigation createNavigation(Level level) {
-        return new FFPathNavigateGround(this, level);
+    public boolean canBeLeashed(Player pPlayer) {
+        return false;
     }
 
     @Override
-    @NotNull
-    protected BodyRotationControl createBodyControl() {
-        return new FFBodyRotationControl(this);
+    protected boolean canRide(Entity pVehicle) {
+        return false;
+    }
+
+    @Override
+    public void lookAt(Entity pEntity, float pMaxYRotIncrease, float pMaxXRotIncrease) {
+        double d0 = pEntity.getX() - this.getX();
+        double d2 = pEntity.getZ() - this.getZ();
+        double d1;
+        if (pEntity instanceof LivingEntity livingentity) {
+            d1 = livingentity.getEyeY() - (getY()+1.75);
+        } else {
+            d1 = (pEntity.getBoundingBox().minY + pEntity.getBoundingBox().maxY) / 2.0D - this.getEyeY();
+        }
+
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+        float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
+        float f1 = (float)(-(Mth.atan2(d1, d3) * (double)(180F / (float)Math.PI)));
+        this.setXRot(this.rotlerp(this.getXRot(), f1, pMaxXRotIncrease));
+        this.setYRot(this.rotlerp(this.getYRot(), f, pMaxYRotIncrease));
+    }
+
+    private float rotlerp(float pAngle, float pTargetAngle, float pMaxIncrease) {
+        float f = Mth.wrapDegrees(pTargetAngle - pAngle);
+        if (f > pMaxIncrease) {
+            f = pMaxIncrease;
+        }
+
+        if (f < -pMaxIncrease) {
+            f = -pMaxIncrease;
+        }
+
+        return pAngle + f;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -721,9 +865,21 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         return ANIMATIONS;
     }
 
-    private final AnimationController<GunKnightPatriot> animationController1 = new AnimationController<GunKnightPatriot>(this, "HandController", 5, this::basicHandAnimation);
-    private final AnimationController<GunKnightPatriot> animationController2 = new AnimationController<GunKnightPatriot>(this, "GunController", 5, this::basicGunAnimation);
-    private final AnimationController<GunKnightPatriot> animationController3 = new AnimationController<GunKnightPatriot>(this, "Wind", 5, this::wingAnimation);
+    public void reloadHolyBullet(int amount){
+        this.holyBulletAmount = amount;
+    }
+
+    public void consumeHolyBullet(int consume){
+        if(this.holyBulletAmount>0){
+            this.holyBulletAmount-=consume;
+            if(this.holyBulletAmount<=0){
+                setIsGlowing(false);
+            }
+        }
+        else {
+            setIsGlowing(false);
+        }
+    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar event) {
@@ -746,21 +902,32 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     protected <T extends GeoEntity> void basicAnimation(AnimationState<T> event) {
-        if (isAggressive()) {
-            if (event.isMoving())
-                event.getController().setAnimation(RawAnimation.begin().thenLoop("march"));
-            else
-                event.getController().setAnimation(RawAnimation.begin().thenLoop("idle_aggressive"));
-        }
-        else{
-            if (event.isMoving())
-                event.getController().setAnimation(RawAnimation.begin().thenLoop("walk_peace"));
-            else
-                event.getController().setAnimation(RawAnimation.begin().thenLoop("idle_peace"));
+        if(getSpawnState()!=State.TWO){
+            if (isAggressive()) {
+                if (event.isMoving())
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("march"));
+                else
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("idle_aggressive"));
+            } else {
+                if (event.isMoving())
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("walk_peace"));
+                else
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("idle_peace"));
+            }
+        }else {
+            if(!isRun()){
+                if (event.isMoving())
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("walk_halberd"));
+                else
+                    event.getController().setAnimation(RawAnimation.begin().thenLoop("idle_halberd"));
+            } else {
+                event.getController().setAnimation(RawAnimation.begin().thenLoop("run_halberd"));
+            }
         }
     }
 
     protected PlayState basicHandAnimation(AnimationState<GunKnightPatriot> event) {
+        if(getSpawnState()==State.TWO) return PlayState.STOP;
         AnimationAct a = getAnimation();
         boolean flad = true;
 
@@ -787,6 +954,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     protected PlayState basicGunAnimation(AnimationState<GunKnightPatriot> event) {
+        if(getSpawnState()==State.TWO) return PlayState.STOP;
         AnimationAct a = getAnimation();
         boolean flad = true;
 
@@ -820,47 +988,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             return PlayState.STOP;
     }
 
-    @Override
-    public @org.jetbrains.annotations.Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @org.jetbrains.annotations.Nullable SpawnGroupData pSpawnData, @org.jetbrains.annotations.Nullable CompoundTag pDataTag) {
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_POSX, 0f);
-        this.entityData.define(TARGET_POSY, 0f);
-        this.entityData.define(TARGET_POSZ, 0f);
-        this.entityData.define(IS_GLOWING, false);
-        this.entityData.define(PREDICATE,1);
-        this.entityData.define(GUN_MODE,0);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        Vector3f vector3f = getTargetPos();
-        compound.putFloat("targetPosX",vector3f.x);
-        compound.putFloat("targetPosY",vector3f.y);
-        compound.putFloat("targetPosZ",vector3f.z);
-        compound.putInt("predicate", getPredicate());
-        compound.putInt("gunmod", getGunMod());
-        compound.putBoolean("aggressiveg", isGlowing());
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        float x = compound.getFloat("targetPosX");
-        float y = compound.getFloat("targetPosY");
-        float z = compound.getFloat("targetPosZ");
-        setTargetPos(new Vec3(x,y,z));
-        setPredicate(compound.getInt("predicate"));
-        setGunMod(compound.getInt("gunmod"));
-        setIsGlowing(compound.getBoolean("aggressiveg"));
-    }
-
-
     public void transGun(int gun){
         int gunMod = getGunMod();
         if(gunMod==gun) return;
@@ -876,16 +1003,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         if(gun==2&&gunMod==0){
             AnimationActHandler.INSTANCE.sendAnimationMessage(this,GUN1TO3);
         }
-    }
-
-    @Override
-    public SoundEvent getBossMusic() {
-        return SoundHandle.GUN_KNIGHT_MUSIC.get();
-    }
-
-    @Override
-    public boolean causeFallDamage(float pFallDistance, float pMultiplier, DamageSource pSource) {
-        return false;
     }
 
     public Vector3f getTargetPos() {
@@ -917,12 +1034,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.entityData.set(GUN_MODE,gunMod);
     }
 
-    public int getPredicate() {
-        return this.entityData.get(PREDICATE);
+    public boolean isRun() {
+        return this.entityData.get(IS_RUN);
     }
 
-    public void setPredicate(int predicate) {
-        this.entityData.set(PREDICATE, predicate);
+    public void setIsRun(boolean gunMod) {
+        this.entityData.set(IS_RUN,gunMod);
     }
 
     private void shootBlackSpearSkill(LivingEntity target,Vec3 vec3,int type) {
@@ -1090,10 +1207,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         shootBlackSpearSkill(pTarget,add,1);
     }
 
-    public boolean changeHalberd(){
-        return true;
-    }
-
     private void doSummonCheng(){
         if(getAnimation()==SUMMON_CHENG){
             int tick = getAnimationTick();
@@ -1219,70 +1332,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
-    @Override
-    public void lookAt(Entity pEntity, float pMaxYRotIncrease, float pMaxXRotIncrease) {
-        double d0 = pEntity.getX() - this.getX();
-        double d2 = pEntity.getZ() - this.getZ();
-        double d1;
-        if (pEntity instanceof LivingEntity livingentity) {
-            d1 = livingentity.getEyeY() - (getY()+1.75);
-        } else {
-            d1 = (pEntity.getBoundingBox().minY + pEntity.getBoundingBox().maxY) / 2.0D - this.getEyeY();
-        }
-
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
-        float f1 = (float)(-(Mth.atan2(d1, d3) * (double)(180F / (float)Math.PI)));
-        this.setXRot(this.rotlerp(this.getXRot(), f1, pMaxXRotIncrease));
-        this.setYRot(this.rotlerp(this.getYRot(), f, pMaxYRotIncrease));
-    }
-
-    private float rotlerp(float pAngle, float pTargetAngle, float pMaxIncrease) {
-        float f = Mth.wrapDegrees(pTargetAngle - pAngle);
-        if (f > pMaxIncrease) {
-            f = pMaxIncrease;
-        }
-
-        if (f < -pMaxIncrease) {
-            f = -pMaxIncrease;
-        }
-
-        return pAngle + f;
-    }
-
     public void addDemonArea(int time, Vec3 pos, int radio){
         demonCounterList.add(new DemonCounter(time,pos,radio));
-    }
-
-    @Override
-    public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
-    }
-
-    @Override
-    public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
-            super.forceAddEffect(effectInstance, entity);
-    }
-
-    @Override
-    public boolean canBeAffected(MobEffectInstance effectInstance) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
-    }
-
-    @Override
-    public boolean displayFireAnimation() {
-        return false;
-    }
-
-    @Override
-    protected boolean canBePushedByEntity(Entity entity) {
-        return false;
-    }
-
-    @Override
-    public boolean isPushedByFluid() {
-        return false;
     }
 
     @Override
@@ -1320,6 +1371,16 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 flad = true;
         }
         return flad;
+    }
+
+    @Override
+    public void setSpawnState(State spawnState) {
+        this.spawnState = spawnState;
+    }
+
+    @Override
+    public State getSpawnState() {
+        return spawnState;
     }
 
     static class DemonCounter{

@@ -36,6 +36,7 @@ public class ServerNetwork {
         registerMessage(MiddelClickMessage.class, MiddelClickMessage::serialize, MiddelClickMessage::deserialize, new MiddelClickMessage.Handler());
         registerMessage(SynNumberEntity.class, SynNumberEntity::serialize, SynNumberEntity::deserialize, new SynNumberEntity.Handler());
         registerMessage(SynCapabilityMessage.class, SynCapabilityMessage::serialize, SynCapabilityMessage::deserialize, new SynCapabilityMessage.Handler());
+        registerMessage(InitClientEntityMessage.class, InitClientEntityMessage::serialize, InitClientEntityMessage::deserialize, new InitClientEntityMessage.Handler());
     }
 
     private static  <MSG> void registerMessage(final Class<MSG> clazz, final BiConsumer<MSG, FriendlyByteBuf> encoder, final Function<FriendlyByteBuf, MSG> decoder, final BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {

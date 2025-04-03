@@ -36,15 +36,8 @@ public class CookingPotRecipeBookComponent extends RecipeBookComponent
 	public void setupGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
 		ItemStack resultStack = recipe.getResultItem(this.minecraft.level.registryAccess());
 		this.ghostRecipe.setRecipe(recipe);
-		if (slots.get(6).getItem().isEmpty()) {
-			this.ghostRecipe.addIngredient(Ingredient.of(resultStack), (slots.get(6)).x, (slots.get(6)).y);
-		}
-
-		if (recipe instanceof StewPotRecipe cookingRecipe) {
-			ItemStack containerStack = cookingRecipe.getOutputContainer();
-			if (!containerStack.isEmpty()) {
-				this.ghostRecipe.addIngredient(Ingredient.of(containerStack), (slots.get(7)).x, (slots.get(7)).y);
-			}
+		if (slots.get(12).getItem().isEmpty()) {
+			this.ghostRecipe.addIngredient(Ingredient.of(resultStack), (slots.get(12)).x, (slots.get(12)).y);
 		}
 
 		this.placeRecipe(this.menu.getGridWidth(), this.menu.getGridHeight(), this.menu.getResultSlotIndex(), recipe, recipe.getIngredients().iterator(), 0);

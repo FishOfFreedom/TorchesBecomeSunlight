@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.server.init;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
+import com.freefish.torchesbecomesunlight.server.entity.dlc.SaintGuard;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.Turret;
 import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.*;
@@ -29,20 +30,45 @@ import net.minecraftforge.registries.RegistryObject;
 public class EntityHandle {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPE =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TorchesBecomeSunlight.MOD_ID);
-
+    //guerrillas
     public static final RegistryObject<EntityType<FrostNova>> FROST_NOVA = ENTITY_TYPE.register("frost_nova",
-            () -> EntityType.Builder.<FrostNova>of(FrostNova::new, MobCategory.CREATURE)
-                    .sized(0.5F, 2F)
+            () -> EntityType.Builder.<FrostNova>of(FrostNova::new, MobCategory.MONSTER).sized(0.5F, 2F)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "frost_nova").toString()));
 
+    public static final RegistryObject<EntityType<Patriot>> PATRIOT = ENTITY_TYPE.register("patriot",
+            () -> EntityType.Builder.<Patriot>of(Patriot::new, MobCategory.MONSTER).sized(1F, 4F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "patriot").toString()));
+
+    public static final RegistryObject<EntityType<ShieldGuard>> SHIELD_GUARD = ENTITY_TYPE.register("shield_guard",
+            () -> EntityType.Builder.<ShieldGuard>of(ShieldGuard::new, MobCategory.MONSTER).sized(1F, 2.6F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "shield_guard").toString()));
+    //ursus
+    public static final RegistryObject<EntityType<Pursuer>> PURSUER = ENTITY_TYPE.register("pursuer",
+            () -> EntityType.Builder.<Pursuer>of(Pursuer::new, MobCategory.MONSTER).sized(1F, 3.5F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "pursuer").toString()));
+    //dlc
+    public static final RegistryObject<EntityType<GunKnightPatriot>> GUN_KNIGHT_PATRIOT = ENTITY_TYPE.register("gun_knight_patriot",
+            () -> EntityType.Builder.<GunKnightPatriot>of(GunKnightPatriot::new, MobCategory.MONSTER).sized(1F, 4F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "gun_knight_patriot").toString()));
+
+    public static final RegistryObject<EntityType<SaintGuard>> SAINT_GUARD = ENTITY_TYPE.register("saint_guard",
+            () -> EntityType.Builder.<SaintGuard>of(SaintGuard::new, MobCategory.MONSTER).sized(0.6F, 0.6F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "saint_guard").toString()));
+
+    public static final RegistryObject<EntityType<Turret>> TURRET = ENTITY_TYPE.register("turret",
+            ()->EntityType.Builder.<Turret>of(Turret::new, MobCategory.CREATURE).sized(1F, 2F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"turret").toString()));
+    //animal
+    public static final RegistryObject<EntityType<Mangler>> MANGLER = ENTITY_TYPE.register("mangler",
+            () -> EntityType.Builder.<Mangler>of(Mangler::new, MobCategory.AMBIENT).sized(1F, 1F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "mangler").toString()));
+    //villager
     public static final RegistryObject<EntityType<MaleVillager>> MALE = ENTITY_TYPE.register("male_villager",
-            () -> EntityType.Builder.<MaleVillager>of(MaleVillager::new, MobCategory.CREATURE)
-                    .sized(0.5F, 1.8F)
+            () -> EntityType.Builder.<MaleVillager>of(MaleVillager::new, MobCategory.MONSTER).sized(0.5F, 1.8F)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "male_villager").toString()));
 
     public static final RegistryObject<EntityType<FemaleVillager>> FEMALE = ENTITY_TYPE.register("female_villager",
-            () -> EntityType.Builder.<FemaleVillager>of(FemaleVillager::new, MobCategory.CREATURE)
-                    .sized(0.5F, 1.8F)
+            () -> EntityType.Builder.<FemaleVillager>of(FemaleVillager::new, MobCategory.MONSTER).sized(0.5F, 1.8F)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "female_villager").toString()));
 
     public static final RegistryObject<EntityType<DialogueEntity>> DIALOGUE = ENTITY_TYPE.register("dialogue",
@@ -74,10 +100,6 @@ public class EntityHandle {
             ()->EntityType.Builder.<BlackTuft>of(BlackTuft::new, MobCategory.MISC)
                     .sized(0.2F, 0.2F).updateInterval(20)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"black_tuft").toString()));
-
-    public static final RegistryObject<EntityType<Turret>> TURRET = ENTITY_TYPE.register("turret",
-            ()->EntityType.Builder.<Turret>of(Turret::new, MobCategory.CREATURE).sized(1F, 2F)
-                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"turret").toString()));
 
     public static final RegistryObject<EntityType<EntityCameraShake>> CAMERA_SHAKE = ENTITY_TYPE.register("camera_shake",
             () -> EntityType.Builder.<EntityCameraShake>of(EntityCameraShake::new, MobCategory.MISC).sized(1, 1).
@@ -119,26 +141,6 @@ public class EntityHandle {
             () -> EntityType.Builder.<EntityFallingBlock>of(EntityFallingBlock::new, MobCategory.MISC)
                     .sized(1, 1).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "falling_block").toString()));
 
-    public static final RegistryObject<EntityType<Patriot>> PATRIOT = ENTITY_TYPE.register("patriot",
-            () -> EntityType.Builder.<Patriot>of(Patriot::new, MobCategory.CREATURE)
-                    .sized(1F, 4F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "patriot").toString()));
-
-    public static final RegistryObject<EntityType<GunKnightPatriot>> GUN_KNIGHT_PATRIOT = ENTITY_TYPE.register("gun_knight_patriot",
-            () -> EntityType.Builder.<GunKnightPatriot>of(GunKnightPatriot::new, MobCategory.CREATURE)
-                    .sized(1F, 4F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "gun_knight_patriot").toString()));
-
-    public static final RegistryObject<EntityType<ShieldGuard>> SHIELD_GUARD = ENTITY_TYPE.register("shield_guard",
-            () -> EntityType.Builder.<ShieldGuard>of(ShieldGuard::new, MobCategory.CREATURE)
-                    .sized(1F, 2.6F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "shield_guard").toString()));
-
-    public static final RegistryObject<EntityType<Mangler>> MANGLER = ENTITY_TYPE.register("mangler",
-            () -> EntityType.Builder.<Mangler>of(Mangler::new, MobCategory.AMBIENT)
-                    .sized(1F, 1F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "mangler").toString()));
-
-    public static final RegistryObject<EntityType<Pursuer>> PURSUER = ENTITY_TYPE.register("pursuer",
-            () -> EntityType.Builder.<Pursuer>of(Pursuer::new, MobCategory.CREATURE)
-                    .sized(1F, 3.5F).build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "pursuer").toString()));
-
 
     @SubscribeEvent
     public static void onCreateAttributes(EntityAttributeCreationEvent event){
@@ -147,6 +149,7 @@ public class EntityHandle {
         event.put(EntityHandle.FEMALE.get(), UrsusVillager.createAttributes().build());
         event.put(EntityHandle.PATRIOT.get(), Patriot.createAttributes().build());
         event.put(EntityHandle.GUN_KNIGHT_PATRIOT.get(), GunKnightPatriot.createAttributes().build());
+        event.put(EntityHandle.SAINT_GUARD.get(), GunKnightPatriot.createAttributes().build());
         event.put(EntityHandle.PURSUER.get(), Pursuer.createAttributes().build());
         event.put(EntityHandle.SHIELD_GUARD.get(), ShieldGuard.createAttributes().build());
         event.put(EntityHandle.MANGLER.get(), Mangler.createAttributes().build());

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.torchesbecomesunlight.client.particle.WindParticle;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
@@ -83,18 +84,21 @@ public class TestItem extends Item {
             }
         }
         if(mode==Mode.PARTICLE){
-            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 2));
+            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 10));
             if(level.isClientSide){
                 //level.addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(),player.getX(),player.getY(),player.getZ(),0,2,0);
                 //level.addParticle(new CycleWindParticle.CycleWindData(player.getId()),player.getX(),player.getY(),player.getZ(),0,0,0);
-
-                for(int i =1;i<=3;i++){
-                    AdvancedParticleBase.spawnParticle(player.level(), ParticleHandler.RING_BIG.get(), player.getX(), player.getY(), player.getZ(), 0, 0, 0, false, 0, 1.57, 0, 0, 16, 1, 1, 1, 1, 0, 20, true, false, new ParticleComponent[]{
-                            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.MOTION_Y, ParticleComponent.KeyTrack.startAndEnd(0.1f*i, -0.1f*i), false),
-                            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0,1,1},new float[]{0,0.2f*i,1}), false),
-                            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, new ParticleComponent.KeyTrack(new float[]{0,8*3,16},new float[]{0,0.3f*i,1}), false)
-                    });
+                for(int i = 0;i<12;i++){
+                    level.addParticle(new WindParticle.WindData(200, 6+i/2f, 0.3f+player.getRandom().nextFloat()*0.3f, player.getRandom().nextFloat()*3.14f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, 0, 0, 0);
                 }
+
+                //for(int i =1;i<=3;i++){
+                //    AdvancedParticleBase.spawnParticle(player.level(), ParticleHandler.RING_BIG.get(), player.getX(), player.getY(), player.getZ(), 0, 0, 0, false, 0, 1.57, 0, 0, 16, 1, 1, 1, 1, 0, 20, true, false, new ParticleComponent[]{
+                //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.MOTION_Y, ParticleComponent.KeyTrack.startAndEnd(0.1f*i, -0.1f*i), false),
+                //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0,1,1},new float[]{0,0.2f*i,1}), false),
+                //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, new ParticleComponent.KeyTrack(new float[]{0,8*3,16},new float[]{0,0.3f*i,1}), false)
+                //    });
+                //}
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){

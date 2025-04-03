@@ -61,6 +61,13 @@ public class ParticleHandler {
         }
     });
 
+    public static final RegistryObject<ParticleType<WindParticle.WindData>> WIND = REG.register("wind", () -> new ParticleType<WindParticle.WindData>(false, WindParticle.WindData.DESERIALIZER) {
+        @Override
+        public Codec<WindParticle.WindData> codec() {
+            return WindParticle.WindData.CODEC(WIND.get());
+        }
+    });
+
     public static final RegistryObject<ParticleType<BladeParticle.BladeData>> BLADE = REG.register("blade", () -> new ParticleType<BladeParticle.BladeData>(false, BladeParticle.BladeData.DESERIALIZER) {
         @Override
         public Codec<BladeParticle.BladeData> codec() {

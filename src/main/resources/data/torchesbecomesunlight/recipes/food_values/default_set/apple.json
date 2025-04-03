@@ -4,6 +4,9 @@
     "minecraft:apple"
   ],
   "values": {
-    "FRUIT": 1
-  }
+    "VEGGIE": 1
+  },
+  "effects": [
+    "minecraft:speed"
+  ]
 }
