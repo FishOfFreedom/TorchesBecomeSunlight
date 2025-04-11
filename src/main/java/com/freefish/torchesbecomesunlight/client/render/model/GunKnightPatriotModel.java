@@ -9,25 +9,21 @@ import net.minecraft.util.Mth;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
-public class GunKnightPatriotModel extends GeoModel<GunKnightPatriot> {
+import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
+
+public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
     @Override
     public void setCustomAnimations(GunKnightPatriot animatable, long instanceId, AnimationState<GunKnightPatriot> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
-        CoreGeoBone head = this.getAnimationProcessor().getBone("neck");
         CoreGeoBone right_arm_rot = this.getAnimationProcessor().getBone("right_arm_rot");
+
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
-
         stateHideGroup(animatable);
-
         float headPitch= Mth.clamp(extraData.headPitch(),-30,30) * 0.017453292F;
-        if(animatable.getAnimation()!=GunKnightPatriot.STATE_2&&animatable.getSpawnState()!=ITwoStateEntity.State.TWO)
+        if(animatable.getAnimation()!=STATE_2&&animatable.getSpawnState()!=ITwoStateEntity.State.TWO)
             right_arm_rot.setRotX(headPitch);
-
-        head.setRotX(headPitch);
-        head.setRotY(extraData.netHeadYaw() * 0.017453292F);
     }
 
     private void stateHideGroup(GunKnightPatriot patriot){
@@ -37,8 +33,8 @@ public class GunKnightPatriotModel extends GeoModel<GunKnightPatriot> {
 
         CoreGeoBone halber = this.getAnimationProcessor().getBone("halber");
         CoreGeoBone halber2 = this.getAnimationProcessor().getBone("halber2");
-        halber2.setHidden(animation !=GunKnightPatriot.STATE_2);
-        halber.setHidden(animation !=GunKnightPatriot.STATE_2&&spawnState != ITwoStateEntity.State.TWO);
+        halber2.setHidden(animation !=STATE_2);
+        halber.setHidden(animation !=STATE_2&&spawnState != ITwoStateEntity.State.TWO);
 
         CoreGeoBone shield2 = this.getAnimationProcessor().getBone("shield2");
         shield2.setHidden(true);

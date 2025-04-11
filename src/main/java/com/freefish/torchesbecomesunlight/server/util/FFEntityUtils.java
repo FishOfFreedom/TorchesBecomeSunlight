@@ -101,12 +101,12 @@ public class FFEntityUtils {
     }
 
 
-    public static void doRangeAttackFX(Entity attacker,double range, double arc){
-        if(false){
+    public static void doRangeAttackFX(Entity attacker,double range, double arc,float yRot){
+        if(true){
             int RANGE = (int) Math.ceil(range);
             for (int i = -RANGE; i <= RANGE; i++) {
                 for (int j = -RANGE; j <= RANGE; j++) {
-                    float entityHitAngle = (float) ((Math.atan2(i, j) * (180 / Math.PI) - 90) % 360);
+                    float entityHitAngle = (float) ((Math.atan2(i, j) * (180 / Math.PI) - 90)+ yRot % 360) ;
                     float entityAttackingAngle = attacker.getYRot() % 360;
                     if (entityHitAngle < 0) {
                         entityHitAngle += 360;

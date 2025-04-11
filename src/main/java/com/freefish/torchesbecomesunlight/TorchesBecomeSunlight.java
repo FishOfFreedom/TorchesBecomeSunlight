@@ -37,6 +37,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.core.animation.EasingType;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashMap;
@@ -57,6 +58,7 @@ public class TorchesBecomeSunlight
     public TorchesBecomeSunlight()
     {
         GeckoLibUtil.addCustomBakedModelFactory(MOD_ID, new MowzieModelFactory());
+        GeckoLibUtil.addCustomEasingType("custom_step",value -> EasingType.easeIn((d)->1));
         GeckoLib.initialize();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 

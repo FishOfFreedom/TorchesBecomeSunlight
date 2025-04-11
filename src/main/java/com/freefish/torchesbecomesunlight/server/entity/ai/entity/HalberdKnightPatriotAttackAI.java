@@ -11,6 +11,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
+import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
 import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity.NO_ANIMATION;
 
 public class HalberdKnightPatriotAttackAI extends Goal {
@@ -46,7 +47,7 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         AnimationAct a = patriot.getAnimation();
 
         if(!(a == NO_ANIMATION)) {
-            if(a == GunKnightPatriot.MACHINE_GUN_1||a == GunKnightPatriot.ARTILLERY_1||a == GunKnightPatriot.SHOTGUN_1){
+            if(a == MACHINE_GUN_1||a == ARTILLERY_1||a == SHOTGUN_1){
                 double dist1 = this.patriot.distanceTo(target);
                 if(dist1>6)
                     walk();

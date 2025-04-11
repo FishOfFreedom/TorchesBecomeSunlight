@@ -15,18 +15,14 @@ import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.GunKnightPatriotAttackAI;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.FXEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.SacredRealmEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
 import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.Bullet;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
-import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
@@ -42,7 +38,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -75,438 +70,14 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
+
 public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , ITwoStateEntity {
-    public static final AnimationAct<GunKnightPatriot> ATTACK1 = new AnimationAct<GunKnightPatriot>("attack_1",44){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-            LivingEntity target = entity.getTarget();
-            if (target != null) {
-                entity.lookAtEntity(target);
-            } else {
-                entity.setYRot(entity.yRotO);
-            }
-            if (tick == 20) {
-                entity.isCanBeAttacking = true;
-                entity.dashForward(3,0);
-            }
-            if (tick == 22) {
-                entity.doRangeAttack(4,140,damage,true);
-                entity.doRangeKnockBack(4,140,3);
-            }
-            if(tick==32){
-                entity.isCanBeAttacking = false;
-            }
-            if(tick==32&&target!=null&&target.distanceTo(entity)<=5+target.getBbWidth()){
-                AnimationActHandler.INSTANCE.sendAnimationMessage(entity,ATTACK2);
-            }
-
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> ATTACK2 = new AnimationAct<GunKnightPatriot>("attack_2",32){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-
-            entity.locateEntity();
-            if (tick == 14){
-                StompEntity stompEntity = new StompEntity(entity.level(),8,entity,5);
-                stompEntity.setPos(entity.position());
-                entity.level().addFreshEntity(stompEntity);
-            }
-
-            if(entity.getGunMod()==2&&tick==20&&target!=null&&target.distanceTo(entity)<=5+target.getBbWidth()){
-                AnimationActHandler.INSTANCE.sendAnimationMessage(entity,ATTACK3);
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> ATTACK3 = new AnimationAct<GunKnightPatriot>("attack_3",39){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-            if (target != null) {
-                entity.lookAtEntity(target);
-            } else {
-                entity.setYRot(entity.yRotO);
-            }
-            if (tick == 12) {
-                entity.isCanBeAttacking = true;
-                entity.doRangeKnockBack(4,140,2);
-            }
-            else if(tick==23){
-                entity.playSound(SoundHandle.SHOT_GUN.get(), 1.5F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-                entity.shootShotGunBullet(target,entity.getShootPos());
-            }
-            else if(tick==40){
-                entity.isCanBeAttacking = false;
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SUMMON_TURRET = new AnimationAct<GunKnightPatriot>("summon_1",40){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null)
-                entity.lookAtEntity(target);
-            else
-                entity.setYRot(entity.yRotO);
-            RandomSource random = entity.random;
-
-            if (tick == 20) {
-                for(int i = 0 ;i<3;i++){
-                    Vec3 add = new Vec3(0, 30, 16+random.nextInt(8)).yRot(6.28f * i / 3 +0.5f -random.nextFloat()).add(entity.position());
-                    Turret.SpawnTurret(entity.level(),add,entity);
-                }
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> RELOAD = new AnimationAct<GunKnightPatriot>("reload",48){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null)
-                entity.lookAtEntity(target);
-            else
-                entity.setYRot(entity.yRotO);
-
-            if(tick==30){
-                entity.reloadHolyBullet(10);
-                entity.setIsGlowing(true);
-                entity.playSound(SoundHandle.GLOWING.get(), 1.0F, 1.0F);
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SUMMON_CHENG = new AnimationAct<GunKnightPatriot>("summon_2",85){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-            entity.locateEntity();
-            if(target!=null)
-                entity.lookAtEntity(target);
-            else
-                entity.setYRot(entity.yRotO);
-            if(tick==76&&target!=null) {
-                SacredRealmEntity sacredRealmEntity= new SacredRealmEntity(EntityHandle.SACRED_REALM.get(),entity.level());
-                sacredRealmEntity.setCaster(entity);
-                Vec3 pos = MathUtils.getFirstBlockAbove(entity.level(),target.position().add(0,-4,0),8);
-                sacredRealmEntity.setPos((int)(pos.x) + 0.5,(int)(pos.y)+0.1,(int)(pos.z)+0.5);
-                entity.level().addFreshEntity(sacredRealmEntity);
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> ALL_SHOT = new AnimationAct<GunKnightPatriot>("all_shot",73){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(tick<=20&&target!=null)
-                entity.lookAtEntity(target);
-            else
-                entity.setYRot(entity.yRotO);
-
-            if(target!=null&&tick==39){
-                entity.shootAllBullet(target, FFEntityUtils.getBodyRotVec(entity, new Vec3(-0.5, 1.7, 3)));
-            }
-
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SKILL_START = new AnimationAct<GunKnightPatriot>("skill_1",58){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            entity.setYRot(entity.yRotO);
-            if(tick==57){
-                AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SKILL_LOOP);
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SKILL_LOOP = new AnimationAct<GunKnightPatriot>("skill_1_loop",170){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            entity.setYRot(entity.yRotO);
-            LivingEntity target = entity.getTarget();
-            RandomSource random = entity.random;
-            if(entity.tickCount%4==0)
-            {
-                Vec3 pos = FFEntityUtils.getBodyRotVec(entity, new Vec3(-0.37, 3.4, 3.5));
-                Vec3 pos1 = FFEntityUtils.getBodyRotVec(entity, new Vec3(-0.37, 5.5, 4.25));
-                entity.shootBulletWithoutFace(pos1, pos, 3,2.5f,true);
-                entity.playSound(SoundHandle.ARTILLERY.get(), 1.6F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-            }
-            if(tick>20&&tick%3!=0){
-                Vec3 randomPos = entity.position().add(new Vec3(0,40,10+30*random.nextFloat()).yRot(6.28f*random.nextFloat()));
-                entity.shootBulletWithoutFace(randomPos.add(0,-1,0), randomPos, 3,1.5f,true);
-                if(tick%8==0&&target!=null&&target.distanceTo(entity)<10){
-                    Vec3 randomPos1 = target.position().add(new Vec3(0,40,4*random.nextFloat()).yRot(6.28f*random.nextFloat()));
-                    entity.shootBulletWithoutFace(randomPos1.add(0,-1,0), randomPos1, 3,2f,true);
-                }
-            }
-            if(tick==169){
-                entity.isCanBeAttacking=false;
-                AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SKILL_END);
-            }
-            if(tick==1) {
-                entity.isCanBeAttacking = true;
-            }
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SKILL_END = new AnimationAct<GunKnightPatriot>("end",32){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            entity.setYRot(entity.yRotO);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> STATE_2 = new AnimationAct<GunKnightPatriot>("1to2",120){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            if(tick<10){
-                entity.setHealth(entity.getMaxHealth()*(tick+1)/10f);
-            }
-            entity.locateEntity();
-            entity.setYRot(entity.yRotO);
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.setSpawnState(State.TWO);
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),new InitClientEntityMessage(entity,InitClientEntityMessage.InitDataType.ISTWOSTATE));
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SHIELD = new AnimationAct<GunKnightPatriot>("shield_attack",25){
-
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            float damage = (float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-            LivingEntity target = entity.getTarget();
-            if (target != null) {
-                entity.getLookControl().setLookAt(target, 30F, 30F);
-                entity.lookAt(target, 30F, 30F);
-            } else {
-                entity.setYRot(entity.yRotO);
-            }
-            if (tick == 17&&target != null) {
-                if(target.distanceTo(entity)<4+target.getBbWidth()/2) {
-                    target.hurt(entity.damageSources().mobAttack(entity), damage);
-                    target.setDeltaMovement(new Vec3(0, 0.25, 0.8).yRot((float) (-entity.getYRot() / 180 * Math.PI)));
-                }
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> STOMP = new AnimationAct<GunKnightPatriot>("stomp",31){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            if (tick == 17){
-                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
-                stompEntity.setPos(entity.position());
-                entity.level().addFreshEntity(stompEntity);
-            }
-        }
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> ARTILLERY_1 = new AnimationAct<GunKnightPatriot>("heavy_artillery_1",35){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-            if(target!=null&&tick<=3)
-                entity.lookAtEntity(target);
-            else {
-                entity.getLookControl().setLookAt(entity.artilleryForecastPos);
-            }
-            if(tick==13){
-                entity.isCanBeAttacking = true;
-                entity.setArtilleryForecastPos(target,entity.getShootPos());
-            }
-            else if(tick==23){
-                entity.playSound(SoundHandle.ARTILLERY.get(), 1.5F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-                entity.shootArtilleryBullet(target,entity.getShootPos());
-            }else if(tick==28){
-                entity.isCanBeAttacking = false;
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            entity.consumeHolyBullet(4);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> SHOTGUN_1 = new AnimationAct<GunKnightPatriot>("shotgun",40){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-            RandomSource random = entity.random;
-
-            if(target!=null){
-                entity.lookAtEntity(target);
-            }
-            if((tick==11||tick==31)&&target!=null){
-                    entity.playSound(SoundHandle.SHOT_GUN.get(), 1.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
-                    entity.shootShotGunBullet(target,entity.getShootPos());
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.consumeHolyBullet(4);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> MACHINE_GUN_1 = new AnimationAct<GunKnightPatriot>("machine_gun",100){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            int tick = entity.getAnimationTick();
-            LivingEntity target = entity.getTarget();
-            RandomSource random = entity.random;
-
-            if(target!=null)
-                entity.lookAtEntity(target);
-            if(tick%2==0&&target!=null&&tick>=16&&tick<=80){
-                entity.shootMachineBullet(target,entity.getShootPos());
-                if(tick==16){
-                    entity.playSound(SoundHandle.MACHINE_GUN.get(), 3.0F, 1.0F);
-                    entity.isCanBeAttacking = true;
-                }
-            }
-            if(tick==85)
-                entity.isCanBeAttacking = false;
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.isCanBeAttacking = false;
-            entity.consumeHolyBullet(5);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> GUN1TO2 = new AnimationAct<GunKnightPatriot>("gun1to2",35,1){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null){
-                entity.lookAtEntity(target);
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.setGunMod(1);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> GUN1TO3 = new AnimationAct<GunKnightPatriot>("gun1to3",24,1){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null){
-                entity.lookAtEntity(target);
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.setGunMod(2);
-            super.stop(entity);
-        }
-
-    };
-    public static final AnimationAct<GunKnightPatriot> GUN2TO1 = new AnimationAct<GunKnightPatriot>("gun2to1",10,1){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null){
-                entity.lookAtEntity(target);
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.setGunMod(0);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> GUN3TO1 = new AnimationAct<GunKnightPatriot>("gun3to1",10,1){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.locateEntity();
-            LivingEntity target = entity.getTarget();
-            if(target!=null){
-                entity.lookAtEntity(target);
-            }
-        }
-
-        @Override
-        public void stop(GunKnightPatriot entity) {
-            entity.setGunMod(0);
-            super.stop(entity);
-        }
-    };
-    public static final AnimationAct<GunKnightPatriot> DIE = new AnimationAct<GunKnightPatriot>("death",45,1);
-
-    public static final AnimationAct<GunKnightPatriot> WIND_MILL = new AnimationAct<GunKnightPatriot>("skill_halberd_1",205){
-        @Override
-        public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
-            int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            if (tick == 17){
-                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
-                stompEntity.setPos(entity.position());
-                entity.level().addFreshEntity(stompEntity);
-            }
-        }
-    };
 
     private static final AnimationAct[] ANIMATIONS = {
-            NO_ANIMATION,WIND_MILL
+            NO_ANIMATION,WIND_MILL,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
+            ,RACK_HALBERD_HEAVY,RACK_HALBERD_CYCLE2,ACK_HALBERD_CHI3,ACK_HALBERD_CHILEFT,MOVE_HALBERD_LEFT,MOVE_HALBERD_RIGHT,
+            MOVE_HALBERD_CYCLE
             ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
             ,GUN1TO2,GUN1TO3,GUN3TO1,GUN2TO1,ATTACK1,ATTACK2,ATTACK3,SHIELD,STATE_2,STOMP,ARTILLERY_1,SHOTGUN_1,MACHINE_GUN_1,SKILL_LOOP,SKILL_END,DIE
     };
@@ -528,6 +99,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private final AnimationController<GunKnightPatriot> animationController3 = new AnimationController<GunKnightPatriot>(this, "Wind", 5, this::wingAnimation);
 
     public int time=0;
+    public int normalAttackTime = -1;
     private LivingEntity dialogueLivingEntity;
     private final List<DemonCounter> demonCounterList = new ArrayList<>();
     public boolean isCanBeAttacking = false;
@@ -550,7 +122,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         //this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
         //this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
-        this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.33));
+        //this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.33));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
@@ -606,7 +178,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doAllShotCheng();
         doSkillCheng();
         doState2();
-
+        doSkillFeng();
 
         if(getTarget() instanceof FrostNova) setTarget(null);
     }
@@ -1057,7 +629,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.level().addFreshEntity(abstractarrow);
     }
 
-    private Vec3 getShootPos(){
+    public Vec3 getShootPos(){
         AnimationAct animation = getAnimation();
         float xRot = Mth.clamp(getXRot()%360,-30,30)* -0.017453292F;
 
@@ -1072,7 +644,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         return new Vec3(-1, 1.75, 2.5).yRot((float) (-getYRot() / 180 * Math.PI)).add(position());
     }
 
-    private void shootMachineBullet(LivingEntity target,Vec3 vec3) {
+    public void shootMachineBullet(LivingEntity target,Vec3 vec3) {
         if(target==null) return;
         float dist = distanceTo(target);
 
@@ -1092,7 +664,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.level().addFreshEntity(abstractarrow);
     }
 
-    private void shootAllBullet(LivingEntity target,Vec3 vec3) {
+    public void shootAllBullet(LivingEntity target,Vec3 vec3) {
         if(target==null) return;
         float dist = distanceTo(target);
 
@@ -1110,9 +682,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.level().addFreshEntity(abstractarrow);
     }
 
-    private Vec3 artilleryForecastPos = Vec3.ZERO;
+    public Vec3 artilleryForecastPos = Vec3.ZERO;
 
-    private void setArtilleryForecastPos(LivingEntity target,Vec3 vec3) {
+    public void setArtilleryForecastPos(LivingEntity target,Vec3 vec3) {
         if(target==null) return;
         float speed = 60f;
 
@@ -1124,7 +696,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         artilleryForecastPos = getTargetMoveVec(target).scale(time).add(target.position());
     }
 
-    private void shootArtilleryBullet(LivingEntity target,Vec3 vec3) {
+    public void shootArtilleryBullet(LivingEntity target,Vec3 vec3) {
         if(target==null||artilleryForecastPos==Vec3.ZERO) return;
 
         double d0 = target.getX()  - vec3.x;
@@ -1140,7 +712,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         abstractarrow.shoot(move.x, Math.sqrt(dist)/60 , move.z, 0);
     }
 
-    private void shootShotGunBullet(LivingEntity target,Vec3 vec3) {
+    public void shootShotGunBullet(LivingEntity target,Vec3 vec3) {
         if(target==null) return;
         float xRot = Mth.clamp(getXRot()%360,-30,30)* -0.017453292F;
         float dist = target.distanceTo(this);
@@ -1205,6 +777,38 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     public void performRangedAttack(LivingEntity pTarget, float pVelocity) {
         Vec3 add = new Vec3(-1, 1, 2).yRot((float) (-this.getYRot() / 180 * Math.PI)).add(position());
         shootBlackSpearSkill(pTarget,add,1);
+    }
+
+    public boolean randomRightAct(LivingEntity target){
+        if(normalAttackTime/5f+0.4 > getRandom().nextFloat()){
+            float v = getRandom().nextFloat();
+            if (v < 0.5) {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(this, LACK_HALBERD_DOWNCHI);
+            } else {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(this, LACK_HALBERD_TIAOWIND);
+            }
+            normalAttackTime = -1;
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean randomLeftAct(LivingEntity taget){
+        if(normalAttackTime/5f+0.4 > getRandom().nextFloat()) {
+            float v = getRandom().nextFloat();
+            if (v < 0.3) {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(this, RACK_HALBERD_CHI);
+            } else if (v < 0.6) {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(this, RACK_HALBERD_HEAVY);
+            } else {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(this, RACK_HALBERD_CYCLE2);
+            }
+            normalAttackTime = -1;
+            return true;
+        }
+
+        return false;
     }
 
     private void doSummonCheng(){
@@ -1328,6 +932,15 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 if(tick==142){
                     FXEntity.SpawnFXEntity(level(),0, position().add(0,0.5f,0), this);
                 }
+            }
+        }
+    }
+
+    private void doSkillFeng(){
+        if(getAnimation()==WIND_MILL){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+
             }
         }
     }

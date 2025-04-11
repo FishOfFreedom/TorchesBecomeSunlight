@@ -14,6 +14,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
 
 import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity.NO_ANIMATION;
+import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
 
 public class GunKnightPatriotAttackAI extends Goal {
     private final GunKnightPatriot patriot;
@@ -62,7 +63,7 @@ public class GunKnightPatriotAttackAI extends Goal {
         timeSinceShoot++;
 
         if(!(a == NO_ANIMATION)) {
-            if(a == GunKnightPatriot.MACHINE_GUN_1||a == GunKnightPatriot.ARTILLERY_1||a == GunKnightPatriot.SHOTGUN_1){
+            if(a == MACHINE_GUN_1||a == ARTILLERY_1||a == SHOTGUN_1){
                 double dist1 = this.patriot.distanceTo(target);
                 if(dist1>6)
                     walk();
@@ -98,36 +99,36 @@ public class GunKnightPatriotAttackAI extends Goal {
 
         if(timeSinceSummon>410){
             timeSinceSummon = 0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.SUMMON_TURRET);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SUMMON_TURRET);
         }else if(timeSinceCheng>450){
             timeSinceCheng = 0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.SUMMON_CHENG);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SUMMON_CHENG);
         }
         else if(timeSinceAll>550){
             timeSinceAll = 0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.ALL_SHOT);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ALL_SHOT);
         }
         else if(timeSinceReload>300){
             timeSinceReload = 0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.RELOAD);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,RELOAD);
         }
         else if(timeSinceSkill>700){
             timeSinceReload = 0;
             timeSinceAll = 0;
             timeSinceCheng = 0;
             timeSinceSkill = 0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.SKILL_START);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SKILL_START);
         }
         else if(dist<60&&dist>6&&gunMod==0&&timeSinceShoot>60){
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.MACHINE_GUN_1);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,MACHINE_GUN_1);
             timeSinceShoot=0;
             normalAttackTime+=5;
         } else if(dist<60&&dist>6&&gunMod==1&&timeSinceShoot>35){
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.ARTILLERY_1);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ARTILLERY_1);
             timeSinceShoot=0;
             normalAttackTime+=2;
         }else if(dist<20&&dist>6&&gunMod==2&&timeSinceShoot>45){
-            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.SHOTGUN_1);
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SHOTGUN_1);
             timeSinceShoot=0;
             normalAttackTime+=5;
         }
@@ -136,11 +137,11 @@ public class GunKnightPatriotAttackAI extends Goal {
                 if(shouldFollowUp(3.5)) {
                     float v = random.nextFloat();
                     if(gunMod==2&&v<0.3)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.SHOTGUN_1);
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SHOTGUN_1);
                     else if(v<0.6)
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.ATTACK1);
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ATTACK1);
                     else
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,GunKnightPatriot.STOMP);
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,STOMP);
                 }
             }
         }

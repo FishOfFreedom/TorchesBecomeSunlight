@@ -157,7 +157,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             }
             else if (tick == 11) {
                 entity.doRangeAttack(2.5,60,damage,true);
-                FFEntityUtils.doRangeAttackFX(entity,2.5,60);
+                FFEntityUtils.doRangeAttackFX(entity,2.5,60,0);
             }
         }
 
@@ -191,11 +191,11 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             }
             else if (tick == 8) {
                 entity.doRangeAttack(2.5,60,damage,false);
-                FFEntityUtils.doRangeAttackFX(entity,2.5,60);
+                FFEntityUtils.doRangeAttackFX(entity,2.5,60,0);
             }
             else if (tick == 16) {
                 entity.doRangeAttack(2.5,20,damage,false);
-                FFEntityUtils.doRangeAttackFX(entity,2.5,20);
+                FFEntityUtils.doRangeAttackFX(entity,2.5,20,0);
             }
         }
         @Override
@@ -477,7 +477,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
 
             if(tick>25&&tick<=55&&tick%5==0){
                 entity.doRangeAttack(12,24,damage,false);
-                FFEntityUtils.doRangeAttackFX(entity,12,24);
+                FFEntityUtils.doRangeAttackFX(entity,12,24,0);
             }
         }
     };

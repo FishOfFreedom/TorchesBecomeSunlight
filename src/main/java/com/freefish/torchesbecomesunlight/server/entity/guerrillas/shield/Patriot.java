@@ -123,7 +123,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             }
             else if (tick == 24) {
                 entity.doRangeAttack(5.5,60,damage,true);
-                FFEntityUtils.doRangeAttackFX(entity,5.5,60);
+                FFEntityUtils.doRangeAttackFX(entity,5.5,60,0);
                 entity.isCanBeAttacking = false;
             }
         }
@@ -151,7 +151,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             }
             if (tick == 40) {
                 entity.doRangeAttack(6.5,30,damage*1.5f,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,30);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,30,0);
                 StompEntity stompEntity = new StompEntity(entity.level(),8,entity,3);
                 stompEntity.setPos(entity.position().add(new Vec3(0, 0, 4.5).yRot((float) (-entity.yBodyRot / 180 * Math.PI))));
                 entity.level().addFreshEntity(stompEntity);
@@ -182,7 +182,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             boolean flad = false;
             if (tick == 7||tick == 10||tick == 15||tick == 20) {
                 flad = entity.doRangeAttack(6.5,25,damage,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,25);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,25,0);
             }
             if(tick == 10 && flad)
                 entity.playSound(SoundHandle.HIT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
@@ -358,7 +358,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             else if (tick == 17&&target != null) {
                 entity.doRangeAttack(4,60,damage,true);
                 entity.doRangeKnockBack(4,60,2);
-                FFEntityUtils.doRangeAttackFX(entity,4,60);
+                FFEntityUtils.doRangeAttackFX(entity,4,60,0);
             }
         }
         @Override

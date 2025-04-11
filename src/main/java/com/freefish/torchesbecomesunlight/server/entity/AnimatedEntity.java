@@ -13,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -28,6 +30,8 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
 
     private float playerXo;
     private float playerZo;
+    private float stepKey;
+    private float stepKeyTime;
     private Vec3 playerPosO;
     private int animationTick;
     private AnimationAct animation = NO_ANIMATION;
@@ -73,6 +77,12 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
             }
             if (level().isClientSide() && animationTick >= animation.getDuration()) {
                 setAnimation(NO_ANIMATION);
+            }
+        }
+
+        if(level().isClientSide){
+            if (stepKeyTime > 0) {
+                stepKeyTime--;
             }
         }
     }

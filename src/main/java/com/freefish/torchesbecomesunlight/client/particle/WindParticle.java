@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
-import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
+import com.freefish.torchesbecomesunlight.client.util.render.MMRenderType;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -10,10 +10,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,13 +20,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.Locale;
-
-import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class WindParticle extends TextureSheetParticle {
     private final SpriteSet sprite;
@@ -53,7 +48,7 @@ public class WindParticle extends TextureSheetParticle {
 
     public void tick() {
         super.tick();
-        //this.setSprite(sprite.get((age)%10,9));
+        this.setSprite(sprite.get(age,lifetime));
     }
 
     @Override
@@ -84,12 +79,8 @@ public class WindParticle extends TextureSheetParticle {
         float f4 = this.getV0();
         float f5 = this.getV1();
         PoseStack poseStack = new PoseStack();
-        MultiBufferSource.BufferSource bufferIn = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer vertexconsumer = bufferIn.getBuffer(FFRenderTypes.getGlowingEffect(sprite.get(age%10,9).atlasLocation()));
 
-
-        renderSphere(f,f1,f2,f3,quatX,poseStack,1,16,8,f6,f7,f4,f5,pPartialTicks,vertexconsumer);
-        bufferIn.endBatch();
+        renderSphere(f,f1,f2,f3,quatX,poseStack,1,16,8,f6,f7,f4,f5,pPartialTicks,pBuffer);
     }
 
     public void renderSphere(float f, float f1, float f2, float f3,Quaternionf quatX,PoseStack poseStack, float radius, int lonSegments, int latSegments,
@@ -119,27 +110,19 @@ public class WindParticle extends TextureSheetParticle {
                     vert.mul(f3);
                     vert.add(f, f1, f2);
                 }
-                //float[][] quadUVs = new float[][] {
-                //        {(float)lon / lonSegments      , (float) lat / latSegments      },
-                //        {(float)(lon + 1) / lonSegments, (float) lat / latSegments      }, // 顶点0
-                //        {(float)(lon + 1) / lonSegments, (float) (lat + 1) / latSegments}, // 顶点1
-                //        {(float)lon / lonSegments      , (float) (lat + 1) / latSegments} // 顶点2
-                //        // 顶点3
-                //};
-                // 计算UV（映射到整个纹理）
+
                 float[][] quadUVs = new float[][] {
                         {Mth.lerp((float)lon / lonSegments      ,u0,u1), Mth.lerp((float) lat / latSegments      ,v0,v1)}, // 顶点3
                         {Mth.lerp((float)(lon + 1) / lonSegments,u0,u1), Mth.lerp((float) lat / latSegments      ,v0,v1)}, // 顶点0
                         {Mth.lerp((float)(lon + 1) / lonSegments,u0,u1), Mth.lerp((float) (lat + 1) / latSegments,v0,v1)}, // 顶点1
                         {Mth.lerp((float)lon / lonSegments      ,u0,u1), Mth.lerp((float) (lat + 1) / latSegments,v0,v1)} // 顶点2
                 };
-                Matrix3f matrix3f = poseStack.last().normal();
-                // 将四边形写入缓冲区（与原代码结构一致）
+
                 int light = getLightColor(partialTicks);
-                buffer.vertex(quadVertices[0].x(), quadVertices[0].y(), quadVertices[0].z()).color(1.f,1.f,1.f,alpha).uv(quadUVs[0][0], quadUVs[0][1]).overlayCoords(NO_OVERLAY).uv2(light).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-                buffer.vertex(quadVertices[1].x(), quadVertices[1].y(), quadVertices[1].z()).color(1.f,1.f,1.f,alpha).uv(quadUVs[1][0], quadUVs[1][1]).overlayCoords(NO_OVERLAY).uv2(light).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-                buffer.vertex(quadVertices[2].x(), quadVertices[2].y(), quadVertices[2].z()).color(1.f,1.f,1.f,alpha).uv(quadUVs[2][0], quadUVs[2][1]).overlayCoords(NO_OVERLAY).uv2(light).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-                buffer.vertex(quadVertices[3].x(), quadVertices[3].y(), quadVertices[3].z()).color(1.f,1.f,1.f,alpha).uv(quadUVs[3][0], quadUVs[3][1]).overlayCoords(NO_OVERLAY).uv2(light).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+                buffer.vertex(quadVertices[0].x(), quadVertices[0].y(), quadVertices[0].z()).uv(quadUVs[0][0], quadUVs[0][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
+                buffer.vertex(quadVertices[1].x(), quadVertices[1].y(), quadVertices[1].z()).uv(quadUVs[1][0], quadUVs[1][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
+                buffer.vertex(quadVertices[2].x(), quadVertices[2].y(), quadVertices[2].z()).uv(quadUVs[2][0], quadUVs[2][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
+                buffer.vertex(quadVertices[3].x(), quadVertices[3].y(), quadVertices[3].z()).uv(quadUVs[3][0], quadUVs[3][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
             }
         }
     }
@@ -154,7 +137,7 @@ public class WindParticle extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return MMRenderType.PARTICLE_SHEET_TRANSLUCENT_NO_DEPTH;
     }
 
     @OnlyIn(Dist.CLIENT)

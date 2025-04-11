@@ -1,6 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
 import com.freefish.torchesbecomesunlight.client.particle.WindParticle;
+import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
@@ -88,10 +90,15 @@ public class TestItem extends Item {
             if(level.isClientSide){
                 //level.addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(),player.getX(),player.getY(),player.getZ(),0,2,0);
                 //level.addParticle(new CycleWindParticle.CycleWindData(player.getId()),player.getX(),player.getY(),player.getZ(),0,0,0);
-                for(int i = 0;i<12;i++){
-                    level.addParticle(new WindParticle.WindData(200, 6+i/2f, 0.3f+player.getRandom().nextFloat()*0.3f, player.getRandom().nextFloat()*3.14f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, 0, 0, 0);
+                for(int i = 0;i<4;i++){
+                    level.addParticle(new WindParticle.WindData(40, 4+i/2f, 0.3f+player.getRandom().nextFloat()*0.3f, player.getRandom().nextFloat()*3.14f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, 0, 0, 0);
                 }
-
+                for(int i=0;i<10;i++){
+                    for(int j=0;j<5;j++){
+                        Vec3 vec3 = new Vec3(0, 0, 0.3).xRot((float) ((j/10f) * org.joml.Math.PI)).yRot((float) ((i/5f) * org.joml.Math.PI)+level.random.nextFloat());
+                        level.addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 1,1,1, (float) (30d), 100, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, vec3.x*4, vec3.y*4, vec3.z*4);
+                    }
+                }
                 //for(int i =1;i<=3;i++){
                 //    AdvancedParticleBase.spawnParticle(player.level(), ParticleHandler.RING_BIG.get(), player.getX(), player.getY(), player.getZ(), 0, 0, 0, false, 0, 1.57, 0, 0, 16, 1, 1, 1, 1, 0, 20, true, false, new ParticleComponent[]{
                 //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.MOTION_Y, ParticleComponent.KeyTrack.startAndEnd(0.1f*i, -0.1f*i), false),
