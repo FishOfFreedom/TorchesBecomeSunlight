@@ -12,6 +12,7 @@
     "MixinLevelRenderer",
     "MixinGuiGraphics",
     "accessor.BlendModeAccessor",
+    "accessor.ShaderInstanceAccessor",
     "ForgeParticleEngineMixin",
     "GLStateManagerMixin",
     "GameRendererMixin",

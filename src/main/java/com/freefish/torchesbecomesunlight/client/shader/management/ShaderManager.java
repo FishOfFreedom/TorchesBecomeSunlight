@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.shader.management;
 
+import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
 import com.freefish.torchesbecomesunlight.client.shader.uniform.IUniformCallback;
 import com.freefish.torchesbecomesunlight.client.util.PositionedRect;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -78,7 +79,7 @@ public class ShaderManager {
 		ShaderProgram program = programs.get(frag);
 		if (program == null) {
 			programs.put(frag, program = new ShaderProgram());
-			program.attach(Shaders.IMAGE_V).attach(frag);
+			program.attach(ShaderHandle.IMAGE_V).attach(frag);
 			if (programCreated != null) {
 				programCreated.accept(program);
 			}

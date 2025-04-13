@@ -1,14 +1,14 @@
 package com.freefish.torchesbecomesunlight.client.shader.management;
 
-import com.lowdragmc.lowdraglib.client.shader.uniform.IUniformCallback;
-import com.lowdragmc.lowdraglib.client.shader.uniform.UniformCache;
+import com.freefish.torchesbecomesunlight.client.shader.uniform.IUniformCallback;
+import com.freefish.torchesbecomesunlight.client.shader.uniform.UniformCache;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ShaderProgram {
 
 	public final int programId;

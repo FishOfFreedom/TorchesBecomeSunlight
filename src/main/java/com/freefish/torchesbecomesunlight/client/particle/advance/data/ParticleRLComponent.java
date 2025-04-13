@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.particle.advance.data;
 
-import com.freefish.torchesbecomesunlight.client.particle.advance.base.AdvancedRLParticleBase;
+import com.freefish.torchesbecomesunlight.client.particle.advance.AdvancedRLParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleRotation;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;

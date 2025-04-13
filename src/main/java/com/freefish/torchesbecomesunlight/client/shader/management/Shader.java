@@ -1,13 +1,13 @@
 package com.freefish.torchesbecomesunlight.client.shader.management;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.google.common.base.Charsets;
-import com.lowdragmc.lowdraglib.LDLib;
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL11;
@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class Shader {
     public final ShaderType shaderType;
     public final String source;
@@ -36,7 +36,7 @@ public class Shader {
         this.source = source;
         this.shaderId = shaderType.createShader();
         if (this.shaderId == 0) {
-            LDLib.LOGGER.error("GL Shader Allocation Fail!");
+            TorchesBecomeSunlight.LOGGER.error("GL Shader Allocation Fail!");
             throw new RuntimeException("GL Shader Allocation Fail!");
         }
     }
@@ -59,7 +59,7 @@ public class Shader {
             if (GL20.glGetShaderi(this.shaderId, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
                 int maxLength = GL20.glGetShaderi(this.shaderId, GL20.GL_INFO_LOG_LENGTH);
                 String error = String.format("Unable to compile %s shader object:\n%s", this.shaderType.name(), GL20.glGetShaderInfoLog(this.shaderId, maxLength));
-                LDLib.LOGGER.error(error);
+                TorchesBecomeSunlight.LOGGER.error(error);
             }
             this.isCompiled = true;
         }

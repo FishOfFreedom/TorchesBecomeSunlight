@@ -1,14 +1,13 @@
 package com.freefish.torchesbecomesunlight.client.particle.advance.data.material;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.shader.management.ShaderManager;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -60,8 +59,6 @@ public abstract class ShaderInstanceMaterial implements IMaterial {
             var lightTexture = Minecraft.getInstance().gameRenderer.lightTexture();
             lightTexture.turnOnLightLayer();
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-
-
 
             bufferbuilder.vertex(-1, -1, 0).uv(imageU, imageV).color(-1).uv2(LightTexture.FULL_BRIGHT).endVertex();
             bufferbuilder.vertex(1, -1, 0).uv(imageU + imageWidth, imageV).color(-1).uv2(LightTexture.FULL_BRIGHT).endVertex();

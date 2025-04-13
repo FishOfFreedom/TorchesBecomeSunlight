@@ -42,6 +42,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 @Mod(TorchesBecomeSunlight.MOD_ID)
@@ -52,6 +53,7 @@ public class TorchesBecomeSunlight
     public static final Map<UUID, Integer> bossBarRegistryNames = new HashMap<>();
 
     public static SimpleChannel NETWORK;
+    public static final Random random = new Random();
 
     public static final RecipeBookType RECIPE_TYPE_COOKING = RecipeBookType.create("STEW");
 
@@ -101,6 +103,7 @@ public class TorchesBecomeSunlight
     private void clientSetup(final FMLClientSetupEvent event) {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientLayerRegistry::onAddLayers);
         event.enqueueWork(()->{
+            ShaderHandle.init();
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             bus.addListener(ShaderHandle::registerShaders);
             MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
