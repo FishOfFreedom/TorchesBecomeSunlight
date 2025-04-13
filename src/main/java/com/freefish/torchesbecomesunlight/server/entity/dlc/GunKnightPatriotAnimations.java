@@ -473,8 +473,8 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(1.3f,0);
             }
             else if (tick == 33) {
-                FFEntityUtils.doRangeAttackFX(entity,5.5,85,-55);
-                entity.doRangeAttackAngle(5.5,85,damage,-55,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,85,-30);
+                entity.doRangeAttackAngle(6.5,85,damage,-30,true);
                 EntityCameraShake.cameraShake(entity.level(), entity.position(), 16F, 0.04F, 5, 15);
             }
         }
@@ -512,8 +512,8 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(1.3f,0);
             }
             else if (tick == 24) {
-                entity.doRangeAttackAngle(5.5,90,damage,30,true);
-                FFEntityUtils.doRangeAttackFX(entity,5.5,90,30);
+                entity.doRangeAttackAngle(6.5,90,damage,30,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,90,30);
             }
         }
 
@@ -551,8 +551,8 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(1.3f,0);
             }
             else if (tick == 33) {
-                FFEntityUtils.doRangeAttackFX(entity,5.5,85,-55);
-                entity.doRangeAttackAngle(5.5,85,damage,-55,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,85,-30);
+                entity.doRangeAttackAngle(6.5,85,damage,-30,true);
                 EntityCameraShake.cameraShake(entity.level(), entity.position(), 16F, 0.04F, 5, 15);
             }
 
@@ -588,8 +588,8 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(1.3f,0);
             }
             else if (tick == 24) {
-                entity.doRangeAttackAngle(5.5,90,damage,30,true);
-                FFEntityUtils.doRangeAttackFX(entity,5.5,90,30);
+                entity.doRangeAttackAngle(6.5,90,damage,30,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,90,30);
             }
 
             if(tick==33){
@@ -602,41 +602,136 @@ public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> RACK_HALBERD_CHI = new AnimationAct<GunKnightPatriot>("attack_halberd_chi",80){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            RandomSource random = entity.getRandom();
+
+            if (target != null&&(tick<=13||(tick>=25))) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if(tick == 12) {
+                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(1.0f,0);
+            } else if(tick == 36) {
+                entity.dashForward(8.0f,0);
+                entity.doRangeAttackAngle(6.5,45,damage,40,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,45,40);
+            }
+            if (tick == 13) {
+                entity.doRangeAttackAngle(6.5,60,damage,-50,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,60,-50);
+            } else if (tick == 52) {
+                entity.doRangeAttackAngle(6.5,60,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,60,0);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> LACK_HALBERD_TIAOWIND = new AnimationAct<GunKnightPatriot>("attack_halberd_tiaowind",60){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            RandomSource random = entity.getRandom();
+
+            if (target != null&&tick<=12) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if (tick == 11) {
+                entity.doRangeAttackAngle(6.5,10,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,10,0);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> LACK_HALBERD_DOWNCHI = new AnimationAct<GunKnightPatriot>("attack_halberd_downchi",130){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            RandomSource random = entity.getRandom();
+//todo Locate?
+            if (target != null&&(tick<=35||(tick>=50))) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if(tick == 52) {
+                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(5f,0);
+            }
+            if (tick == 37) {
+                entity.doRangeAttackAngle(6.5,10,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,10,0);
+            } else if (tick == 75) {
+                entity.doRangeAttackAngle(6,10,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6,10,0);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> RACK_HALBERD_HEAVY = new AnimationAct<GunKnightPatriot>("attack_halberd_heavy",65){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            RandomSource random = entity.getRandom();
+
+            if (target != null&&tick<=25) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if(tick == 25) {
+                entity.dashForward(6f,0);
+                entity.doCycleAttack(2,damage);
+            }
+             if (tick == 33) {
+                entity.doRangeAttackAngle(6.5,20,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,20,0);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> RACK_HALBERD_CYCLE2 = new AnimationAct<GunKnightPatriot>("attack_halberd_cycle2",55){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            RandomSource random = entity.getRandom();
+
+            if (target != null&&(tick<=14||(tick>=20))) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if(tick == 14) {
+                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(4f,0);
+            }
+            else if (tick == 15) {
+                entity.doRangeAttackAngle(6.5,80,damage,35,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,80,35);
+            }
+
+            if(tick == 28) {
+                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.dashForward(4f,0);
+            }
+            else if (tick == 29) {
+                entity.doRangeAttackAngle(6.5,80,damage,-35,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,80,-35);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> ACK_HALBERD_CHI3 = new AnimationAct<GunKnightPatriot>("attack_halberd_chi3",115){
@@ -658,12 +753,64 @@ public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_LEFT = new AnimationAct<GunKnightPatriot>("move_halberd_left",45){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            LivingEntity target = entity.getTarget();
+
+            if (target != null&&(tick<=14)) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if(tick==13){
+                entity.dashForward(10,1.04f);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_RIGHT = new AnimationAct<GunKnightPatriot>("move_halberd_right",45){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            int tick = entity.getAnimationTick();
+            LivingEntity target = entity.getTarget();
+
+            if (target != null&&(tick<=14)) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if(tick==13){
+                entity.dashForward(10,-1.04f);
+            }
+        }
+    };
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE = new AnimationAct<GunKnightPatriot>("move_halberd_cycle",100){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            int tick = entity.getAnimationTick();
+            LivingEntity target = entity.getTarget();
+
+            if (target != null&&(tick<=53||tick>=58)) {
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if(tick>=14&&tick<=20){
+                entity.dashForwardContinue(8,0);
+            }
+            if(tick>20&&tick<=50){
+                entity.dashForwardContinue(2.2f,0);
+            }
+
+            if(tick==57){
+                entity.forceDashTime(2,(float) (-entity.getYRot() / 180 * Math.PI),8);
+            }
+        }
+    };
+    public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_RL2 = new AnimationAct<GunKnightPatriot>("remote_halberd_rl2",70){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             entity.setYRot(entity.yRotO);
@@ -671,7 +818,23 @@ public class GunKnightPatriotAnimations {
             entity.locateEntity();
         }
     };
-    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE = new AnimationAct<GunKnightPatriot>("move_halberd_cycle",85){
+    public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_RZHOU = new AnimationAct<GunKnightPatriot>("remote_halberd_rzhou",70){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            entity.setYRot(entity.yRotO);
+            int tick = entity.getAnimationTick();
+            entity.locateEntity();
+        }
+    };
+    public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_THROW = new AnimationAct<GunKnightPatriot>("remote_halberd_throw",65){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            entity.setYRot(entity.yRotO);
+            int tick = entity.getAnimationTick();
+            entity.locateEntity();
+        }
+    };
+    public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_SUMMON1 = new AnimationAct<GunKnightPatriot>("remote_halberd_summon1",65){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             entity.setYRot(entity.yRotO);

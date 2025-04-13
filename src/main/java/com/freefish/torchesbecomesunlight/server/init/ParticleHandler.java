@@ -32,6 +32,7 @@ public class ParticleHandler {
     public static final RegistryObject<ParticleType<AdvancedParticleData>> ICE_WHIRLWIND = register("ice_whirlwind", AdvancedParticleData.DESERIALIZER);
     public static final RegistryObject<ParticleType<AdvancedParticleData>> SAN = register("san", AdvancedParticleData.DESERIALIZER);
 
+    //public static final RegistryObject<ParticleType<AdvancedRLParticleData>> BLADE_TAIL = registerRLParticle("blade_tail", AdvancedRLParticleData.DESERIALIZER);
 
     public static final RegistryObject<ParticleType<BlackSpearParticle.BlackSpearData>> BLACK_SPEAR = REG.register("black_spear", () -> new ParticleType<BlackSpearParticle.BlackSpearData>(false, BlackSpearParticle.BlackSpearData.DESERIALIZER) {
         @Override

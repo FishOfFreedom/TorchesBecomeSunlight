@@ -113,7 +113,7 @@ public class TorchesBecomeSunlight
         }
     }
 
-    public static boolean underShaderPack() {
+    public static boolean isUsingShaderPack() {
         return ForgeOculusHandle.INSTANCE!=null && ForgeOculusHandle.INSTANCE.underShaderPack();
     }
 }

@@ -3,9 +3,11 @@ package com.freefish.torchesbecomesunlight.client.render.model;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -18,6 +20,13 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
     public void setCustomAnimations(GunKnightPatriot animatable, long instanceId, AnimationState<GunKnightPatriot> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
         CoreGeoBone right_arm_rot = this.getAnimationProcessor().getBone("right_arm_rot");
+
+        CoreGeoBone lote_front = this.getAnimationProcessor().getBone("lote_front");
+        CoreGeoBone lote_back = this.getAnimationProcessor().getBone("lote_back");
+        if(lote_back!=null&&lote_front!=null){
+            animatable.setClientVectors(0, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_front));
+            animatable.setClientVectors(1, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_back));
+        }
 
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
         stateHideGroup(animatable);

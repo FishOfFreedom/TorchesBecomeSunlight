@@ -26,7 +26,7 @@ public abstract class ForgeParticleEngineMixin{
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/particle/ParticleRenderType;begin(Lcom/mojang/blaze3d/vertex/BufferBuilder;Lnet/minecraft/client/renderer/texture/TextureManager;)V"))
     private ParticleRenderType injectRenderPre(ParticleRenderType particlerendertype, BufferBuilder bufferBuilder, TextureManager textureManager) {
-        if(!TorchesBecomeSunlight.underShaderPack()&&particlerendertype == TBSParticleRenderType.BLOOM){
+        if(!TorchesBecomeSunlight.isUsingShaderPack()&&particlerendertype == TBSParticleRenderType.BLOOM){
             PostProcessing postProcessing = PostProcessing.BLOOM_UNREAL;
             postProcessing.getPostTarget(false).bindWrite(false);
             postProcessing.hasParticle();
@@ -41,7 +41,7 @@ public abstract class ForgeParticleEngineMixin{
                     shift = At.Shift.AFTER))
     private void injectRenderPost(CallbackInfo ci) {
         RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
-        if (!TorchesBecomeSunlight.underShaderPack()&& TracedGLState.bindFrameBuffer != mainRenderTarget.frameBufferId){
+        if (!TorchesBecomeSunlight.isUsingShaderPack()&& TracedGLState.bindFrameBuffer != mainRenderTarget.frameBufferId){
             mainRenderTarget.bindWrite(false);
         }
     }
@@ -49,7 +49,7 @@ public abstract class ForgeParticleEngineMixin{
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/culling/Frustum;)V",
             at = @At(value = "RETURN"), remap = false)
     private void injectRenderReturn(PoseStack pMatrixStack, MultiBufferSource.BufferSource pBuffer, LightTexture pLightTexture, Camera pActiveRenderInfo, float pPartialTicks, net.minecraft.client.renderer.culling.Frustum clippingHelper, CallbackInfo ci) {
-        if(!TorchesBecomeSunlight.underShaderPack()){
+        if(!TorchesBecomeSunlight.isUsingShaderPack()){
             PostProcessing.BLOOM_UNREAL.renderParticlePost();
         }
     }

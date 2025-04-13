@@ -56,6 +56,11 @@ public abstract class FreeFishEntity extends PathfinderMob {
 
     @Override
     public void tick() {
+        if(forceDashTime>0){
+            forceDashTime--;
+            move(MoverType.SELF,new Vec3(0,0,forceDashSpeed).yRot(forceDashYRot));
+        }
+
         super.tick();
         if(!level().isClientSide){
         }
@@ -252,6 +257,16 @@ public abstract class FreeFishEntity extends PathfinderMob {
         lookAt(livingEntity,30f,30f);
     }
 
+    //move
+    private int forceDashTime = 0;
+    private float forceDashYRot = 0;
+    private float forceDashSpeed = 0;
+    public void forceDashTime(int time,float forceDashYRot,float length){
+        this.forceDashTime = time;
+        this.forceDashYRot = forceDashYRot;
+        this.forceDashSpeed = length / time;
+    }
+
     public void dashForward(float maxLen,float yawOffset){
         float jumpLen;
         LivingEntity target = getTarget();
@@ -260,9 +275,23 @@ public abstract class FreeFishEntity extends PathfinderMob {
             if(dist<=maxLen) jumpLen = dist/4f;
             else jumpLen = maxLen / 4;
         } else {
-            jumpLen = 1;
+            jumpLen = maxLen / 4;
         }
         Vec3 direction = new Vec3(0, Math.sqrt(jumpLen)*0.1, jumpLen).yRot((float) (yawOffset-getYRot() / 180 * org.joml.Math.PI));
+        setDeltaMovement(direction);
+    }
+
+    public void dashForwardContinue(float maxLen,float yawOffset){
+        float jumpLen;
+        LivingEntity target = getTarget();
+        if(target!=null){
+            float dist = target.distanceTo(this);
+            if(dist<=maxLen) jumpLen = dist/4f;
+            else jumpLen = maxLen / 4;
+        } else {
+            jumpLen = maxLen / 4;
+        }
+        Vec3 direction = new Vec3(0, 0, jumpLen).yRot((float) (yawOffset-getYRot() / 180 * org.joml.Math.PI));
         setDeltaMovement(direction);
     }
 

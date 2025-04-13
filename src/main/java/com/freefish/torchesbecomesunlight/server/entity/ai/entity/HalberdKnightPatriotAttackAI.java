@@ -4,6 +4,7 @@ import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -63,6 +64,11 @@ public class HalberdKnightPatriotAttackAI extends Goal {
             if (dist < 4D * 4D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                 if(shouldFollowUp(3.5)) {
                     float v = random.nextFloat();
+                    if(v>0.5f){
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ACK_HALBERD_R);
+                    }
+                    else
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ACK_HALBERD_L);
                 }
             }
         }
@@ -83,11 +89,11 @@ public class HalberdKnightPatriotAttackAI extends Goal {
     private void walk(){
         LivingEntity target = patriot.getTarget();
         if(target!=null) {
-            moveMode(target);
+            //moveMode(target);
         }
     }
 
     private boolean moveMode(LivingEntity target){
-        return this.patriot.getNavigation().moveTo(target, 0.23);
+        return this.patriot.getNavigation().moveTo(target, 0.34);
     }
 }

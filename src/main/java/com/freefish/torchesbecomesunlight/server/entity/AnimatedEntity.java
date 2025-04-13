@@ -182,6 +182,10 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         return cache;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void setClientVectors(int index, Vec3 pos) {
+    }
+
 //todo FrostNova is Influente
     public float getTargetMove(LivingEntity target){
         float f1,f2;

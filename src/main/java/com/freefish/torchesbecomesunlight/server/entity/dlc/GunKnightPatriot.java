@@ -77,7 +77,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private static final AnimationAct[] ANIMATIONS = {
             NO_ANIMATION,WIND_MILL,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
             ,RACK_HALBERD_HEAVY,RACK_HALBERD_CYCLE2,ACK_HALBERD_CHI3,ACK_HALBERD_CHILEFT,MOVE_HALBERD_LEFT,MOVE_HALBERD_RIGHT,
-            MOVE_HALBERD_CYCLE
+            MOVE_HALBERD_CYCLE,REMOTE_HALBERD_RL2,REMOTE_HALBERD_RZHOU,REMOTE_HALBERD_THROW,REMOTE_HALBERD_SUMMON1
             ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
             ,GUN1TO2,GUN1TO3,GUN3TO1,GUN2TO1,ATTACK1,ATTACK2,ATTACK3,SHIELD,STATE_2,STOMP,ARTILLERY_1,SHOTGUN_1,MACHINE_GUN_1,SKILL_LOOP,SKILL_END,DIE
     };
@@ -179,6 +179,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doSkillCheng();
         doState2();
         doSkillFeng();
+        doMoveCycle();
 
         if(getTarget() instanceof FrostNova) setTarget(null);
     }
@@ -191,11 +192,14 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         if(getAnimation()==STATE_2) return false;
 
-        if (entitySource != null){
-            return attackWithShield(source, amount);
-        }
-        else if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            return super.hurt(source, amount);
+        if(getSpawnState()!=State.TWO){
+            if (entitySource != null) {
+                return attackWithShield(source, amount);
+            } else if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                return super.hurt(source, amount);
+            }
+        }else {
+            return super.hurt(source,amount/10);
         }
         return false;
     }
@@ -394,20 +398,25 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public void lookAt(Entity pEntity, float pMaxYRotIncrease, float pMaxXRotIncrease) {
-        double d0 = pEntity.getX() - this.getX();
-        double d2 = pEntity.getZ() - this.getZ();
-        double d1;
-        if (pEntity instanceof LivingEntity livingentity) {
-            d1 = livingentity.getEyeY() - (getY()+1.75);
-        } else {
-            d1 = (pEntity.getBoundingBox().minY + pEntity.getBoundingBox().maxY) / 2.0D - this.getEyeY();
-        }
+        if(getSpawnState()!=State.TWO){
+            double d0 = pEntity.getX() - this.getX();
+            double d2 = pEntity.getZ() - this.getZ();
+            double d1;
+            if (pEntity instanceof LivingEntity livingentity) {
+                d1 = livingentity.getEyeY() - (getY() + 1.75);
+            } else {
+                d1 = (pEntity.getBoundingBox().minY + pEntity.getBoundingBox().maxY) / 2.0D - this.getEyeY();
+            }
 
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
-        float f1 = (float)(-(Mth.atan2(d1, d3) * (double)(180F / (float)Math.PI)));
-        this.setXRot(this.rotlerp(this.getXRot(), f1, pMaxXRotIncrease));
-        this.setYRot(this.rotlerp(this.getYRot(), f, pMaxYRotIncrease));
+            double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+            float f = (float) (Mth.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F;
+            float f1 = (float) (-(Mth.atan2(d1, d3) * (double) (180F / (float) Math.PI)));
+            this.setXRot(this.rotlerp(this.getXRot(), f1, pMaxXRotIncrease));
+            this.setYRot(this.rotlerp(this.getYRot(), f, pMaxYRotIncrease));
+        }
+        else {
+            super.lookAt(pEntity, pMaxYRotIncrease, pMaxXRotIncrease);
+        }
     }
 
     private float rotlerp(float pAngle, float pTargetAngle, float pMaxIncrease) {
@@ -746,7 +755,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.level().addFreshEntity(abstractarrow);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Override
     public void setClientVectors(int index, Vec3 pos) {
         if (clientVectors != null && clientVectors.length > index) {
             clientVectors[index] = pos;
@@ -941,6 +950,22 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             int tick = getAnimationTick();
             if(level().isClientSide){
 
+            }
+        }
+    }
+
+    private void doMoveCycle(){
+        if(getAnimation()==MOVE_HALBERD_CYCLE){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if(tick==15){
+                    for(int i=0;i<=6;i++){
+                        for(int j=0;j<=4;j++){
+                            Vec3 move = new Vec3(0,0,random.nextFloat()*3+3).xRot(j/4f).yRot((float) (180-this.getYRot() / 180 * Math.PI)+i/3f-1);
+                            level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX(), this.getY(), this.getZ(), move.x, move.y, move.z);
+                        }
+                    }
+                }
             }
         }
     }
