@@ -1,6 +1,5 @@
 package com.freefish.torchesbecomesunlight.compat.oculus;
 
-import net.irisshaders.iris.api.v0.IrisApi;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.ModList;
 
@@ -17,11 +16,11 @@ public class ForgeOculusHandle {
     });
 
     public boolean underShaderPack() {
-        return IrisApi.getInstance().isShaderPackInUse();
+        return false;
     }
 
     public boolean underShadowPass() {
-        return IrisApi.getInstance().isRenderingShadowPass();
+        return false;
     }
 
     public void bindWriteMain() {

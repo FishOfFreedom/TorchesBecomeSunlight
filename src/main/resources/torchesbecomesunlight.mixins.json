@@ -10,16 +10,7 @@
   ],
   "client": [
     "MixinLevelRenderer",
-    "MixinGuiGraphics",
-    "accessor.BlendModeAccessor",
-    "accessor.ShaderInstanceAccessor",
-    "ForgeParticleEngineMixin",
-    "GLStateManagerMixin",
-    "GameRendererMixin",
-    "MainTargetMixin",
-    "PostChainMixin",
-    "PostPassMixin",
-    "RenderTargetMixin"
+    "MixinGuiGraphics"
   ],
   "injectors": {
     "defaultRequire": 1

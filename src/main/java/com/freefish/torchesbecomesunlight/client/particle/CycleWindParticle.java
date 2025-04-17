@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import com.freefish.torchesbecomesunlight.client.util.render.MMRenderType;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.projectile.BulletRenderer;
@@ -136,7 +137,7 @@ public class CycleWindParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return TBSParticleRenderType.BLOOM;
+        return MMRenderType.PARTICLE_SHEET_TRANSLUCENT_NO_DEPTH;
     }
 
     @OnlyIn(Dist.CLIENT)

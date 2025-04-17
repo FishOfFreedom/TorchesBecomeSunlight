@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
 
 version = mod_version
@@ -39,7 +39,7 @@ minecraft {
         }
 
         client {
-            property 'mixin.env.disableRefMap', 'true'
+            properties 'mixin.env.remapRefMap': 'true'
             property 'forge.enabledGameTestNamespaces', mod_id
 
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
@@ -48,7 +48,7 @@ minecraft {
         }
 
         server {
-            property 'mixin.env.disableRefMap', 'true'
+            properties 'mixin.env.remapRefMap': 'true'
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
 
@@ -64,7 +64,7 @@ minecraft {
         data {
             workingDirectory project.file('run-data')
 
-            property 'mixin.env.disableRefMap', 'true'
+            properties 'mixin.env.remapRefMap': 'true'
 
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
@@ -98,6 +98,17 @@ repositories {
     }
     maven { url = 'https://maven.parchmentmc.org' }
     maven { url = 'https://repo.spongepowered.org/maven' }
+    maven {
+        url "https://jitpack.io"
+    }
+    maven {
+        allowInsecureProtocol = true
+        url = "http://localhost:8081/repository/arknightsmod/"
+        credentials {
+            username = System.getenv("MAVENNAME")
+            password = System.getenv("PASSWORD")
+        }
+    }
 }
 
 dependencies {
@@ -108,9 +119,16 @@ dependencies {
 
     runtimeOnly  fg.deobf("curse.maven:mob-battle-mod-268746:4748521")
     runtimeOnly fg.deobf("curse.maven:eeeabs-mobs-921600:5931229")
+    runtimeOnly fg.deobf("curse.maven:neat-238372:5728641")
 
     implementation fg.deobf("curse.maven:xenon-564239:5216360")
     implementation fg.deobf("curse.maven:oculus-581495:5299671")
+
+    //rosmontislib
+    //implementation jarJar("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT")
+    implementation fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT")
+    //implementation fg.deobf(files("lib/meetyourfight-1.20.1-1.4.3.jar"))
+    //implementation fg.deobf("com.freefish.torchesbecomesunlight:gatheringtorchesbecomesunlight:0.3.0")
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {

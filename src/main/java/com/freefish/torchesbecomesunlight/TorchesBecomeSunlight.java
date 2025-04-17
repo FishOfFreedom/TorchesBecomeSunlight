@@ -103,7 +103,6 @@ public class TorchesBecomeSunlight
     private void clientSetup(final FMLClientSetupEvent event) {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientLayerRegistry::onAddLayers);
         event.enqueueWork(()->{
-            ShaderHandle.init();
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             bus.addListener(ShaderHandle::registerShaders);
             MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);

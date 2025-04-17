@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.client.particle;
 
 import com.freefish.torchesbecomesunlight.client.render.util.LightningBoltData;
 import com.freefish.torchesbecomesunlight.client.render.util.LightningRender;
+import com.freefish.torchesbecomesunlight.client.util.render.MMRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -88,7 +89,7 @@ public class TeslaBulbLightningParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return TBSParticleRenderType.BLOOM;
+        return MMRenderType.PARTICLE_SHEET_TRANSLUCENT_NO_DEPTH;
     }
 
     @OnlyIn(Dist.CLIENT)
