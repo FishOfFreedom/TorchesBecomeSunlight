@@ -2,7 +2,6 @@
   "required": true,
   "package": "com.freefish.torchesbecomesunlight.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.freefish.torchesbecomesunlight.mixin.TBSMixinPlugin",
   "refmap": "torchesbecomesunlight.refmap.json",
   "mixins": [
     "accessor.RecipeManagerAccessor",

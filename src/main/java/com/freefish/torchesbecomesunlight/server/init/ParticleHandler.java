@@ -32,19 +32,11 @@ public class ParticleHandler {
     public static final RegistryObject<ParticleType<AdvancedParticleData>> ICE_WHIRLWIND = register("ice_whirlwind", AdvancedParticleData.DESERIALIZER);
     public static final RegistryObject<ParticleType<AdvancedParticleData>> SAN = register("san", AdvancedParticleData.DESERIALIZER);
 
-    //public static final RegistryObject<ParticleType<AdvancedRLParticleData>> BLADE_TAIL = registerRLParticle("blade_tail", AdvancedRLParticleData.DESERIALIZER);
 
     public static final RegistryObject<ParticleType<BlackSpearParticle.BlackSpearData>> BLACK_SPEAR = REG.register("black_spear", () -> new ParticleType<BlackSpearParticle.BlackSpearData>(false, BlackSpearParticle.BlackSpearData.DESERIALIZER) {
         @Override
         public Codec<BlackSpearParticle.BlackSpearData> codec() {
             return BlackSpearParticle.BlackSpearData.CODEC(BLACK_SPEAR.get());
-        }
-    });
-
-    public static final RegistryObject<ParticleType<CycleWindParticle.CycleWindData>> CYCLE_WIND = REG.register("cycle_wind", () -> new ParticleType<CycleWindParticle.CycleWindData>(false, CycleWindParticle.CycleWindData.DESERIALIZER) {
-        @Override
-        public Codec<CycleWindParticle.CycleWindData> codec() {
-            return CycleWindParticle.CycleWindData.CODEC(CYCLE_WIND.get());
         }
     });
 

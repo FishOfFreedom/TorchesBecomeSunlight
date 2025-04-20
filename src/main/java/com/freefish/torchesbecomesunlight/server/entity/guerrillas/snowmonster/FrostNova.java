@@ -1,5 +1,15 @@
 package com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster;
 
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
+import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifetimeSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
+import com.freefish.rosmontislib.client.particle.advance.data.number.RandomConstant;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.GradientHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
+import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
@@ -9,7 +19,6 @@ import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
-import com.freefish.torchesbecomesunlight.client.particle.CycleWindParticle;
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.snownova.SnowNova1AttackAI;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
@@ -708,10 +717,25 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         else {
             if(isAggressive()) {
                 float v = getSecondHealth() / (getMaxHealth() / 4);
-                if (tickCount % 5 == 0) {
-                    if (random.nextFloat() < v) {
-                        CycleWindParticle.spawnParticle(level(), this);
-                    }
+                if (tickCount % 20 == 0&&v>0.01) {
+                    RLParticle wind = new RLParticle();
+                    wind.config.setDuration(20);
+                    wind.config.setStartLifetime(NumberFunction.constant(20));
+                    wind.config.setStartSize(new NumberFunction3(0.2));
+
+                    wind.config.getEmission().setEmissionRate(NumberFunction.constant(v));
+
+                    Circle circle = new Circle();circle.setRadius(0.4f);circle.setRadiusThickness(0);
+                    wind.config.getShape().setShape(circle);
+                    wind.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    wind.config.getVelocityOverLifetime().open();
+                    wind.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0), new RandomConstant(3,4,true),NumberFunction.constant(0)));
+                    wind.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+                    wind.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0), new RandomConstant(7,8,true),NumberFunction.constant(0)));
+                    wind.config.trails.open();
+                    wind.config.trails.setColorOverLifetime(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    wind.emmit(new EntityEffect(level(),this));
                 }
                 if (tickCount % 2 == 0) {
                     float scale = 2.2f;

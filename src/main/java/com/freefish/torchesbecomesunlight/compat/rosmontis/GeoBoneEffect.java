@@ -1,0 +1,32 @@
+package com.freefish.torchesbecomesunlight.compat.rosmontis;
+
+import com.freefish.rosmontislib.client.particle.advance.base.IFXObject;
+import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
+import com.freefish.rosmontislib.client.particle.advance.effect.FXEffect;
+import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+import software.bernie.geckolib.cache.object.GeoBone;
+
+public class GeoBoneEffect extends FXEffect {
+    private final GeoBone geoBone ;
+    private final LivingEntity living;
+
+    public GeoBoneEffect(Level level, LivingEntity living, GeoBone geoBone) {
+        super(level);
+        this.geoBone = geoBone;
+        this.living = living;
+    }
+
+    @Override
+    public void updateFXObjectFrame(IFXObject fxObject, float partialTicks) {
+        Vec3 position = MathUtils.getWorldPosFromModel(living, living.yBodyRot, geoBone);
+        fxObject.updatePos(new Vector3f((float)(position.x + (double)this.offset.x), (float)(position.y + (double)this.offset.y), (float)(position.z + (double)this.offset.z)));
+    }
+
+    @Override
+    public void start() {
+    }
+}

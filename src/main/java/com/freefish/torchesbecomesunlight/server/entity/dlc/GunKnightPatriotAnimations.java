@@ -5,6 +5,7 @@ import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.SacredRealmEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
@@ -15,8 +16,13 @@ import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHand
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.util.List;
 
 public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> ATTACK1 = new AnimationAct<GunKnightPatriot>("attack_1",44){
@@ -447,6 +453,43 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
+    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_2 = new AnimationAct<GunKnightPatriot>("skill_halberd_2",135){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            int tick = entity.getAnimationTick();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            RandomSource random = entity.getRandom();
+
+            LivingEntity target = entity.getTarget();
+            if (target != null) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if (tick == 78||tick == 95||tick==110) {
+                FFEntityUtils.doRangeAttackFX(entity,16,360,0);
+                List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(16+5), livingEntity ->
+                        livingEntity.distanceTo(entity)<16+livingEntity.getBbWidth()/2);
+                for(LivingEntity entityHit:list) {
+                    if(entityHit == entity) continue;
+
+                    float dist = Math.min(4,entityHit.distanceTo(entity)/4);
+                    entity.doHurtEntity(entityHit,entity.damageSources().mobAttack(entity),damage*(5-dist));
+                    entity.invulnerableTime = 0;
+                    if (entityHit instanceof Player player) {
+                        ItemStack pPlayerItemStack = player.getUseItem();
+                        if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
+                            player.getCooldowns().addCooldown(Items.SHIELD, 100);
+                            entity.level().broadcastEntityEvent(player, (byte) 30);
+                        }
+                    }
+                }
+                EntityCameraShake.cameraShake(entity.level(), entity.position(), 20, 0.06F, 10, 15);
+            }
+        }
+    };
     public static final AnimationAct<GunKnightPatriot> ACK_HALBERD_R = new AnimationAct<GunKnightPatriot>("attack_halberd_right",40){
         @Override
         public void start(GunKnightPatriot entity) {
@@ -765,6 +808,24 @@ public class GunKnightPatriotAnimations {
 
             if(tick==13){
                 entity.dashForward(10,1.04f);
+            }
+        }
+    };
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_BACK = new AnimationAct<GunKnightPatriot>("move_halberd_back",100){
+        @Override
+        public void tickUpdate(GunKnightPatriot entity) {
+            int tick = entity.getAnimationTick();
+            LivingEntity target = entity.getTarget();
+
+            if (target != null&&(tick<=14)) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if(tick==13){
+                entity.dashForward(-10,0);
             }
         }
     };

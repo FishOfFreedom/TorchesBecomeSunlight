@@ -32,7 +32,6 @@ public class PatriotModel extends GeoModel<Patriot> {
             head.setRotY(extraData.netHeadYaw() * 0.017453292F);
         }
 
-
     }
 
     private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/patriot.geo.json");

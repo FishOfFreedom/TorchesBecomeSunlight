@@ -1,7 +1,30 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
+import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.UVAnimationSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifetimeSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
+import com.freefish.rosmontislib.client.particle.advance.data.number.RandomConstant;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.GradientHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Curve;
+import com.freefish.rosmontislib.client.particle.advance.data.number.curve.ECBCurves;
+import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Line;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Cone;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Dot;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
+import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
+import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
+import com.freefish.rosmontislib.client.utils.GradientColor;
+import com.freefish.rosmontislib.client.utils.Range;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.HalberdKnightPatriotAttackAI;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
@@ -60,6 +83,7 @@ import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -67,15 +91,14 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
 
 public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , ITwoStateEntity {
 
     private static final AnimationAct[] ANIMATIONS = {
-            NO_ANIMATION,WIND_MILL,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
+            NO_ANIMATION,WIND_MILL,MOVE_HALBERD_BACK,SKILL_HALBERD_2,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
             ,RACK_HALBERD_HEAVY,RACK_HALBERD_CYCLE2,ACK_HALBERD_CHI3,ACK_HALBERD_CHILEFT,MOVE_HALBERD_LEFT,MOVE_HALBERD_RIGHT,
             MOVE_HALBERD_CYCLE,REMOTE_HALBERD_RL2,REMOTE_HALBERD_RZHOU,REMOTE_HALBERD_THROW,REMOTE_HALBERD_SUMMON1
             ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
@@ -97,6 +120,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private final AnimationController<GunKnightPatriot> animationController1 = new AnimationController<GunKnightPatriot>(this, "HandController", 5, this::basicHandAnimation);
     private final AnimationController<GunKnightPatriot> animationController2 = new AnimationController<GunKnightPatriot>(this, "GunController", 5, this::basicGunAnimation);
     private final AnimationController<GunKnightPatriot> animationController3 = new AnimationController<GunKnightPatriot>(this, "Wind", 5, this::wingAnimation);
+
+    private Map<LivingEntity,DefendCounter> defendCounterMap = new HashMap<>();
 
     public int time=0;
     public int normalAttackTime = -1;
@@ -122,7 +147,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         //this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
         //this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
-        //this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.33));
+        this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.33));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
@@ -153,6 +178,17 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             repelEntities(1.7F, 4.5f, 1.7F, 1.7F);
 
         if(!level().isClientSide){
+            Iterator<Map.Entry<LivingEntity, DefendCounter>> it = defendCounterMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<LivingEntity, DefendCounter> item = it.next();
+                LivingEntity key = item.getKey();
+                if(key == null||!key.isAlive()){
+                    it.remove();
+                }
+                if(item.getValue().effectiveAttackTick>0){
+                    item.getValue().effectiveAttackTick-=1;
+                }
+            }
         }
         else {
             if(isGlowing()){
@@ -179,7 +215,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doSkillCheng();
         doState2();
         doSkillFeng();
+        doSkillHalberd2();
         doMoveCycle();
+        doMoveHalberdBack();
 
         if(getTarget() instanceof FrostNova) setTarget(null);
     }
@@ -199,9 +237,18 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 return super.hurt(source, amount);
             }
         }else {
-            return super.hurt(source,amount/10);
+            return attackWithDefendCounter(source,amount);
         }
         return false;
+    }
+
+    @Override
+    public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
+        if(defendCounterMap.containsKey(livingEntity)){
+            DefendCounter defendCounter = defendCounterMap.get(livingEntity);
+            defendCounter.effectiveAttackCounter -=1;
+        }
+        return super.doHurtEntity(livingEntity, source, damage);
     }
 
     @Override
@@ -241,6 +288,26 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             }
         }
         return false;
+    }
+
+    public boolean attackWithDefendCounter(DamageSource source, float amount){
+        Entity entitySource = source.getDirectEntity();
+        if (entitySource instanceof LivingEntity living) {
+            int attackTime = 1;
+            if(defendCounterMap.containsKey(living)){
+                DefendCounter defendCounter = defendCounterMap.get(living);
+                attackTime +=defendCounter.effectiveAttackCounter;
+
+                if(defendCounter.effectiveAttackTick<=0){
+                    defendCounter.effectiveAttackCounter+=1;
+                    defendCounter.effectiveAttackTick = 20;
+                }
+            }else {
+                defendCounterMap.put(living,new DefendCounter(1,20));
+            }
+            return super.hurt(source,amount/10*attackTime);
+        }
+        return super.hurt(source,amount/20);
     }
 
     @Override
@@ -954,6 +1021,216 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
+    private void doSkillHalberd2(){
+        if(getAnimation()==SKILL_HALBERD_2){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if(tick==5){
+                    BlockEffect blockEffect = new BlockEffect(level(),getOnPos().above(2));
+
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(50);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(30));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(-8));
+                    rlParticle1.config.setStartSize(new NumberFunction3(1.5f));
+
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(3));
+                    EmissionSetting.Burst burst = new EmissionSetting.Burst();burst.setCount(NumberFunction.constant(60));
+                    rlParticle1.config.getEmission().addBursts(burst);
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    Circle circle = new Circle();circle.setRadius(16);circle.setRadiusThickness(0.2f);
+                    rlParticle1.config.getShape().setShape(circle);
+
+                    rlParticle1.config.getVelocityOverLifetime().open();
+                    rlParticle1.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.LinearVelocity);
+                    rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,-4,0));
+
+                    rlParticle1.config.getColorOverLifetime().open();
+                    rlParticle1.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    rlParticle1.config.getUvAnimation().open();
+                    rlParticle1.config.getUvAnimation().setTiles(new Range(2,2));
+                    rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    RLParticle rlParticle2 = new RLParticle();
+                    rlParticle2.config.setDuration(50);
+                    rlParticle2.transform.position(new Vector3f(0,7,0));
+                    rlParticle2.config.setStartLifetime(NumberFunction.constant(30));
+                    rlParticle2.config.setStartSpeed(NumberFunction.constant(-8));
+                    rlParticle2.config.setStartSize(new NumberFunction3(new RandomConstant(0.5,0.1,true)));
+
+                    rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
+
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Circle circle2 = new Circle();circle2.setRadius(16);circle2.setRadiusThickness(0.2f);
+                    rlParticle2.config.getShape().setShape(circle2);
+
+                    rlParticle2.config.getVelocityOverLifetime().open();
+                    rlParticle2.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.LinearVelocity);
+                    rlParticle2.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,-4,0));
+                    rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,-5,0));
+
+                    rlParticle2.config.getColorOverLifetime().open();
+                    rlParticle2.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    rlParticle2.config.trails.open();
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+
+                    RLParticle rlParticle3 = new RLParticle();
+                    rlParticle3.config.setDuration(40);
+                    rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle3.config.setStartSpeed(NumberFunction.constant(-8));
+                    rlParticle3.config.setStartSize(new NumberFunction3(NumberFunction.constant(1)));
+
+                    rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+                    EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.time = 10;burst3.setCount(NumberFunction.constant(2));
+                    burst3.cycles = 0;
+                    rlParticle3.config.getEmission().addBursts(burst3);
+
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    Circle circle3 = new Circle();circle3.setRadius(8);circle3.setRadiusThickness(0.2f);
+                    rlParticle3.config.getShape().setShape(circle3);
+
+                    rlParticle3.config.getVelocityOverLifetime().open();
+                    rlParticle3.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.LinearVelocity);
+                    rlParticle3.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,-4,0));
+
+                    rlParticle3.config.getColorOverLifetime().open();
+                    rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    rlParticle3.config.getUvAnimation().open();
+                    rlParticle3.config.getUvAnimation().setTiles(new Range(2,2));
+                    rlParticle3.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
+
+                    rlParticle3.config.trails.open();
+                    rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+
+                    rlParticle1.emmit(blockEffect);
+                    rlParticle2.emmit(new BlockEffect(level(),getOnPos().above(8)));
+                    rlParticle3.emmit(blockEffect);
+                }
+                if (tick==76||tick==108){
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(20);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
+                    rlParticle1.config.setStartSize(new NumberFunction3(4));
+
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(1));
+                    EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(18));
+                    rlParticle1.config.getEmission().addBursts(burst1);
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(0);
+                    rlParticle1.config.getShape().setShape(circle1);
+
+                    rlParticle1.config.getVelocityOverLifetime().open();
+                    rlParticle1.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+                    rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.5f,1},new float[]{78,78,36}),NumberFunction.constant(0)));
+                    rlParticle1.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(0,1,true),NumberFunction.constant(0)));
+
+                    rlParticle1.config.getColorOverLifetime().open();
+                    rlParticle1.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    rlParticle1.config.getUvAnimation().open();
+                    rlParticle1.config.getUvAnimation().setTiles(new Range(2,2));
+                    rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    RLParticle rlParticle2 = new RLParticle();
+                    rlParticle2.config.setDuration(16);
+                    rlParticle2.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle2.config.setStartSpeed(NumberFunction.constant(1));
+                    rlParticle2.config.setStartSize(new NumberFunction3(new RandomConstant(16,14,true)));
+
+                    rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.RING);
+
+                    ((RendererSetting.Particle)rlParticle2.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
+
+                    rlParticle2.config.getShape().setShape(new Dot());
+
+                    rlParticle2.config.getSizeOverLifetime().open();
+                    rlParticle2.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,0.5f,1},new float[]{0,1,1})));
+
+                    rlParticle2.config.getColorOverLifetime().open();
+                    rlParticle2.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    RLParticle rlParticle3 = new RLParticle();
+                    rlParticle3.config.setDuration(20);
+                    rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
+                    rlParticle3.config.setStartSize(new NumberFunction3(0.3));
+                    rlParticle3.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(-40 ,40 , true)));
+
+                    rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(3));
+                    EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(24));
+                    rlParticle3.config.getEmission().addBursts(burst3);
+
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW);
+
+                    Circle circle3 = new Circle();circle3.setRadius(1);circle3.setRadiusThickness(0);
+                    rlParticle3.config.getShape().setShape(circle3);
+
+                    rlParticle3.config.getVelocityOverLifetime().open();
+                    rlParticle3.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+                    rlParticle3.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.5f,1},new float[]{60,60,28}),NumberFunction.constant(0)));
+                    rlParticle3.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(4,1,true),NumberFunction.constant(0)));
+
+                    rlParticle3.config.getColorOverLifetime().open();
+                    rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    RLParticle rlParticle4 = new RLParticle();
+                    rlParticle4.config.setDuration(16);
+                    rlParticle4.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle4.config.setStartSpeed(NumberFunction.constant(0));
+                    rlParticle4.config.setStartSize(new NumberFunction3(1.5));
+
+                    rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(1));
+                    EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(2));
+                    rlParticle4.config.getEmission().addBursts(burst4);
+
+                    rlParticle4.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    Circle circle4 = new Circle();circle4.setRadius(4);circle4.setRadiusThickness(0.5f);circle4.setArc(180);
+                    rlParticle4.config.getShape().setShape(circle4);
+
+                    rlParticle4.config.getVelocityOverLifetime().open();
+                    rlParticle4.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.LinearVelocity);
+                    rlParticle4.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.5f,1},new float[]{40,40,20}),NumberFunction.constant(0)));
+                    rlParticle4.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(6,4,true),NumberFunction.constant(0)));
+
+                    rlParticle4.config.getColorOverLifetime().open();
+                    rlParticle4.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    rlParticle4.config.getUvAnimation().open();
+                    rlParticle4.config.getUvAnimation().setTiles(new Range(2,2));
+                    rlParticle4.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
+
+                    rlParticle4.config.trails.open();
+                    rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+                    BlockEffect blockEffect = new BlockEffect(level(),getOnPos().above(1));
+                    rlParticle1.emmit(blockEffect);
+                    rlParticle2.emmit(blockEffect);
+                    rlParticle3.emmit(blockEffect);
+                    rlParticle4.emmit(blockEffect);
+                }
+            }
+        }
+    }
+
     private void doMoveCycle(){
         if(getAnimation()==MOVE_HALBERD_CYCLE){
             int tick = getAnimationTick();
@@ -968,6 +1245,207 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 }
             }
         }
+    }
+
+    private void doMoveHalberdBack(){
+        if(getAnimation()==MOVE_HALBERD_BACK){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if(tick==20){
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(10);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
+
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(15));
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Circle circle1 = new Circle();circle1.setRadius(4);circle1.setRadiusThickness(1);
+                    rlParticle1.config.getShape().setShape(circle1);
+
+                    rlParticle1.config.getNoise().open();
+                    rlParticle1.config.getNoise().setPosition(new NumberFunction3(0.6));
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.setLifetime(NumberFunction.constant(0.2));
+                    rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0X00DFEF86,0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+
+                    rlParticle1.emmit(new BlockEffect(level(),getOnPos().above()));
+
+                    sLightParticle(new Vector3f());
+                }
+            }
+        }
+    }
+
+    public void idleLightParticle(GeoBone geoBone){
+        RLParticle rlParticle1 = new RLParticle();
+        rlParticle1.config.setDuration(200);
+        rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
+        rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
+        rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(1));
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
+        rlParticle1.config.getShape().setShape(circle1);
+        rlParticle1.config.getNoise().open();
+        rlParticle1.config.getNoise().setPosition(new NumberFunction3(2));
+
+        rlParticle1.config.trails.open();
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+
+        rlParticle1.emmit(new GeoBoneEffect(level(),this,geoBone));
+    }
+
+    public void sLightParticle(Vector3f scale){
+        RLParticle rlParticle1 = new RLParticle();
+        rlParticle1.config.setDuration(10);
+        rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
+        rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
+        rlParticle1.config.setStartSize(new NumberFunction3(0.2));
+
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
+        rlParticle1.config.getEmission().addBursts(burst1);
+
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
+        rlParticle1.config.getShape().setShape(circle1);
+
+        rlParticle1.config.getVelocityOverLifetime().open();
+        rlParticle1.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(3),NumberFunction.constant(0)));
+
+        rlParticle1.config.getNoise().open();
+        rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
+
+        rlParticle1.config.trails.open();
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
+
+        rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle2 = new RLParticle();
+        rlParticle2.config.setDuration(8);
+        rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
+        rlParticle2.config.setStartSpeed(NumberFunction.constant(16));
+        rlParticle2.config.setStartSize(new NumberFunction3(0.2));
+
+        rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst2 = new EmissionSetting.Burst();burst2.setCount(NumberFunction.constant(7));
+        burst2.cycles = 3;burst2.interval = 2;
+        rlParticle2.config.getEmission().addBursts(burst2);
+
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
+        rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
+        rlParticle2.config.getShape().setShape(circle2);
+
+        rlParticle2.config.getVelocityOverLifetime().open();
+        rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(30,0,true),NumberFunction.constant(0)));
+
+        rlParticle2.config.getNoise().open();
+        rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
+
+        rlParticle2.config.trails.open();
+        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
+        rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle3 = new RLParticle();
+        rlParticle3.config.setDuration(8);
+        rlParticle3.config.setStartLifetime(NumberFunction.constant(4));
+        rlParticle3.config.setStartSpeed(NumberFunction.constant(20));
+        rlParticle3.config.setStartSize(new NumberFunction3(0.2));
+
+        rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(3));
+        rlParticle3.config.getEmission().addBursts(burst3);
+
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        rlParticle3.config.getShape().setShape(new Dot());
+
+        rlParticle3.config.getVelocityOverLifetime().open();
+        rlParticle3.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(40),NumberFunction.constant(0)));
+
+        rlParticle3.config.getNoise().open();
+        rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
+
+        rlParticle3.config.trails.open();
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
+        rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle4 = new RLParticle();
+        rlParticle4.config.setDuration(20);
+        rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
+        rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
+
+        rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
+        rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
+
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
+        rlParticle4.config.getShape().setShape(circle4);
+
+        rlParticle4.config.getNoise().open();
+        rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
+
+        rlParticle4.config.trails.open();
+        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
+        rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle5 = new RLParticle();
+        rlParticle5.config.setDuration(20);
+        rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
+        rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
+        rlParticle5.config.setStartSize(new NumberFunction3(5));
+
+        rlParticle5.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst5 = new EmissionSetting.Burst();burst5.setCount(NumberFunction.constant(2));
+        burst5.cycles = 2;burst5.interval = 2;
+        rlParticle5.config.getEmission().addBursts(burst5);
+
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle5.config.getShape().setShape(new Dot());
+
+        ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
+
+        rlParticle5.config.getColorOverLifetime().open();
+        rlParticle5.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0X00DFEF86)));
+
+        rlParticle5.config.getSizeOverLifetime().open();
+        rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
+
+        RLParticle rlParticle6 = new RLParticle();
+        rlParticle6.config.setDuration(4);
+        rlParticle6.config.setStartLifetime(NumberFunction.constant(6));
+        rlParticle6.config.setStartSpeed(NumberFunction.constant(1));
+        rlParticle6.config.setStartSize(new NumberFunction3(4));
+
+        rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
+        rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
+        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+
+        rlParticle6.config.getColorOverLifetime().open();
+        rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
+
+        BlockEffect blockEffect = new BlockEffect(level(), getOnPos().above());
+        rlParticle1.emmit(blockEffect);
+        rlParticle2.emmit(blockEffect);
+        rlParticle3.emmit(blockEffect);
+        rlParticle4.emmit(blockEffect);
+        rlParticle5.emmit(blockEffect);
+        rlParticle6.emmit(blockEffect);
     }
 
     public void addDemonArea(int time, Vec3 pos, int radio){
@@ -1021,6 +1499,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         return spawnState;
     }
 
+
+
     static class DemonCounter{
         public DemonCounter(int time,Vec3 pos,int radio) {
             this.time = time;
@@ -1073,5 +1553,18 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         public boolean disappear() {
             return time == 0;
         }
+    }
+
+    class DefendCounter{
+
+
+        int effectiveAttackTick;
+
+        public DefendCounter(int effectiveAttackCounter,int effectiveAttackTick) {
+            this.effectiveAttackCounter = effectiveAttackCounter;
+            this.effectiveAttackTick = effectiveAttackTick;
+        }
+
+        int effectiveAttackCounter;
     }
 }

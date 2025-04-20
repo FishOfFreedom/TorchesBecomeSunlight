@@ -125,10 +125,11 @@ dependencies {
     implementation fg.deobf("curse.maven:oculus-581495:5299671")
 
     //rosmontislib
-    //implementation jarJar("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT")
-    implementation fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT")
-    //implementation fg.deobf(files("lib/meetyourfight-1.20.1-1.4.3.jar"))
-    //implementation fg.deobf("com.freefish.torchesbecomesunlight:gatheringtorchesbecomesunlight:0.3.0")
+    //implementation jarJar(fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT"))
+    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250419.142129-7"))
+    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250419.142129-7")) {
+        jarJar.ranged(it, "[0.2.0,)")
+    }
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {

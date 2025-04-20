@@ -17,6 +17,7 @@ import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimated
 
 public class HalberdKnightPatriotAttackAI extends Goal {
     private final GunKnightPatriot patriot;
+    private int skillHalberdTime = 0;
 
     public HalberdKnightPatriotAttackAI(GunKnightPatriot patriot) {
         this.patriot = patriot;
@@ -46,20 +47,19 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         if (target == null) return;
         RandomSource random = patriot.getRandom();
         AnimationAct a = patriot.getAnimation();
+        float healthRadio = patriot.getHealth()/ patriot.getMaxHealth();
 
+        skillHalberdTime++;
         if(!(a == NO_ANIMATION)) {
-            if(a == MACHINE_GUN_1||a == ARTILLERY_1||a == SHOTGUN_1){
-                double dist1 = this.patriot.distanceTo(target);
-                if(dist1>6)
-                    walk();
-                else
-                    patriot.getNavigation().stop();
-            }
             return;
         }
         walk();
 
         double dist = this.patriot.distanceTo(target);
+        if(dist<12&&healthRadio<0.5&&skillHalberdTime>200){
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SKILL_HALBERD_2);
+            skillHalberdTime = 0;
+        }
         if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
             if (dist < 4D * 4D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                 if(shouldFollowUp(3.5)) {
@@ -89,7 +89,7 @@ public class HalberdKnightPatriotAttackAI extends Goal {
     private void walk(){
         LivingEntity target = patriot.getTarget();
         if(target!=null) {
-            //moveMode(target);
+            moveMode(target);
         }
     }
 

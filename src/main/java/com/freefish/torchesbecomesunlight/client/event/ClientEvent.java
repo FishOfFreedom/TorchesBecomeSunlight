@@ -38,6 +38,7 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityHandle.FEMALE.get(), WomanRenderer::new);
         event.registerEntityRenderer(EntityHandle.DIALOGUE.get(), DialogueEntityRenderer::new);
         event.registerEntityRenderer(EntityHandle.ICE_CRYSTAL.get(), IceCrystalRenderer::new);
+        event.registerEntityRenderer(EntityHandle.LIGHT_BOOM.get(), LightBoomRenderer::new);
         event.registerEntityRenderer(EntityHandle.BIG_ICE_CRYSTAL.get(), BigIceCrystalRenderer::new);
         event.registerEntityRenderer(EntityHandle.CAMERA_SHAKE.get(), VoidRenderer::new);
         event.registerEntityRenderer(EntityHandle.ICE_TUFT.get(), IceTuftRenderer::new);
@@ -85,7 +86,6 @@ public class ClientEvent {
         event.registerSpriteSet(ParticleHandler.DEMONHOLE.get(), DemonHoleParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.BLADE.get(), BladeParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.BLACK_FLAT.get(), BlackFlatParticle.Factory::new);
-        event.registerSpriteSet(ParticleHandler.CYCLE_WIND.get(), CycleWindParticle.Factory::new);
         event.registerSpriteSet(ParticleHandler.WIND.get(), WindParticle.Factory::new);
         event.registerSpecial(ParticleHandler.TESLA_BULB_LIGHTNING.get(),new TeslaBulbLightningParticle.Factory());
     }

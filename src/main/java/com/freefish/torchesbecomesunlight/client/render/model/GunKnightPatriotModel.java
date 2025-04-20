@@ -33,6 +33,10 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
         float headPitch= Mth.clamp(extraData.headPitch(),-30,30) * 0.017453292F;
         if(animatable.getAnimation()!=STATE_2&&animatable.getSpawnState()!=ITwoStateEntity.State.TWO)
             right_arm_rot.setRotX(headPitch);
+
+        if(animatable.tickCount == 20){
+            animatable.idleLightParticle((GeoBone) lote_front);
+        }
     }
 
     private void stateHideGroup(GunKnightPatriot patriot){

@@ -1,8 +1,18 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticleConfig;
+import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifetimeSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
 import com.freefish.torchesbecomesunlight.client.particle.WindParticle;
+import com.freefish.torchesbecomesunlight.client.render.projectile.LightBoomRenderer;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.NoGravityProjectileEntity;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
@@ -29,6 +39,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.apache.http.util.EntityUtils;
 
 import java.util.List;
 
@@ -90,15 +101,18 @@ public class TestItem extends Item {
             if(level.isClientSide){
                 //level.addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(),player.getX(),player.getY(),player.getZ(),0,2,0);
                 //level.addParticle(new CycleWindParticle.CycleWindData(player.getId()),player.getX(),player.getY(),player.getZ(),0,0,0);
-                for(int i = 0;i<4;i++){
-                    level.addParticle(new WindParticle.WindData(40, 4+i/2f, 0.3f+player.getRandom().nextFloat()*0.3f, player.getRandom().nextFloat()*3.14f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, 0, 0, 0);
-                }
-                for(int i=0;i<10;i++){
-                    for(int j=0;j<5;j++){
-                        Vec3 vec3 = new Vec3(0, 0, 0.3).xRot((float) ((j/10f) * org.joml.Math.PI)).yRot((float) ((i/5f) * org.joml.Math.PI)+level.random.nextFloat());
-                        level.addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 1,1,1, (float) (30d), 100, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, vec3.x*4, vec3.y*4, vec3.z*4);
-                    }
-                }
+
+                //for(int i = 0;i<4;i++){
+                //    level.addParticle(new WindParticle.WindData(40, 4+i/2f, 0.3f+player.getRandom().nextFloat()*0.3f, player.getRandom().nextFloat()*3.14f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, 0, 0, 0);
+                //}
+                //for(int i=0;i<10;i++){
+                //    for(int j=0;j<5;j++){
+                //        Vec3 vec3 = new Vec3(0, 0, 0.3).xRot((float) ((j/10f) * org.joml.Math.PI)).yRot((float) ((i/5f) * org.joml.Math.PI)+level.random.nextFloat());
+                //        level.addParticle(new ParticleCloud.CloudData(ParticleHandler.CLOUD.get(), 1,1,1, (float) (30d), 100, ParticleCloud.EnumCloudBehavior.SHRINK, 1f), bodyRotVec.x, bodyRotVec.y,bodyRotVec.z, vec3.x*4, vec3.y*4, vec3.z*4);
+                //    }
+                //
+                //}
+
                 //for(int i =1;i<=3;i++){
                 //    AdvancedParticleBase.spawnParticle(player.level(), ParticleHandler.RING_BIG.get(), player.getX(), player.getY(), player.getZ(), 0, 0, 0, false, 0, 1.57, 0, 0, 16, 1, 1, 1, 1, 0, 20, true, false, new ParticleComponent[]{
                 //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.MOTION_Y, ParticleComponent.KeyTrack.startAndEnd(0.1f*i, -0.1f*i), false),
@@ -106,20 +120,28 @@ public class TestItem extends Item {
                 //            new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, new ParticleComponent.KeyTrack(new float[]{0,8*3,16},new float[]{0,0.3f*i,1}), false)
                 //    });
                 //}
+
+                RLParticle rlParticle = new RLParticle();
+                rlParticle.setPos(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z);
+                rlParticle.config.getShape().setShape(new Circle());
+                rlParticle.config.getVelocityOverLifetime().setEnable(true);
+                rlParticle.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.AngularVelocity);
+                rlParticle.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(
+                        NumberFunction.constant(1),
+                        NumberFunction.constant(1),
+                        NumberFunction.constant(1)
+                ));
+
+                rlParticle.emmit(null);
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){
-            GunKnightPatriot gunKnightPatriot = MathUtils.getClosestEntity(player,level.getEntitiesOfClass(GunKnightPatriot.class,player.getBoundingBox().inflate(5)));
-            if(gunKnightPatriot!=null) {
-                int gunMod = gunKnightPatriot.getGunMod() + 1;
-                gunKnightPatriot.setGunMod(gunMod > 2 ? 0 : gunMod);
-            }
-            //Mangler mangler = new Mangler(EntityHandle.MANGLER.get(),level,true);
-            //mangler.setPos(player.position());
-            //if(!level.isClientSide){
-            //    level.addFreshEntity(mangler);
-            //}
-            //mangler.spawnHerd();
+            LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
+            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
+            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,6,0);
+            lightingBoom.setPos(player.getX(),player.getY(),player.getZ());
+            lightingBoom.setOwner(player);
+            level.addFreshEntity(lightingBoom);
         }else if(mode==Mode.DIALOGUE){
 
             Bullet abstractarrow = new Bullet(level,player,0);
