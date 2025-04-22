@@ -14,13 +14,16 @@ import com.freefish.rosmontislib.client.particle.advance.data.shape.Dot;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
-import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import javax.annotation.Nullable;
 
 public class LightingHalberd extends NoGravityProjectileEntity{
     public LightingHalberd(EntityType<? extends NoGravityProjectileEntity> pEntityType, Level pLevel) {
@@ -40,7 +43,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
 
     @Override
     public int getTickDespawn() {
-        return 100;
+        return 110;
     }
 
     @Override
@@ -229,5 +232,23 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle5.emmit(blockEffect);
             rlParticle6.emmit(blockEffect);
         }
+    }
+
+    public static void shootLightingBoom(Level level, LivingEntity owner, @Nullable LivingEntity target, Vec3 shootPos){
+        LightingHalberd lightingBoom = new LightingHalberd(EntityHandle.LIGHT_HALBERD.get(), level);
+
+        Vec3 targetPos ;
+        if(target==null){
+            targetPos = FFEntityUtils.getBodyRotVec(owner,new Vec3(0,0,10));
+        }
+        else {
+            targetPos = target.position();
+        }
+        Vec3 bodyRotVec = targetPos.subtract(shootPos);
+        lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,40f,0);
+
+        lightingBoom.setPos(shootPos.x,shootPos.y,shootPos.z);
+        lightingBoom.setOwner(owner);
+        level.addFreshEntity(lightingBoom);
     }
 }

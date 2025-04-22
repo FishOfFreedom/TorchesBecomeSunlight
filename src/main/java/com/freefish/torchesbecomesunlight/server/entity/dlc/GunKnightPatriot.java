@@ -51,7 +51,10 @@ import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHand
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -79,6 +82,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -95,12 +100,12 @@ import java.util.*;
 
 import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
 
-public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , ITwoStateEntity {
+public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , IEntityAdditionalSpawnData, ITwoStateEntity {
 
     private static final AnimationAct[] ANIMATIONS = {
-            NO_ANIMATION,WIND_MILL,MOVE_HALBERD_BACK,SKILL_HALBERD_2,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
+            NO_ANIMATION,WIND_MILL,REMOTE_HALBERD_THROW,REMOTE_HALBERD_RL2,MOVE_HALBERD_BACK,SKILL_HALBERD_2,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
             ,RACK_HALBERD_HEAVY,RACK_HALBERD_CYCLE2,ACK_HALBERD_CHI3,ACK_HALBERD_CHILEFT,MOVE_HALBERD_LEFT,MOVE_HALBERD_RIGHT,
-            MOVE_HALBERD_CYCLE,REMOTE_HALBERD_RL2,REMOTE_HALBERD_RZHOU,REMOTE_HALBERD_THROW,REMOTE_HALBERD_SUMMON1
+            MOVE_HALBERD_CYCLE,REMOTE_HALBERD_RZHOU,REMOTE_HALBERD_SUMMON1
             ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
             ,GUN1TO2,GUN1TO3,GUN3TO1,GUN2TO1,ATTACK1,ATTACK2,ATTACK3,SHIELD,STATE_2,STOMP,ARTILLERY_1,SHOTGUN_1,MACHINE_GUN_1,SKILL_LOOP,SKILL_END,DIE
     };
@@ -157,8 +162,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     @Override
     public void tick() {
         super.tick();
-        if(tickCount == 1&&!level().isClientSide)
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this),new InitClientEntityMessage(this,InitClientEntityMessage.InitDataType.ISTWOSTATE));
 
         for(int i = 0;i<demonCounterList.size();i++){
             DemonCounter demonCounter = demonCounterList.get(i);
@@ -345,6 +348,21 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         setIsGlowing(compound.getBoolean("aggressiveg"));
         setIsRun(compound.getBoolean("isrun"));
         readAddAdditionalSpawnState(compound);
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeUtf(getSpawnState().toString());
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        setSpawnState(State.valueOf(additionalData.readUtf()));
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -1275,7 +1293,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
                     rlParticle1.emmit(new BlockEffect(level(),getOnPos().above()));
 
-                    sLightParticle(new Vector3f());
+                    //sLightParticle(new Vector3f());
                 }
             }
         }
@@ -1498,8 +1516,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     public State getSpawnState() {
         return spawnState;
     }
-
-
 
     static class DemonCounter{
         public DemonCounter(int time,Vec3 pos,int radio) {

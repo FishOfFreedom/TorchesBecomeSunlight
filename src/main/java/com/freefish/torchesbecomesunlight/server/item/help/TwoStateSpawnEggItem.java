@@ -1,8 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
-import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
-import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

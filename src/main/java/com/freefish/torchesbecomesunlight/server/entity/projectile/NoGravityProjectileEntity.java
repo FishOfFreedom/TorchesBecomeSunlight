@@ -162,13 +162,14 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
             this.clearFire();
         }
 
+        if (!this.level().isClientSide) {
+            this.tickDespawn();
+        }
+
         if (this.inGround) {
             if (this.lastState != blockstate && this.shouldFall()) {
                 this.startFalling();
-            } else if (!this.level().isClientSide) {
-                this.tickDespawn();
             }
-
             ++this.inGroundTime;
         } else {
             this.inGroundTime = 0;
@@ -194,7 +195,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
                     }
                 }
 
-                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS && !flag) {
+                if (hitresult != null && hitresult.getType() != HitResult.Type.MISS) {
                     this.onHit(hitresult);
                     this.hasImpulse = true;
                     break;
@@ -216,7 +217,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
             if (this.isRemoved())
                 return;
 
-            vec3 = this.getDeltaMovement();
+            vec3 = changeDeltaMovement(this.getDeltaMovement());
             double d5 = vec3.x;
             double d6 = vec3.y;
             double d1 = vec3.z;
@@ -234,7 +235,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
             this.setXRot((float)(Mth.atan2(d6, d4) * (double)(180F / (float)Math.PI)));
             this.setXRot(lerpRotation(this.xRotO, this.getXRot()));
             this.setYRot(lerpRotation(this.yRotO, this.getYRot()));
-            float f = 0.99F;
+            float f = 1F;
             if (this.isInWater()) {
                 for(int j = 0; j < 4; ++j) {
                     this.level().addParticle(ParticleTypes.BUBBLE, d7 - d5 * 0.25D, d2 - d6 * 0.25D, d3 - d1 * 0.25D, d5, d6, d1);
@@ -242,7 +243,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
                 f = this.getWaterInertia();
             }
 
-            this.setDeltaMovement(vec3.scale((double)f));
+            this.setDeltaMovement(vec3.scale(f));
             if (!this.isNoGravity() && !flag) {
                 Vec3 vec34 = this.getDeltaMovement();
                 this.setDeltaMovement(vec34.x, vec34.y - (double)0.05F, vec34.z);
@@ -251,6 +252,10 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
             this.setPos(d7, d2, d3);
             this.checkInsideBlocks();
         }
+    }
+
+    public Vec3 changeDeltaMovement(Vec3 vec3){
+        return vec3;
     }
 
     private boolean shouldFall() {
@@ -405,6 +410,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     protected boolean canHitEntity(Entity p_36743_) {
+        if(getOwner() != null && getOwner() == p_36743_) return false;
         return super.canHitEntity(p_36743_) && !this.ignoredEntities.contains(p_36743_.getId());
     }
 

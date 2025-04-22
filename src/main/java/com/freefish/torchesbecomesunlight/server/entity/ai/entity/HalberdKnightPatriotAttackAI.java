@@ -18,6 +18,10 @@ import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimated
 public class HalberdKnightPatriotAttackAI extends Goal {
     private final GunKnightPatriot patriot;
     private int skillHalberdTime = 0;
+    private int moveHalberdBack = 0;
+    private int removeHalberd = 0;
+    private int moveHalberdRightLeft = 0;
+    private int moveHalberdMove = 0;
 
     public HalberdKnightPatriotAttackAI(GunKnightPatriot patriot) {
         this.patriot = patriot;
@@ -50,25 +54,55 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         float healthRadio = patriot.getHealth()/ patriot.getMaxHealth();
 
         skillHalberdTime++;
+        moveHalberdBack++;
+        moveHalberdRightLeft++;
+        moveHalberdMove++;
         if(!(a == NO_ANIMATION)) {
             return;
         }
         walk();
 
         double dist = this.patriot.distanceTo(target);
-        if(dist<12&&healthRadio<0.5&&skillHalberdTime>200){
+        if(dist>8){
+            removeHalberd++;
+        }
+        if(dist>12&&moveHalberdRightLeft>300){
+            if(random.nextInt(2)==0){
+                AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_LEFT);
+            }
+            else {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_RIGHT);
+            }
+            moveHalberdRightLeft = 0;
+        }else if(dist<12&&healthRadio<0.5&&skillHalberdTime>200){
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,SKILL_HALBERD_2);
             skillHalberdTime = 0;
+        }else if(dist>10&&moveHalberdMove>123){
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_CYCLE);
+            moveHalberdMove = 0;
+        }else if(dist>9&&removeHalberd>50){
+            if(random.nextInt(2)==0){
+                AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RL2);
+            }
+            else {
+                AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_THROW);
+            }
+            removeHalberd = 0;
         }
         if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
             if (dist < 4D * 4D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                 if(shouldFollowUp(3.5)) {
-                    float v = random.nextFloat();
-                    if(v>0.5f){
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ACK_HALBERD_R);
+                    if(moveHalberdBack>100){
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_BACK);
+                        moveHalberdBack = 0;
                     }
-                    else
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot,ACK_HALBERD_L);
+                    else {
+                        float v = random.nextFloat();
+                        if (v > 0.5f) {
+                            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_R);
+                        } else
+                            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_L);
+                    }
                 }
             }
         }

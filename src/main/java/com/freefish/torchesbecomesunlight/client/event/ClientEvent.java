@@ -38,7 +38,7 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityHandle.FEMALE.get(), WomanRenderer::new);
         event.registerEntityRenderer(EntityHandle.DIALOGUE.get(), DialogueEntityRenderer::new);
         event.registerEntityRenderer(EntityHandle.ICE_CRYSTAL.get(), IceCrystalRenderer::new);
-        event.registerEntityRenderer(EntityHandle.LIGHT_BOOM.get(), LightBoomRenderer::new);
+        event.registerEntityRenderer(EntityHandle.LIGHT_BOOM.get(), VoidRenderer::new);
         event.registerEntityRenderer(EntityHandle.LIGHT_HALBERD.get(), HalberdOTI2Renderer::new);
         event.registerEntityRenderer(EntityHandle.BIG_ICE_CRYSTAL.get(), BigIceCrystalRenderer::new);
         event.registerEntityRenderer(EntityHandle.CAMERA_SHAKE.get(), VoidRenderer::new);

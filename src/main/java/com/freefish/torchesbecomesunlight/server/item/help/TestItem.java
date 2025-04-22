@@ -6,8 +6,6 @@ import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifeti
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
-import com.freefish.torchesbecomesunlight.client.particle.WindParticle;
-import com.freefish.torchesbecomesunlight.client.render.projectile.LightBoomRenderer;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
@@ -139,9 +137,9 @@ public class TestItem extends Item {
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){
-            LightingHalberd lightingBoom = new LightingHalberd(EntityHandle.LIGHT_HALBERD.get(), level);
-            Vec3 bodyRotVec = FFEntityUtils.getHeadRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
-            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,20,0);
+            LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
+            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
+            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,1.5f,0);
             lightingBoom.setPos(player.getX(),player.getY(),player.getZ());
             lightingBoom.setOwner(player);
             level.addFreshEntity(lightingBoom);

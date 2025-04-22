@@ -222,6 +222,14 @@ public final class MathUtils {
         return x * x * x * x * x;
     }
 
+    public static float easeOutQuart(float x) {
+        return (float) (1 - Math.pow(1 - x, 4));
+    }
+
+    public static float easeOutQuad(float x){
+        return 1 - (1 - x) * (1 - x);
+    }
+
     public static float easeOutBack(float x) {
         float c1 = 1.70158f;
         float c3 = c1 + 1;

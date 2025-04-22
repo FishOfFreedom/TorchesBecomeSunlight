@@ -5,7 +5,8 @@ import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.SacredRealmEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingHalberd;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
@@ -800,7 +801,6 @@ public class GunKnightPatriotAnimations {
             LivingEntity target = entity.getTarget();
 
             if (target != null&&(tick<=14)) {
-                entity.locateEntity();
                 entity.lookAtEntity(target);
             } else {
                 entity.setYRot(entity.yRotO);
@@ -816,6 +816,7 @@ public class GunKnightPatriotAnimations {
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
             LivingEntity target = entity.getTarget();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
             if (target != null&&(tick<=14)) {
                 entity.locateEntity();
@@ -827,6 +828,14 @@ public class GunKnightPatriotAnimations {
             if(tick==13){
                 entity.dashForward(-10,0);
             }
+
+            if(tick==54){
+                entity.doRangeAttackAngle(6.5,30,damage,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,30,0);
+            }
+            if(tick>=60&&tick<=70){
+                entity.dashForwardContinue(-16*(1-MathUtils.easeOutQuad(((tick - 60)/10f))),0);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_RIGHT = new AnimationAct<GunKnightPatriot>("move_halberd_right",45){
@@ -836,7 +845,6 @@ public class GunKnightPatriotAnimations {
             LivingEntity target = entity.getTarget();
 
             if (target != null&&(tick<=14)) {
-                entity.locateEntity();
                 entity.lookAtEntity(target);
             } else {
                 entity.setYRot(entity.yRotO);
@@ -874,9 +882,20 @@ public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_RL2 = new AnimationAct<GunKnightPatriot>("remote_halberd_rl2",70){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
             entity.locateEntity();
+            LivingEntity target = entity.getTarget();
+            if(target!=null) {
+                entity.getLookControl().setLookAt(target);
+            }
+            if (tick == 19) {
+                Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(entity, new Vec3(-1, 0.5f, 1));
+                LightingBoom.shootLightingBoom(entity.level(),entity,target,bodyRotVec,true);
+            }
+            if(tick==44){
+                Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(entity, new Vec3(1, 0.5f, 1));
+                LightingBoom.shootLightingBoom(entity.level(),entity,target,bodyRotVec,false);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_RZHOU = new AnimationAct<GunKnightPatriot>("remote_halberd_rzhou",70){
@@ -890,9 +909,16 @@ public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_THROW = new AnimationAct<GunKnightPatriot>("remote_halberd_throw",65){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
             entity.locateEntity();
+            LivingEntity target = entity.getTarget();
+            if(target!=null) {
+                entity.getLookControl().setLookAt(target);
+            }
+            if (tick == 36) {
+                Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(entity, new Vec3(-0.875, 3.43, 1.43));
+                LightingHalberd.shootLightingBoom(entity.level(),entity,target,bodyRotVec);
+            }
         }
     };
     public static final AnimationAct<GunKnightPatriot> REMOTE_HALBERD_SUMMON1 = new AnimationAct<GunKnightPatriot>("remote_halberd_summon1",65){
