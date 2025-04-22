@@ -46,13 +46,24 @@ public class FFEntityUtils {
 
     /**
      * @Date 2024/12/28 22:29
-     * @Description 获取相位实体朝向位移后的坐标
+     * @Description 获取相位实体身体朝向位移后的坐标
      * @Param [entity, vec3]
      * @Return net.minecraft.world.phys.Vec3
      */
 
     public static Vec3 getBodyRotVec(Entity entity,Vec3 vec3){
         return vec3.yRot((float) (-entity.getYRot() / 180 * Math.PI)).add(entity.position());
+    }
+
+    /**
+     * @Date 2024/12/28 22:29
+     * @Description 获取相位实体头朝向位移后的坐标
+     * @Param [entity, vec3]
+     * @Return net.minecraft.world.phys.Vec3
+     */
+
+    public static Vec3 getHeadRotVec(Entity entity,Vec3 vec3){
+        return vec3.xRot((float) (-entity.getXRot() / 180 * Math.PI)).yRot((float) (-entity.getYRot() / 180 * Math.PI)).add(entity.position());
     }
 
     /**

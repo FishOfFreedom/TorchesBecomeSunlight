@@ -11,6 +11,7 @@ import com.freefish.torchesbecomesunlight.client.render.projectile.LightBoomRend
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
+import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingHalberd;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.NoGravityProjectileEntity;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
@@ -34,6 +35,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -136,9 +139,9 @@ public class TestItem extends Item {
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){
-            LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
-            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
-            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,6,0);
+            LightingHalberd lightingBoom = new LightingHalberd(EntityHandle.LIGHT_HALBERD.get(), level);
+            Vec3 bodyRotVec = FFEntityUtils.getHeadRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
+            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,20,0);
             lightingBoom.setPos(player.getX(),player.getY(),player.getZ());
             lightingBoom.setOwner(player);
             level.addFreshEntity(lightingBoom);

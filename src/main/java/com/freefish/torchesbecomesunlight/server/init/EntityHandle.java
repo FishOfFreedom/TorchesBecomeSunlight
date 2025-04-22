@@ -86,6 +86,11 @@ public class EntityHandle {
                     .sized(2F, 2F).setUpdateInterval(1)
                     .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"light_boom").toString()));
 
+    public static final RegistryObject<EntityType<LightingHalberd>> LIGHT_HALBERD = ENTITY_TYPE.register("light_halberd",
+            ()->EntityType.Builder.<LightingHalberd>of(LightingHalberd::new, MobCategory.MISC)
+                    .sized(1F, 1F)
+                    .build(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"light_halberd").toString()));
+
     public static final RegistryObject<EntityType<BigIceCrystal>> BIG_ICE_CRYSTAL = ENTITY_TYPE.register("big_ice_crystal",
             ()->EntityType.Builder.<BigIceCrystal>of(BigIceCrystal::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20)

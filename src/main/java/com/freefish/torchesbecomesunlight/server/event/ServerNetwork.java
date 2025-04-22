@@ -10,7 +10,6 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -37,6 +36,7 @@ public class ServerNetwork {
         registerMessage(SynNumberEntity.class, SynNumberEntity::serialize, SynNumberEntity::deserialize, new SynNumberEntity.Handler());
         registerMessage(SynCapabilityMessage.class, SynCapabilityMessage::serialize, SynCapabilityMessage::deserialize, new SynCapabilityMessage.Handler());
         registerMessage(InitClientEntityMessage.class, InitClientEntityMessage::serialize, InitClientEntityMessage::deserialize, new InitClientEntityMessage.Handler());
+        registerMessage(ProjectileHitEntityMessage.class, ProjectileHitEntityMessage::serialize, ProjectileHitEntityMessage::deserialize, new ProjectileHitEntityMessage.Handler());
     }
 
     private static  <MSG> void registerMessage(final Class<MSG> clazz, final BiConsumer<MSG, FriendlyByteBuf> encoder, final Function<FriendlyByteBuf, MSG> decoder, final BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {
