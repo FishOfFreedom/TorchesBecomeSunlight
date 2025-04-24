@@ -12,20 +12,30 @@ import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Line;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Dot;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
+import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class LightingHalberd extends NoGravityProjectileEntity{
+    int timeToBoom;
+    int timeToBoomMaxTime;
+
     public LightingHalberd(EntityType<? extends NoGravityProjectileEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
@@ -33,24 +43,43 @@ public class LightingHalberd extends NoGravityProjectileEntity{
     @Override
     public void tick() {
         super.tick();
-
-        if(level().isClientSide){
-            if (tickCount == 1) {
-
+        if(timeToBoomMaxTime!=0&&timeToBoom==3){
+            float damage = 30;
+            if (getOwner() instanceof LivingEntity living)
+                damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE)*2.5f;
+            List<LivingEntity> entitiesOfClass = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(7));
+            for (LivingEntity boom : entitiesOfClass) {
+                if (boom == getOwner()||!boom.onGround()) continue;
+                boom.invulnerableTime = 0;
+                boom.hurt(boom.damageSources().lightningBolt(), damage);
             }
         }
+
+        if(timeToBoom>0) timeToBoom--;
+    }
+
+    @Override
+    public boolean hitEntity(Entity target) {
+        return false;
     }
 
     @Override
     public int getTickDespawn() {
-        return 110;
+        return 110+timeToBoomMaxTime;
     }
 
     @Override
-    public void hitEntity(Entity target) {
-        if(level().isClientSide){
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        timeToBoom = pCompound.getInt("boom");
+        timeToBoomMaxTime = pCompound.getInt("boommax");
+    }
 
-        }
+    @Override
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("boom",timeToBoom);
+        pCompound.putInt("boommax",timeToBoomMaxTime);
     }
 
     @Override
@@ -85,13 +114,38 @@ public class LightingHalberd extends NoGravityProjectileEntity{
     @Override
     protected void onHitBlock(BlockHitResult pResult) {
         super.onHitBlock(pResult);
+        BlockPos blockPos = pResult.getBlockPos();
 
         if(level().isClientSide){
+            RLParticle rlParticle10 = new RLParticle();
+            rlParticle10.config.setDuration(10);
+            rlParticle10.config.setStartLifetime(NumberFunction.constant(20));
+            rlParticle10.config.setStartSpeed(NumberFunction.constant(1));
+
+            rlParticle10.config.getEmission().setEmissionRate(NumberFunction.constant(15));
+
+            rlParticle10.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+            Circle circle10 = new Circle();circle10.setRadius(4);circle10.setRadiusThickness(1);
+            rlParticle10.config.getShape().setShape(circle10);
+
+            rlParticle10.config.getNoise().open();
+            rlParticle10.config.getNoise().setPosition(new NumberFunction3(0.6));
+
+            rlParticle10.config.trails.open();
+            rlParticle10.config.trails.setLifetime(NumberFunction.constant(0.2));
+            rlParticle10.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0X00DFEF86,0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
+            rlParticle10.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle10.config.trails.config.getRenderer().setBloomEffect(true);
+
+            rlParticle10.emmit(new BlockEffect(level(),new Vec3(blockPos.getX()+0.5,blockPos.getY()+1.1,blockPos.getZ()+0.5)));
+
             RLParticle rlParticle1 = new RLParticle();
             rlParticle1.config.setDuration(10);
             rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
             rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
             rlParticle1.config.setStartSize(new NumberFunction3(0.2));
+            rlParticle1.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
             EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
@@ -119,6 +173,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
             rlParticle2.config.setStartSpeed(NumberFunction.constant(16));
             rlParticle2.config.setStartSize(new NumberFunction3(0.2));
+            rlParticle2.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0));
             EmissionSetting.Burst burst2 = new EmissionSetting.Burst();burst2.setCount(NumberFunction.constant(7));
@@ -147,6 +202,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle3.config.setStartLifetime(NumberFunction.constant(4));
             rlParticle3.config.setStartSpeed(NumberFunction.constant(20));
             rlParticle3.config.setStartSize(new NumberFunction3(0.2));
+            rlParticle3.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
             EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(3));
@@ -171,6 +227,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle4.config.setDuration(20);
             rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
+            rlParticle4.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(0));
             EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
@@ -194,6 +251,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
             rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
             rlParticle5.config.setStartSize(new NumberFunction3(5));
+            rlParticle5.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle5.config.getEmission().setEmissionRate(NumberFunction.constant(0));
             EmissionSetting.Burst burst5 = new EmissionSetting.Burst();burst5.setCount(NumberFunction.constant(2));
@@ -216,6 +274,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle6.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle6.config.setStartSpeed(NumberFunction.constant(1));
             rlParticle6.config.setStartSize(new NumberFunction3(4));
+            rlParticle6.config.setStartDelay(NumberFunction.constant(30));
 
             rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
             rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
@@ -224,14 +283,40 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle6.config.getColorOverLifetime().open();
             rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
 
-            EntityEffect blockEffect = new EntityEffect(level(), this);
+            BlockEffect blockEffect = new BlockEffect(level(), new Vec3(blockPos.getX()+0.5,blockPos.getY()+1.1,blockPos.getZ()+0.5));
+
+            rlParticle1.updateScale(new Vector3f(2,2,2));
+            rlParticle2.updateScale(new Vector3f(2,2,2));
+            rlParticle3.updateScale(new Vector3f(2,2,2));
+            rlParticle4.updateScale(new Vector3f(2,2,2));
+            rlParticle5.updateScale(new Vector3f(2,2,2));
+            rlParticle6.updateScale(new Vector3f(2,2,2));
+
             rlParticle1.emmit(blockEffect);
             rlParticle2.emmit(blockEffect);
             rlParticle3.emmit(blockEffect);
             rlParticle4.emmit(blockEffect);
             rlParticle5.emmit(blockEffect);
             rlParticle6.emmit(blockEffect);
+        }else {
+            float damage = 10;
+            if (getOwner() instanceof LivingEntity living)
+                damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            List<LivingEntity> entitiesOfClass = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5).move(blockPos.getX()+0.5f-getX(),blockPos.getY()+0.5f-getY(),blockPos.getZ()+0.5f-getZ()));
+            for (LivingEntity boom : entitiesOfClass) {
+                if (boom == getOwner()||!boom.onGround()) continue;
+                boom.invulnerableTime = 0;
+                boom.hurt(boom.damageSources().lightningBolt(), damage);
+            }
         }
+
+        timeToBoomMaxTime = 33;
+        timeToBoom = 33;
+    }
+
+    @Override
+    public boolean isHitEntityDiscard(Entity entity) {
+        return false;
     }
 
     public static void shootLightingBoom(Level level, LivingEntity owner, @Nullable LivingEntity target, Vec3 shootPos){

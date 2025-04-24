@@ -1,6 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -76,8 +78,10 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                 EntityType<?> entitytype = this.getType(itemstack.getTag());
                 Entity spawn = entitytype.spawn((ServerLevel) level, itemstack, pContext.getPlayer(), blockpos1, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
                 if (spawn != null) {
-                    if(spawn instanceof ITwoStateEntity twoStateEntity)
+                    if(spawn instanceof ITwoStateEntity twoStateEntity) {
                         twoStateEntity.setSpawnState(state);
+                        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> spawn),new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
+                    }
                     itemstack.shrink(1);
                     level.gameEvent(pContext.getPlayer(), GameEvent.ENTITY_PLACE, blockpos);
                 }

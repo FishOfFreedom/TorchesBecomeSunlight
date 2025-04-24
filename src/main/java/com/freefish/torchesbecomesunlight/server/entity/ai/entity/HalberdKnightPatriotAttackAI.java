@@ -22,6 +22,8 @@ public class HalberdKnightPatriotAttackAI extends Goal {
     private int removeHalberd = 0;
     private int moveHalberdRightLeft = 0;
     private int moveHalberdMove = 0;
+    private int actHalberdChi = 0;
+    private int remoteHalberdZhou = 0;
 
     public HalberdKnightPatriotAttackAI(GunKnightPatriot patriot) {
         this.patriot = patriot;
@@ -57,6 +59,8 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         moveHalberdBack++;
         moveHalberdRightLeft++;
         moveHalberdMove++;
+        actHalberdChi++;
+        remoteHalberdZhou++;
         if(!(a == NO_ANIMATION)) {
             return;
         }
@@ -80,6 +84,9 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         }else if(dist>10&&moveHalberdMove>123){
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_CYCLE);
             moveHalberdMove = 0;
+        }else if(dist>10&&remoteHalberdZhou>123){
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RZHOU);
+            remoteHalberdZhou = 0;
         }else if(dist>9&&removeHalberd>50){
             if(random.nextInt(2)==0){
                 AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RL2);
@@ -95,6 +102,14 @@ public class HalberdKnightPatriotAttackAI extends Goal {
                     if(moveHalberdBack>100){
                         AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_BACK);
                         moveHalberdBack = 0;
+                    }
+                    else if(actHalberdChi>100){
+                        float v = random.nextFloat();
+                        if (v > 0.5f) {
+                            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_CHI3);
+                        } else
+                            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_CHILEFT);
+                        actHalberdChi = 0;
                     }
                     else {
                         float v = random.nextFloat();

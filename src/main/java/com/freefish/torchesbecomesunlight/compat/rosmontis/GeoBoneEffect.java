@@ -22,8 +22,10 @@ public class GeoBoneEffect extends FXEffect {
 
     @Override
     public void updateFXObjectFrame(IFXObject fxObject, float partialTicks) {
-        Vec3 position = MathUtils.getWorldPosFromModel(living, living.yBodyRot, geoBone);
-        fxObject.updatePos(new Vector3f((float)(position.x + (double)this.offset.x), (float)(position.y + (double)this.offset.y), (float)(position.z + (double)this.offset.z)));
+        if(living!=null&&living.isAlive()){
+            Vec3 position = MathUtils.getWorldPosFromModel(living, living.yBodyRot, geoBone);
+            fxObject.updatePos(new Vector3f((float) (position.x + (double) this.offset.x), (float) (position.y + (double) this.offset.y), (float) (position.z + (double) this.offset.z)));
+        }
     }
 
     @Override

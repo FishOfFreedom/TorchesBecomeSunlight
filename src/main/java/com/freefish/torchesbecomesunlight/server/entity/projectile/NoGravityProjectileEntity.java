@@ -361,17 +361,19 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         } else {
             entity.setRemainingFireTicks(k);
         }
-        hitEntity(entity);
-        if(!level().isClientSide){
+
+        boolean b = hitEntity(entity);
+        if(!level().isClientSide&&b){
             TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new ProjectileHitEntityMessage(this, entity.getId()));
         }
 
-        if(isHitEntityDiscard())
+        if(isHitEntityDiscard(entity)) {
             this.discard();
+        }
     }
 
-    public void hitEntity(Entity target){
-
+    public boolean hitEntity(Entity target){
+        return false;
     }
 
     protected void onHitBlock(BlockHitResult pResult) {
@@ -496,7 +498,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         }
     }
 
-    public boolean isHitEntityDiscard(){
-        return false;
+    public boolean isHitEntityDiscard(Entity entity){
+        return true;
     }
 }
