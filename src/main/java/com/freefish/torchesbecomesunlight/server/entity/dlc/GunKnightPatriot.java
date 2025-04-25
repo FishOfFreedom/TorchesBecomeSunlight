@@ -227,8 +227,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
         if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
         Entity entitySource = source.getDirectEntity();
-
-        if(getAnimation()==STATE_2) return false;
+        AnimationAct animation = getAnimation();
+        if(animation ==STATE_2||animation ==SKILL_HALBERD_2||animation ==MOVE_HALBERD_LEFT||animation ==MOVE_HALBERD_RIGHT) return false;
 
         if(getSpawnState()!=State.TWO){
             if (entitySource != null) {
@@ -305,7 +305,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             }else {
                 defendCounterMap.put(living,new DefendCounter(1,20));
             }
-            return super.hurt(source,amount/10*attackTime);
+            return super.hurt(source,amount/10*Math.max(1,attackTime));
         }
         return super.hurt(source,amount/20);
     }

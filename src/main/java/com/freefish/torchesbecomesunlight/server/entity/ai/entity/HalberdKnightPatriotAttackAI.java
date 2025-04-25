@@ -56,20 +56,23 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         float healthRadio = patriot.getHealth()/ patriot.getMaxHealth();
 
         skillHalberdTime++;
-        moveHalberdBack++;
         moveHalberdRightLeft++;
         moveHalberdMove++;
         actHalberdChi++;
         remoteHalberdZhou++;
+
+        double dist = this.patriot.distanceTo(target);
+        if(dist>8){
+            removeHalberd++;
+        }else {
+            moveHalberdBack++;
+        }
+
         if(!(a == NO_ANIMATION)) {
             return;
         }
         walk();
 
-        double dist = this.patriot.distanceTo(target);
-        if(dist>8){
-            removeHalberd++;
-        }
         if(dist>12&&moveHalberdRightLeft>300){
             if(random.nextInt(2)==0){
                 AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_LEFT);
@@ -87,8 +90,8 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         }else if(dist>10&&remoteHalberdZhou>123){
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RZHOU);
             remoteHalberdZhou = 0;
-        }else if(dist>9&&removeHalberd>50){
-            if(random.nextInt(2)==0){
+        }else if(dist>8&&removeHalberd>50){
+            if(random.nextFloat()>0.5f){
                 AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RL2);
             }
             else {
@@ -99,8 +102,9 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
             if (dist < 4D * 4D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                 if(shouldFollowUp(3.5)) {
-                    if(moveHalberdBack>100){
+                    if(moveHalberdBack>200){
                         AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_BACK);
+                        removeHalberd+=50;
                         moveHalberdBack = 0;
                     }
                     else if(actHalberdChi>100){

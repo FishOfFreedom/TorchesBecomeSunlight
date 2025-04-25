@@ -23,6 +23,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -47,11 +48,11 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             float damage = 30;
             if (getOwner() instanceof LivingEntity living)
                 damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE)*2.5f;
-            List<LivingEntity> entitiesOfClass = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(7));
+            List<LivingEntity> entitiesOfClass = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(8.5));
             for (LivingEntity boom : entitiesOfClass) {
                 if (boom == getOwner()||!boom.onGround()) continue;
                 boom.invulnerableTime = 0;
-                boom.hurt(boom.damageSources().lightningBolt(), damage);
+                boom.hurt(getOwner() instanceof Mob mob?boom.damageSources().mobAttack(mob):boom.damageSources().lightningBolt(), damage);
             }
         }
 
@@ -306,7 +307,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             for (LivingEntity boom : entitiesOfClass) {
                 if (boom == getOwner()||!boom.onGround()) continue;
                 boom.invulnerableTime = 0;
-                boom.hurt(boom.damageSources().lightningBolt(), damage);
+                boom.hurt((getOwner() instanceof Mob mob?boom.damageSources().mobAttack(mob):boom.damageSources().lightningBolt()), damage);
             }
         }
 

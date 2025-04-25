@@ -107,7 +107,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
                 for (LivingEntity boom : entitiesOfClass) {
                     if (boom == getOwner()) continue;
                     boom.invulnerableTime = 0;
-                    boom.hurt(boom.damageSources().lightningBolt(), damage);
+                    boom.hurt(boom.damageSources().mobAttack(mob), damage);
                 }
             }
             return true;

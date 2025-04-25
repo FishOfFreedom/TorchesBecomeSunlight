@@ -469,16 +469,16 @@ public class GunKnightPatriotAnimations {
                 entity.setYRot(entity.yRotO);
             }
 
-            if (tick == 78||tick == 95||tick==110) {
+            if (tick == 78||tick == 86||tick == 95||tick == 102||tick==110) {
                 FFEntityUtils.doRangeAttackFX(entity,16,360,0);
                 List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(16+5), livingEntity ->
                         livingEntity.distanceTo(entity)<16+livingEntity.getBbWidth()/2);
                 for(LivingEntity entityHit:list) {
                     if(entityHit == entity) continue;
-
+                    entity.invulnerableTime = 0;
                     float dist = Math.min(4,entityHit.distanceTo(entity)/4);
                     entity.doHurtEntity(entityHit,entity.damageSources().mobAttack(entity),damage*(5-dist));
-                    entity.invulnerableTime = 0;
+
                     if (entityHit instanceof Player player) {
                         ItemStack pPlayerItemStack = player.getUseItem();
                         if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
@@ -662,12 +662,12 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(1.0f,0);
             } else if(tick == 36) {
                 entity.dashForward(8.0f,0);
-                entity.doRangeAttackAngle(6.5,45,damage,40,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,45,40);
+                entity.doRangeAttackAngle(6.5,45,damage,25,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,45,25);
             }
             if (tick == 13) {
-                entity.doRangeAttackAngle(6.5,60,damage,-50,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,60,-50);
+                entity.doRangeAttackAngle(6.5,60,damage,-30,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,60,-30);
             } else if (tick == 52) {
                 entity.doRangeAttackAngle(6.5,60,damage,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,60,0);
@@ -691,6 +691,11 @@ public class GunKnightPatriotAnimations {
             if (tick == 11) {
                 entity.doRangeAttackAngle(6.5,10,damage,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,10,0);
+            }
+
+            if (tick == 35) {
+                entity.doCycleAttack(7,damage*1.5f);
+                FFEntityUtils.doRangeAttackFX(entity,7,360,0);
             }
         }
     };
@@ -737,7 +742,7 @@ public class GunKnightPatriotAnimations {
             }
             if(tick == 25) {
                 entity.dashForward(6f,0);
-                entity.doCycleAttack(2,damage);
+                entity.doCycleAttack(3,damage);
             }
              if (tick == 33) {
                 entity.doRangeAttackAngle(6.5,20,damage,0,true);
