@@ -27,16 +27,19 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
             animatable.setClientVectors(0, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_front));
             animatable.setClientVectors(1, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_back));
         }
+        if(lote_front!=null&&animatable.halberd==null){
+            animatable.halberd = (GeoBone) lote_back;
+        }
+        CoreGeoBone lote_back1 = this.getAnimationProcessor().getBone("pos");
+        if(lote_back1!=null&&animatable.halberd1==null){
+            animatable.halberd1 = (GeoBone) lote_back1;
+        }
 
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
         stateHideGroup(animatable);
         float headPitch= Mth.clamp(extraData.headPitch(),-30,30) * 0.017453292F;
         if(animatable.getAnimation()!=STATE_2&&animatable.getSpawnState()!=ITwoStateEntity.State.TWO)
             right_arm_rot.setRotX(headPitch);
-
-        if(animatable.tickCount == 20){
-            animatable.idleLightParticle((GeoBone) lote_front);
-        }
     }
 
     private void stateHideGroup(GunKnightPatriot patriot){

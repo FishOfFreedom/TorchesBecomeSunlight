@@ -24,6 +24,7 @@ public class HalberdKnightPatriotAttackAI extends Goal {
     private int moveHalberdMove = 0;
     private int actHalberdChi = 0;
     private int remoteHalberdZhou = 0;
+    private int remoteHalberdLian = 0;
 
     public HalberdKnightPatriotAttackAI(GunKnightPatriot patriot) {
         this.patriot = patriot;
@@ -60,6 +61,7 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         moveHalberdMove++;
         actHalberdChi++;
         remoteHalberdZhou++;
+        remoteHalberdLian++;
 
         double dist = this.patriot.distanceTo(target);
         if(dist>8){
@@ -114,6 +116,10 @@ public class HalberdKnightPatriotAttackAI extends Goal {
                         } else
                             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_CHILEFT);
                         actHalberdChi = 0;
+                    }
+                    else if(remoteHalberdLian>300){
+                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, SKILL_HALBERD_LIAN);
+                        remoteHalberdLian = 0;
                     }
                     else {
                         float v = random.nextFloat();

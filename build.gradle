@@ -126,8 +126,8 @@ dependencies {
 
     //rosmontislib
     //implementation jarJar(fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT"))
-    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250424.055552-8"))
-    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250424.055552-8")) {
+    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250426.085129-11"))
+    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250426.085129-11")) {
         jarJar.ranged(it, "[0.2.0,)")
     }
 
