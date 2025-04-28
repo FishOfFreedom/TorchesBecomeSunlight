@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import com.freefish.rosmontislib.commom.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
@@ -948,7 +949,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE1 = new AnimationAct<GunKnightPatriot>("move_halberd_cycle1",70){
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE1 = new AnimationAct<GunKnightPatriot>("move_halberd_cycle1",65){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -1097,13 +1098,28 @@ public class GunKnightPatriotAnimations {
     public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_13 = new AnimationAct<GunKnightPatriot>("skill_halberd_13",230){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
+            LivingEntity target = entity.getTarget();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+
+            if(target!=null&&(tick<38||tick>46)) {
+                entity.getLookControl().setLookAt(target);
+            }else {
+                entity.setYRot(entity.yRotO);
+            }
             if (tick == 17){
                 StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
                 stompEntity.setPos(entity.position());
                 entity.level().addFreshEntity(stompEntity);
+            }
+            if (tick == 153) {
+                List<LivingEntity> entitiesOfClass = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(18), living ->
+                        living.distanceTo(entity) < 16);
+                for(LivingEntity living : entitiesOfClass){
+                    if(living == entity) continue;
+
+                    living.hurt(DamageSourceHandle.realDamage(entity),damage*4);
+                }
             }
         }
     };

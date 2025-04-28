@@ -1070,7 +1070,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 }
             }
             if (getAnimation() == SKILL_HALBERD_13) {
-                if (tick == 184) {
+                if (tick == 153) {
                     skillHalberd12(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,4)));
                 }
             }
