@@ -15,18 +15,21 @@ public class SynCapabilityMessage {
     private int dialogueEntityID;
 
     private int frozeTime;
+    private int lightingTime;
 
     public SynCapabilityMessage(){
     }
 
-    public SynCapabilityMessage(LivingEntity dialogueEntity,int frozeTime) {
+    public SynCapabilityMessage(LivingEntity dialogueEntity,int frozeTime,int lightingTime) {
         this.dialogueEntityID = dialogueEntity.getId();
         this.frozeTime = frozeTime;
+        this.lightingTime = lightingTime;
     }
 
     public static void serialize(final SynCapabilityMessage message, final FriendlyByteBuf buf) {
         buf.writeVarInt(message.dialogueEntityID);
         buf.writeVarInt(message.frozeTime);
+        buf.writeVarInt(message.lightingTime);
     }
 
     public static SynCapabilityMessage deserialize(final FriendlyByteBuf buf) {
@@ -34,6 +37,7 @@ public class SynCapabilityMessage {
 
         message.dialogueEntityID = buf.readVarInt();
         message.frozeTime = buf.readVarInt();
+        message.lightingTime = buf.readVarInt();
 
         return message;
     }
@@ -49,9 +53,14 @@ public class SynCapabilityMessage {
                     if(data!=null){
                         data.setFrozen(message.frozeTime);
                         data.setIsFrozen(true);
+                        data.setLighting(message.lightingTime);
+                        data.setIsLighting(true);
 
                         if(data.getFrozenTick() == 0){
                             data.clearFrozen(livingEntity);
+                        }
+                        if(data.getLightingTick() == 0){
+                            data.clearLighting(livingEntity);
                         }
                     }
                 }

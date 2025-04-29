@@ -13,6 +13,8 @@ import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
 import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -108,6 +110,16 @@ public class LightingBoom extends NoGravityProjectileEntity{
                     if (boom == getOwner()) continue;
                     boom.invulnerableTime = 0;
                     boom.hurt(boom.damageSources().mobAttack(mob), damage);
+                    FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(boom, CapabilityHandle.FROZEN_CAPABILITY);
+                    if(capability!=null){
+                        capability.setLighting(boom,100);
+                    }
+                }
+            }
+            if(target instanceof LivingEntity living){
+                FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(living, CapabilityHandle.FROZEN_CAPABILITY);
+                if(capability!=null){
+                    capability.setLighting(living,100);
                 }
             }
             return true;

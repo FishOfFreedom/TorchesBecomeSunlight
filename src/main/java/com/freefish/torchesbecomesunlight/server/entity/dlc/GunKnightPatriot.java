@@ -23,6 +23,7 @@ import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.rosmontislib.client.utils.Range;
 
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.EntityPosRotEffect;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
@@ -234,6 +235,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doMoveCycle();
         doMoveHalberdBack();
         doMoveHalberdDownChi();
+        doAckHalberdChi();
+        doSkillHalberdLian();
+        doAckHalberdCycle2();
+        doAckHalberdHeavy();
 
         if(getTarget() instanceof FrostNova) setTarget(null);
     }
@@ -1351,69 +1356,75 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle3.emmit(blockEffect);
                 }
                 if (tick==38){
-                    RLParticle rlParticle1 = new RLParticle();
-                    rlParticle1.config.setDuration(20);
-                    rlParticle1.config.setStartLifetime(NumberFunction.constant(30));
-                    rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
-                    rlParticle1.config.setStartSize(new NumberFunction3(2.8));
-                    rlParticle1.config.setStartColor(new Gradient(new GradientColor(0X67E6FFFF)));
-
-                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
-                    EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(22));
-                    rlParticle1.config.getEmission().addBursts(burst1);
-
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
-
-                    Circle circle1 = new Circle();circle1.setRadius(0.5f);circle1.setRadiusThickness(0);
-                    rlParticle1.config.getShape().setShape(circle1);
-
-                    rlParticle1.config.getVelocityOverLifetime().open();
-                    rlParticle1.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
-                    rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.08f,0.16f,1},new float[]{60,60,30,30}),NumberFunction.constant(0)));
-
-                    rlParticle1.config.getColorOverLifetime().open();
-                    rlParticle1.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF)));
-
-                    rlParticle1.config.getUvAnimation().open();
-                    rlParticle1.config.getUvAnimation().setTiles(new Range(2,2));
-                    rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
-
-                    rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
-
-                    RLParticle rlParticle3 = new RLParticle();
-                    rlParticle3.config.setDuration(20);
-                    rlParticle3.config.setStartLifetime(NumberFunction.constant(12));
-                    rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
-                    rlParticle3.config.setStartSize(new NumberFunction3(0.1));
-                    rlParticle3.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(-40 ,40 , true)));
-
-                    rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(3));
-                    EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(24));
-                    rlParticle3.config.getEmission().addBursts(burst3);
-
-                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW);
-
-                    Circle circle3 = new Circle();circle3.setRadius(1);circle3.setRadiusThickness(0);
-                    rlParticle3.config.getShape().setShape(circle3);
-
-                    rlParticle3.config.getVelocityOverLifetime().open();
-                    rlParticle3.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
-                    rlParticle3.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.5f,1},new float[]{16,16,7}),NumberFunction.constant(0)));
-                    rlParticle3.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(1,0.5,true),NumberFunction.constant(0)));
-
-                    rlParticle3.config.getColorOverLifetime().open();
-                    rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
-
-                    BlockEffect blockEffect = new BlockEffect(level(),FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,2)));
-                    rlParticle1.emmit(blockEffect);
-                    rlParticle3.emmit(blockEffect);
+                    jianshuwind(false);
                 }
             }
         }
     }
 
+    //减速旋风
+    private void jianshuwind(boolean isfan){
+        RLParticle rlParticle1 = new RLParticle();
+        rlParticle1.config.setDuration(20);
+        rlParticle1.config.setStartLifetime(NumberFunction.constant(30));
+        rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
+        rlParticle1.config.setStartSize(new NumberFunction3(2.8));
+        rlParticle1.config.setStartColor(new Gradient(new GradientColor(0X67E6FFFF)));
 
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(22));
+        rlParticle1.config.getEmission().addBursts(burst1);
+
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+        Circle circle1 = new Circle();circle1.setRadius(0.5f);circle1.setRadiusThickness(0);
+        rlParticle1.config.getShape().setShape(circle1);
+
+        rlParticle1.config.getVelocityOverLifetime().open();
+        rlParticle1.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+
+        float fan = isfan?-1:1;
+
+        rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.08f,0.16f,1},new float[]{60*fan,60*fan,30*fan,30*fan}),NumberFunction.constant(0)));
+
+        rlParticle1.config.getColorOverLifetime().open();
+        rlParticle1.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF)));
+
+        rlParticle1.config.getUvAnimation().open();
+        rlParticle1.config.getUvAnimation().setTiles(new Range(2,2));
+        rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
+
+        rlParticle1.config.trails.open();
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+
+        RLParticle rlParticle3 = new RLParticle();
+        rlParticle3.config.setDuration(20);
+        rlParticle3.config.setStartLifetime(NumberFunction.constant(12));
+        rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
+        rlParticle3.config.setStartSize(new NumberFunction3(0.1));
+        rlParticle3.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(-40 ,40 , true)));
+
+        rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(3));
+        EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(24));
+        rlParticle3.config.getEmission().addBursts(burst3);
+
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW);
+
+        Circle circle3 = new Circle();circle3.setRadius(1);circle3.setRadiusThickness(0);
+        rlParticle3.config.getShape().setShape(circle3);
+
+        rlParticle3.config.getVelocityOverLifetime().open();
+        rlParticle3.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+        rlParticle3.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,0.5f,1},new float[]{16*fan,16*fan,7*fan}),NumberFunction.constant(0)));
+        rlParticle3.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(1,0.5,true),NumberFunction.constant(0)));
+
+        rlParticle3.config.getColorOverLifetime().open();
+        rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+        BlockEffect blockEffect = new BlockEffect(level(),FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,2)));
+        rlParticle1.emmit(blockEffect);
+        rlParticle3.emmit(blockEffect);
+    }
 
     private void doMoveCycle(){
         if(getAnimation()==MOVE_HALBERD_CYCLE){
@@ -1471,6 +1482,166 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 if(tick==88){
                     Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0, 2));
                     lightBoomParticle((float) (-this.getYRot() / 180 * Math.PI),bodyRotVec);
+                }
+            }
+        }
+    }
+
+    private void doAckHalberdChi(){
+        if(getAnimation()==ACK_HALBERD_CHI3){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if(tick==24||tick==54||tick==84){
+                    Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0, 3));
+                    lightBoomParticle((float) (-this.getYRot() / 180 * Math.PI),bodyRotVec);
+
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(10);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(6));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(40));
+                    rlParticle1.config.setStartSize(new NumberFunction3(0.35));
+                    rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+                    EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(3));
+                    rlParticle1.config.getEmission().addBursts(burst);
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Cone circle1 = new Cone();circle1.setRadius(0.01f);circle1.setAngle(5);
+                    rlParticle1.config.getShape().setShape(circle1);
+                    rlParticle1.config.getShape().setRotation(new NumberFunction3(105,0,0));
+
+                    rlParticle1.config.getNoise().open();
+                    rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+                    rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
+
+                    BlockEffect blockEffect = new BlockEffect(level(), FFEntityUtils.getBodyRotVec(this, new Vec3(-0.5, 2, 2)));
+                    rlParticle1.updateRotation(new Vector3f(0,(float) (-this.getYRot() / 180 * Math.PI),0));
+                    rlParticle1.emmit(blockEffect);
+                }
+            }
+        }
+    }
+
+
+    private void doAckHalberdCycle2(){
+        if(getAnimation()==RACK_HALBERD_CYCLE2) {
+            int tick = getAnimationTick();
+            if(tick==29){
+                jianshuwind(true);
+            }
+        }
+    }
+
+    private void doAckHalberdHeavy(){
+        if(getAnimation()==RACK_HALBERD_HEAVY) {
+            int tick = getAnimationTick();
+            if(tick==58){
+                skillHalberd2(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,5.5)),new Vector3f(1,1,1));
+            }
+        }
+    }
+
+    private void doSkillHalberdLian(){
+        if(getAnimation()==SKILL_HALBERD_LIAN){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if (tick == 30||tick == 36||tick == 47||tick == 61||tick == 72||tick == 86) {
+                    float r = 1;
+                    if(tick==36||tick == 61||tick == 86) r = -1;
+
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(10);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(8));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
+
+                    rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(2));
+                    EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(8));
+                    rlParticle1.config.getEmission().addBursts(burst);
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Circle circle1 = new Circle();circle1.setRadius(2);circle1.setArc(180);circle1.setRadiusThickness(0);
+                    rlParticle1.config.getShape().setShape(circle1);
+
+                    rlParticle1.config.getNoise().open();
+                    rlParticle1.config.getNoise().setPosition(new NumberFunction3(0.2));
+
+                    rlParticle1.config.getVelocityOverLifetime().open();
+                    rlParticle1.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,6,0));
+                    rlParticle1.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+                    rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,6*r,0));
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+                    rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
+
+                    RLParticle rlParticle2 = new RLParticle();
+                    rlParticle2.config.setDuration(10);
+                    rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
+                    rlParticle2.config.setStartSpeed(NumberFunction.constant(3));
+                    rlParticle2.config.setStartSize(new NumberFunction3(0.3));
+
+                    rlParticle2.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(1));
+                    EmissionSetting.Burst burst2 = new EmissionSetting.Burst(); burst2.setCount(NumberFunction.constant(5));
+                    rlParticle2.config.getEmission().addBursts(burst2);
+
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Circle circle2 = new Circle();circle2.setRadius(2);circle2.setArc(180);circle2.setRadiusThickness(0);
+                    rlParticle2.config.getShape().setShape(circle2);
+
+                    rlParticle2.config.getNoise().open();
+                    rlParticle2.config.getNoise().setPosition(new NumberFunction3(0.2));
+
+                    rlParticle2.config.getVelocityOverLifetime().open();
+                    rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,8,0));
+                    rlParticle2.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+                    rlParticle2.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,8*r,0));
+
+                    rlParticle2.config.trails.open();
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
+                    rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
+
+                    RLParticle rlParticle3 = new RLParticle();
+                    rlParticle3.config.setDuration(10);
+                    rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
+                    rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
+                    rlParticle3.config.setStartSize(new NumberFunction3(0.4));
+
+                    rlParticle3.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+                    EmissionSetting.Burst burst3 = new EmissionSetting.Burst(); burst3.setCount(NumberFunction.constant(20));
+                    rlParticle3.config.getEmission().addBursts(burst3);
+
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+
+                    Circle circle3 = new Circle();circle3.setRadius(2);circle3.setArc(180);circle3.setRadiusThickness(0);
+                    rlParticle3.config.getShape().setShape(circle3);
+
+                    rlParticle3.config.getColorOverLifetime().open();
+                    rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+                    BlockEffect blockEffect = new BlockEffect(level(), FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0, 2)));
+                    Vector3f vector3f = new Vector3f(0, (float) (-this.getYRot() / 180 * Math.PI), 0);
+                    rlParticle3.updateRotation(vector3f);
+                    rlParticle1.updateRotation(vector3f);
+                    rlParticle2.updateRotation(vector3f);
+                    Vector3f scale = new Vector3f(1.7f,1.7f,1.7f);
+                    rlParticle3.updateScale(scale);
+                    rlParticle1.updateScale(scale);
+                    rlParticle2.updateScale(scale);
+                    rlParticle1.emmit(blockEffect);
+                    rlParticle2.emmit(blockEffect);
+                    rlParticle3.emmit(blockEffect);
                 }
             }
         }
@@ -1790,8 +1961,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle5.emmit(blockEffect);
         rlParticle6.emmit(blockEffect);
     }
-
-    public void skillHalberd2(Vector3f scale){
+    //闪电冲击波
+    public void skillHalberd2(Vec3 pos,Vector3f scale){
         RLParticle rlParticle1 = new RLParticle();
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
@@ -1929,6 +2100,208 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle6.config.getColorOverLifetime().open();
         rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
 
+        BlockEffect blockEffect = new BlockEffect(level(),pos);
+        rlParticle1.emmit(blockEffect);
+        rlParticle2.emmit(blockEffect);
+        rlParticle3.emmit(blockEffect);
+        rlParticle4.emmit(blockEffect);
+        rlParticle5.emmit(blockEffect);
+        rlParticle6.emmit(blockEffect);
+    }
+    //风系垫步旋转
+    public void windFastMove(){
+        RLParticle rlParticle5 = new RLParticle();
+        rlParticle5.config.setDuration(20);
+        rlParticle5.config.setStartLifetime(NumberFunction.constant(20));
+        rlParticle5.config.setStartSpeed(NumberFunction.constant(0));
+        rlParticle5.config.setStartSize(new NumberFunction3(1.5));
+
+        rlParticle5.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
+        EmissionSetting.Burst burst5 = new EmissionSetting.Burst();burst5.setCount(NumberFunction.constant(10));
+        rlParticle5.config.getEmission().addBursts(burst5);
+
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+        rlParticle5.config.getUvAnimation().open();
+        rlParticle5.config.getUvAnimation().setTiles(new Range(2,2));
+
+        Circle circle = new Circle();circle.setRadius(0.2f);circle.setRadiusThickness(0);
+        rlParticle5.config.getShape().setShape(circle);
+        rlParticle5.config.getShape().setRotation(new NumberFunction3(90,0,0));
+
+        rlParticle5.config.getVelocityOverLifetime().open();
+        rlParticle5.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);
+        rlParticle5.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new Line(new float[]{0,0.33f,0.5f,1},new float[]{16,16,9,9})));
+
+        rlParticle5.config.getColorOverLifetime().open();
+        rlParticle5.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
+
+        rlParticle5.config.trails.open();
+
+        EntityPosRotEffect effect = new EntityPosRotEffect(level(),this);
+        rlParticle5.emmit(effect);
+    }
+
+    //大闪电冲击波
+    public void bigSkillHalberd2(Vector3f scale){
+        RLParticle rlParticle1 = new RLParticle();
+        rlParticle1.config.setDuration(10);
+        rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
+        rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
+        rlParticle1.config.setStartSize(new NumberFunction3(0.2));
+
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
+        rlParticle1.config.getEmission().addBursts(burst1);
+
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
+        rlParticle1.config.getShape().setShape(circle1);
+
+        rlParticle1.config.getVelocityOverLifetime().open();
+        rlParticle1.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(3),NumberFunction.constant(0)));
+
+        rlParticle1.config.getNoise().open();
+        rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
+
+        rlParticle1.config.trails.open();
+        rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
+        rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle2 = new RLParticle();
+        rlParticle2.config.setDuration(8);
+        rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
+        rlParticle2.config.setStartSpeed(NumberFunction.constant(20));
+        rlParticle2.config.setStartSize(new NumberFunction3(0.4));
+
+        rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst2 = new EmissionSetting.Burst();burst2.setCount(NumberFunction.constant(7));
+        burst2.cycles = 3;burst2.interval = 2;
+        rlParticle2.config.getEmission().addBursts(burst2);
+
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
+        rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
+        rlParticle2.config.getShape().setShape(circle2);
+
+        rlParticle2.config.getVelocityOverLifetime().open();
+        rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(30,0,true),NumberFunction.constant(0)));
+
+        rlParticle2.config.getNoise().open();
+        rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
+
+        rlParticle2.config.trails.open();
+        rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
+        rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle3 = new RLParticle();
+        rlParticle3.config.setDuration(8);
+        rlParticle3.config.setStartLifetime(NumberFunction.constant(3));
+        rlParticle3.config.setStartSpeed(NumberFunction.constant(10));
+        rlParticle3.config.setStartSize(new NumberFunction3(0.8));
+
+        rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(5));
+        rlParticle3.config.getEmission().addBursts(burst3);
+
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        rlParticle3.config.getShape().setShape(new Dot());
+
+        rlParticle3.config.getVelocityOverLifetime().open();
+        rlParticle3.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,70,0));
+
+        rlParticle3.config.getNoise().open();
+        rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
+        //todo
+        rlParticle3.config.trails.open();
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
+        rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle4 = new RLParticle();
+        rlParticle4.config.setDuration(20);
+        rlParticle4.config.setStartLifetime(NumberFunction.constant(9));
+        rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
+
+        rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
+        rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
+
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
+        rlParticle4.config.getShape().setShape(circle4);
+
+        rlParticle4.config.getNoise().open();
+        rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
+
+        rlParticle4.config.trails.open();
+        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
+        rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
+
+        RLParticle rlParticle5 = new RLParticle();
+        rlParticle5.config.setDuration(20);
+        rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
+        rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
+        rlParticle5.config.setStartSize(new NumberFunction3(10));
+
+        rlParticle5.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst5 = new EmissionSetting.Burst();burst5.setCount(NumberFunction.constant(2));
+        burst5.cycles = 2;burst5.interval = 2;
+        rlParticle5.config.getEmission().addBursts(burst5);
+
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle5.config.getShape().setShape(new Dot());
+
+        ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
+
+        rlParticle5.config.getColorOverLifetime().open();
+        rlParticle5.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0X00DFEF86)));
+
+        rlParticle5.config.getSizeOverLifetime().open();
+        rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
+
+        RLParticle rlParticle6 = new RLParticle();
+        rlParticle6.config.setDuration(4);
+        rlParticle6.config.setStartLifetime(NumberFunction.constant(5));
+        rlParticle6.config.setStartSize(new NumberFunction3(10));
+
+        rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
+        rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
+        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+
+        rlParticle6.config.getShape().setShape(new Dot());
+        rlParticle6.config.getShape().setPosition(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,1},new float[]{-3,14}),NumberFunction.constant(0)));
+
+        rlParticle6.config.getColorOverLifetime().open();
+        rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
+
+        RLParticle rlParticle7 = new RLParticle();
+        rlParticle7.config.setDuration(10);
+        rlParticle7.config.setStartLifetime(NumberFunction.constant(10));
+        rlParticle7.config.setStartSpeed(NumberFunction.constant(40));
+
+        rlParticle7.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst7 = new EmissionSetting.Burst();burst7.setCount(NumberFunction.constant(7));
+        rlParticle7.config.getEmission().addBursts(burst7);burst7.time = 6;burst7.cycles=0;
+
+        rlParticle7.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+        Cone circle7 = new Cone();circle7.setRadius(0.5f);circle7.setRadiusThickness(1f);circle7.setAngle(60);
+        rlParticle7.config.getShape().setShape(circle7);
+
+        rlParticle7.config.getPhysics().open();
+        rlParticle7.config.getPhysics().setHasCollision(false);
+        rlParticle7.config.getPhysics().setFriction(NumberFunction.constant(0.5));
+
+        rlParticle7.config.trails.open();
+        rlParticle7.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle7.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86,0X00DFEF86)));
+        rlParticle7.config.trails.config.getRenderer().setBloomEffect(true);
+
         BlockEffect blockEffect = new BlockEffect(level(),new Vec3(getX(),getY()+1,getZ()));
         rlParticle1.emmit(blockEffect);
         rlParticle2.emmit(blockEffect);
@@ -1936,6 +2309,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle4.emmit(blockEffect);
         rlParticle5.emmit(blockEffect);
         rlParticle6.emmit(blockEffect);
+        rlParticle7.emmit(blockEffect);
     }
 
     public void skillHalberd10(){
@@ -2124,7 +2498,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.setStartColor(new Gradient(new GradientColor(0X31DFDDAF)));
 
         rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
-        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(1400));
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(1000));
         rlParticle1.config.getEmission().addBursts(burst1);
 
         rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);

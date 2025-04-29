@@ -153,6 +153,7 @@ public final class EventListener {
         FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
         if(frozen!=null){
             if(frozen.getFrozen()) frozen.tickFrozen(livingEntity);
+            if(frozen.getLighting()) frozen.tickLighting(livingEntity);
         }
 
         if (event.getEntity() != null) {
@@ -178,6 +179,19 @@ public final class EventListener {
         DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.DIALOGUE_CAPABILITY);
         if(capability!=null) capability.tick(event);
     }
+
+    @SubscribeEvent
+    public void healBlockEvent(LivingHealEvent event){
+        LivingEntity livingEntity = event.getEntity();
+        FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
+        if(frozen!=null){
+            if(frozen.getLighting()) {
+                event.setCanceled(true);
+            }
+        }
+    }
+
+
 
     @SubscribeEvent
     public void onJoinWorld(EntityJoinLevelEvent event) {

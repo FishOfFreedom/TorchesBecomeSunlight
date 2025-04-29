@@ -1,5 +1,15 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
+import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
+import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
+import com.freefish.rosmontislib.client.particle.advance.data.number.RandomConstant;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
+import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
+import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.SynCapabilityMessage;
@@ -21,9 +31,9 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,11 +56,21 @@ public class FrozenCapability {
         boolean getFrozen();
         int getFrozenTick();
         void clearFrozen(final LivingEntity entity);
+        //Lighting
+        void tickLighting(final LivingEntity entity);
+        void setLighting(final LivingEntity target, int duration);
+        void setLighting(int duration);
+        void setIsLighting(boolean isLighting);
+        boolean getLighting();
+        int getLightingTick();
+        void clearLighting(final LivingEntity entity);
     }
 
     public static class FrozenCapabilityImp implements IFrozenCapability {
         public int frozenTicks;
         public boolean isFrozen;
+        public int lightingTicks;
+        public boolean isLighting;
         public boolean canDeleteDish = true;
 
         public float[] attributes = new float[4];
@@ -98,6 +118,62 @@ public class FrozenCapability {
             }
         }
 
+        public void tickLighting(final LivingEntity entity) {
+            if (!isLighting) {
+                return;
+            }
+
+
+            //if (entity.isOnFire()) {
+            //    clearFrozen(entity);
+            //    entity.clearFire();
+            //    return;
+            //}
+
+            if (!entity.isAlive()) {
+                clearLighting(entity);
+                return;
+            }
+
+            if (lightingTicks > 0) {
+                lightingTicks--;
+            } else {
+                clearLighting(entity);
+            }
+
+            if (isLighting && !(entity instanceof Player player && player.isCreative())) {
+                if (!(entity instanceof EnderDragon) && !entity.onGround()) {
+                    entity.setDeltaMovement(entity.getDeltaMovement().add(0, -0.3, 0));
+                }
+                if(entity.level().isClientSide&&entity.tickCount%20==0){
+                    RLParticle rlParticle2 = new RLParticle();
+                    rlParticle2.config.setDuration(20);
+                    rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
+                    rlParticle2.config.setStartSpeed(NumberFunction.constant(2));
+                    rlParticle2.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.2));
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    Sphere circle2 = new Sphere();circle2.setRadius(0.5f);
+                    rlParticle2.config.getShape().setShape(circle2);
+                    rlParticle2.config.getShape().setPosition(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(2,0,true),NumberFunction.constant(0)));
+                    rlParticle2.config.getNoise().open();
+                    rlParticle2.config.getNoise().setPosition(new NumberFunction3(1.5));
+
+                    rlParticle2.config.getVelocityOverLifetime().open();
+                    rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,6,0));
+
+                    rlParticle2.config.trails.open();
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
+
+                    EntityEffect effect = new EntityEffect(entity.level(),entity);
+                    float scale = entity.getBbHeight()/4;
+                    rlParticle2.updateScale(new Vector3f(scale));
+                    rlParticle2.emmit(effect);
+                }
+            }
+        }
+
         public void setFrozen(final LivingEntity target, int duration) {
             if(target.level().isClientSide) return;
 
@@ -106,7 +182,7 @@ public class FrozenCapability {
             }
             frozenTicks = duration;
             isFrozen = true;
-            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target,frozenTicks));
+            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target,frozenTicks,lightingTicks));
         }
 
         public void setIsFrozen(boolean isFrozen){
@@ -139,8 +215,41 @@ public class FrozenCapability {
             isFrozen = false;
             frozenTicks = 0;
             if(!entity.level().isClientSide)
-                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity,frozenTicks));
+                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity,frozenTicks,lightingTicks));
         }
+
+        public void setLighting(final LivingEntity target, int duration) {
+            if(target.level().isClientSide) return;
+
+            lightingTicks = duration;
+            isLighting = true;
+            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target, frozenTicks,lightingTicks));
+        }
+
+        public void setIsLighting(boolean isLighting){
+            this.isLighting = isLighting;
+        }
+
+        public void setLighting(int LightingTicks){
+            this.lightingTicks = LightingTicks;
+        }
+
+        public int getLightingTick(){
+            return this.lightingTicks;
+        };
+
+        public boolean getLighting(){
+            return isLighting;
+        }
+
+        public void clearLighting(final LivingEntity entity) {
+            isLighting = false;
+            lightingTicks = 0;
+            if(!entity.level().isClientSide)
+                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity, frozenTicks,lightingTicks));
+        }
+
+
 
         public void addAttributeModifier(Attribute pAttribute, String pUuid, double pAmount, AttributeModifier.Operation pOperation) {
             AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString(pUuid), "dishattributemodifier", pAmount, pOperation);
@@ -199,6 +308,8 @@ public class FrozenCapability {
             CompoundTag frozenData = new CompoundTag();
             frozenData.putInt("frozenTicks", frozenTicks);
             frozenData.putBoolean("isfrozen", isFrozen);
+            frozenData.putInt("lightingTicks", lightingTicks);
+            frozenData.putBoolean("islighting", isLighting);
 
             frozenData.putFloat("act",   attributes[0]);
             frozenData.putFloat("move",  attributes[1]);
@@ -211,6 +322,8 @@ public class FrozenCapability {
         public void deserializeNBT(CompoundTag tag) {
             frozenTicks = tag.getInt("frozenTicks");
             isFrozen = tag.getBoolean("isfrozen");
+            frozenTicks = tag.getInt("lightingTicks");
+            isFrozen = tag.getBoolean("islighting");
 
             attributes[0] = tag.getFloat("act");
             attributes[1] = tag.getFloat("move");
