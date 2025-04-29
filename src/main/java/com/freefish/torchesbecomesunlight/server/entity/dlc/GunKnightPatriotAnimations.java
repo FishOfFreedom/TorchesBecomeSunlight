@@ -442,16 +442,55 @@ public class GunKnightPatriotAnimations {
     };
     public static final AnimationAct<GunKnightPatriot> DIE = new AnimationAct<GunKnightPatriot>("death",45,1);
 
-    public static final AnimationAct<GunKnightPatriot> WIND_MILL = new AnimationAct<GunKnightPatriot>("skill_halberd_1",230){
+    public static final AnimationAct<GunKnightPatriot> WIND_MILL = new AnimationAct<GunKnightPatriot>("skill_halberd_1",225){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
-            entity.setYRot(entity.yRotO);
             int tick = entity.getAnimationTick();
-            entity.locateEntity();
-            if (tick == 17){
-                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
-                stompEntity.setPos(entity.position());
-                entity.level().addFreshEntity(stompEntity);
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            RandomSource random = entity.getRandom();
+
+            LivingEntity target = entity.getTarget();
+            if (target != null) {
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+
+            if(tick<=135)
+                entity.locateEntity();
+
+            if(tick==42||tick==62||tick==84||tick==107){
+                List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(8+5), livingEntity ->
+                        livingEntity.distanceTo(entity)<8+livingEntity.getBbWidth()/2);
+                for(LivingEntity entityHit:list) {
+                    if(entityHit == entity) continue;
+                    entity.doHurtEntity(entityHit,entity.damageSources().mobAttack(entity),damage);
+                }
+            }
+
+            if(tick>=136&&tick<140){
+                entity.dashForwardContinueNoTarget(11,0);
+            }
+            if(tick>=175&&tick<179){
+                entity.dashForwardContinueNoTarget(11,0);
+            }
+
+            if(tick==140||tick==151||tick==179||tick==188){
+                List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(12+5), livingEntity ->
+                        livingEntity.distanceTo(entity)<12
+                                +livingEntity.getBbWidth()/2);
+                for(LivingEntity entityHit:list) {
+                    if(entityHit == entity) continue;
+                    entity.invulnerableTime = 0;
+                    entity.doHurtEntity(entityHit,entity.damageSources().mobAttack(entity),damage*2f);
+                    if (entityHit instanceof Player player) {
+                        ItemStack pPlayerItemStack = player.getUseItem();
+                        if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
+                            player.getCooldowns().addCooldown(Items.SHIELD, 100);
+                            entity.level().broadcastEntityEvent(player, (byte) 30);
+                        }
+                    }
+                }
             }
         }
     };
@@ -1110,11 +1149,38 @@ public class GunKnightPatriotAnimations {
             }else {
                 entity.setYRot(entity.yRotO);
             }
-            if (tick == 17){
-                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
-                stompEntity.setPos(entity.position());
-                entity.level().addFreshEntity(stompEntity);
+
+            if (tick == 5){
+                entity.doRangeAttack(7,60,damage*2,true);
             }
+
+            if (tick == 36||tick == 46){
+                List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(8+5), livingEntity ->
+                        livingEntity.distanceTo(entity)<8+livingEntity.getBbWidth()/2);
+                for(LivingEntity entityHit:list) {
+                    if(entityHit == entity) continue;
+                    entity.doHurtEntity(entityHit,entity.damageSources().mobAttack(entity),damage);
+                }
+            }
+
+            if (tick == 81) {
+                Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(entity, new Vec3(-1, 0.5f, 1));
+                LightingBoom.shootLightingBoom(entity.level(),entity,target,bodyRotVec,true);
+            }
+
+            if(tick>101&&tick<=106){
+                entity.dashForwardContinueNoTarget(16,0);
+                entity.doCycleAttack(3,damage);
+            }
+
+            if(tick==134){
+                entity.dashForwardContinue(10,0);
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0,1,0));
+            }
+            if(tick==144){
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0,-1,0));
+            }
+
             if (tick == 153) {
                 List<LivingEntity> entitiesOfClass = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(18), living ->
                         living.distanceTo(entity) < 16);
@@ -1122,6 +1188,14 @@ public class GunKnightPatriotAnimations {
                     if(living == entity) continue;
 
                     living.hurt(DamageSourceHandle.realDamage(entity),damage*4);
+                }
+                List<LivingEntity> entitiesOfClass1 = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(64), living -> {
+                    float v = living.distanceTo(entity);
+                    return v > 16 && v < 64;
+                });
+                for(LivingEntity living : entitiesOfClass1){
+                    if(living == entity) continue;
+                    living.hurt(entity.damageSources().mobAttack(entity),damage*3);
                 }
             }
         }
@@ -1140,12 +1214,22 @@ public class GunKnightPatriotAnimations {
             }
 
             if(tick == 30||tick == 36||tick == 47||tick == 61||tick == 72||tick == 86||tick == 100) {
-                entity.dashForward(4f,0);
+                entity.dashForward(3f,0);
             }
-            if (tick == 30||tick == 36||tick == 47||tick == 61||tick == 72||tick == 86||tick == 100) {
+            if (tick == 30||tick == 36||tick == 47||tick == 61) {
                 entity.doRangeKnockBack(6.5,90,0.6f);
                 entity.doRangeAttackAngle(6.5,90,damage,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,90,0);
+            }
+            if (tick == 72||tick == 86||tick == 100) {
+                entity.doRangeKnockBack(6.5,90,0.6f);
+                entity.doRangeAttackAngle(6.5,90,damage*1.5f,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,6.5,90,0);
+            }
+            if (tick == 100) {
+                entity.doRangeKnockBack(10,20,-2);
+                entity.doRangeAttackAngle(10,20,damage*2f,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,10,20,0);
             }
         }
     };

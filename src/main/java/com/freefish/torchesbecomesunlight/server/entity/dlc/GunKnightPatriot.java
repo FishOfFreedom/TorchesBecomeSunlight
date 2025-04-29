@@ -234,6 +234,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doSkillHalberd3();
         doMoveCycle();
         doMoveHalberdBack();
+        doWindMill();
         doMoveHalberdDownChi();
         doAckHalberdChi();
         doSkillHalberdLian();
@@ -250,7 +251,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         Entity entitySource = source.getDirectEntity();
         AnimationAct animation = getAnimation();
         if(animation ==STATE_2||animation ==SKILL_HALBERD_2||animation ==MOVE_HALBERD_LEFT||animation ==MOVE_HALBERD_RIGHT) return false;
-
+        if(animation == WIND_MILL) amount = amount/10;
         if(getSpawnState()!=State.TWO){
             if (entitySource != null) {
                 return attackWithShield(source, amount);
@@ -315,7 +316,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         Entity entitySource = source.getDirectEntity();
         if (entitySource instanceof LivingEntity living) {
             int attackTime = 1;
-            if(defendCounterMap.containsKey(living)){
+            if(living.distanceTo(this)<6+living.getBbWidth()/2 && defendCounterMap.containsKey(living)){
                 DefendCounter defendCounter = defendCounterMap.get(living);
                 attackTime +=defendCounter.effectiveAttackCounter;
 
@@ -1362,7 +1363,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
-    //减速旋风
+    //风减速旋风
     private void jianshuwind(boolean isfan){
         RLParticle rlParticle1 = new RLParticle();
         rlParticle1.config.setDuration(20);
@@ -1470,6 +1471,20 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 if(tick==59){
                     Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0, 2));
                     lightBoomParticle((float) (-this.getYRot() / 180 * Math.PI),bodyRotVec);
+                }
+            }
+        }
+    }
+
+    private void doWindMill(){
+        if(getAnimation()==WIND_MILL){
+            int tick = getAnimationTick();
+            if(level().isClientSide){
+                if(tick==42||tick==62||tick==84||tick==107){
+                    jianshuwind(false);
+                }
+                if(tick==144||tick==183){
+                    jianshuwind(false);
                 }
             }
         }
