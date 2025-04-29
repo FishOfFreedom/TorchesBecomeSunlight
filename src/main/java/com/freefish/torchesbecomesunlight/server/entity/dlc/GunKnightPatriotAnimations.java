@@ -248,6 +248,7 @@ public class GunKnightPatriotAnimations {
         @Override
         public void stop(GunKnightPatriot entity) {
             entity.setSpawnState(ITwoStateEntity.State.TWO);
+            entity.transSpawnState(ITwoStateEntity.State.TWO);
             TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),new InitClientEntityMessage(entity,InitClientEntityMessage.InitDataType.ISTWOSTATE));
             super.stop(entity);
         }
@@ -789,7 +790,7 @@ public class GunKnightPatriotAnimations {
                 entity.doCycleAttack(3,damage);
             }
              if (tick == 33) {
-                entity.doRangeAttackAngle(6.5,20,damage,0,true);
+                entity.doRangeAttackAngle(6.5,20,damage*2,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,20,0);
             }
         }
@@ -1137,7 +1138,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_13 = new AnimationAct<GunKnightPatriot>("skill_halberd_13",230){
+    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_13 = new AnimationAct<GunKnightPatriot>("skill_halberd_13",175){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -1200,7 +1201,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_LIAN = new AnimationAct<GunKnightPatriot>("skill_halberd_lian",135){
+    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_LIAN = new AnimationAct<GunKnightPatriot>("skill_halberd_lian",130){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -1214,22 +1215,30 @@ public class GunKnightPatriotAnimations {
             }
 
             if(tick == 30||tick == 36||tick == 47||tick == 61||tick == 72||tick == 86||tick == 100) {
-                entity.dashForward(3f,0);
+                entity.dashForward(5f,0);
             }
             if (tick == 30||tick == 36||tick == 47||tick == 61) {
-                entity.doRangeKnockBack(6.5,90,0.6f);
+                entity.doRangeKnockBack(6.5,90,0.7f);
                 entity.doRangeAttackAngle(6.5,90,damage,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,90,0);
             }
-            if (tick == 72||tick == 86||tick == 100) {
-                entity.doRangeKnockBack(6.5,90,0.6f);
+            if (tick == 72||tick == 86) {
+                entity.doRangeKnockBack(6.5,90,0.7f);
                 entity.doRangeAttackAngle(6.5,90,damage*1.5f,0,true);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,90,0);
             }
+
+            if(tick==92){
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0,0.5,0));
+            }
+            if(tick==96){
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0,-0.5,0));
+            }
+
             if (tick == 100) {
-                entity.doRangeKnockBack(10,20,-2);
-                entity.doRangeAttackAngle(10,20,damage*2f,0,true);
-                FFEntityUtils.doRangeAttackFX(entity,10,20,0);
+                entity.doRangeKnockBack(16,30,-4);
+                entity.doRangeAttackAngle(16,30,damage*2f,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,16,30,0);
             }
         }
     };

@@ -80,6 +80,7 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                 if (spawn != null) {
                     if(spawn instanceof ITwoStateEntity twoStateEntity) {
                         twoStateEntity.setSpawnState(state);
+                        twoStateEntity.transSpawnState(state);
                         TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> spawn),new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
                     }
                     itemstack.shrink(1);

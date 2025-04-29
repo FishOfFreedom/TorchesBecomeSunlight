@@ -68,6 +68,8 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
@@ -377,6 +379,20 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     @Override
     public void readSpawnData(FriendlyByteBuf additionalData) {
         setSpawnState(State.valueOf(additionalData.readUtf()));
+    }
+
+    @Override
+    public void transSpawnState(State spawnState) {
+        if(spawnState == State.TWO){
+            if(!level().isClientSide){
+                AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
+                if (maxHealthAttr != null) {
+                    double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
+                    maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                    setHealth(getMaxHealth());
+                }
+            }
+        }
     }
 
     @Override
@@ -1555,7 +1571,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private void doAckHalberdHeavy(){
         if(getAnimation()==RACK_HALBERD_HEAVY) {
             int tick = getAnimationTick();
-            if(tick==58){
+            if(tick==33){
                 skillHalberd2(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,5.5)),new Vector3f(1,1,1));
             }
         }
@@ -1657,6 +1673,36 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.emmit(blockEffect);
                     rlParticle2.emmit(blockEffect);
                     rlParticle3.emmit(blockEffect);
+                }
+                if(tick == 100){
+                    RLParticle rlParticle1 = new RLParticle();
+                    rlParticle1.config.setDuration(10);
+                    rlParticle1.config.setStartLifetime(NumberFunction.constant(6));
+                    rlParticle1.config.setStartSpeed(NumberFunction.constant(40));
+                    rlParticle1.config.setStartSize(new NumberFunction3(0.45));
+                    rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                    rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+                    EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(5));
+                    rlParticle1.config.getEmission().addBursts(burst);
+
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+
+                    Cone circle1 = new Cone();circle1.setRadius(0.01f);circle1.setAngle(5);
+                    rlParticle1.config.getShape().setShape(circle1);
+                    rlParticle1.config.getShape().setRotation(new NumberFunction3(95,0,0));
+
+                    rlParticle1.config.getNoise().open();
+                    rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
+
+                    rlParticle1.config.trails.open();
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+                    rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
+
+                    BlockEffect blockEffect = new BlockEffect(level(), FFEntityUtils.getBodyRotVec(this, new Vec3(-0.5, 2, 2)));
+                    rlParticle1.updateRotation(new Vector3f(0,(float) (-this.getYRot() / 180 * Math.PI),0));
+                    rlParticle1.updateScale(new Vector3f(3));
+                    rlParticle1.emmit(blockEffect);
                 }
             }
         }

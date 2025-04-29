@@ -59,6 +59,7 @@ public class InitClientEntityMessage {
                 if (entity != null) {
                     if(message.index == InitDataType.ISTWOSTATE){
                         ITwoStateEntity twoStateEntity = (ITwoStateEntity) entity;
+                        twoStateEntity.transSpawnState(message.isTwoState);
                         twoStateEntity.setSpawnState(message.isTwoState);
                     }
                 }

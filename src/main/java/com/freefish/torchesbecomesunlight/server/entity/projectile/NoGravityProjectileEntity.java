@@ -1,19 +1,5 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
-import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
-import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
-import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
-import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
-import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
-import com.freefish.rosmontislib.client.particle.advance.data.number.RandomConstant;
-import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
-import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Line;
-import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
-import com.freefish.rosmontislib.client.particle.advance.data.shape.Dot;
-import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
-import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
-import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUseAbility;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ProjectileHitEntityMessage;
@@ -321,6 +307,8 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     protected void onHitEntity(EntityHitResult pResult) {
+        if(pResult.getEntity() == getOwner()) return;
+
         super.onHitEntity(pResult);
         Entity entity = pResult.getEntity();
         Entity owner = getOwner();

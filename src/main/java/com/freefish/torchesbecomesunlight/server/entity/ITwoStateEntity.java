@@ -3,6 +3,8 @@ package com.freefish.torchesbecomesunlight.server.entity;
 import net.minecraft.nbt.CompoundTag;
 
 public interface ITwoStateEntity {
+    void transSpawnState(State spawnState);
+
     void setSpawnState(State spawnState);
 
     State getSpawnState();
