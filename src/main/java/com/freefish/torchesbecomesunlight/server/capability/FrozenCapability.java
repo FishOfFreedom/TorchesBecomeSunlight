@@ -142,9 +142,6 @@ public class FrozenCapability {
             }
 
             if (isLighting && !(entity instanceof Player player && player.isCreative())) {
-                if (!(entity instanceof EnderDragon) && !entity.onGround()) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().add(0, -0.3, 0));
-                }
                 if(entity.level().isClientSide&&entity.tickCount%20==0){
                     RLParticle rlParticle2 = new RLParticle();
                     rlParticle2.config.setDuration(20);
@@ -182,7 +179,7 @@ public class FrozenCapability {
             }
             frozenTicks = duration;
             isFrozen = true;
-            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target,frozenTicks,lightingTicks));
+            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target,frozenTicks,0));
         }
 
         public void setIsFrozen(boolean isFrozen){
@@ -215,7 +212,7 @@ public class FrozenCapability {
             isFrozen = false;
             frozenTicks = 0;
             if(!entity.level().isClientSide)
-                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity,frozenTicks,lightingTicks));
+                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity,frozenTicks,0));
         }
 
         public void setLighting(final LivingEntity target, int duration) {
@@ -223,7 +220,7 @@ public class FrozenCapability {
 
             lightingTicks = duration;
             isLighting = true;
-            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target, frozenTicks,lightingTicks));
+            ServerNetwork.toClientMessage(target,new SynCapabilityMessage(target, lightingTicks,1));
         }
 
         public void setIsLighting(boolean isLighting){
@@ -246,7 +243,7 @@ public class FrozenCapability {
             isLighting = false;
             lightingTicks = 0;
             if(!entity.level().isClientSide)
-                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity, frozenTicks,lightingTicks));
+                ServerNetwork.toClientMessage(entity,new SynCapabilityMessage(entity, lightingTicks,1));
         }
 
 
@@ -322,8 +319,8 @@ public class FrozenCapability {
         public void deserializeNBT(CompoundTag tag) {
             frozenTicks = tag.getInt("frozenTicks");
             isFrozen = tag.getBoolean("isfrozen");
-            frozenTicks = tag.getInt("lightingTicks");
-            isFrozen = tag.getBoolean("islighting");
+            lightingTicks = tag.getInt("lightingTicks");
+            isLighting = tag.getBoolean("islighting");
 
             attributes[0] = tag.getFloat("act");
             attributes[1] = tag.getFloat("move");

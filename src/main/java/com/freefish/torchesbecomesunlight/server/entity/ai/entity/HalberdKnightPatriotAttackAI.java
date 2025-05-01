@@ -70,6 +70,9 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         double dist = this.patriot.distanceTo(target);
         if(dist>8){
             removeHalberd++;
+            if(moveHalberdBack>-100){
+                moveHalberdBack -= 2;
+            }
         }else {
             moveHalberdBack++;
         }
@@ -111,9 +114,12 @@ public class HalberdKnightPatriotAttackAI extends Goal {
             }
             removeHalberd = 0;
         }
-        if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
-            if (dist < 4D * 4D && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
-                if(shouldFollowUp(3.5)) {
+        else if(dist<6&&remoteHalberdLian>300){
+            AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, SKILL_HALBERD_LIAN);
+            remoteHalberdLian = 0;
+        }
+        else if (target.getY() - this.patriot.getY() >= -3 && target.getY() - this.patriot.getY() <= 5) {
+            if (dist < 4D + target.getBbWidth()/2 && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                     if(moveHalberdBack>200){
                         AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, MOVE_HALBERD_BACK);
                         removeHalberd+=50;
@@ -127,10 +133,6 @@ public class HalberdKnightPatriotAttackAI extends Goal {
                             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_CHILEFT);
                         actHalberdChi = 0;
                     }
-                    else if(remoteHalberdLian>300){
-                        AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, SKILL_HALBERD_LIAN);
-                        remoteHalberdLian = 0;
-                    }
                     else {
                         float v = random.nextFloat();
                         if (v > 0.5f) {
@@ -138,21 +140,8 @@ public class HalberdKnightPatriotAttackAI extends Goal {
                         } else
                             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, ACK_HALBERD_L);
                     }
-                }
             }
         }
-    }
-
-    private boolean shouldFollowUp(double bonusRange) {
-        LivingEntity entityTarget = patriot.getTarget();
-        if (entityTarget != null && entityTarget.isAlive()) {
-            Vec3 targetMoveVec = entityTarget.getDeltaMovement();
-            Vec3 betweenEntitiesVec = patriot.position().subtract(entityTarget.position());
-            boolean targetComingCloser = targetMoveVec.dot(betweenEntitiesVec) < 0;
-            double targetDistance = patriot.distanceTo(entityTarget);
-            return targetDistance < bonusRange || (targetDistance <5 + bonusRange && targetComingCloser);
-        }
-        return false;
     }
 
     private void walk(){

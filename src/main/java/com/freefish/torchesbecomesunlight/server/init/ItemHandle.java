@@ -46,11 +46,11 @@ public class ItemHandle {
     public static final RegistryObject<Item> WINTER_PASS = ITEMS.register("winter_pass",
             () ->new WinterPass((new Item.Properties()).fireResistant()));
 
-    public static final RegistryObject<DeerHelmetItem> DEER_HELMET = ITEMS.register("deer_helmet",
-            () -> new DeerHelmetItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Properties()));
-
-    public static final RegistryObject<WinterScratchItem> WINTER_SCRATCH = ITEMS.register("winter_scratch",
-            () -> new WinterScratchItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    //public static final RegistryObject<DeerHelmetItem> DEER_HELMET = ITEMS.register("deer_helmet",
+    //        () -> new DeerHelmetItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Properties()));
+//
+    //public static final RegistryObject<WinterScratchItem> WINTER_SCRATCH = ITEMS.register("winter_scratch",
+    //        () -> new WinterScratchItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
 
     public static final RegistryObject<Item> TITLE =
             ITEMS.register("title", () ->

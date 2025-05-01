@@ -18,6 +18,7 @@ import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -29,7 +30,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -48,6 +48,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
     public void tick() {
         super.tick();
         if(timeToBoomMaxTime!=0&&timeToBoom==3){
+            this.playSound(SoundHandle.BigLight.get(), 2.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
             float damage = 30;
             if (getOwner() instanceof LivingEntity living)
                 damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE)*2.5f;
@@ -58,7 +59,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
                 boom.hurt(getOwner() instanceof Mob mob?boom.damageSources().mobAttack(mob):boom.damageSources().lightningBolt(), damage);
                 FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(boom, CapabilityHandle.FROZEN_CAPABILITY);
                 if(capability!=null){
-                    capability.setLighting(boom,100);
+                    capability.setLighting(boom,300);
                 }
             }
         }
@@ -71,7 +72,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
         if(!level().isClientSide&&target instanceof LivingEntity living){
             FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(living, CapabilityHandle.FROZEN_CAPABILITY);
             if(capability!=null){
-                capability.setLighting(living,100);
+                capability.setLighting(living,300);
             }
         }
         return false;
@@ -320,10 +321,10 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             for (LivingEntity boom : entitiesOfClass) {
                 if (boom == getOwner()||!boom.onGround()) continue;
                 boom.invulnerableTime = 0;
-                boom.hurt((getOwner() instanceof Mob mob?boom.damageSources().mobAttack(mob):boom.damageSources().lightningBolt()), damage);
+                boom.hurt((getOwner() instanceof Mob mob?boom.damageSources().mobAttack(mob):boom.damageSources().lightningBolt()), damage*2);
                 FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(boom, CapabilityHandle.FROZEN_CAPABILITY);
                 if(capability!=null){
-                    capability.setLighting(boom,100);
+                    capability.setLighting(boom,300);
                 }
             }
         }

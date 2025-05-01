@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import com.freefish.rosmontislib.client.RLClientUseUtils;
 import com.freefish.rosmontislib.commom.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
@@ -461,6 +462,8 @@ public class GunKnightPatriotAnimations {
                 entity.locateEntity();
 
             if(tick==42||tick==62||tick==84||tick==107){
+                entity.playSound(SoundHandle.CycleWind.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+
                 List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(8+5), livingEntity ->
                         livingEntity.distanceTo(entity)<8+livingEntity.getBbWidth()/2);
                 for(LivingEntity entityHit:list) {
@@ -477,6 +480,8 @@ public class GunKnightPatriotAnimations {
             }
 
             if(tick==140||tick==151||tick==179||tick==188){
+                entity.playSound(SoundHandle.CycleWind.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+
                 List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(12+5), livingEntity ->
                         livingEntity.distanceTo(entity)<12
                                 +livingEntity.getBbWidth()/2);
@@ -511,6 +516,10 @@ public class GunKnightPatriotAnimations {
             }
 
             if (tick == 78||tick == 86||tick == 95||tick == 102||tick==110) {
+                if(tick==78||tick==110){
+                    entity.playSound(SoundHandle.CycleWind.get(), 3.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+                }
+
                 FFEntityUtils.doRangeAttackFX(entity,16,360,0);
                 List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(16+5), livingEntity ->
                         livingEntity.distanceTo(entity)<16+livingEntity.getBbWidth()/2);
@@ -528,6 +537,7 @@ public class GunKnightPatriotAnimations {
                         }
                     }
                 }
+                entity.doRangeWind(16,200);
                 EntityCameraShake.cameraShake(entity.level(), entity.position(), 20, 0.06F, 10, 15);
             }
         }
@@ -734,8 +744,11 @@ public class GunKnightPatriotAnimations {
             }
 
             if (tick == 35) {
-                entity.doCycleAttack(7,damage*1.5f);
-                FFEntityUtils.doRangeAttackFX(entity,7,360,0);
+                entity.playSound(SoundHandle.CycleWind.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+
+                entity.doCycleAttack(12,damage*1.5f);
+                entity.doRangeWind(12,200);
+                FFEntityUtils.doRangeAttackFX(entity,12,360,0);
             }
         }
     };
@@ -752,8 +765,12 @@ public class GunKnightPatriotAnimations {
             } else {
                 entity.setYRot(entity.yRotO);
             }
-            if(tick == 52) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+            if(tick == 30){
+                StompEntity stompEntity = new StompEntity(entity.level(),16,entity,5);
+                stompEntity.setPos(entity.position());
+                entity.level().addFreshEntity(stompEntity);
+            }
+            if(tick == 46) {
                 entity.dashForward(12f,0);
             }
             if (tick == 37) {
@@ -789,9 +806,10 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(6f,0);
                 entity.doCycleAttack(3,damage);
             }
-             if (tick == 33) {
-                entity.doRangeAttackAngle(6.5,20,damage*2,0,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,20,0);
+             if (tick == 35) {
+                 entity.playSound(SoundHandle.BigLight.get(), 2.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.doRangeAttackAngle(7.5,35,damage*2.5f,0,true);
+                FFEntityUtils.doRangeAttackFX(entity,7.5,35,0);
             }
         }
     };
@@ -823,7 +841,8 @@ public class GunKnightPatriotAnimations {
                 entity.dashForward(4f,0);
             }
             else if (tick == 29) {
-                entity.doRangeAttackAngle(6.5,80,damage,-35,true);
+                entity.doCycleAttack(7.5f,damage*1.5f);
+                entity.doRangeWind(7.5f,200);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,80,-35);
             }
         }
@@ -843,29 +862,32 @@ public class GunKnightPatriotAnimations {
             }
 
             if(tick == 22) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 entity.dashForward(1f,0);
             }
             else if (tick == 24) {
-                entity.doRangeAttackAngle(7,20,damage,0,true);
+                entity.doRangeAttackAngle(7,20,damage*1.5f,0,true);
+                entity.doRangeLighting(7,20,50,0);
                 FFEntityUtils.doRangeAttackFX(entity,7,20,0);
             }
 
             if(tick == 51) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 entity.dashForward(1f,0);
             }
             else if (tick == 53) {
-                entity.doRangeAttackAngle(7,20,damage,0,true);
+                entity.doRangeAttackAngle(7,20,damage*1.5f,0,true);
+                entity.doRangeLighting(7,20,50,0);
                 FFEntityUtils.doRangeAttackFX(entity,7,20,0);
             }
 
             if(tick == 81) {
-                entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                entity.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 entity.dashForward(1f,0);
             }
             else if (tick == 83) {
-                entity.doRangeAttackAngle(7,20,damage,0,true);
+                entity.doRangeAttackAngle(7,20,damage*1.5f,0,true);
+                entity.doRangeLighting(7,20,50,0);
                 FFEntityUtils.doRangeAttackFX(entity,7,20,0);
             }
         }
@@ -906,7 +928,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_LEFT = new AnimationAct<GunKnightPatriot>("move_halberd_left",45){
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_LEFT = new AnimationAct<GunKnightPatriot>("move_halberd_left",38){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -950,7 +972,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_RIGHT = new AnimationAct<GunKnightPatriot>("move_halberd_right",45){
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_RIGHT = new AnimationAct<GunKnightPatriot>("move_halberd_right",38){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -992,25 +1014,28 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE1 = new AnimationAct<GunKnightPatriot>("move_halberd_cycle1",65){
+    public static final AnimationAct<GunKnightPatriot> MOVE_HALBERD_CYCLE1 = new AnimationAct<GunKnightPatriot>("move_halberd_cycle1",55){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
             LivingEntity target = entity.getTarget();
             float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
-            if (target != null&&(tick<=18||tick>=35)) {
+            if (target != null&&(tick<=14||tick>=20)) {
                 entity.lookAtEntity(target);
             } else {
                 entity.setYRot(entity.yRotO);
             }
 
-            if(tick==23||tick==24||tick==25){
+            if(tick==17||tick==18||tick==19){
+                if(tick==17){
+                    entity.playSound(SoundHandle.AXE_SWEPT.get(), 2.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+                }
                 entity.dashForwardContinueNoTarget(11,0);
-                entity.doCycleAttack(5.5f,damage);
+                entity.doCycleAttack(5.5f,damage*1.5f);
             }
 
-            if(tick==43){
+            if(tick==27){
                 entity.doRangeAttackAngle(5.5,60,damage,0,true);
                 Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(entity, new Vec3(0, 0.5f, 1));
                 LightingBoom.shootLightingBoom(entity.level(),entity,target,bodyRotVec,true);
@@ -1093,6 +1118,13 @@ public class GunKnightPatriotAnimations {
             int tick = entity.getAnimationTick();
             entity.locateEntity();
 
+            if(tick==26){
+                entity.playSound(SoundHandle.HolyLight.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+            }
+            if(tick==66){
+                entity.playSound(SoundHandle.BigLight.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+            }
+
             if(tick==66){
                 AnimationActHandler.INSTANCE.sendAnimationMessage(entity,SKILL_HALBERD_11);
             }
@@ -1129,6 +1161,10 @@ public class GunKnightPatriotAnimations {
                 entity.setYRot(entity.yRotO);
             }
 
+            if(tick==23){
+                entity.playSound(SoundHandle.CycleWind.get(), 2.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+            }
+
             if(tick>24){
                 entity.dashForwardContinue(1.09f*4, 0);
             }
@@ -1144,18 +1180,24 @@ public class GunKnightPatriotAnimations {
             int tick = entity.getAnimationTick();
             LivingEntity target = entity.getTarget();
             float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            RandomSource random = entity.getRandom();
 
-            if(target!=null&&(tick<38||tick>46)) {
-                entity.getLookControl().setLookAt(target);
+            if(target!=null) {
+                entity.absFaceEntity(target);
             }else {
                 entity.setYRot(entity.yRotO);
             }
 
             if (tick == 5){
                 entity.doRangeAttack(7,60,damage*2,true);
+                entity.playSound(SoundHandle.BigLight.get(), 2.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
             }
 
-            if (tick == 36||tick == 46){
+            if (tick == 33||tick == 46){
+                if(tick==33){
+                    entity.playSound(SoundHandle.CycleWind.get(), 2.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                }
+
                 List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class,entity.getBoundingBox().inflate(8+5), livingEntity ->
                         livingEntity.distanceTo(entity)<8+livingEntity.getBbWidth()/2);
                 for(LivingEntity entityHit:list) {
@@ -1169,13 +1211,24 @@ public class GunKnightPatriotAnimations {
                 LightingBoom.shootLightingBoom(entity.level(),entity,target,bodyRotVec,true);
             }
 
-            if(tick>101&&tick<=106){
-                entity.dashForwardContinueNoTarget(16,0);
+            if(tick>101&&tick<=105){
+                entity.dashForwardContinue(10,0);
                 entity.doCycleAttack(3,damage);
             }
 
             if(tick==134){
-                entity.dashForwardContinue(10,0);
+                float jumpLen;
+                Vec3 direction;
+                if(target!=null){
+                    float dist = target.distanceTo(entity);
+                    if(dist<=16) jumpLen = dist/4f;
+                    else jumpLen = 16f / 4;
+                    direction = new Vec3(0, 0, -jumpLen).yRot((float) (-FFEntityUtils.getPosToPosRot(target.position(),entity.position()) / 180 * org.joml.Math.PI));
+                } else {
+                    jumpLen = 16f / 4;
+                    direction = new Vec3(0, 0, -jumpLen);
+                }
+                entity.setDeltaMovement(direction);
                 entity.setDeltaMovement(entity.getDeltaMovement().add(0,1,0));
             }
             if(tick==144){
@@ -1183,6 +1236,9 @@ public class GunKnightPatriotAnimations {
             }
 
             if (tick == 153) {
+                RLClientUseUtils.StartCameraShake(entity.level(), entity.position(), 100, 0.06F, 20, 15);
+
+                entity.playSound(SoundHandle.ShotLight.get(), 4.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 List<LivingEntity> entitiesOfClass = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(18), living ->
                         living.distanceTo(entity) < 16);
                 for(LivingEntity living : entitiesOfClass){
@@ -1201,7 +1257,7 @@ public class GunKnightPatriotAnimations {
             }
         }
     };
-    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_LIAN = new AnimationAct<GunKnightPatriot>("skill_halberd_lian",130){
+    public static final AnimationAct<GunKnightPatriot> SKILL_HALBERD_LIAN = new AnimationAct<GunKnightPatriot>("skill_halberd_lian",125){
         @Override
         public void tickUpdate(GunKnightPatriot entity) {
             int tick = entity.getAnimationTick();
@@ -1215,11 +1271,15 @@ public class GunKnightPatriotAnimations {
             }
 
             if(tick == 30||tick == 36||tick == 47||tick == 61||tick == 72||tick == 86||tick == 100) {
+                if(tick!=100){
+                    entity.playSound(SoundHandle.CycleWind.get(), 2.5F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+                }
                 entity.dashForward(5f,0);
             }
             if (tick == 30||tick == 36||tick == 47||tick == 61) {
                 entity.doRangeKnockBack(6.5,90,0.7f);
                 entity.doRangeAttackAngle(6.5,90,damage,0,true);
+                entity.doRangeLighting(6.5,90,20,0);
                 FFEntityUtils.doRangeAttackFX(entity,6.5,90,0);
             }
             if (tick == 72||tick == 86) {
@@ -1236,8 +1296,9 @@ public class GunKnightPatriotAnimations {
             }
 
             if (tick == 100) {
-                entity.doRangeKnockBack(16,30,-4);
+                entity.playSound(SoundHandle.BigLight.get(), 3F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
                 entity.doRangeAttackAngle(16,30,damage*2f,0,true);
+                entity.doRangeKnockBack(16,30,-4);
                 FFEntityUtils.doRangeAttackFX(entity,16,30,0);
             }
         }

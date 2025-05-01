@@ -25,7 +25,7 @@ public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implemen
     private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation("textures/gui/recipe_button.png");
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
-    private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
+    private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 33, 0, 17);
 
     private final CookingPotRecipeBookComponent recipeBookComponent = new CookingPotRecipeBookComponent();
     private boolean widthTooNarrow;
@@ -42,11 +42,11 @@ public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implemen
         this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.menu);
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
         if (true) {
-            this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) ->
+            this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 87, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) ->
             {
             	this.recipeBookComponent.toggleVisibility();
             	this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-            	((ImageButton) button).setPosition(this.leftPos + 5, this.height / 2 - 49);
+            	((ImageButton) button).setPosition(this.leftPos + 5, this.height / 2 - 87);
             }));
         } else {
             this.recipeBookComponent.hide();

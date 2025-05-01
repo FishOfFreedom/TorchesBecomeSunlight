@@ -42,7 +42,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
         int startX = 8;
         int startY = 18;
         int inputStartX = 30;
-        int inputStartY = -1;
+        int inputStartY = 17;
         int borderSlotSize = 18;
         for (int row = 0; row < 3; ++row) {
             for (int column = 0; column < 3; ++column) {
@@ -54,7 +54,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
 
         // Decorate
         inputStartX = 6;
-        inputStartY = -19;
+        inputStartY = 17;
         for (int row = 0; row < 3; ++row) {
             this.addSlot(new SlotItemHandler(inventory, 9+row,
                     inputStartX,
@@ -62,7 +62,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
         }
 
         // Output
-        this.addSlot(new CookingPotResultSlot(playerInventory.player, blockEntity, inventory, 12, 124, 55));
+        this.addSlot(new CookingPotResultSlot(playerInventory.player, blockEntity, inventory, 12, 124, 35));
 
         // Main Player Inventory
         int startPlayerInvY = startY * 4 + 12;

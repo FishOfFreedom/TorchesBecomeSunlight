@@ -12,6 +12,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -95,6 +97,22 @@ public class FFEntityUtils {
         vec31 = vec31.normalize();
         double d1 = vec3.dot(vec31);
         return d1 > 1D - 0.025D / d0 ? pPlayer.hasLineOfSight(livingEntity) : false;
+    }
+
+    /**
+     * @Date 2025/5/1 8:14
+     * @Description 判断一个生物到一个点之间是否有方块挡住整个生物
+     * @Param
+     * @Return boolean
+     */
+
+    public static boolean isLargeNumberBlockBlocking(LivingEntity livingEntity, Vec3 pos) {
+        HitResult hitresult = livingEntity.level().clip(new ClipContext(pos, livingEntity.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, livingEntity));
+        if(hitresult.getType() == HitResult.Type.MISS){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     /**

@@ -15,6 +15,22 @@
     "sounds": ["torchesbecomesunlight:entity/gunknight/shotgun"],
     "subtitle": "subtitles.torchesbecomesunlight.gunknight.shotgun"
   },
+  "gunknight.big_light": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/big_light"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.big_light"
+  },
+  "gunknight.shot_light": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/shot_light"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.shot_light"
+  },
+  "gunknight.holy_light": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/holy_light2"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.holy_light"
+  },
+  "gunknight.cycle_wind": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/wind"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.cycle_wind"
+  },
   "giant_step": {
     "sounds": ["torchesbecomesunlight:entity/patriot/giant_step_1",
       "torchesbecomesunlight:entity/patriot/giant_step_2","torchesbecomesunlight:entity/patriot/giant_step_3"],

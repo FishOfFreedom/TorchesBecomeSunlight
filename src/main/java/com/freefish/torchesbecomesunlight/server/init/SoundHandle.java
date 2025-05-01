@@ -18,6 +18,11 @@ public class SoundHandle {
     public static final RegistryObject<SoundEvent> SHOT_GUN = create("gunknight.shotgun");
     public static final RegistryObject<SoundEvent> ARTILLERY = create("gunknight.artillery");
 
+    public static final RegistryObject<SoundEvent> BigLight = create("gunknight.big_light");
+    public static final RegistryObject<SoundEvent> HolyLight = create("gunknight.holy_light");
+    public static final RegistryObject<SoundEvent> ShotLight = create("gunknight.shot_light");
+    public static final RegistryObject<SoundEvent> CycleWind = create("gunknight.cycle_wind");
+
     // SnowNova
     public static final RegistryObject<SoundEvent> ICE_CRYSTAL = create("snownova.ice_crystal");
     public static final RegistryObject<SoundEvent> ICE_WHIRLWIND = create("snownova.ice_whirlwind");

@@ -26,6 +26,8 @@ import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.EntityPosRotEffect;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.HalberdKnightPatriotAttackAI;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
@@ -67,6 +69,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -80,6 +83,8 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -213,6 +218,25 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             if(getSpawnState()==State.TWO){
                 if(tickCount%90==0){
                     normalLightParticle();
+                    if(halberd!=null){
+                        RLParticle rlParticle1 = new RLParticle();
+                        rlParticle1.config.setDuration(time);
+                        rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
+                        rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
+                        rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
+                        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0.2));
+                        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                        Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
+                        rlParticle1.config.getShape().setShape(circle1);
+                        rlParticle1.config.getNoise().open();
+                        rlParticle1.config.getNoise().setPosition(new NumberFunction3(1.5));
+
+                        rlParticle1.config.trails.open();
+                        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                        rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
+
+                        rlParticle1.emmit(new GeoBoneEffect(level(),this,halberd));
+                    }
                 }
             }
         }
@@ -252,8 +276,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
         Entity entitySource = source.getDirectEntity();
         AnimationAct animation = getAnimation();
-        if(animation ==STATE_2||animation ==SKILL_HALBERD_2||animation ==MOVE_HALBERD_LEFT||animation ==MOVE_HALBERD_RIGHT) return false;
-        if(animation == WIND_MILL) amount = amount/10;
+        if(animation ==STATE_2||animation ==SKILL_HALBERD_2||animation ==MOVE_HALBERD_LEFT||animation ==MOVE_HALBERD_RIGHT||animation == SKILL_HALBERD_10||animation == SKILL_HALBERD_11||animation == SKILL_HALBERD_12) return false;
+        if(animation == WIND_MILL||animation == SKILL_HALBERD_LIAN) amount = amount/10;
         if(getSpawnState()!=State.TWO){
             if (entitySource != null) {
                 return attackWithShield(source, amount);
@@ -318,11 +342,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         Entity entitySource = source.getDirectEntity();
         if (entitySource instanceof LivingEntity living) {
             int attackTime = 1;
-            if(living.distanceTo(this)<6+living.getBbWidth()/2 && defendCounterMap.containsKey(living)){
+            if(living.distanceTo(this)<8+living.getBbWidth()/2 && defendCounterMap.containsKey(living)){
                 DefendCounter defendCounter = defendCounterMap.get(living);
                 attackTime +=defendCounter.effectiveAttackCounter;
 
-                if(defendCounter.effectiveAttackTick<=0){
+                if(defendCounter.effectiveAttackTick<=0&&living == getTarget()){
                     defendCounter.effectiveAttackCounter+=1;
                     defendCounter.effectiveAttackTick = 20;
                 }
@@ -743,6 +767,44 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         this.entityData.set(IS_RUN,gunMod);
     }
 
+    public void addLightTime(LivingEntity target,int lightingTime){
+        if(level().isClientSide){
+            FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
+            if (capability != null) {
+                int lightingTick = capability.getLightingTick();
+                capability.setLighting(lightingTick + lightingTime);
+            }
+        }
+    }
+
+    public void doRangeLighting(double range, double arc,int time,float yRot){
+        List<LivingEntity> entitiesHit = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(range+5, 3, range+5), e -> e != this && distanceTo(e) <= range + e.getBbWidth() / 2f && e.getY() <= getY() + 3);
+        for (LivingEntity entityHit : entitiesHit) {
+            float entityHitAngle = (float) ((Math.atan2(entityHit.getZ() - getZ(), entityHit.getX() - getX()) * (180 / Math.PI) - 90)+ yRot % 360) ;
+            float entityAttackingAngle = getYRot() % 360;
+            if (entityHitAngle < 0) {
+                entityHitAngle += 360;
+            }
+            if (entityAttackingAngle < 0) {
+                entityAttackingAngle += 360;
+            }
+            float entityRelativeAngle = entityHitAngle - entityAttackingAngle;
+            float entityHitDistance = (float) Math.sqrt((entityHit.getZ() - getZ()) * (entityHit.getZ() - getZ()) + (entityHit.getX() - getX()) * (entityHit.getX() - getX())) - entityHit.getBbWidth() / 2f;
+            if (entityHitDistance <= range && (entityRelativeAngle <= arc / 2 && entityRelativeAngle >= -arc / 2) || (entityRelativeAngle >= 360 - arc / 2 || entityRelativeAngle <= -360 + arc / 2)) {
+                addLightTime(entityHit,time);
+            }
+        }
+    }
+
+    public void doRangeWind(double range,int time){
+        List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(range+5),livingEntity ->
+                !(livingEntity instanceof GuerrillasEntity)&&livingEntity.distanceTo(this)<range+livingEntity.getBbWidth()/2);
+        for(LivingEntity entityHit:list) {
+            if(entityHit == this||(entityHit instanceof Player player&&player.isCreative())) return;
+            entityHit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,time,2));
+        }
+    }
+
     private void shootBlackSpearSkill(LivingEntity target,Vec3 vec3,int type) {
         if (target==null) return;
         Bullet abstractarrow = new Bullet(level(),this,type);
@@ -1051,7 +1113,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     Vec3 move = new Vec3(0, h, len).yRot(6.28f*lightTick/10);
                     Vec3 move1 = new Vec3(0, h+(random.nextBoolean()?1:-1), len).yRot(6.28f*(lightTick+1)/10);
                     Vec3 finalMove = move1.subtract(move);
-                    level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX()+move.x, this.getY()+move.y, this.getZ()+move.z, finalMove.x, finalMove.y, finalMove.z);
+                    //level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX()+move.x, this.getY()+move.y, this.getZ()+move.z, finalMove.x, finalMove.y, finalMove.z);
+                }
+                if(tick==100){
+                    normalLightParticle();
                 }
             }
             else {
@@ -1086,14 +1151,26 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     skillHalberd11(halberd,1.1f);
                 }
                 if (tick == 64 &&halberd!=null) {
-                    idleLightParticle(halberd);
-                    idleLightParticle(halberd);
-                    idleLightParticle(halberd);
+                    idleLightParticle(halberd,200);
+                    idleLightParticle(halberd,200);
                 }
             }
-            if (getAnimation() == SKILL_HALBERD_13) {
+            else if (getAnimation() == SKILL_HALBERD_13) {
+                if (tick == 5) {
+                    lightBoomParticle(0,FFEntityUtils.getBodyRotVec(this,new Vec3(0,0,2)));
+                }
+                if (tick == 36) {
+                    jianshuwind(true);
+                }
                 if (tick == 153) {
-                    skillHalberd12(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,4)));
+                    Vec3 vec3 = FFEntityUtils.getBodyRotVec(this,new Vec3(0, 0.5, 4));
+                    skillHalberd12(vec3);
+                    bigSkillHalberd2(new Vector3f(3.5f),vec3);
+                }
+            }
+            else if (getAnimation() == SKILL_HALBERD_12) {
+                if (tick == 15) {
+                    jianshuwind(false);
                 }
             }
         }
@@ -1102,6 +1179,18 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private void doSkillHalberd2(){
         if(getAnimation()==SKILL_HALBERD_2){
             int tick = getAnimationTick();
+
+            if(tick>=15&&tick<=110){
+                List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,this.getBoundingBox().inflate(16+5), livingEntity ->
+                        livingEntity.distanceTo(this)<16+livingEntity.getBbWidth()/2);
+                for(LivingEntity entityHit:list) {
+                    if(entityHit == this||(entityHit instanceof Player player&&player.isCreative())) continue;
+
+                    Vec3 move = this.position().subtract(entityHit.position()).normalize().scale(0.1);
+                    entityHit.setDeltaMovement(entityHit.getDeltaMovement().add(move));
+                }
+            }
+
             if(level().isClientSide){
                 if(tick==5){
                     BlockEffect blockEffect = new BlockEffect(level(),new Vec3(getX(),getY()+2,getZ()));
@@ -1571,8 +1660,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private void doAckHalberdHeavy(){
         if(getAnimation()==RACK_HALBERD_HEAVY) {
             int tick = getAnimationTick();
-            if(tick==33){
-                skillHalberd2(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,5.5)),new Vector3f(1,1,1));
+            if(tick==35){
+                skillHalberd2(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,4.5)),new Vector3f(1,1,1));
             }
         }
     }
@@ -1708,9 +1797,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
-    public void idleLightParticle(GeoBone geoBone){
+    public void idleLightParticle(GeoBone geoBone,int time){
         RLParticle rlParticle1 = new RLParticle();
-        rlParticle1.config.setDuration(200);
+        rlParticle1.config.setDuration(time);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
         rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
@@ -2203,7 +2292,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     //大闪电冲击波
-    public void bigSkillHalberd2(Vector3f scale){
+    public void bigSkillHalberd2(Vector3f scale,Vec3 pos){
         RLParticle rlParticle1 = new RLParticle();
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
@@ -2260,7 +2349,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.setDuration(8);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(3));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(10));
-        rlParticle3.config.setStartSize(new NumberFunction3(0.8));
+        rlParticle3.config.setStartSize(new NumberFunction3(1.4));
 
         rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0));
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(5));
@@ -2363,7 +2452,14 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle7.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86,0X00DFEF86)));
         rlParticle7.config.trails.config.getRenderer().setBloomEffect(true);
 
-        BlockEffect blockEffect = new BlockEffect(level(),new Vec3(getX(),getY()+1,getZ()));
+        BlockEffect blockEffect = new BlockEffect(level(),pos);
+        rlParticle1.updateScale(scale);
+        rlParticle2.updateScale(scale);
+        rlParticle3.updateScale(scale);
+        rlParticle4.updateScale(scale);
+        rlParticle5.updateScale(scale);
+        rlParticle6.updateScale(scale);
+        rlParticle7.updateScale(scale);
         rlParticle1.emmit(blockEffect);
         rlParticle2.emmit(blockEffect);
         rlParticle3.emmit(blockEffect);

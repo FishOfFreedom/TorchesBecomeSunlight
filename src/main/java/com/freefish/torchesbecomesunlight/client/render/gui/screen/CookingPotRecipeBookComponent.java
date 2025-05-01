@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.gui.screen;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.init.recipe.StewPotRecipe;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

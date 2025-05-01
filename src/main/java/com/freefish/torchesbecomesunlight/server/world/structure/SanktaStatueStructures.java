@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.world.structure;
 
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -24,6 +25,13 @@ public class SanktaStatueStructures extends FFStructures {
 
     public SanktaStatueStructures(StructureSettings config, Holder<StructureTemplatePool> startPool, Optional<ResourceLocation> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter) {
         super(config, startPool, startJigsawName, size, startHeight, projectStartToHeightmap, maxDistanceFromCenter);
+    }
+
+    @Override
+    protected boolean checkLocation(GenerationContext context, boolean checkHeight, boolean avoidWater) {
+        if(!ConfigHandler.COMMON.GLOBALSETTING.ursusvillage.structureConfig.canGenerate.get()) return false;
+
+        return super.checkLocation(context, checkHeight, avoidWater);
     }
 
     @Override

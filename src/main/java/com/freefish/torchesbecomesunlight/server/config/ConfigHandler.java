@@ -4,6 +4,10 @@ import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 import static net.minecraftforge.common.ForgeConfigSpec.*;
 
 @Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -20,6 +24,8 @@ public final class ConfigHandler {
 
     public static ForgeConfigSpec COMMON_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
+
+    private static final Predicate<Object> STRING_PREDICATE = s -> s instanceof String;
 
     static {
         COMMON = new Common(COMMON_BUILDER);
@@ -233,9 +239,36 @@ public final class ConfigHandler {
             builder.push("global_setting");
             this.damageCap = builder.comment("Whether living can talk(experiment)")
                     .define("Enable living can talk", false);
+
+            this.ursusvillage = new URSUSVILLAGE(builder);
+
             builder.pop();
         }
 
         public final BooleanValue damageCap;
+
+        public final URSUSVILLAGE ursusvillage;
+    }
+
+    public static class StructureConfig {
+        StructureConfig(final ForgeConfigSpec.Builder builder,boolean canGenerate, List<String> avoidStructures) {
+            builder.comment("Controls for spawning structure/mob with world generation");
+            builder.push("generation_config");
+            this.canGenerate = builder.comment("false causes disable generate")
+                    .translation(LANG_PREFIX + "generation_distance")
+                    .define("avoid_structures", canGenerate);
+            builder.pop();
+        }
+        public final BooleanValue canGenerate;
+    }
+
+    public static class URSUSVILLAGE {
+        URSUSVILLAGE(final Builder builder) {
+            builder.push("ursus_village");
+            structureConfig = new StructureConfig(builder, false, new ArrayList<>());
+            builder.pop();
+        }
+
+        public final StructureConfig structureConfig;
     }
 }

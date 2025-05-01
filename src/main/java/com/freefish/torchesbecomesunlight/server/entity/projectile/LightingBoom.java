@@ -16,6 +16,7 @@ import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -102,6 +103,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
     public boolean hitEntity(Entity target) {
         if (!level().isClientSide) {
             if(getOwner() instanceof Mob mob&&mob.getTarget() == target){
+                this.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 float damage = 10;
                 if (getOwner() instanceof LivingEntity living)
                     damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -109,7 +111,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
                 for (LivingEntity boom : entitiesOfClass) {
                     if (boom == getOwner()) continue;
                     boom.invulnerableTime = 0;
-                    boom.hurt(boom.damageSources().mobAttack(mob), damage);
+                    boom.hurt(boom.damageSources().mobAttack(mob), damage*1.5f);
                     FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(boom, CapabilityHandle.FROZEN_CAPABILITY);
                     if(capability!=null){
                         capability.setLighting(boom,100);
@@ -244,7 +246,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
 
         Vec3 targetPos ;
         if(target==null){
-            targetPos = FFEntityUtils.getBodyRotVec(owner,new Vec3(0,0,10));
+            targetPos = FFEntityUtils.getBodyRotVec(owner, new Vec3(0, 0, 10));
         }
         else {
             targetPos = target.position();
