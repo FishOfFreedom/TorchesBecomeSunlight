@@ -292,7 +292,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
-        if(defendCounterMap.containsKey(livingEntity)){
+        if(getSpawnState()==State.TWO&&defendCounterMap.containsKey(livingEntity)){
             DefendCounter defendCounter = defendCounterMap.get(livingEntity);
             defendCounter.effectiveAttackCounter -=1;
         }
@@ -415,6 +415,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
                     setHealth(getMaxHealth());
                 }
+                setIsGlowing(false);
             }
         }
     }
@@ -1116,7 +1117,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     //level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX()+move.x, this.getY()+move.y, this.getZ()+move.z, finalMove.x, finalMove.y, finalMove.z);
                 }
                 if(tick==100){
-                    normalLightParticle();
+                    if(level().isClientSide){
+                        normalLightParticle();
+                    }
                 }
             }
             else {

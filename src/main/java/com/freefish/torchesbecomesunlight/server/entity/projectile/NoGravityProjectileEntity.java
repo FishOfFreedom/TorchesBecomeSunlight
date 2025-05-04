@@ -37,7 +37,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import org.apache.commons.lang3.ArrayUtils;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -86,6 +85,11 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         d0 *= 64.0D * getViewScale();
         return pDistance < d0 * d0;
+    }
+
+    @Override
+    public boolean displayFireAnimation() {
+        return false;
     }
 
     protected void defineSynchedData() {
