@@ -6,6 +6,7 @@ import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifeti
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
+import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
@@ -26,6 +27,7 @@ import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.Di
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -122,18 +124,17 @@ public class TestItem extends Item {
                 //    });
                 //}
 
-                RLParticle rlParticle = new RLParticle();
-                rlParticle.setPos(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z);
-                rlParticle.config.getShape().setShape(new Circle());
-                rlParticle.config.getVelocityOverLifetime().setEnable(true);
-                rlParticle.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.AngularVelocity);
-                rlParticle.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(
-                        NumberFunction.constant(1),
-                        NumberFunction.constant(1),
-                        NumberFunction.constant(1)
-                ));
-
-                rlParticle.emmit(null);
+                //RLParticle rlParticle = new RLParticle((ClientLevel) level);
+                //rlParticle.setPos(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z);
+                //rlParticle.config.getShape().setShape(new Circle());
+                //rlParticle.config.getVelocityOverLifetime().setEnable(true);
+                //rlParticle.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.AngularVelocity);
+                //rlParticle.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(
+                //        NumberFunction.constant(1),
+                //        NumberFunction.constant(1),
+                //        NumberFunction.constant(1)
+                //));
+                //rlParticle.emmit(new BlockEffect(level,player.position()));
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){

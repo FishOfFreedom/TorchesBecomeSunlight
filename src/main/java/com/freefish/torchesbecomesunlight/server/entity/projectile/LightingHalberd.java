@@ -20,6 +20,7 @@ import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -101,7 +102,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
     public void readSpawnData(FriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         if(level().isClientSide){
-            RLParticle rlParticle1 = new RLParticle();
+            RLParticle rlParticle1 = new RLParticle( level());
             rlParticle1.config.setDuration(100);
             rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
             rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
@@ -112,14 +113,14 @@ public class LightingHalberd extends NoGravityProjectileEntity{
 
             rlParticle1.config.getEmission().addBursts(burst);
 
-            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
             Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
             rlParticle1.config.getShape().setShape(circle1);
             rlParticle1.config.getNoise().open();
             rlParticle1.config.getNoise().setPosition(new NumberFunction3(2));
 
             rlParticle1.config.trails.open();
-            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
             rlParticle1.emmit(new EntityEffect(level(),this));
@@ -132,14 +133,14 @@ public class LightingHalberd extends NoGravityProjectileEntity{
         BlockPos blockPos = pResult.getBlockPos();
 
         if(level().isClientSide){
-            RLParticle rlParticle10 = new RLParticle();
+            RLParticle rlParticle10 = new RLParticle( level());
             rlParticle10.config.setDuration(10);
             rlParticle10.config.setStartLifetime(NumberFunction.constant(20));
             rlParticle10.config.setStartSpeed(NumberFunction.constant(1));
 
             rlParticle10.config.getEmission().setEmissionRate(NumberFunction.constant(15));
 
-            rlParticle10.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle10.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle10 = new Circle();circle10.setRadius(4);circle10.setRadiusThickness(1);
             rlParticle10.config.getShape().setShape(circle10);
@@ -150,12 +151,12 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle10.config.trails.open();
             rlParticle10.config.trails.setLifetime(NumberFunction.constant(0.2));
             rlParticle10.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0X00DFEF86,0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
-            rlParticle10.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle10.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle10.config.trails.config.getRenderer().setBloomEffect(true);
 
             rlParticle10.emmit(new BlockEffect(level(),new Vec3(blockPos.getX()+0.5,blockPos.getY()+1.1,blockPos.getZ()+0.5)));
 
-            RLParticle rlParticle1 = new RLParticle();
+            RLParticle rlParticle1 = new RLParticle( level());
             rlParticle1.config.setDuration(10);
             rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
             rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -166,7 +167,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
             rlParticle1.config.getEmission().addBursts(burst1);
 
-            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
             rlParticle1.config.getShape().setShape(circle1);
@@ -178,12 +179,12 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
             rlParticle1.config.trails.open();
-            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
             rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle2 = new RLParticle();
+            RLParticle rlParticle2 = new RLParticle( level());
             rlParticle2.config.setDuration(8);
             rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
             rlParticle2.config.setStartSpeed(NumberFunction.constant(16));
@@ -195,7 +196,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             burst2.cycles = 3;burst2.interval = 2;
             rlParticle2.config.getEmission().addBursts(burst2);
 
-            rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
             rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
@@ -208,11 +209,11 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
 
             rlParticle2.config.trails.open();
-            rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
             rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle3 = new RLParticle();
+            RLParticle rlParticle3 = new RLParticle( level());
             rlParticle3.config.setDuration(8);
             rlParticle3.config.setStartLifetime(NumberFunction.constant(4));
             rlParticle3.config.setStartSpeed(NumberFunction.constant(20));
@@ -223,7 +224,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(3));
             rlParticle3.config.getEmission().addBursts(burst3);
 
-            rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             rlParticle3.config.getShape().setShape(new Dot());
 
@@ -234,11 +235,11 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
 
             rlParticle3.config.trails.open();
-            rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
             rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle4 = new RLParticle();
+            RLParticle rlParticle4 = new RLParticle( level());
             rlParticle4.config.setDuration(20);
             rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
@@ -248,7 +249,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
             rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
 
-            rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
             rlParticle4.config.getShape().setShape(circle4);
@@ -257,11 +258,11 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
 
             rlParticle4.config.trails.open();
-            rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
             rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle5 = new RLParticle();
+            RLParticle rlParticle5 = new RLParticle( level());
             rlParticle5.config.setDuration(20);
             rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
             rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
@@ -273,7 +274,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             burst5.cycles = 2;burst5.interval = 2;
             rlParticle5.config.getEmission().addBursts(burst5);
 
-            rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+            rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING.create());
             rlParticle5.config.getShape().setShape(new Dot());
 
             ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
@@ -284,7 +285,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
             rlParticle5.config.getSizeOverLifetime().open();
             rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
 
-            RLParticle rlParticle6 = new RLParticle();
+            RLParticle rlParticle6 = new RLParticle( level());
             rlParticle6.config.setDuration(4);
             rlParticle6.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle6.config.setStartSpeed(NumberFunction.constant(1));
@@ -293,7 +294,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
 
             rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
             rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
-            rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
             rlParticle6.config.getColorOverLifetime().open();
             rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));

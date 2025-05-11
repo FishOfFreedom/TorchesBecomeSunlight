@@ -38,6 +38,7 @@ import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
@@ -718,7 +719,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             if(isAggressive()) {
                 float v = getSecondHealth() / (getMaxHealth() / 4);
                 if (tickCount % 20 == 0&&v>0.01) {
-                    RLParticle wind = new RLParticle();
+                    RLParticle wind = new RLParticle(level());
                     wind.config.setDuration(20);
                     wind.config.setStartLifetime(NumberFunction.constant(20));
                     wind.config.setStartSize(new NumberFunction3(0.2));
@@ -727,7 +728,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
 
                     Circle circle = new Circle();circle.setRadius(0.4f);circle.setRadiusThickness(0);
                     wind.config.getShape().setShape(circle);
-                    wind.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    wind.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
                     wind.config.getVelocityOverLifetime().open();
                     wind.config.getVelocityOverLifetime().setLinear(new NumberFunction3(NumberFunction.constant(0), new RandomConstant(3,4,true),NumberFunction.constant(0)));
                     wind.config.getVelocityOverLifetime().setOrbitalMode(VelocityOverLifetimeSetting.OrbitalMode.FixedVelocity);

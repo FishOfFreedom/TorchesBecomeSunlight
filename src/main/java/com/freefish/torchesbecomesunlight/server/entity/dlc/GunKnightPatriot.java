@@ -219,20 +219,20 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 if(tickCount%90==0){
                     normalLightParticle();
                     if(halberd!=null){
-                        RLParticle rlParticle1 = new RLParticle();
+                        RLParticle rlParticle1 = new RLParticle(level());
                         rlParticle1.config.setDuration(time);
                         rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
                         rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
                         rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
                         rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0.2));
-                        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
                         Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
                         rlParticle1.config.getShape().setShape(circle1);
                         rlParticle1.config.getNoise().open();
                         rlParticle1.config.getNoise().setPosition(new NumberFunction3(1.5));
 
                         rlParticle1.config.trails.open();
-                        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
                         rlParticle1.emmit(new GeoBoneEffect(level(),this,halberd));
@@ -1195,7 +1195,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 if(tick==5){
                     BlockEffect blockEffect = new BlockEffect(level(),new Vec3(getX(),getY()+2,getZ()));
 
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(50);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(30));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(-8));
@@ -1205,7 +1205,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst = new EmissionSetting.Burst();burst.setCount(NumberFunction.constant(60));
                     rlParticle1.config.getEmission().addBursts(burst);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     Circle circle = new Circle();circle.setRadius(16);circle.setRadiusThickness(0.2f);
                     rlParticle1.config.getShape().setShape(circle);
@@ -1222,9 +1222,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
-                    RLParticle rlParticle2 = new RLParticle();
+                    RLParticle rlParticle2 = new RLParticle( level());
                     rlParticle2.config.setDuration(50);
                     rlParticle2.transform.position(new Vector3f(0,7,0));
                     rlParticle2.config.setStartLifetime(NumberFunction.constant(30));
@@ -1233,7 +1233,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
                     rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
 
-                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Circle circle2 = new Circle();circle2.setRadius(16);circle2.setRadiusThickness(0.2f);
                     rlParticle2.config.getShape().setShape(circle2);
@@ -1247,9 +1247,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle2.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
 
                     rlParticle2.config.trails.open();
-                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
-                    RLParticle rlParticle3 = new RLParticle();
+                    RLParticle rlParticle3 = new RLParticle( level());
                     rlParticle3.config.setDuration(40);
                     rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle3.config.setStartSpeed(NumberFunction.constant(-8));
@@ -1260,7 +1260,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     burst3.cycles = 0;
                     rlParticle3.config.getEmission().addBursts(burst3);
 
-                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     Circle circle3 = new Circle();circle3.setRadius(8);circle3.setRadiusThickness(0.2f);
                     rlParticle3.config.getShape().setShape(circle3);
@@ -1277,7 +1277,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle3.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
                     rlParticle3.config.trails.open();
-                    rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
 
                     rlParticle1.emmit(blockEffect);
@@ -1285,7 +1285,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle3.emmit(blockEffect);
                 }
                 if (tick==76||tick==108){
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(20);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
@@ -1295,7 +1295,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(18));
                     rlParticle1.config.getEmission().addBursts(burst1);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(0);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1313,16 +1313,16 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
-                    RLParticle rlParticle2 = new RLParticle();
+                    RLParticle rlParticle2 = new RLParticle( level());
                     rlParticle2.config.setDuration(16);
                     rlParticle2.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle2.config.setStartSpeed(NumberFunction.constant(1));
                     rlParticle2.config.setStartSize(new NumberFunction3(new RandomConstant(16,14,true)));
 
                     rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
-                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.RING);
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.RING.create());
 
                     ((RendererSetting.Particle)rlParticle2.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
 
@@ -1334,7 +1334,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle2.config.getColorOverLifetime().open();
                     rlParticle2.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
 
-                    RLParticle rlParticle3 = new RLParticle();
+                    RLParticle rlParticle3 = new RLParticle( level());
                     rlParticle3.config.setDuration(20);
                     rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
@@ -1345,7 +1345,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(24));
                     rlParticle3.config.getEmission().addBursts(burst3);
 
-                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW);
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW.create());
 
                     Circle circle3 = new Circle();circle3.setRadius(1);circle3.setRadiusThickness(0);
                     rlParticle3.config.getShape().setShape(circle3);
@@ -1358,7 +1358,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle3.config.getColorOverLifetime().open();
                     rlParticle3.config.getColorOverLifetime().setColor(new Gradient(GradientHandle.CENTER_OPAQUE));
 
-                    RLParticle rlParticle4 = new RLParticle();
+                    RLParticle rlParticle4 = new RLParticle( level());
                     rlParticle4.config.setDuration(16);
                     rlParticle4.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle4.config.setStartSpeed(NumberFunction.constant(0));
@@ -1368,7 +1368,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(2));
                     rlParticle4.config.getEmission().addBursts(burst4);
 
-                    rlParticle4.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle4.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     Circle circle4 = new Circle();circle4.setRadius(4);circle4.setRadiusThickness(0.5f);circle4.setArc(180);
                     rlParticle4.config.getShape().setShape(circle4);
@@ -1386,7 +1386,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle4.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
                     rlParticle4.config.trails.open();
-                    rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     BlockEffect blockEffect = new BlockEffect(level(),new Vec3(getX(),getY()+1,getZ()));
                     rlParticle1.emmit(blockEffect);
@@ -1403,7 +1403,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             int tick = getAnimationTick();
             if(level().isClientSide){
                 if (tick==24&&halberd1!=null){
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(20);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
@@ -1414,7 +1414,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(4));
                     rlParticle1.config.getEmission().addBursts(burst1);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
                     Circle circle1 = new Circle();circle1.setRadius(0.6f);circle1.setRadiusThickness(0);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1432,9 +1432,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
-                    RLParticle rlParticle3 = new RLParticle();
+                    RLParticle rlParticle3 = new RLParticle( level());
                     rlParticle3.config.setDuration(20);
                     rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
@@ -1443,7 +1443,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
                     rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(1));
 
-                    rlParticle3.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL);
+                    rlParticle3.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL.create());
 
                     Circle circle3 = new Circle();circle3.setRadius(0.6f);circle3.setRadiusThickness(0);
                     rlParticle3.config.getShape().setShape(circle3);
@@ -1470,7 +1470,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     //风减速旋风
     private void jianshuwind(boolean isfan){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(20);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(30));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
@@ -1481,7 +1481,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(22));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
         Circle circle1 = new Circle();circle1.setRadius(0.5f);circle1.setRadiusThickness(0);
         rlParticle1.config.getShape().setShape(circle1);
@@ -1501,9 +1501,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getUvAnimation().setAnimation(UVAnimationSetting.Animation.SingleRow);
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(20);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(12));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
@@ -1514,7 +1514,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(24));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.GLOW.create());
 
         Circle circle3 = new Circle();circle3.setRadius(1);circle3.setRadiusThickness(0);
         rlParticle3.config.getShape().setShape(circle3);
@@ -1548,14 +1548,14 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             int tick = getAnimationTick();
             if(level().isClientSide){
                 if(tick==20){
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(10);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
 
                     rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(15));
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Circle circle1 = new Circle();circle1.setRadius(4);circle1.setRadiusThickness(1);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1566,7 +1566,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.trails.open();
                     rlParticle1.config.trails.setLifetime(NumberFunction.constant(0.2));
                     rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0X00DFEF86,0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
                     rlParticle1.emmit(new BlockEffect(level(),new Vec3(getX(),getY()+1,getZ())));
@@ -1615,7 +1615,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0, 3));
                     lightBoomParticle((float) (-this.getYRot() / 180 * Math.PI),bodyRotVec);
 
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(10);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(6));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(40));
@@ -1625,7 +1625,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(3));
                     rlParticle1.config.getEmission().addBursts(burst);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Cone circle1 = new Cone();circle1.setRadius(0.01f);circle1.setAngle(5);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1635,7 +1635,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
                     rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
@@ -1651,8 +1651,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private void doAckHalberdCycle2(){
         if(getAnimation()==RACK_HALBERD_CYCLE2) {
             int tick = getAnimationTick();
-            if(tick==29){
-                jianshuwind(true);
+            if(level().isClientSide){
+                if (tick == 29) {
+                    jianshuwind(true);
+                }
             }
         }
     }
@@ -1660,8 +1662,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private void doAckHalberdHeavy(){
         if(getAnimation()==RACK_HALBERD_HEAVY) {
             int tick = getAnimationTick();
-            if(tick==35){
-                skillHalberd2(FFEntityUtils.getBodyRotVec(this,new Vec3(0,0.5,4.5)),new Vector3f(1,1,1));
+            if(level().isClientSide){
+                if (tick == 35) {
+                    skillHalberd2(FFEntityUtils.getBodyRotVec(this, new Vec3(0, 0.5, 4.5)), new Vector3f(1, 1, 1));
+                }
             }
         }
     }
@@ -1674,7 +1678,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     float r = 1;
                     if(tick==36||tick == 61||tick == 86) r = -1;
 
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(10);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(8));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
@@ -1684,7 +1688,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(8));
                     rlParticle1.config.getEmission().addBursts(burst);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Circle circle1 = new Circle();circle1.setRadius(2);circle1.setArc(180);circle1.setRadiusThickness(0);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1698,11 +1702,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,6*r,0));
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
                     rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
-                    RLParticle rlParticle2 = new RLParticle();
+                    RLParticle rlParticle2 = new RLParticle( level());
                     rlParticle2.config.setDuration(10);
                     rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
                     rlParticle2.config.setStartSpeed(NumberFunction.constant(3));
@@ -1713,7 +1717,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst2 = new EmissionSetting.Burst(); burst2.setCount(NumberFunction.constant(5));
                     rlParticle2.config.getEmission().addBursts(burst2);
 
-                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Circle circle2 = new Circle();circle2.setRadius(2);circle2.setArc(180);circle2.setRadiusThickness(0);
                     rlParticle2.config.getShape().setShape(circle2);
@@ -1727,11 +1731,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle2.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,8*r,0));
 
                     rlParticle2.config.trails.open();
-                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
                     rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
-                    RLParticle rlParticle3 = new RLParticle();
+                    RLParticle rlParticle3 = new RLParticle( level());
                     rlParticle3.config.setDuration(10);
                     rlParticle3.config.setStartLifetime(NumberFunction.constant(20));
                     rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
@@ -1742,7 +1746,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst3 = new EmissionSetting.Burst(); burst3.setCount(NumberFunction.constant(20));
                     rlParticle3.config.getEmission().addBursts(burst3);
 
-                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
                     Circle circle3 = new Circle();circle3.setRadius(2);circle3.setArc(180);circle3.setRadiusThickness(0);
                     rlParticle3.config.getShape().setShape(circle3);
@@ -1764,7 +1768,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle3.emmit(blockEffect);
                 }
                 if(tick == 100){
-                    RLParticle rlParticle1 = new RLParticle();
+                    RLParticle rlParticle1 = new RLParticle( level());
                     rlParticle1.config.setDuration(10);
                     rlParticle1.config.setStartLifetime(NumberFunction.constant(6));
                     rlParticle1.config.setStartSpeed(NumberFunction.constant(40));
@@ -1774,7 +1778,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EmissionSetting.Burst burst = new EmissionSetting.Burst(); burst.setCount(NumberFunction.constant(5));
                     rlParticle1.config.getEmission().addBursts(burst);
 
-                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
                     Cone circle1 = new Cone();circle1.setRadius(0.01f);circle1.setAngle(5);
                     rlParticle1.config.getShape().setShape(circle1);
@@ -1784,7 +1788,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
                     rlParticle1.config.trails.open();
-                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
                     rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
@@ -1798,27 +1802,27 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void idleLightParticle(GeoBone geoBone,int time){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(time);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
         rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(1));
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
         Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
         rlParticle1.config.getShape().setShape(circle1);
         rlParticle1.config.getNoise().open();
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(2));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
         rlParticle1.emmit(new GeoBoneEffect(level(),this,geoBone));
     }
 
     public void normalLightParticle(){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(40);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -1827,23 +1831,23 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(10));
         burst1.time =15;
         rlParticle1.config.getEmission().addBursts(burst1);
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
         Sphere circle1 = new Sphere();circle1.setRadius(0.5f);
         rlParticle1.config.getShape().setShape(circle1);
         rlParticle1.config.getNoise().open();
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(1.5));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(100);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(2));
         rlParticle2.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.2));
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
         Sphere circle2 = new Sphere();circle2.setRadius(0.5f);
         rlParticle2.config.getShape().setShape(circle2);
         rlParticle2.config.getShape().setPosition(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(2,0,true),NumberFunction.constant(0)));
@@ -1854,7 +1858,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,6,0));
 
         rlParticle2.config.trails.open();
-        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
         EntityEffect effect = new EntityEffect(level(),this);
@@ -1863,7 +1867,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void lightBoomParticle(float yrot, Vec3 blockpos){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -1873,7 +1877,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
         rlParticle1.config.getShape().setShape(circle1);
@@ -1885,12 +1889,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(8);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(20));
@@ -1901,7 +1905,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 3;burst2.interval = 2;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Cone circle2 = new Cone();circle2.setRadius(0.5f);circle2.setAngle(40);
         rlParticle2.config.getShape().setScale(new NumberFunction3(0.4,1,0.4));
@@ -1913,12 +1917,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle2.config.trails.open();
-        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
         rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(20);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(3));
@@ -1928,7 +1932,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst3.cycles = 1;burst3.interval = 7;burst3.time = 2;
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle3 = new Circle();circle3.setRadius(2);
         rlParticle3.config.getShape().setShape(circle3);
@@ -1937,20 +1941,20 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.5));
 
         rlParticle3.config.trails.open();
-        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle3.config.trails.setLifetime(NumberFunction.constant(0.5));
         rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
         rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle4 = new RLParticle();
+        RLParticle rlParticle4 = new RLParticle( level());
         rlParticle4.config.setDuration(4);
         rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle4.config.setStartColor(new Gradient(new GradientColor(0X5FDFEF86)));
 
         rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
 
-        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle4.config.getShape().setShape(new Dot());
 
@@ -1966,7 +1970,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void sLightParticle(Vector3f scale){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -1976,7 +1980,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
         rlParticle1.config.getShape().setShape(circle1);
@@ -1988,12 +1992,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(8);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(16));
@@ -2004,7 +2008,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 3;burst2.interval = 2;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
         rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
@@ -2017,11 +2021,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle2.config.trails.open();
-        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(8);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(4));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(20));
@@ -2031,7 +2035,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(3));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         rlParticle3.config.getShape().setShape(new Dot());
 
@@ -2042,11 +2046,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
 
         rlParticle3.config.trails.open();
-        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle4 = new RLParticle();
+        RLParticle rlParticle4 = new RLParticle( level());
         rlParticle4.config.setDuration(20);
         rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
@@ -2055,7 +2059,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
         rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
 
-        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
         rlParticle4.config.getShape().setShape(circle4);
@@ -2064,11 +2068,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
 
         rlParticle4.config.trails.open();
-        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
         rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle5 = new RLParticle();
+        RLParticle rlParticle5 = new RLParticle( level());
         rlParticle5.config.setDuration(20);
         rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
         rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
@@ -2079,7 +2083,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst5.cycles = 2;burst5.interval = 2;
         rlParticle5.config.getEmission().addBursts(burst5);
 
-        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING.create());
         rlParticle5.config.getShape().setShape(new Dot());
 
         ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
@@ -2090,7 +2094,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle5.config.getSizeOverLifetime().open();
         rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
 
-        RLParticle rlParticle6 = new RLParticle();
+        RLParticle rlParticle6 = new RLParticle( level());
         rlParticle6.config.setDuration(4);
         rlParticle6.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle6.config.setStartSpeed(NumberFunction.constant(1));
@@ -2098,7 +2102,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
         rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
-        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle6.config.getColorOverLifetime().open();
         rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
@@ -2113,7 +2117,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
     //闪电冲击波
     public void skillHalberd2(Vec3 pos,Vector3f scale){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -2123,7 +2127,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
         rlParticle1.config.getShape().setShape(circle1);
@@ -2135,12 +2139,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
 
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(8);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(16));
@@ -2151,7 +2155,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 3;burst2.interval = 2;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
         rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
@@ -2164,11 +2168,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
 
         rlParticle2.config.trails.open();
-        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(8);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(4));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(20));
@@ -2178,7 +2182,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(3));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         rlParticle3.config.getShape().setShape(new Dot());
 
@@ -2189,11 +2193,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
 
         rlParticle3.config.trails.open();
-        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle4 = new RLParticle();
+        RLParticle rlParticle4 = new RLParticle( level());
         rlParticle4.config.setDuration(20);
         rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
@@ -2202,7 +2206,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
         rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
 
-        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
         rlParticle4.config.getShape().setShape(circle4);
@@ -2211,11 +2215,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
 
         rlParticle4.config.trails.open();
-        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
         rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle5 = new RLParticle();
+        RLParticle rlParticle5 = new RLParticle( level());
         rlParticle5.config.setDuration(20);
         rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
         rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
@@ -2226,7 +2230,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst5.cycles = 2;burst5.interval = 2;
         rlParticle5.config.getEmission().addBursts(burst5);
 
-        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING.create());
         rlParticle5.config.getShape().setShape(new Dot());
 
         ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
@@ -2237,7 +2241,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle5.config.getSizeOverLifetime().open();
         rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
 
-        RLParticle rlParticle6 = new RLParticle();
+        RLParticle rlParticle6 = new RLParticle( level());
         rlParticle6.config.setDuration(4);
         rlParticle6.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle6.config.setStartSpeed(NumberFunction.constant(1));
@@ -2245,7 +2249,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
         rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
-        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle6.config.getColorOverLifetime().open();
         rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
@@ -2260,7 +2264,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
     //风系垫步旋转
     public void windFastMove(){
-        RLParticle rlParticle5 = new RLParticle();
+        RLParticle rlParticle5 = new RLParticle( level());
         rlParticle5.config.setDuration(20);
         rlParticle5.config.setStartLifetime(NumberFunction.constant(20));
         rlParticle5.config.setStartSpeed(NumberFunction.constant(0));
@@ -2270,7 +2274,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst5 = new EmissionSetting.Burst();burst5.setCount(NumberFunction.constant(10));
         rlParticle5.config.getEmission().addBursts(burst5);
 
-        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
         rlParticle5.config.getUvAnimation().open();
         rlParticle5.config.getUvAnimation().setTiles(new Range(2,2));
 
@@ -2293,7 +2297,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     //大闪电冲击波
     public void bigSkillHalberd2(Vector3f scale,Vec3 pos){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(10);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -2303,7 +2307,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(20));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle1 = new Circle();circle1.setRadius(1);circle1.setRadiusThickness(1);
         rlParticle1.config.getShape().setShape(circle1);
@@ -2318,7 +2322,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(8);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(20));
@@ -2329,7 +2333,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 3;burst2.interval = 2;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle2 = new Circle();circle2.setRadius(0.2f);circle2.setRadiusThickness(0.2f);
         rlParticle2.config.getShape().setScale(new NumberFunction3(NumberFunction.constant(0.4),NumberFunction.constant(1),NumberFunction.constant(0.4)));
@@ -2345,7 +2349,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(8);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(3));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(10));
@@ -2355,7 +2359,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(5));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         rlParticle3.config.getShape().setShape(new Dot());
 
@@ -2366,11 +2370,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.7));
         //todo
         rlParticle3.config.trails.open();
-        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86)));
         rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle4 = new RLParticle();
+        RLParticle rlParticle4 = new RLParticle( level());
         rlParticle4.config.setDuration(20);
         rlParticle4.config.setStartLifetime(NumberFunction.constant(9));
         rlParticle4.config.setStartSpeed(NumberFunction.constant(6));
@@ -2379,7 +2383,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(40));
         rlParticle4.config.getEmission().addBursts(burst4);burst4.time = 2;
 
-        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle4 = new Circle();circle4.setRadius(2f);circle4.setRadiusThickness(1f);
         rlParticle4.config.getShape().setShape(circle4);
@@ -2388,11 +2392,11 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle4.config.getNoise().setPosition(new NumberFunction3(0.5));
 
         rlParticle4.config.trails.open();
-        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle4.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF,0XFFDFEF86)));
         rlParticle4.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle5 = new RLParticle();
+        RLParticle rlParticle5 = new RLParticle( level());
         rlParticle5.config.setDuration(20);
         rlParticle5.config.setStartLifetime(NumberFunction.constant(8));
         rlParticle5.config.setStartSpeed(NumberFunction.constant(1));
@@ -2403,7 +2407,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst5.cycles = 2;burst5.interval = 2;
         rlParticle5.config.getEmission().addBursts(burst5);
 
-        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle5.config.getMaterial().setMaterial(MaterialHandle.RING.create());
         rlParticle5.config.getShape().setShape(new Dot());
 
         ((RendererSetting.Particle)rlParticle5.config.getRenderer()).setRenderMode(RendererSetting.Particle.Mode.Horizontal);
@@ -2414,14 +2418,14 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle5.config.getSizeOverLifetime().open();
         rlParticle5.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
 
-        RLParticle rlParticle6 = new RLParticle();
+        RLParticle rlParticle6 = new RLParticle( level());
         rlParticle6.config.setDuration(4);
         rlParticle6.config.setStartLifetime(NumberFunction.constant(5));
         rlParticle6.config.setStartSize(new NumberFunction3(10));
 
         rlParticle6.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
         rlParticle6.config.setStartColor(new Gradient(new GradientColor(0X48FFFFFF)));
-        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle6.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle6.config.getShape().setShape(new Dot());
         rlParticle6.config.getShape().setPosition(new NumberFunction3(NumberFunction.constant(0),new Line(new float[]{0,1},new float[]{-3,14}),NumberFunction.constant(0)));
@@ -2429,7 +2433,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle6.config.getColorOverLifetime().open();
         rlParticle6.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFDFEF86,0XFFDFEF86,0X00DFEF86)));
 
-        RLParticle rlParticle7 = new RLParticle();
+        RLParticle rlParticle7 = new RLParticle( level());
         rlParticle7.config.setDuration(10);
         rlParticle7.config.setStartLifetime(NumberFunction.constant(10));
         rlParticle7.config.setStartSpeed(NumberFunction.constant(40));
@@ -2438,7 +2442,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst7 = new EmissionSetting.Burst();burst7.setCount(NumberFunction.constant(7));
         rlParticle7.config.getEmission().addBursts(burst7);burst7.time = 6;burst7.cycles=0;
 
-        rlParticle7.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle7.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Cone circle7 = new Cone();circle7.setRadius(0.5f);circle7.setRadiusThickness(1f);circle7.setAngle(60);
         rlParticle7.config.getShape().setShape(circle7);
@@ -2448,7 +2452,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle7.config.getPhysics().setFriction(NumberFunction.constant(0.5));
 
         rlParticle7.config.trails.open();
-        rlParticle7.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle7.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle7.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFDFEF86,0X00DFEF86)));
         rlParticle7.config.trails.config.getRenderer().setBloomEffect(true);
 
@@ -2470,7 +2474,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void skillHalberd10(){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(70);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(12));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
@@ -2478,7 +2482,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0.6));
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Circle circle1 = new Circle();circle1.setRadius(4.5f);circle1.setRadiusThickness(1);
         rlParticle1.config.getShape().setShape(circle1);
@@ -2490,12 +2494,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(0.6));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(GradientHandle.CENTER_OPAQUE));
 
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(40);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(60));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(1));
@@ -2506,7 +2510,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst2 = new EmissionSetting.Burst();burst2.setCount(NumberFunction.constant(1));
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.RING);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.RING.create());
         rlParticle2.config.getShape().setShape(new Dot());
 
         rlParticle2.config.getRenderer().setRenderMode(RendererSetting.Particle.Mode.Horizontal);
@@ -2514,7 +2518,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getSizeOverLifetime().open();
         rlParticle2.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{0,1})));
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(40);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(50));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(0));
@@ -2525,7 +2529,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(20));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         Circle circle3 = new Circle();circle3.setRadius(5f);circle3.setRadiusThickness(0.8f);
         rlParticle3.config.getShape().setShape(circle3);
@@ -2545,7 +2549,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void skillHalberd11(GeoBone geoBone,float scale){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
         rlParticle1.config.setDuration(30);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle1.config.setStartSpeed(NumberFunction.constant(14));
@@ -2556,7 +2560,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(60));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
         Sphere circle1 = new Sphere();
         rlParticle1.config.getShape().setShape(circle1);
@@ -2565,12 +2569,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getNoise().setPosition(new NumberFunction3(0.6));
 
         rlParticle1.config.trails.open();
-        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{0,0.95f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
         rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(4);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(1));
@@ -2582,13 +2586,13 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 0;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle2.config.getShape().setShape(new Dot());
 
         rlParticle2.config.getColorOverLifetime().open();
         rlParticle2.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF)));
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(100);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(1));
@@ -2599,7 +2603,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(1));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle3.config.getShape().setShape(new Dot());
 
@@ -2609,7 +2613,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle3.config.getColorOverLifetime().open();
         rlParticle3.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF)));
 
-        RLParticle rlParticle4 = new RLParticle();
+        RLParticle rlParticle4 = new RLParticle( level());
         rlParticle4.config.setDuration(100);
         rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
         rlParticle4.config.setStartSpeed(NumberFunction.constant(1));
@@ -2619,7 +2623,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst4 = new EmissionSetting.Burst();burst4.setCount(NumberFunction.constant(1));
         rlParticle4.config.getEmission().addBursts(burst4);
 
-        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
         rlParticle4.config.getRenderer().setBloomEffect(true);
         rlParticle4.config.getShape().setShape(new Dot());
 
@@ -2644,7 +2648,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     }
 
     public void skillHalberd12(Vec3 geoBone){
-        RLParticle rlParticle1 = new RLParticle();
+        RLParticle rlParticle1 = new RLParticle( level());
 
         rlParticle1.config.setDuration(100);
         rlParticle1.config.setStartLifetime(NumberFunction.constant(200));
@@ -2658,7 +2662,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(1000));
         rlParticle1.config.getEmission().addBursts(burst1);
 
-        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE);
+        rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
 
         Circle circle1 = new Circle();
         rlParticle1.config.getShape().setShape(circle1);
@@ -2679,7 +2683,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.trails.open();
         rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(new float[]{1,0.96f,1},new int[]{0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
 
-        RLParticle rlParticle2 = new RLParticle();
+        RLParticle rlParticle2 = new RLParticle( level());
         rlParticle2.config.setDuration(100);
         rlParticle2.config.setStartLifetime(NumberFunction.constant(9));
         rlParticle2.config.setStartSpeed(NumberFunction.constant(90));
@@ -2691,7 +2695,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         burst2.cycles = 4;
         rlParticle2.config.getEmission().addBursts(burst2);
 
-        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
         rlParticle2.config.getShape().setShape(new Circle());
 
@@ -2704,7 +2708,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle2.config.getSizeOverLifetime().open();
         rlParticle2.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,1},new float[]{1,2})));
 
-        RLParticle rlParticle3 = new RLParticle();
+        RLParticle rlParticle3 = new RLParticle( level());
         rlParticle3.config.setDuration(100);
         rlParticle3.config.setStartLifetime(NumberFunction.constant(80));
         rlParticle3.config.setStartSpeed(NumberFunction.constant(1.5));
@@ -2715,7 +2719,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         EmissionSetting.Burst burst3 = new EmissionSetting.Burst();burst3.setCount(NumberFunction.constant(250));
         rlParticle3.config.getEmission().addBursts(burst3);
 
-        rlParticle3.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL);
+        rlParticle3.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL.create());
 
         Circle circle3 = new Circle();circle3.setRadius(40);
         rlParticle3.config.getShape().setShape(circle3);

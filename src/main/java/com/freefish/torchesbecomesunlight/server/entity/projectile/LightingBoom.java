@@ -18,6 +18,7 @@ import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -58,21 +59,21 @@ public class LightingBoom extends NoGravityProjectileEntity{
         super.readSpawnData(additionalData);
         rotSpeed = additionalData.readFloat();
         if(level().isClientSide){
-            RLParticle rlParticle1 = new RLParticle();
+            RLParticle rlParticle1 = new RLParticle( level());
             rlParticle1.config.setDuration(80);
             rlParticle1.config.setStartLifetime(NumberFunction.constant(10));
             rlParticle1.config.setStartSpeed(NumberFunction.constant(1));
             rlParticle1.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
             rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(2.5));
 
-            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
             Sphere circle1 = new Sphere();circle1.setRadius(0.1f);
             rlParticle1.config.getShape().setShape(circle1);
             rlParticle1.config.getNoise().open();
             rlParticle1.config.getNoise().setPosition(new NumberFunction3(2));
 
             rlParticle1.config.trails.open();
-            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
             rlParticle1.emmit(new EntityEffect(level(),this));
@@ -126,7 +127,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
             }
             return true;
         }else {
-            RLParticle rlParticle1 = new RLParticle();
+            RLParticle rlParticle1 = new RLParticle( level());
             rlParticle1.config.setDuration(10);
             rlParticle1.config.setStartLifetime(NumberFunction.constant(5));
             rlParticle1.config.setStartSpeed(NumberFunction.constant(3));
@@ -137,7 +138,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
             burst1.setCount(NumberFunction.constant(20));
             rlParticle1.config.getEmission().addBursts(burst1);
 
-            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle1.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle1 = new Circle();
             circle1.setRadius(1);
@@ -151,12 +152,12 @@ public class LightingBoom extends NoGravityProjectileEntity{
             rlParticle1.config.getNoise().setPosition(new NumberFunction3(1));
 
             rlParticle1.config.trails.open();
-            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle1.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle1.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF, 0XFFDFEF86)));
 
             rlParticle1.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle2 = new RLParticle();
+            RLParticle rlParticle2 = new RLParticle( level());
             rlParticle2.config.setDuration(8);
             rlParticle2.config.setStartLifetime(NumberFunction.constant(2));
             rlParticle2.config.setStartSpeed(NumberFunction.constant(20));
@@ -169,7 +170,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
             burst2.interval = 2;
             rlParticle2.config.getEmission().addBursts(burst2);
 
-            rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Cone circle2 = new Cone();
             circle2.setRadius(0.5f);
@@ -183,12 +184,12 @@ public class LightingBoom extends NoGravityProjectileEntity{
             rlParticle2.config.getNoise().setPosition(new NumberFunction3(1));
 
             rlParticle2.config.trails.open();
-            rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle2.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF, 0XFFDFEF86)));
 
             rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle3 = new RLParticle();
+            RLParticle rlParticle3 = new RLParticle( level());
             rlParticle3.config.setDuration(20);
             rlParticle3.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle3.config.setStartSpeed(NumberFunction.constant(3));
@@ -201,7 +202,7 @@ public class LightingBoom extends NoGravityProjectileEntity{
             burst3.time = 2;
             rlParticle3.config.getEmission().addBursts(burst3);
 
-            rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID);
+            rlParticle3.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
 
             Circle circle3 = new Circle();
             circle3.setRadius(2);
@@ -211,20 +212,20 @@ public class LightingBoom extends NoGravityProjectileEntity{
             rlParticle3.config.getNoise().setPosition(new NumberFunction3(0.5));
 
             rlParticle3.config.trails.open();
-            rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle3.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
             rlParticle3.config.trails.setLifetime(NumberFunction.constant(0.5));
             rlParticle3.config.trails.setColorOverLifetime(new Gradient(new GradientColor(0XFFFFFFFF, 0XFFDFEF86)));
 
             rlParticle3.config.trails.config.getRenderer().setBloomEffect(true);
 
-            RLParticle rlParticle4 = new RLParticle();
+            RLParticle rlParticle4 = new RLParticle( level());
             rlParticle4.config.setDuration(4);
             rlParticle4.config.setStartLifetime(NumberFunction.constant(6));
             rlParticle4.config.setStartColor(new Gradient(new GradientColor(0X5FDFEF86)));
 
             rlParticle4.config.getEmission().setEmissionRate(NumberFunction.constant(0.5));
 
-            rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+            rlParticle4.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
 
             rlParticle4.config.getShape().setShape(new Dot());
 

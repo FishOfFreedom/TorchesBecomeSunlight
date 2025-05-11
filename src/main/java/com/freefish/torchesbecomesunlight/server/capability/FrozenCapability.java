@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
-import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
@@ -143,13 +142,13 @@ public class FrozenCapability {
 
             if (isLighting && !(entity instanceof Player player && player.isCreative())) {
                 if(entity.level().isClientSide&&entity.tickCount%20==0){
-                    RLParticle rlParticle2 = new RLParticle();
+                    RLParticle rlParticle2 = new RLParticle(entity.level());
                     rlParticle2.config.setDuration(20);
                     rlParticle2.config.setStartLifetime(NumberFunction.constant(8));
                     rlParticle2.config.setStartSpeed(NumberFunction.constant(2));
                     rlParticle2.config.setStartColor(new Gradient(new GradientColor(0XFFDFEF86)));
                     rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0.2));
-                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID);
+                    rlParticle2.config.getMaterial().setMaterial(MaterialHandle.VOID.create());
                     Sphere circle2 = new Sphere();circle2.setRadius(0.5f);
                     rlParticle2.config.getShape().setShape(circle2);
                     rlParticle2.config.getShape().setPosition(new NumberFunction3(NumberFunction.constant(0),new RandomConstant(2,0,true),NumberFunction.constant(0)));
@@ -160,7 +159,7 @@ public class FrozenCapability {
                     rlParticle2.config.getVelocityOverLifetime().setLinear(new NumberFunction3(0,6,0));
 
                     rlParticle2.config.trails.open();
-                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE);
+                    rlParticle2.config.trails.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
                     rlParticle2.config.trails.config.getRenderer().setBloomEffect(true);
 
                     EntityEffect effect = new EntityEffect(entity.level(),entity);

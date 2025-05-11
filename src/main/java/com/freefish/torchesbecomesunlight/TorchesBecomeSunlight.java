@@ -4,6 +4,7 @@ import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistr
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
 import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
 import com.freefish.torchesbecomesunlight.compat.oculus.ForgeOculusHandle;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.init.village.MemoryModuleTypeHandle;
 import com.freefish.torchesbecomesunlight.server.event.EventListener;
@@ -105,6 +106,7 @@ public class TorchesBecomeSunlight
         event.enqueueWork(()->{
             IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
             bus.addListener(ShaderHandle::registerShaders);
+            TBSMaterialHandle.init();
             MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
         });
     }

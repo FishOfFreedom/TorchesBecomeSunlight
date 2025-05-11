@@ -131,7 +131,7 @@ public class FFEntityUtils {
 
 
     public static void doRangeAttackFX(Entity attacker,double range, double arc,float yRot){
-        if(true){
+        if(false){
             int RANGE = (int) Math.ceil(range);
             for (int i = -RANGE; i <= RANGE; i++) {
                 for (int j = -RANGE; j <= RANGE; j++) {
