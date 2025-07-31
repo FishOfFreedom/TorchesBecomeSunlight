@@ -1,0 +1,38 @@
+{
+  "parent": "torchesbecomesunlight:cook",
+  "criteria": {
+    "has_oven": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:oven"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.cook_oven"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:oven"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.cook_oven"
+    }
+  },
+  "requirements": [
+    [
+      "has_oven"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

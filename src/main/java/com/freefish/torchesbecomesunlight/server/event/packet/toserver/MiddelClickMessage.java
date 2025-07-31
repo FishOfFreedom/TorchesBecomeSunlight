@@ -1,13 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
 
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
+import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
+import com.freefish.torchesbecomesunlight.server.story.data.Option;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
@@ -46,30 +46,26 @@ public class MiddelClickMessage {
                         Level level = player.level();
                         List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(5));
                         DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player, entitiesOfClass);
-                        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null){
+                        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getCurrentOptions()!=null){
                             int number = dialogueEntity.getNumber();
-                            List<DialogueTrigger> options = dialogueEntity.getDialogue().getOptions();
-                            DialogueTrigger dialogueTrigger = options.get(number);
+                            Option[] options = dialogueEntity.getCurrentOptions();
+                            Option dialogueTrigger = options[number];
 
-                            if(dialogueTrigger.getHasTrigger()){
-                                LivingEntity entity = (LivingEntity)dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()];
-                                dialogueTrigger.trigger(entity);
+                            if(dialogueTrigger.HasTrigger()){
+                                dialogueTrigger.trigger(dialogueEntity);
                             }
 
-                            if(dialogueTrigger.getNextDialogue()!=null){
-                                Entity chatEntity = dialogueEntity.getChatEntities()[dialogueTrigger.getNumber()];
-                                dialogueTrigger.chooseDialogue(chatEntity);
-                                dialogueEntity.startSpeakInServer(dialogueTrigger.getNextDialogue(), dialogueTrigger.getNextDialogue().getDialogueTime());
+                            String chooseNextId = dialogueTrigger.getChooseNextId(dialogueEntity);
+                            DialogueEntry dialogueEntry = dialogueEntity.getDialogueEntry(chooseNextId.isEmpty()?dialogueTrigger.getNextid():chooseNextId);
+                            if(dialogueEntry!=null){
+                                dialogueEntity.startSpeak(dialogueEntry, dialogueEntry.getDialoguetime());
+                                dialogueEntry.trigger(dialogueEntity);
                             }
-                            //else if (dialogueEntity.getDialogue().getNextDialogue() != null) {
-                            //    dialogueEntity.startSpeakInServer(dialogueEntity.getDialogue().getNextDialogue(), dialogueEntity.getDialogue().getNextDialogue().getDialogueTime());
-                            //}
                             else {
                                 dialogueEntity.startSpeak(null, 100);
                             }
-                            //dialogueEntity.setNumber(0);
+                            dialogueEntity.setNumber(0);
                         }
-
                     }
                 }
             });

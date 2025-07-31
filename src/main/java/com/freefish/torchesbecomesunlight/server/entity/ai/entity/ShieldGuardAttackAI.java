@@ -20,7 +20,6 @@ public class ShieldGuardAttackAI extends Goal {
     private double targetY;
     private double targetZ;
     private int timeSinceRun;
-    private int timeSinceStomp;
     private int timeSinceStrengthen;
     private int timeSinceShield;
 
@@ -37,6 +36,7 @@ public class ShieldGuardAttackAI extends Goal {
 
     @Override
     public void start() {
+        shieldGuard.setAggressive(true);
         this.repath = 0;
     }
 
@@ -52,35 +52,39 @@ public class ShieldGuardAttackAI extends Goal {
         RandomSource random = shieldGuard.getRandom();
 
         timeSinceRun++;
-        timeSinceStomp++;
         timeSinceStrengthen++;
         timeSinceShield++;
 
-        if(!(this.shieldGuard.getAnimation() == NO_ANIMATION||shieldGuard.getAnimation()==ShieldGuard.RUN)) return;
+        if(!(this.shieldGuard.getAnimation() == NO_ANIMATION||shieldGuard.getAnimation()== ShieldGuard.RUN)) return;
         walk();
         if(shieldGuard.getAnimation()==ShieldGuard.RUN) return;
 
-        double dist = this.shieldGuard.distanceToSqr(this.targetX, this.targetY, this.targetZ);
+        double dist = this.shieldGuard.distanceTo(target);
         if(timeSinceStrengthen>=300){
             timeSinceStrengthen=0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.STRENGTHEN);
-        }
-        else if(dist < 8 && timeSinceStomp>=160){
-            timeSinceStomp=0;
-            AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.STOMP);
         }
         else if(dist < 2 + target.getBbWidth()/2 && timeSinceShield>=120){
             timeSinceShield=0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.SHIELD);
         }
-        else if(dist >= 20 &&timeSinceRun>=180) {
+        else if(dist >= 10 &&timeSinceRun>=180) {
             targetX = targetY = targetZ = 0;
             timeSinceRun = 0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(shieldGuard, ShieldGuard.RUN);
         } else if (target.getY() - this.shieldGuard.getY() >= -1 && target.getY() - this.shieldGuard.getY() <= 3) {
-            if (dist < 7D * 7D && Math.abs(MathUtils.wrapDegrees(this.shieldGuard.getAngleBetweenEntities(target, this.shieldGuard) - this.shieldGuard.yBodyRot)) < 35.0D) {
-                if(shouldFollowUp(3.5)) {
+            if (dist < 6D && Math.abs(MathUtils.wrapDegrees(this.shieldGuard.getAngleBetweenEntities(target, this.shieldGuard) - this.shieldGuard.yBodyRot)) < 35.0D) {
+                float v = random.nextFloat();
+                if(v<0.25){
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.ATTACK);
+                }
+                else if(v<0.5) {
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.ATTACK2);
+                }
+                else if(v<0.75) {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.ATTACK3);
+                }else {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this.shieldGuard, ShieldGuard.ATTACK4);
                 }
             }
         }

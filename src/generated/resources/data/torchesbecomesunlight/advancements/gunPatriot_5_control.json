@@ -1,0 +1,32 @@
+{
+  "parent": "torchesbecomesunlight:gunPatriot_4_sakta",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "gunPatriot_5_control"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gunPatriot_5_control"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:sankta_ring"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gunPatriot_5_control"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

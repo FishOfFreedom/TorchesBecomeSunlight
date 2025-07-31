@@ -10,9 +10,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.Map;
 
-/**
- * Credits to Botania's dev team for the implementation!
- */
 @Mixin(RecipeManager.class)
 public interface RecipeManagerAccessor
 {

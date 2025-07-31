@@ -1,0 +1,16 @@
+{
+  "type": "torchesbecomesunlight:nether_fortress_loot",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/nether_bridge"
+        }
+      ]
+    }
+  ],
+  "item": "torchesbecomesunlight:demon_eye",
+  "probability": 0.75
+}

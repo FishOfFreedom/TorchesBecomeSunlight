@@ -13,18 +13,18 @@ import com.freefish.rosmontislib.client.particle.advance.data.shape.Sphere;
 import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -92,6 +92,8 @@ public class LightingBoom extends NoGravityProjectileEntity{
 
     @Override
     public boolean isHitEntityDiscard(Entity entity) {
+        if(getOwner() instanceof Player) return true;
+
         if(getOwner() instanceof Mob living&&living.getTarget() == entity){
             return true;
         }
@@ -105,6 +107,17 @@ public class LightingBoom extends NoGravityProjectileEntity{
         if (!level().isClientSide) {
             if(getOwner() instanceof Mob mob&&mob.getTarget() == target){
                 this.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                float damage = 24;
+                List<LivingEntity> entitiesOfClass = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2));
+                for (LivingEntity boom : entitiesOfClass) {
+                    if (boom == getOwner()) continue;
+                    boom.invulnerableTime = 0;
+                    boom.hurt(boom.damageSources().mobAttack(mob), damage*1.5f);
+                    ForceEffectHandle.addForceEffect(boom,new ForceEffectInstance(ForceEffectHandle.LIGHTING_FORCE_EFFECT,1,100));
+                }
+            }
+            else if(getOwner() instanceof Mob mob&&mob.getTarget() == target){
+                this.playSound(SoundHandle.BigLight.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
                 float damage = 10;
                 if (getOwner() instanceof LivingEntity living)
                     damage = (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE);
@@ -113,17 +126,11 @@ public class LightingBoom extends NoGravityProjectileEntity{
                     if (boom == getOwner()) continue;
                     boom.invulnerableTime = 0;
                     boom.hurt(boom.damageSources().mobAttack(mob), damage*1.5f);
-                    FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(boom, CapabilityHandle.FROZEN_CAPABILITY);
-                    if(capability!=null){
-                        capability.setLighting(boom,100);
-                    }
+                    ForceEffectHandle.addForceEffect(boom,new ForceEffectInstance(ForceEffectHandle.LIGHTING_FORCE_EFFECT,1,100));
                 }
             }
-            if(target instanceof LivingEntity living){
-                FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(living, CapabilityHandle.FROZEN_CAPABILITY);
-                if(capability!=null){
-                    capability.setLighting(living,100);
-                }
+            if(target instanceof LivingEntity living&&target != getOwner()){
+                ForceEffectHandle.addForceEffect(living,new ForceEffectInstance(ForceEffectHandle.LIGHTING_FORCE_EFFECT,1,100));
             }
             return true;
         }else {
@@ -260,6 +267,29 @@ public class LightingBoom extends NoGravityProjectileEntity{
         lightingBoom.rotSpeed = (float)(1.047/tick);
 
         if(!isRight) lightingBoom.rotSpeed = -lightingBoom.rotSpeed;
+
+        lightingBoom.setPos(shootPos.x,shootPos.y,shootPos.z);
+        lightingBoom.setOwner(owner);
+        level.addFreshEntity(lightingBoom);
+    }
+
+    public static void shootLightingBoomNoTarget(Level level, LivingEntity owner, Vec3 shootPos){
+        LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
+
+        float posToPosRot = (float) -Math.toRadians(owner.getYRot());
+        Vec3 bodyRotVec = new Vec3(0,0,1).yRot(posToPosRot);
+        lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,2.5f,0);
+
+        lightingBoom.setPos(shootPos.x,shootPos.y,shootPos.z);
+        lightingBoom.setOwner(owner);
+        level.addFreshEntity(lightingBoom);
+    }
+
+    public static void shootLightingBoomMotion(Level level, LivingEntity owner, Vec3 shootPos){
+        LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
+
+        Vec3 bodyRotVec = FFEntityUtils.getHeadRotVec(owner,new Vec3(0,0,1)).subtract(owner.position());
+        lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,2.5f,0);
 
         lightingBoom.setPos(shootPos.x,shootPos.y,shootPos.z);
         lightingBoom.setOwner(owner);

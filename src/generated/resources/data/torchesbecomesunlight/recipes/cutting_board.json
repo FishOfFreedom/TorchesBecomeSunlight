@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_sword"
+    },
+    "I": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "  B",
+    "III",
+    "   "
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:cutting_board"
+  },
+  "show_notification": true
+}

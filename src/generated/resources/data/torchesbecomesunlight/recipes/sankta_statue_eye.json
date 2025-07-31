@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:glowstone"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "I": {
+      "item": "minecraft:end_stone"
+    }
+  },
+  "pattern": [
+    "BIB",
+    "IEI",
+    "BIB"
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:sankta_statue_eye"
+  },
+  "show_notification": true
+}

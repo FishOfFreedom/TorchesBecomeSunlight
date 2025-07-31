@@ -2,6 +2,7 @@ package com.freefish.torchesbecomesunlight.server.capability;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -13,13 +14,10 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-
-import static com.freefish.torchesbecomesunlight.server.util.FFEntityUtils.isLookingAtMe;
 
 public class DialogueCapability {
     public static ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue_cap");
@@ -59,20 +57,28 @@ public class DialogueCapability {
             LivingEntity entity = event.getEntity();
             Level level = entity.level();
 
-            if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get()){
-                List<Player> livingEntities = level.getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5), livingEntity ->
-                        livingEntity.distanceTo(entity) < 3 + livingEntity.getBbWidth() / 2 && livingEntity != entity);
-                boolean flad = false;
+            if(entity instanceof IDialogueEntity dialogue){
                 int f1 = this.getDialogueNeedTime();
-                for (LivingEntity livingEntity : livingEntities) {
-                    if (isLookingAtMe(entity, livingEntity))
-                        flad = true;
+
+                if(dialogue.canDialogue()&&ConfigHandler.COMMON.GLOBALSETTING.canDialogue.get()){
+                    List<Player> livingEntities = level.getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5), livingEntity ->
+                            livingEntity.distanceTo(entity) < 3 + livingEntity.getBbWidth() / 2 && livingEntity != entity);
+                    boolean flad = false;
+                    for (LivingEntity livingEntity : livingEntities) {
+                        if (isLookingAtMe1(entity, livingEntity))
+                            flad = true;
+                    }
+                    if (flad && f1 < 50) this.setDialogueNeedTime(f1 + 1);
+                    if (!flad && f1 > 0) this.setDialogueNeedTime(f1 - 1);
+                }else {
+                    if (f1 > 0) this.setDialogueNeedTime(f1 - 1);
                 }
-                if (flad && f1 < 50) this.setDialogueNeedTime(f1 + 1);
-                if (!flad && f1 > 0) this.setDialogueNeedTime(f1 - 1);
             }
         }
 
+        public boolean isLookingAtMe1(LivingEntity livingEntity, LivingEntity pPlayer) {
+            return pPlayer.hasLineOfSight(livingEntity);
+        }
     }
 
     public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>

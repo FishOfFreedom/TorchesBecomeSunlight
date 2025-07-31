@@ -1,17 +1,12 @@
 package com.freefish.torchesbecomesunlight.client.render.model.village;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoBone;
 import com.freefish.torchesbecomesunlight.server.entity.villager.MaleVillager;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
-
-import java.util.Optional;
 
 public class ManModel extends GeoBipedModel<MaleVillager> {
     private static final ResourceLocation playerModel = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/male_villager.geo.json");
@@ -21,7 +16,7 @@ public class ManModel extends GeoBipedModel<MaleVillager> {
     public static final ResourceLocation TEXTUREHEAD_1 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/villager/malehead_1.png");
     public static final ResourceLocation TEXTUREHEAD_2 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/villager/malehead_2.png");
     public static final ResourceLocation TEXTUREHEAD_3 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/villager/malehead_3.png");
-    private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/male_villager.animation.json");
+    public static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/male_villager.animation.json");
 
     public ManModel() {
     }

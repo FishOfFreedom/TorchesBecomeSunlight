@@ -1,0 +1,20 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:beef",
+    "minecraft:porkchop",
+    "minecraft:mutton",
+    "minecraft:chicken",
+    "minecraft:rabbit",
+    "minecraft:cooked_rabbit",
+    "minecraft:cooked_chicken",
+    "minecraft:cooked_mutton",
+    "minecraft:cooked_porkchop",
+    "minecraft:cooked_beef"
+  ],
+  "values": {
+    "MEAT": 1
+  },
+  "effects": [
+  ]
+}

@@ -1,6 +1,5 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
@@ -8,7 +7,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
-public class FFWaterAvoidingRandomStrollGoal<T extends PathfinderMob & IDialogueEntity> extends RandomStrollGoal {
+public class FFWaterAvoidingRandomStrollGoal<T extends PathfinderMob> extends RandomStrollGoal {
     public static final float PROBABILITY = 0.001F;
     protected final float probability;
     T mob;
@@ -25,7 +24,7 @@ public class FFWaterAvoidingRandomStrollGoal<T extends PathfinderMob & IDialogue
     }
 
     public boolean canUse() {
-        return mob.getTarget() == null && mob.getDialogueEntity() == null&&super.canUse();
+        return mob.getTarget() == null&&mob.isAlive() && super.canUse();
     }
 
     @Nullable

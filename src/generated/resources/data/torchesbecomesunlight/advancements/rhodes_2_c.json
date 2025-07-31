@@ -1,0 +1,33 @@
+{
+  "parent": "torchesbecomesunlight:rhodes_1",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "rhodes_2_c"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.rhodes_2_c"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:rhodes_shield",
+      "nbt": "{Damage:0}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.rhodes_2_c"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

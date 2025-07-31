@@ -5,7 +5,13 @@
   "refmap": "torchesbecomesunlight.refmap.json",
   "mixins": [
     "accessor.RecipeManagerAccessor",
-    "MixinStructureTemplatePool"
+    "accessor.PoolElementStructurePieceAccessor",
+    "accessor.ChunkAccessAccessor",
+    "MixinStructureTemplatePool",
+    "LivingEntityMixin",
+    "EntityMixin",
+    "NearestAttackableTargetGoalMixin",
+    "MobMixin"
   ],
   "client": [
     "MixinLevelRenderer",

@@ -1,15 +1,19 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
+import com.freefish.torchesbecomesunlight.server.entity.dlc.Turret;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.FXEntity;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ProjectileHitEntityMessage;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -18,19 +22,18 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
 
-public class Bullet extends Projectile {
-    private int type1 = -1;
-
+public class Bullet extends NoGravityProjectileEntity {
     private int bulletLen;
     private int oBulletLen;
 
@@ -65,18 +68,16 @@ public class Bullet extends Projectile {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
         super.readAdditionalSaveData(compoundTag);
         setType(compoundTag.getInt("type"));
-        setIsHit(compoundTag.getBoolean("ishit"));
         setIsHoly(compoundTag.getBoolean("isholy"));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    public void addAdditionalSaveData(CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
         compoundTag.putInt("type",getType1());
-        compoundTag.putBoolean("ishit",isHit());
         compoundTag.putBoolean("isholy",isHoly());
     }
 
@@ -84,56 +85,9 @@ public class Bullet extends Projectile {
         return Mth.lerp(p,oBulletLen,bulletLen);
     }
 
-    private int hitTime;
-
     @Override
     public void tick() {
         super.tick();
-        if(isHit()){
-            if(hitTime>=1){
-                discard();
-                return;
-            }
-            if(hitTime==0){
-                int type2 = getType1();
-                if(level().isClientSide){
-                    if(type2==0||type2==4) {
-                        AdvancedParticleBase.spawnParticle(level(),ParticleHandler.BURST_MESSY.get(),xo,yo,zo,0,0,0,true,0,0,0,0,1,1,1,1,1,0,6,true,false,new ParticleComponent[]{
-                                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 10f), false),
-                                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
-                        });
-                        AdvancedParticleBase.spawnParticle(level(),ParticleHandler.RING_BIG.get(),xo,yo,zo,0,0,0,true,0,0,0,0,1,1,1,1,1,0,4,true,false,new ParticleComponent[]{
-                                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 7f), false),
-                                new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
-                        });
-                    }
-                }
-                else {
-                    if (getType1() == 1||getType1()==3) {
-                        if (getOwner() instanceof LivingEntity caster) {
-                            float damage = (float) caster.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-                            List<LivingEntity> nearByLivingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5),
-                                    entity -> entity.distanceTo(this) < 4);
-                            for (LivingEntity hit : nearByLivingEntities) {
-                                if (hit == caster) continue;
-                                hit.hurt(caster.damageSources().mobAttack(caster), damage);
-                            }
-                            this.level().explode(caster, this.getX(), this.getY(), this.getZ(), 5, Level.ExplosionInteraction.NONE);
-                        }
-                    }
-                }
-                if (getType1() == 2) {
-                    doAllShootFX();
-                } else if (getType1()==1) {
-                    if(getOwner() instanceof GunKnightPatriot gunKnightPatriot){
-                        gunKnightPatriot.addDemonArea(100,MathUtils.getFirstBlockAbove(level(),position().add(0,-3,0),5),4);
-                    }
-                }
-            }
-            hitTime++;
-        }
-
-        this.move(MoverType.SELF, this.getDeltaMovement());
 
         if(level().isClientSide){
             oBulletLen = bulletLen;
@@ -165,36 +119,16 @@ public class Bullet extends Projectile {
                 }
             }
         }
+    }
+
+    @Override
+    public Vec3 changeDeltaMovement(Vec3 vec3) {
         int type2 = getType1();
         if(type2==1){
-            setDeltaMovement(getDeltaMovement().add(0,- 0.05F,0));
+            vec3 = vec3.add(0,- 0.05F,0);
+            setDeltaMovement(vec3);
         }
-        if (this.tickCount > 40) {
-            this.discard();
-        } else {
-            this.doHurtTarget();
-        }
-
-        if(!level().isClientSide()){
-            if (getType1() == 0||getType1()==4) {
-                BlockState blockState = getBlockStateOn();
-                if ( !blockState.isAir() && !isHit()) {
-                    setIsHit(true);
-                }
-            } else {
-                BlockState blockState = this.level().getBlockState(this.getOnPos(1.0E-5F));
-                BlockState blockState2 = this.level().getBlockState(this.getOnPos(1+1.0E-5F));
-                if ((!blockState.isAir()||!blockState2.isAir()) && !isHit()) {
-                    setIsHit(true);
-                }
-            }
-        }
-
-        Vec3 vec3 = this.getDeltaMovement();
-        double d6 = vec3.y;
-        double d4 = vec3.horizontalDistance();
-
-        this.setXRot((float)(Mth.atan2(d6, d4) * (double)(180F / (float)Math.PI)));
+        return super.changeDeltaMovement(vec3);
     }
 
     public Vec3 getTrailPosition(int pointer, float partialTick) {
@@ -212,45 +146,93 @@ public class Bullet extends Projectile {
         return trailPointer != -1;
     }
 
-    private void doAllShootFX(){
+    public int len111 = 10;
+
+    private void doAllShootFX(Vec3 blockPos){
         if(level().isClientSide){
             bombFX();
-            Vec3 ground = MathUtils.getFirstBlockAbove(level(),position(),5);
-            AdvancedParticleBase.spawnParticle(level(),ParticleHandler.RING_BIG.get(),ground.x,ground.y,ground.z,0,0,0,false,0,1.57,0,0,1,1,1,1,1,0,8,true,false,new ParticleComponent[]{
+            AdvancedParticleBase.spawnParticle(level(),ParticleHandler.RING_BIG.get(),blockPos.x,blockPos.y,blockPos.z,0,0,0,false,0,1.57,0,0,1,1,1,1,1,0,8,true,false,new ParticleComponent[]{
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 160f), false),
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
             });
         }
         else {
-            Vec3 ground = MathUtils.getFirstBlockAbove(level(),position().add(0,-3,0),5);
-
-            FXEntity.SpawnFXEntity(level(),0, ground, (LivingEntity) getOwner());
-            EntityCameraShake.cameraShake(this.level(), this.position(), 20F, 1.5F, 5, 15);
+            FXEntity.SpawnFXEntity(level(),0,len111, blockPos, (LivingEntity) getOwner());
+            EntityCameraShake.cameraShake(this.level(), blockPos, 20F, 1.5F, 5, 15);
         }
     }
 
-    private void doHurtTarget() {
-        if(level().isClientSide() ) return;
-        if (!isHit()) {
-            List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(getDeltaMovement().length()+1));
-            boolean flad = false;
-            Entity caster = getOwner();
-            for (LivingEntity target : entities) {
-                if (target == caster||target instanceof GunKnightPatriot) continue;
-                boolean flad1 = false;
+    @Override
+    public int getTickDespawn() {
+        return 200;
+    }
 
-                Vec3 oldPosition = new Vec3(xo,yo,zo);
-                Vec3 position = position();
-                Vec3 totarget = target.position().add(0,Mth.clamp(getY()-target.getY(),0,target.getBbHeight()),0).subtract(position);
-                Vec3 line = oldPosition.subtract(position).normalize();
-                float l = (float) line.dot(totarget);
-                if(l>=0) {
-                    Vec3 len = line.scale(l);
-                    float fa = (float) len.subtract(totarget).length();
-                    if(fa<=0.1+target.getBbWidth()) flad1 = true;
+    @Override
+    public boolean isNoPhysics() {
+        return true;
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult pResult) {
+        Entity entity = pResult.getEntity();
+
+        boolean b = hitEntity(entity);
+        if(!level().isClientSide&&b){
+            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new ProjectileHitEntityMessage(this, entity.getId()));
+        }
+
+        if(isHitEntityDiscard(entity)) {
+            this.discard();
+        }
+    }
+
+    @Override
+    public boolean hitEntity(Entity entity) {
+        int type2 = getType1();
+        if(level().isClientSide){
+            if(type2==0||type2==4) {
+                AdvancedParticleBase.spawnParticle(level(),ParticleHandler.BURST_MESSY.get(),getX(),getY(),getZ(),0,0,0,true,0,0,0,0,1,1,1,1,1,0,6,true,false,new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 10f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
+                });
+                AdvancedParticleBase.spawnParticle(level(),ParticleHandler.RING_BIG.get(),getX(),getY(),getZ(),0,0,0,true,0,0,0,0,1,1,1,1,1,0,4,true,false,new ParticleComponent[]{
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 7f), false),
+                        new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(0.8f, 0f), false)
+                });
+            }
+        }
+        else {
+            if (getType1() == 1||getType1()==3) {
+                if (getOwner() instanceof LivingEntity caster) {
+                    float damage = (float) caster.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+                    List<LivingEntity> nearByLivingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5),
+                            entity1 -> entity1.distanceTo(this) < 4);
+                    for (LivingEntity hit : nearByLivingEntities) {
+                        if (hit == caster) continue;
+                        hit.hurt(caster.damageSources().mobAttack(caster), damage);
+                    }
+                    this.level().explode(caster, this.getX(), this.getY(), this.getZ(), 3, Level.ExplosionInteraction.NONE);
                 }
+            }
+        }
+        if(getType1()==2){
+            doAllShootFX(entity.position());
+        }
 
-                if (flad1 && caster instanceof LivingEntity living) {
+        if(!level().isClientSide){
+            if(entity instanceof LivingEntity target){
+                boolean flad = false;
+                Entity caster = getOwner();
+
+                if (target == caster) return false;
+                if (caster instanceof Turret && entity instanceof GunKnightPatriot) return false;
+
+                if (caster instanceof Player living) {
+                    float damage = (float) ConfigHandler.COMMON.TOOLs.SACRED_GUN.attackDamage.get().doubleValue();
+                    target.hurt(this.damageSources().playerAttack(living), damage);
+                    target.invulnerableTime = 2;
+                    flad = true;
+                }else if (caster instanceof LivingEntity living) {
                     AttributeInstance attribute = living.getAttribute(Attributes.ATTACK_DAMAGE);
                     if (attribute != null) {
                         float type = 1;
@@ -265,15 +247,16 @@ public class Bullet extends Projectile {
                     }
                 }
 
-            }
-            if(flad){
-                playSound(SoundHandle.SHOOT.get(), 1.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
-                if (getType1() == 1||getType1()==3) {
-                    this.level().explode(caster, this.getX(), this.getY(), this.getZ(), 5, Level.ExplosionInteraction.NONE);
+                if(flad){
+                    playSound(SoundHandle.SHOOT.get(), 1.5F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
+                    if (getType1() == 1||getType1()==3) {
+                        this.level().explode(caster, this.getX(), this.getY(), this.getZ(), 3, Level.ExplosionInteraction.NONE);
+                    }
                 }
-                setIsHit(true);
             }
+            return true;
         }
+        return false;
     }
 
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
@@ -297,6 +280,36 @@ public class Bullet extends Projectile {
     }
 
     @Override
+    protected void onHitBlock(BlockHitResult pResult) {
+        BlockPos blockPos = pResult.getBlockPos();
+        if (getType1() == 2) {
+            doAllShootFX(blockPos.getCenter());
+        } else if (getType1()==1) {
+            if(getOwner() instanceof GunKnightPatriot gunKnightPatriot){
+                gunKnightPatriot.addDemonArea(100,blockPos.getCenter(),4);
+            }
+        }
+        if (getType1() == 1||getType1()==3) {
+            if (getOwner() instanceof LivingEntity caster) {
+                float damage = (float) caster.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+                List<LivingEntity> nearByLivingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(5),
+                        entity1 -> entity1.distanceTo(this) < 4);
+                for (LivingEntity hit : nearByLivingEntities) {
+                    if (hit == caster) continue;
+                    hit.hurt(caster.damageSources().mobAttack(caster), damage);
+                }
+                this.level().explode(caster, this.getX(), this.getY(), this.getZ(), 3, Level.ExplosionInteraction.NONE);
+            }
+        }
+        super.onHitBlock(pResult);
+    }
+
+    @Override
+    public boolean isHitBlockDiscard() {
+        return true;
+    }
+
+    @Override
     public float getLightLevelDependentMagicValue() {
         return 1.0F;
     }
@@ -313,23 +326,10 @@ public class Bullet extends Projectile {
 
     public void setType(int type){
         this.entityData.set(TYPE,type);
-        type1 = type;
     }
 
     public int getType1(){
-        if(type1!=-1) {
-            return type1;
-        }
-        type1 = this.entityData.get(TYPE);
-        return type1;
-    }
-
-    public boolean isHit(){
-        return this.entityData.get(IS_HIT);
-    }
-
-    public void setIsHit(boolean isHit){
-        this.entityData.set(IS_HIT,isHit);
+        return this.entityData.get(TYPE);
     }
 
     public boolean isHoly(){
@@ -338,11 +338,6 @@ public class Bullet extends Projectile {
 
     public void setIsHoly(boolean isHit){
         this.entityData.set(IS_HOLY,isHit);
-    }
-
-    @Override
-    public void lerpMotion(double pX, double pY, double pZ) {
-        this.setDeltaMovement(pX, pY, pZ);
     }
 
     private void bombFX(){

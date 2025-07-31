@@ -1,0 +1,58 @@
+{
+  "id": "gunknight_fight",
+  "title": "no",
+  "description": "挑战寻路者",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "main3",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_fight_final.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main4",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_fight_final.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_fight_final.main4",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.gunknight_fight_final.main4_o1"
+        },
+        {
+          "nextid": "main2",
+          "text": "dialogue.gunknight_fight_final.main4_o2"
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_fight_final.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

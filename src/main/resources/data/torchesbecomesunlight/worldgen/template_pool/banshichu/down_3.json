@@ -1,0 +1,14 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "torchesbecomesunlight:rhodesbanshichu/banshichu_down_4",
+        "processors": "torchesbecomesunlight:rhodesisland",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

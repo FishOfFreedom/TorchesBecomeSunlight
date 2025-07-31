@@ -2,7 +2,6 @@ package com.freefish.torchesbecomesunlight.client.render.model;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BigIceCrystal;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.IceCrystal;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

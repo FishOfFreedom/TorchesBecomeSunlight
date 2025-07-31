@@ -1,0 +1,49 @@
+{
+  "id": "gunknight_firstmeet1",
+  "title": "no",
+  "description": "和枪骑第一次相遇,强",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_firstmeet1.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.gunknight_firstmeet1.main1_o1"
+        },
+        {
+          "nextid": "main4",
+          "text": "dialogue.gunknight_firstmeet1.main1_o2"
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_firstmeet1.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main2",
+      "speaker": "pathfinder",
+      "text": "dialogue.gunknight_firstmeet1.main4",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

@@ -109,6 +109,7 @@ repositories {
             password = System.getenv("PASSWORD")
         }
     }
+    maven { url = "https://maven.blamejared.com/" }
 }
 
 dependencies {
@@ -124,12 +125,21 @@ dependencies {
     implementation fg.deobf("curse.maven:xenon-564239:5216360")
     implementation fg.deobf("curse.maven:oculus-581495:5299671")
 
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    // at runtime, use the full JEI
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+
     //rosmontislib
     //implementation jarJar(fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT"))
-    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250511.081433-20"))
-    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250511.081433-20")) {
+    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250728.202116-28"))
+    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250728.202116-28")) {
         jarJar.ranged(it, "[0.2.0,)")
     }
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {

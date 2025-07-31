@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity.snownova;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.util.RandomSource;
@@ -66,8 +66,8 @@ public class SnowNova1AttackAI extends Goal {
             return;
         }
 
-        FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
-        if(data!=null&&data.getFrozen()) {
+        ForceEffectInstance data = ForceEffectHandle.getForceEffect(target, ForceEffectHandle.FROZEN_FORCE_EFFECT);
+        if(data!=null&&data.getLevel()>1) {
             timeSinceDash += 4;
             timeSinceIceBlade +=4;
         }

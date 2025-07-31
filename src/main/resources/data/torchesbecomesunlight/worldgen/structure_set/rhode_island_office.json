@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "torchesbecomesunlight:rhode_island_office",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1469945163,
+    "spacing": 12,
+    "separation": 4
+  }
+}

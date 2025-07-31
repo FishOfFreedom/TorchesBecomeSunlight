@@ -25,10 +25,12 @@ public class ServerNetwork {
                 .serverAcceptedVersions(VERSION::equals)
                 .simpleChannel();
 
+        registerMessage(ActRangeSignMessage.class, ActRangeSignMessage::serialize, ActRangeSignMessage::deserialize, new ActRangeSignMessage.Handler());
         registerMessage(AnimationActMessage.class, AnimationActMessage::serialize, AnimationActMessage::deserialize, new AnimationActMessage.Handler());
         registerMessage(StartDialogueMessage.class, StartDialogueMessage::serialize, StartDialogueMessage::deserialize, new StartDialogueMessage.Handler());
-        registerMessage(DialogueTriggerMessage.class, DialogueTriggerMessage::serialize, DialogueTriggerMessage::deserialize, new DialogueTriggerMessage.Handler());
+        registerMessage(SkipDialogueMessage.class, SkipDialogueMessage::serialize, SkipDialogueMessage::deserialize, new SkipDialogueMessage.Handler());
         registerMessage(MessageUpdateBossBar.class, MessageUpdateBossBar::serialize, MessageUpdateBossBar::deserialize, new MessageUpdateBossBar.Handler());
+        registerMessage(PlayerInteractMessage.class, PlayerInteractMessage::serialize, PlayerInteractMessage::deserialize, new PlayerInteractMessage.Handler());
         registerMessage(SetDemonCentreMessage.class, SetDemonCentreMessage::serialize, SetDemonCentreMessage::deserialize, new SetDemonCentreMessage.Handler());
         registerMessage(MessageUseAbility.class, MessageUseAbility::serialize, MessageUseAbility::deserialize, new MessageUseAbility.Handler());
         registerMessage(MessageInterruptAbility.class, MessageInterruptAbility::serialize, MessageInterruptAbility::deserialize, new MessageInterruptAbility.Handler());
@@ -37,6 +39,8 @@ public class ServerNetwork {
         registerMessage(SynCapabilityMessage.class, SynCapabilityMessage::serialize, SynCapabilityMessage::deserialize, new SynCapabilityMessage.Handler());
         registerMessage(InitClientEntityMessage.class, InitClientEntityMessage::serialize, InitClientEntityMessage::deserialize, new InitClientEntityMessage.Handler());
         registerMessage(ProjectileHitEntityMessage.class, ProjectileHitEntityMessage::serialize, ProjectileHitEntityMessage::deserialize, new ProjectileHitEntityMessage.Handler());
+        registerMessage(PartnerCommandTriggerMessage.class, PartnerCommandTriggerMessage::serialize, PartnerCommandTriggerMessage::deserialize, new PartnerCommandTriggerMessage.Handler());
+        registerMessage(SetBlockEntityDataMessage.class, SetBlockEntityDataMessage::serialize, SetBlockEntityDataMessage::deserialize, new SetBlockEntityDataMessage.Handler());
     }
 
     private static  <MSG> void registerMessage(final Class<MSG> clazz, final BiConsumer<MSG, FriendlyByteBuf> encoder, final Function<FriendlyByteBuf, MSG> decoder, final BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer) {

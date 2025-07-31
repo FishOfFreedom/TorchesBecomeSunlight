@@ -1,0 +1,32 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "talk"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.talk"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:title"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.talk"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

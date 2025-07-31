@@ -2,8 +2,8 @@ package com.freefish.torchesbecomesunlight.client.render.entity;
 
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
+import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,13 +16,10 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.*;
-
-import java.lang.Math;
+import org.joml.Matrix4f;
 
 public class DialogueEntityRenderer extends EntityRenderer<DialogueEntity> {
     private static final ResourceLocation DIALOGUE =new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/ribbon_flat.png");
@@ -45,17 +42,16 @@ public class DialogueEntityRenderer extends EntityRenderer<DialogueEntity> {
     }
 
     private void drawString(DialogueEntity entity, PoseStack poseStack, MultiBufferSource bufferSource,float par, int packedLightIn) {
-        Entity[] chatEntities = entity.getChatEntities();
         Player player = Minecraft.getInstance().player;
-        if(chatEntities!=null&&chatEntities.length!=0) {
-            Dialogue dialogue = entity.getDialogue();
+        if(entity.hasChatEntities()) {
+            DialogueEntry dialogue = entity.getDialogue();
             if(dialogue!=null&&player!=null) {
                 Font font = this.getFont();
-                String oMessage = entity.getDialogue().getMessage();
+                String oMessage = entity.currentText;
                 int len = font.width(oMessage);
 
                 String  message = cuttingString(oMessage, MathUtils.easeOutCubic(Math.min(1,2f*entity.getDialogueScale())));
-                Entity chatEntity = chatEntities[dialogue.getSpeakerNumber()];
+                Entity chatEntity = entity.getChatEntities(dialogue.getSpeaker());
                 if(chatEntity!=null){
                     poseStack.translate(chatEntity.getX()-entity.getX(), chatEntity.getY()+1.5+(1-1.5/chatEntity.getBbHeight())-entity.getY(), chatEntity.getZ()-entity.getZ());
 

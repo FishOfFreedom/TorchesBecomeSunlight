@@ -1,0 +1,32 @@
+{
+  "parent": "torchesbecomesunlight:main",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "main_8_1_frostnova"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.main_8_1_frostnova"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:blessing_of_sami"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.main_8_1_frostnova"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

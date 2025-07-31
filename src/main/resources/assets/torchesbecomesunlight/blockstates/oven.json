@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "torchesbecomesunlight:block/oven",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "torchesbecomesunlight:block/oven"
+    },
+    "facing=south": {
+      "model": "torchesbecomesunlight:block/oven",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "torchesbecomesunlight:block/oven",
+      "y": 270
+    }
+  }
+}

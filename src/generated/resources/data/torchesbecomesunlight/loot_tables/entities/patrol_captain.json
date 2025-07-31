@@ -1,0 +1,126 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "chance": 0.01,
+              "condition": "minecraft:random_chance_with_looting",
+              "looting_multiplier": 0.01
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "torchesbecomesunlight:machete"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "chance": 0.01,
+              "condition": "minecraft:random_chance_with_looting",
+              "looting_multiplier": 0.01
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "torchesbecomesunlight:patrol_captain_boots"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "chance": 0.01,
+              "condition": "minecraft:random_chance_with_looting",
+              "looting_multiplier": 0.01
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "torchesbecomesunlight:patrol_captain_chestplate"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "chance": 0.01,
+              "condition": "minecraft:random_chance_with_looting",
+              "looting_multiplier": 0.01
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "torchesbecomesunlight:patrol_captain_helmet"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "chance": 0.01,
+              "condition": "minecraft:random_chance_with_looting",
+              "looting_multiplier": 0.01
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "torchesbecomesunlight:patrol_captain_leggings"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "torchesbecomesunlight:entities/patrol_captain"
+}

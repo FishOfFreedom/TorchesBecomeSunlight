@@ -1,22 +1,27 @@
 package com.freefish.torchesbecomesunlight.server.util;
 
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ActRangeSignMessage;
+import com.freefish.torchesbecomesunlight.server.partner.IMobPartner;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 public class FFEntityUtils {
     public static boolean isBeneficial(MobEffect effect) {
@@ -83,6 +88,14 @@ public class FFEntityUtils {
         return entityHitAngle;
     }
 
+    public static void disableShield(Player player,int time){
+        ItemStack pPlayerItemStack = player.getUseItem();
+        if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.getItem() instanceof ShieldItem shieldItem) {
+            player.getCooldowns().addCooldown(shieldItem, time);
+            player.level().broadcastEntityEvent(player, (byte)30);
+        }
+    }
+
     /**
      * @Date 2024/12/31 1:21
      * @Description 判断一个生物是否看向其他生物
@@ -129,27 +142,45 @@ public class FFEntityUtils {
         return new Vec3(rotX,rotY,0);
     }
 
+    /**
+     * @Date 2024/12/31 1:26
+     * @Description 从一个向量获取rotX-pirch rotY-yaw
+     * @Param [vec3]
+     * @Return net.minecraft.world.phys.Vec3
+     */
+    public static boolean callBaseHurt(LivingEntity entity, DamageSource source, float amount) {
+        try {
+            if(entity instanceof Mob m){
+                IMobPartner partner = (IMobPartner) m;
+                return partner.invokeHurt(source,amount);
+            }else {
+                return entity.hurt(source, amount);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return entity.hurt(source, amount);
+        }
+    }
 
-    public static void doRangeAttackFX(Entity attacker,double range, double arc,float yRot){
-        if(false){
-            int RANGE = (int) Math.ceil(range);
-            for (int i = -RANGE; i <= RANGE; i++) {
-                for (int j = -RANGE; j <= RANGE; j++) {
-                    float entityHitAngle = (float) ((Math.atan2(i, j) * (180 / Math.PI) - 90)+ yRot % 360) ;
-                    float entityAttackingAngle = attacker.getYRot() % 360;
-                    if (entityHitAngle < 0) {
-                        entityHitAngle += 360;
-                    }
-                    if (entityAttackingAngle < 0) {
-                        entityAttackingAngle += 360;
-                    }
-                    double len = Math.sqrt((double) i * i + (double) j * j);
-                    if (Math.abs(entityAttackingAngle - entityHitAngle) < arc && len <= range) {
-                        ServerLevel level = (ServerLevel) attacker.level();
-                        level.sendParticles(ParticleTypes.FLAME, attacker.getX() + j, attacker.getY() + 1, attacker.getZ() + i, 2, 0, 0, 0, 0);
-                    }
+    public static EntityHitResult getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox) {
+        double d0 = Double.MAX_VALUE;
+        Entity entity = null;
+        for(Entity entity1 : pLevel.getEntities(pProjectile, pBoundingBox, (e) -> true)) {
+            AABB aabb = entity1.getBoundingBox().inflate(0.3);
+            Optional<Vec3> optional = aabb.clip(pStartVec, pEndVec);
+            if (optional.isPresent()) {
+                double d1 = pStartVec.distanceToSqr(optional.get());
+                if (d1 < d0) {
+                    entity = entity1;
+                    d0 = d1;
                 }
             }
         }
+        return entity == null ? null : new EntityHitResult(entity);
+    }
+
+
+    public static void doRangeAttackFX(Entity attacker,double range, double arc,float yRot){
+        ActRangeSignMessage.showSectorInter(attacker,attacker.position().add(0,0.1,0),(float)range,(float) (arc/180*Math.PI),attacker.getYRot()+yRot,attacker.level());
     }
 }

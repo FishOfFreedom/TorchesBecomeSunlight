@@ -1,39 +1,42 @@
 package com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
-import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
-import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.entity.IChallengeEntity;
+import com.freefish.torchesbecomesunlight.server.entity.TeamMemberStorage;
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
-import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
-import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
-import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
-import com.freefish.torchesbecomesunlight.server.util.MathUtils;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
-import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.patriot.PatriotAttackAI;
+import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.StompEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.ai.PatriotAutoDialogueGoal;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.HalberdOTIEntity;
+import com.freefish.torchesbecomesunlight.server.init.*;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
+import com.freefish.torchesbecomesunlight.server.partner.Partner;
+import com.freefish.torchesbecomesunlight.server.partner.PartnerUtil;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
+import com.freefish.torchesbecomesunlight.server.story.PlayerStoryStoneData;
+import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.Parabola;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.FFBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.IBossInfoUpdate;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -42,15 +45,18 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,11 +74,10 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
-import static com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore.genList;
-
-public class Patriot extends GuerrillasEntity implements IDialogueEntity {
+public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChallengeEntity {
     public static final AnimationAct<Patriot> ATTACK1 = new AnimationAct<Patriot>("attack1",40){
         @Override
         public void tickUpdate(Patriot entity) {
@@ -181,8 +186,8 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             }
             boolean flad = false;
             if (tick == 7||tick == 10||tick == 15||tick == 20) {
-                flad = entity.doRangeAttack(6.5,25,damage,true);
-                FFEntityUtils.doRangeAttackFX(entity,6.5,25,0);
+                flad = entity.doRangeAttack(5.7,25,damage,true);
+                FFEntityUtils.doRangeAttackFX(entity,5.7,25,0);
             }
             if(tick == 10 && flad)
                 entity.playSound(SoundHandle.HIT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
@@ -212,11 +217,12 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             }
             boolean flad = false;
             if (tick == 21||tick == 24||tick == 29||tick == 34) {
-                flad = entity.doRangeAttack(6.5,50,damage,true);
+                flad = entity.doRangeAttack(5.7,25,damage,true);
+                FFEntityUtils.doRangeAttackFX(entity,5.7,25,0);
             }
             if(tick == 24 && flad)
                 entity.playSound(SoundHandle.HIT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-            if(tick==17) entity.isCanBeAttacking = true;
+            if(tick==16) entity.isCanBeAttacking = true;
             else if(tick==43) entity.isCanBeAttacking = false;
             if(tick==35&&entity.random.nextInt(2)==1)
                 AnimationActHandler.INSTANCE.sendAnimationMessage(entity,CYCLE);
@@ -249,7 +255,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             entity.setYRot(entity.yRotO);
             if (tick == 24) {
                 entity.playSound(SoundHandle.AXE_SWEPT.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
-                entity.doCycleAttack(7.2f,damage);
+                entity.doCycleAttack(5.8f,damage);
             }
             if(tick==37) entity.isCanBeAttacking = false;
         }
@@ -259,23 +265,51 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             super.stop(entity);
         }
     };
-    public static final AnimationAct<Patriot> PROPEL1 = new AnimationAct<Patriot>("propel1",16){
+    public static final AnimationAct<Patriot> PROPEL1 = new AnimationAct<Patriot>("propel1",30){
 
         @Override
         public void tickUpdate(Patriot entity) {
             int tick = entity.getAnimationTick();
             float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
             LivingEntity target = entity.getTarget();
-            if (target != null&&tick<=8) {
+            if (target != null&&tick<=24) {
                 entity.locateEntity();
                 entity.lookAtEntity(target);
             } else {
                 entity.setYRot(entity.yRotO);
             }
-            if(tick == 11){
+            if(tick == 24){
                 entity.dashForward(2,0);
             }
-            else if (tick == 12) {
+            else if (tick == 26) {
+                entity.doRangeAttack(4.5,60,damage*0.8f,true);
+                if(target!=null)
+                    entity.LocateEntity(target,5,10);
+            }
+        }
+
+        @Override
+        public void stop(Patriot entity) {
+            AnimationActHandler.INSTANCE.sendAnimationMessage(entity,PROPEL2);
+        }
+    };
+    public static final AnimationAct<Patriot> TOUJI = new AnimationAct<Patriot>("touji",30){
+
+        @Override
+        public void tickUpdate(Patriot entity) {
+            int tick = entity.getAnimationTick();
+            float damage = (float) entity.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            LivingEntity target = entity.getTarget();
+            if (target != null&&tick<=24) {
+                entity.locateEntity();
+                entity.lookAtEntity(target);
+            } else {
+                entity.setYRot(entity.yRotO);
+            }
+            if(tick == 24){
+                entity.dashForward(2,0);
+            }
+            else if (tick == 26) {
                 entity.doRangeAttack(4.5,60,damage*0.8f,true);
                 if(target!=null)
                     entity.LocateEntity(target,5,10);
@@ -422,8 +456,8 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             else if (tick == 41) {
                 entity.playSound(SoundHandle.GROUND.get(), 1.0F, 1.0F / (entity.random.nextFloat() * 0.4F + 0.8F));
                 entity.doRangeAttack(6,80,damage*2.5f,true);
-                StompEntity stompEntity = new StompEntity(entity.level(),8,entity,5);
-                stompEntity.setPos(entity.position().add(new Vec3(0, 0, 4.5).yRot((float) (-entity.yBodyRot / 180 * Math.PI))));
+                StompEntity stompEntity = new StompEntity(entity.level(),8,entity,3);
+                stompEntity.setPos(entity.position().add(new Vec3(0, 0, 5.5).yRot((float) (-entity.yBodyRot / 180 * Math.PI))));
                 entity.level().addFreshEntity(stompEntity);
                 entity.addEffect(new MobEffectInstance(EffectHandle.WINDIGO.get()));
             }
@@ -468,35 +502,21 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             entity.setYRot(entity.yRotO);
         }
     };
-    public static final AnimationAct<Patriot> BREAK_START = new AnimationAct<Patriot>("break_start",20,2){
-        @Override
-        public void tickUpdate(Patriot entity) {
-            entity.locateEntity();
-            entity.setYRot(entity.yRotO);
-        }
+    public static final AnimationAct<Patriot> BREAK_START = new AnimationAct<Patriot>("break_start",50,2){
 
         @Override
-        public void stop(Patriot entity) {
-            AnimationActHandler.INSTANCE.sendAnimationMessage(entity,BREAK_LOOP);
-        }
-    };
-    public static final AnimationAct<Patriot> BREAK_LOOP = new AnimationAct<Patriot>("break_loop",200,2){
-        @Override
         public void tickUpdate(Patriot entity) {
-            entity.locateEntity();
             entity.setYRot(entity.yRotO);
-        }
+            int tick = entity.getAnimationTick();
 
-        @Override
-        public void stop(Patriot entity) {
-            AnimationActHandler.INSTANCE.sendAnimationMessage(entity,BREAK_END);
-        }
-    };
-    public static final AnimationAct<Patriot> BREAK_END = new AnimationAct<Patriot>("break_end",10,2){
-        @Override
-        public void tickUpdate(Patriot entity) {
+            entity.setLastHurtByMob(null);
+            entity.setTarget(null);
+
             entity.locateEntity();
-            entity.setYRot(entity.yRotO);
+            if(tick<=16&&tick%4==0){
+                float health = (tick+4)/20.f;
+                entity.setHealth(entity.getMaxHealth()*health);
+            }
         }
     };
 
@@ -524,7 +544,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
 
     private static final AnimationAct[] ANIMATIONS = {
             NO_ANIMATION,ATTACK1,ATTACK2,ATTACK3,PIERCE1,PIERCE2,RUN,CYCLE,SHIELD,THROW,STOMP,PROPEL1,PROPEL2,PROPEL3,STRENGTHEN,HUNT,
-            DIE,ATTACK_PREPARE,BREAK_END,BREAK_LOOP,BREAK_START,SHIELD_START,SHIELD_LOOP
+            DIE,ATTACK_PREPARE,BREAK_START,SHIELD_START,SHIELD_LOOP
     };
 
     public Parabola parabola = new Parabola();
@@ -534,9 +554,10 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     public Vec3[] clientVectors;
 
     public int timeSinceThrow;
+    public TeamMemberStorage<ShieldGuard> teamMemberStorage;
     public int timeSinceShield;
-    private LivingEntity dialogueLivingEntity;
-    private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this,2);
+
+    private final ServerBossEvent bossInfo= ConfigHandler.COMMON.GLOBALSETTING.healthBarIsNearShow.get()?new FFBossInfoServer(this,2): new CustomBossInfoServer(this,2);
 
     private static final EntityDataAccessor<Integer> LOCATE_MOB_ID = SynchedEntityData.defineId(Patriot.class, EntityDataSerializers.INT);
 
@@ -548,20 +569,25 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
         super(entityType, level);
         if (level().isClientSide)
             clientVectors = new Vec3[] {new Vec3(0, 0, 0)};
+        else {
+            teamMemberStorage = new TeamMemberStorage<>(this);
+        }
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new PatriotAutoDialogueGoal(this));
         this.goalSelector.addGoal(2, new PatriotAttackAI(this));
 
-        //this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
-        //this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
-        //this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.19));
+        this.goalSelector.addGoal(7, new FFLookAtPlayerTotherGoal<>(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
+        this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.19));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetNoPlayerGoal(this).setAlertOthers(GuerrillasEntity.class));
     }
 
     @Override
@@ -584,18 +610,33 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             super.repelEntities(x, y, z, radius);
     }
 
+    public void spawnShield(){
+        if(!level().isClientSide){
+            int len = 2 + random.nextInt(2);
+            for (int i = 0; i < len; i++) {
+                ShieldGuard shieldGuard = new ShieldGuard(EntityHandle.SHIELD_GUARD.get(), level());
+                shieldGuard.setPos(position());
+                teamMemberStorage.addMember(shieldGuard);
+                level().addFreshEntity(shieldGuard);
+            }
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if (tickCount % 4 == 0) bossInfo.update();
+        if (tickCount % 4 == 0&& bossInfo instanceof IBossInfoUpdate update) update.update();
+
+        if(!level().isClientSide){
+            teamMemberStorage.tick();
+        }
 
         Entity locateEntity = getLocateMob();
         if(locateEntity instanceof LivingEntity){
             Vec3 move = getLocateVec().subtract(locateEntity.position());
             locateEntity.setDeltaMovement(move);
         }
-
 
         LivingEntity target = this.getTarget();
         if(target != null && target.isAlive())
@@ -623,6 +664,15 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundHandle.GIANT_STEP.get(), this.getSoundSource(), 20F, 1F, false);
         }
         addIceWindParticle();
+
+        if(waitTargetTime>=0){
+            if(waitTargetTime == 0){
+                if(challengePlayer!=null){
+                    setTarget(challengePlayer);
+                }
+            }
+            waitTargetTime--;
+        }
     }
 
     @Override
@@ -637,6 +687,12 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     }
 
     @Override
+    protected ConfigHandler.NeutralProtectionConfig getNeutralProtectionConfig() {
+        return ConfigHandler.COMMON.MOBS.PATRIOT.neutralProtectionConfig;
+    }
+
+
+    @Override
     public boolean canBeAffected(MobEffectInstance effectInstance) {
         return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
     }
@@ -647,10 +703,23 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     }
 
     @Override
+    public boolean removeWhenFarAway(double pDistanceToClosestPlayer) {
+        return super.removeWhenFarAway(pDistanceToClosestPlayer);
+    }
+
+    @Override
     public void die(DamageSource pDamageSource) {
-        super.die(pDamageSource);
-        if (!this.isRemoved()) {
-            bossInfo.update();
+        if(challengePlayer==null||!challengePlayer.isAlive()){
+            super.die(pDamageSource);
+            if (!this.isRemoved() && bossInfo instanceof IBossInfoUpdate update) {
+                update.update();
+            }
+            if (teamMemberStorage != null) {
+                Collection<ShieldGuard> members = teamMemberStorage.getMembers();
+                for (ShieldGuard shieldGuard : members) {
+                    shieldGuard.setLeader(null);
+                }
+            }
         }
     }
 
@@ -680,24 +749,16 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
         this.bossInfo.setName(this.getDisplayName());
     }
 
+
     @Override
     public boolean hurt(DamageSource source, float amount) {
-
-        if(source.getDirectEntity() instanceof Player&&getHasDialogue()){
-            DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(this, CapabilityHandle.DIALOGUE_CAPABILITY);
-            if(capability!=null&&capability.getDialogueNeedTime()>40){
-                setDialogueEntity((LivingEntity) source.getDirectEntity());
-                Player player1 = MathUtils.getClosestEntity(this,level().getEntitiesOfClass(Player.class,getBoundingBox().inflate(5)));
-                DialogueEntity dialogueEntity = new DialogueEntity(this,level(),getDialogue(),player1,this);
-                dialogueEntity.setPos(position());
-                level().addFreshEntity(dialogueEntity);
-                setDialogueEntity(player1);
-                return false;
-            }
-        }
-
+        if(getAnimation()==BREAK_START) return false;
         float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
         if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
+
+        if(source.getEntity()!=null&&source.getEntity() == challengePlayer){
+            amount*=3.5f;
+        }
 
         Entity entitySource = source.getDirectEntity();
         if (entitySource != null){
@@ -837,7 +898,11 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
 
     @Override
     public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
+        if(livingEntity == challengePlayer){
+            damage/=2.5f;
+        }
         boolean b = super.doHurtEntity(livingEntity, source, damage);
+
         if(this.getAnimation()== Patriot.PIERCE1||this.getAnimation()==Patriot.PIERCE2){
             livingEntity.invulnerableTime=1;
         }
@@ -860,6 +925,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
         compound.putFloat("targetPosX",vector3f.x);
         compound.putFloat("targetPosY",vector3f.y);
         compound.putFloat("targetPosZ",vector3f.z);
+        compound.put("menber",teamMemberStorage.serializeNBT());
     }
 
     @Override
@@ -869,6 +935,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
         float y = compound.getFloat("targetPosY");
         float z = compound.getFloat("targetPosZ");
         setTargetPos(new Vec3(x,y,z));
+        teamMemberStorage.deserializeNBT(compound.getCompound("menber"));
     }
 
     @Override
@@ -969,6 +1036,15 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
     public void ShootHalberd(int offset){
         int tick = getAnimationTick();
         Vector3f targetPos = getTargetPos();
+
+        Partner<?> partner = PartnerUtil.getPartner(this);
+        if(partner!=null){
+            Vec3 instancePos = partner.getInstancePos();
+            if(instancePos!=null){
+                targetPos = new Vector3f(instancePos.toVector3f());
+            }
+        }
+
         if (tick == (36+offset) || tick ==(46+offset)) {
             parabola.mathParabola(this, targetPos);
         }
@@ -1019,7 +1095,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             float f = (float) vector3d.horizontalDistance();
             float yaw = (float)(Mth.atan2(vector3d.x, vector3d.z) * (double)(180F / (float)Math.PI));
             float pitch = (float)(Mth.atan2(vector3d.y, (double)f) * (double)(180F / (float)Math.PI));
-            HalberdOTIEntity ganRanZheZhiJi = new HalberdOTIEntity(level(), this, new ItemStack(Items.TRIDENT));
+            HalberdOTIEntity ganRanZheZhiJi = new HalberdOTIEntity(level(), this, new ItemStack(Items.TRIDENT),true);
             ganRanZheZhiJi.absMoveTo(getX() + parabola.getX()*i,getY() + parabola.getY(x3),getZ() + parabola.getZ()*i, -pitch, yaw);
             ganRanZheZhiJi.shootFromRotation(this, -pitch, -yaw, 0.0F, 6F, 0f);
             ganRanZheZhiJi.setNoGravity(true);
@@ -1033,45 +1109,6 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
             if(level().isClientSide) {
             }
         }
-    }
-
-    @Override
-    public Dialogue getDialogue() {
-        Dialogue snownova_meet_2 = new Dialogue(entity -> (entity instanceof GuerrillasEntity guerrillas?guerrillas.findVillage():"no"),null,null,1,100);
-
-        Dialogue snownova_meet_1 = new Dialogue("dialogue.torchesbecomesunlight.snownova_meet_1hliafv啊打发嗯阿风啊jhajflafjaj阿达哈尔福德lfliafihaflej打法饿啊fclaujfh啊方法liafh",
-                genList(new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_1",0,null),
-                        new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_2",1,
-                                entity -> {
-                                    Player player = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(Player.class,entity.getBoundingBox().inflate(5)));
-                                    if(player!=null&&!player.isCreative()) {
-                                        if (entity instanceof FrostNova snowNova) {
-                                            snowNova.waitAct = snowNova.getDialogueEntity();
-                                            AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
-                                        }
-                                        else if (entity instanceof Patriot snowNova) {
-                                            snowNova.waitAct = snowNova.getDialogueEntity();
-                                            AnimationActHandler.INSTANCE.sendAnimationMessage(snowNova, FrostNova.ATTACK_PREPARE);
-                                        }
-                                    }
-                                }),new DialogueTrigger("dialogue.torchesbecomesunlight.snownova_meet_1_3",0,snownova_meet_2,null)), null, 1,100);
-
-        return snownova_meet_1;
-    }
-
-    @Override
-    public LivingEntity getDialogueEntity() {
-        return dialogueLivingEntity;
-    }
-
-    @Override
-    public void setDialogueEntity(LivingEntity dialogueEntity) {
-        dialogueLivingEntity = dialogueEntity;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
     }
 
     //trail
@@ -1112,5 +1149,109 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity {
 
     public boolean hasTrail() {
         return trailPointer != -1&&hasTrail;
+    }
+
+    //Dialogue
+    private DialogueEntity dialogueEntity;
+    private int startBlack;
+    private int startBlackO;
+
+    public float getStartBlack(float pa){
+        return Mth.lerp(pa,startBlackO,startBlack);
+    }
+
+    public boolean isStartBlack(){
+        return startBlack != 0;
+    }
+
+    @Override
+    public boolean canDialogue() {
+        return !isAggressive()&&getDialogueEntity()==null;
+    }
+
+    @Override
+    public void playDeathAnimationPre(DamageSource source) {
+        if(challengePlayer!=null){
+
+            if(challengePlayer instanceof ServerPlayer serverPlayer){
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_2_patriot");
+            }
+            setAggressive(false);
+            setHealth(1);
+            PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(challengePlayer, CapabilityHandle.PLAYER_CAPABILITY);
+            if(capability!=null){
+                PlayerStoryStoneData playerStory = capability.getPlayerStory();
+                playerStory.setWinOPatriot(true);
+                playerStory.setCanSummonOPatriot(true);
+            }
+            challengePlayer = null;
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this,BREAK_START);
+        }else {
+            Entity entity = source.getEntity();
+            if(entity instanceof Player player){
+                PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+                if(capability!=null){
+                    PlayerStoryStoneData playerStory = capability.getPlayerStory();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void startDialogue(Player player) {
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null){
+            PlayerStoryStoneData playerStory = capability.getPlayerStory();
+            if(playerStory.isWinOPatriot()){
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/patriot/patriot_win.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    Inventory inventory = player.getInventory();
+                    inventory.add(new ItemStack(ItemHandle.INFECTED_SHIELD.get()));
+                    inventory.add(new ItemStack(ItemHandle.INFECTED_HALBERD.get()));
+                    inventory.add(new ItemStack(ItemHandle.TALISMAN.get()));
+                    playerStory.setWinOPatriot(false);
+                });
+            }
+            else if(playerStory.isSeenOPatriot()){
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/patriot/patriot_fight.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    startChallengePlayer(player);
+                });
+            }else {
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/patriot/patriot_firstmeet.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    playerStory.setSeenOPatriot(true);
+                });
+            }
+        }
+    }
+
+    @Override
+    public DialogueEntity getDialogueEntity() {
+        if(dialogueEntity!=null&&!dialogueEntity.isAlive()) dialogueEntity = null;
+
+        return dialogueEntity;
+    }
+
+    @Override
+    public void setDialogueEntity(DialogueEntity dialogueEntity) {
+        this.dialogueEntity = dialogueEntity;
+    }
+
+
+    public Player challengePlayer;
+    private int waitTargetTime = -1;
+
+    public void startChallengePlayer(Player player){
+        challengePlayer = player;
+        this.waitTargetTime = 120;
+    }
+
+    @Override
+    public LivingEntity getChallenge() {
+        return challengePlayer;
     }
 }

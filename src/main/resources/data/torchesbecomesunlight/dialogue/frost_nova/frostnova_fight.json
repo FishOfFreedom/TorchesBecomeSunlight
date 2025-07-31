@@ -1,0 +1,40 @@
+{
+  "id": "pathfinder_firstmeet",
+  "title": "no",
+  "description": "和寻路者第一次相遇",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.frostnova_fight.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.frostnova_fight.main1_o1"
+        },
+        {
+          "nextid": "main2",
+          "text": "dialogue.frostnova_fight.main1_o2"
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.frostnova_fight.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

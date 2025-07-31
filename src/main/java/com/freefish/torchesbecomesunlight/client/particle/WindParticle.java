@@ -141,7 +141,7 @@ public class WindParticle extends TextureSheetParticle {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static class Factory implements ParticleProvider<WindParticle.WindData> {
+    public static class Factory implements ParticleProvider<WindData> {
         private final SpriteSet spriteSet;
 
         public Factory(SpriteSet sprite) {
@@ -149,7 +149,7 @@ public class WindParticle extends TextureSheetParticle {
         }
 
         @Override
-        public Particle createParticle(WindParticle.WindData typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(WindData typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             WindParticle particle = new WindParticle(worldIn, x, y, z,xSpeed,ySpeed,zSpeed,typeIn.duration,typeIn.scale,typeIn.rotX,typeIn.rotY,spriteSet);
             return particle;
         }
@@ -157,8 +157,8 @@ public class WindParticle extends TextureSheetParticle {
 
 
     public static class WindData implements ParticleOptions {
-        public static final Deserializer<WindParticle.WindData> DESERIALIZER = new Deserializer<WindParticle.WindData>() {
-            public WindParticle.WindData fromCommand(ParticleType<WindParticle.WindData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
+        public static final Deserializer<WindData> DESERIALIZER = new Deserializer<WindData>() {
+            public WindData fromCommand(ParticleType<WindData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
                 reader.expect(' ');
                 int duration =  reader.readInt();
                 reader.expect(' ');
@@ -168,11 +168,11 @@ public class WindParticle extends TextureSheetParticle {
                 reader.expect(' ');
                 float rotY = reader.readFloat();
                 reader.expect(' ');
-                return new WindParticle.WindData(duration,scale,rotX,rotY);
+                return new WindData(duration,scale,rotX,rotY);
             }
 
-            public WindParticle.WindData fromNetwork(ParticleType<WindParticle.WindData> particleTypeIn, FriendlyByteBuf buffer) {
-                return new WindParticle.WindData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
+            public WindData fromNetwork(ParticleType<WindData> particleTypeIn, FriendlyByteBuf buffer) {
+                return new WindData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
         };
 
@@ -204,7 +204,7 @@ public class WindParticle extends TextureSheetParticle {
         }
 
         @Override
-        public ParticleType<WindParticle.WindData> getType() {
+        public ParticleType<WindData> getType() {
             return ParticleHandler.WIND.get();
         }
 
@@ -226,13 +226,13 @@ public class WindParticle extends TextureSheetParticle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<WindParticle.WindData> CODEC(ParticleType<WindParticle.WindData> particleType) {
+        public static Codec<WindData> CODEC(ParticleType<WindData> particleType) {
             return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
-                            Codec.INT.fieldOf("duration").forGetter(WindParticle.WindData::getDuration),
-                            Codec.FLOAT.fieldOf("scale").forGetter(WindParticle.WindData::getScale),
-                            Codec.FLOAT.fieldOf("rotX").forGetter(WindParticle.WindData::getRotX),
-                            Codec.FLOAT.fieldOf("rotY").forGetter(WindParticle.WindData::getRotY)
-                    ).apply(codecBuilder, WindParticle.WindData::new)
+                            Codec.INT.fieldOf("duration").forGetter(WindData::getDuration),
+                            Codec.FLOAT.fieldOf("scale").forGetter(WindData::getScale),
+                            Codec.FLOAT.fieldOf("rotX").forGetter(WindData::getRotX),
+                            Codec.FLOAT.fieldOf("rotY").forGetter(WindData::getRotY)
+                    ).apply(codecBuilder, WindData::new)
             );
         }
     }

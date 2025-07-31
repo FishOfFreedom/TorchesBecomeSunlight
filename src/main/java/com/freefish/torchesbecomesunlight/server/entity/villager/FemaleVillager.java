@@ -1,7 +1,5 @@
 package com.freefish.torchesbecomesunlight.server.entity.villager;
 
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -28,15 +26,5 @@ public class FemaleVillager extends UrsusVillager{
     @Override
     public AnimationAct getDeathAnimation() {
         return null;
-    }
-
-    @Override
-    public Dialogue getDialogue() {
-        return DialogueStore.pursuer_d_1;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
     }
 }

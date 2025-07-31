@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_blessing_of_sami": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:blessing_of_sami"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "torchesbecomesunlight:blessing_of_sami"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_blessing_of_sami",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "torchesbecomesunlight:blessing_of_sami"
+    ]
+  },
+  "sends_telemetry_event": false
+}

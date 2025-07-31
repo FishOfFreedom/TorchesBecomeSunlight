@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "torchesbecomesunlight:block/cutting_board",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "torchesbecomesunlight:block/cutting_board"
+    },
+    "facing=south": {
+      "model": "torchesbecomesunlight:block/cutting_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "torchesbecomesunlight:block/cutting_board",
+      "y": 270
+    }
+  }
+}

@@ -1,12 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
-import net.minecraft.world.entity.PathfinderMob;
+import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
-public class FFRandomLookAroundGoal<T extends PathfinderMob & IDialogueEntity> extends Goal {
+public class FFRandomLookAroundGoal<T extends AnimatedEntity> extends Goal {
     private final T mob;
     private double relX;
     private double relZ;
@@ -18,14 +17,20 @@ public class FFRandomLookAroundGoal<T extends PathfinderMob & IDialogueEntity> e
     }
 
     public boolean canUse() {
-        if(mob.getTarget()!=null||mob.getDialogueEntity()!=null){
+        if(mob.getTarget()!=null&&mob.isAlive()){
+            return false;
+        }
+        if(!mob.canLookAnimation()){
             return false;
         }
         return this.mob.getRandom().nextFloat() < 0.02F;
     }
 
     public boolean canContinueToUse() {
-        if(mob.getTarget()!=null||mob.getDialogueEntity()!=null){
+        if(mob.getTarget()!=null){
+            return false;
+        }
+        if(!mob.canLookAnimation()){
             return false;
         }
         return this.lookTime >= 0;

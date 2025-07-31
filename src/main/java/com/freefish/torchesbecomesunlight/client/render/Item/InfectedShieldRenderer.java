@@ -2,26 +2,15 @@ package com.freefish.torchesbecomesunlight.client.render.Item;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.model.PatriotModel;
-import com.freefish.torchesbecomesunlight.server.item.weapon.InfectedHalberd;
+import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
 import com.freefish.torchesbecomesunlight.server.item.weapon.InfectedShield;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-
-import java.util.Optional;
 
 public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
     public InfectedShieldRenderer() {
@@ -35,29 +24,50 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
         this.currentItemStack = stack;
         this.renderPerspective = transformType;
 
-        if (transformType == ItemDisplayContext.GUI) {
-            //renderInGui(transformType, poseStack, bufferSource, packedLight, packedOverlay);
-
-            RenderType armorRenderType = RenderType.armorCutoutNoCull(PatriotModel.TEXTURE);
-            BakedGeoModel model = this.getGeoModel().getBakedModel(this.getGeoModel().getModelResource(animatable));
-            Optional<GeoBone> leftArm = model.getBone("bone");
-            if(leftArm.isPresent()){
+        if(transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND){
+            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            if (isActive) {
                 poseStack.pushPose();
-                poseStack.last().pose().translate(-0.65f,0.5f,0);
-                GeoBone geoBone = leftArm.get();
-                renderRecursively(poseStack,animatable,geoBone,armorRenderType,bufferSource,bufferSource.getBuffer(armorRenderType),false,0
-                        ,packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1,1);
+                poseStack.last().pose().translate(0,0,0.45f);
+
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(0,45,0,true));
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(0,0,25,true));
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(20,0,0,true));
+                super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
                 poseStack.popPose();
+            }else {
+                super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
             }
+        }else if(transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND){
+            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            if (isActive) {
+                poseStack.pushPose();
+                poseStack.last().pose().translate(0.5f,-0.5f,0.2f);
 
-        }
-        else {
-            RenderType renderType = getRenderType(this.animatable, getTextureLocation(this.animatable), bufferSource, Minecraft.getInstance().getFrameTime());
-            VertexConsumer buffer = ItemRenderer.getFoilBufferDirect(bufferSource, renderType, false, this.currentItemStack != null && this.currentItemStack.hasFoil());
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(0,-45,0,true));
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(0,0,25,true));
+                poseStack.mulPose(MathUtils.quatFromRotationXYZ(-20,0,0,true));
 
-            defaultRender(poseStack, this.animatable, bufferSource, renderType, buffer,
-                    0, Minecraft.getInstance().getFrameTime(), packedLight);
+                super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
+                poseStack.popPose();
+            }else {
+                super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
+            }
         }
+        else super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
+
+            //RenderType armorRenderType = RenderType.armorCutoutNoCull(PatriotModel.TEXTURE);
+            //BakedGeoModel model = this.getGeoModel().getBakedModel(this.getGeoModel().getModelResource(animatable));
+            //Optional<GeoBone> leftArm = model.getBone("bone");
+            //if(leftArm.isPresent()){
+            //    poseStack.pushPose();
+            //    poseStack.last().pose().translate(-0.65f,0.5f,0);
+            //    GeoBone geoBone = leftArm.get();
+            //    renderRecursively(poseStack,animatable,geoBone,armorRenderType,bufferSource,bufferSource.getBuffer(armorRenderType),false,0
+            //            ,packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1,1);
+            //    poseStack.popPose();
+            //}
+
     }
 
     public static class InfectedShieldModel extends GeoModel<InfectedShield> {

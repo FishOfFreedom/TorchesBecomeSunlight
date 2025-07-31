@@ -1,0 +1,75 @@
+{
+  "id": "op_find_rosmontis",
+  "title": "no",
+  "description": "认识迷迭香，并开始战斗的对话",
+  "speakers": [
+    "op","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "main2",
+      "speaker": "op",
+      "text": "如你所见，这是诅咒溢出的源头。",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "main3",
+      "speaker": "player",
+      "text": "我想问问，时间还有多少？",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main4",
+      "speaker": "op",
+      "text": "虚无正在吞噬时间……",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main5",
+      "speaker": "op",
+      "text": "……锚也无法将它固定",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main5",
+      "nextid": "main6",
+      "speaker": "player",
+      "text": "我该说……麻烦比我想象的还大？",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main6",
+      "nextid": "main7",
+      "speaker": "op",
+      "text": "铭记自己身为人类。",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main7",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "史无前例的战争，即将开始。",
+      "dialoguetime": "40",
+      "triggers": [
+      ]
+    }
+  ]
+}

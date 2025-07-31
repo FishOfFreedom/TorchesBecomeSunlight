@@ -1,0 +1,38 @@
+{
+  "parent": "torchesbecomesunlight:cook",
+  "criteria": {
+    "has_cutting_board": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:cutting_board"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.cook_cutting"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:cutting_board"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.cook_cutting"
+    }
+  },
+  "requirements": [
+    [
+      "has_cutting_board"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

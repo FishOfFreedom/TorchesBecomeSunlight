@@ -1,0 +1,40 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 256,
+				"texture_height": 256,
+				"visible_bounds_width": 6,
+				"visible_bounds_height": 6.5,
+				"visible_bounds_offset": [0, 2.75, 0]
+			},
+			"bones": [
+				{
+					"name": "main",
+					"pivot": [0, 18.65, 0]
+				},
+				{
+					"name": "ipad",
+					"parent": "main",
+					"pivot": [-14.125, 19.575, 0.025],
+					"cubes": [
+						{
+							"origin": [-4.125, 0.575, 0.025],
+							"size": [8, 11, 1],
+							"uv": {
+								"north": {"uv": [131, 47], "uv_size": [8, 11]},
+								"east": {"uv": [133, 47], "uv_size": [1, 11]},
+								"south": {"uv": [139, 47], "uv_size": [8, 11]},
+								"west": {"uv": [133, 47], "uv_size": [1, 11]},
+								"up": {"uv": [139, 59], "uv_size": [-8, -1]},
+								"down": {"uv": [139, 59], "uv_size": [-8, -1]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

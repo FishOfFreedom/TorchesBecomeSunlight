@@ -1,11 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -77,10 +77,7 @@ public class IceTuft extends EffectEntity implements GeoEntity {
                 if(hit == caster) continue;
                 hit.hurt(caster.damageSources().mobAttack(caster),damage);
                 if(getTypeNumber()==0){
-                    FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(hit, CapabilityHandle.FROZEN_CAPABILITY);
-                    if(data!=null){
-                        data.setFrozen(hit, 150);
-                    }
+                    ForceEffectHandle.addForceEffect(hit,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,150));
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.util;
 
 import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerThirdPerson;
-import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoBone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
@@ -19,11 +18,13 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;

@@ -1,0 +1,16 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:pufferfish"
+  ],
+  "values": {
+    "FISH": 1.5
+  },
+  "effects": [
+    {
+      "effect_id":"minecraft:water_breathing",
+      "time":1200,
+      "level":1
+    }
+  ]
+}

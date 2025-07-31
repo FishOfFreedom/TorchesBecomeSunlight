@@ -1,0 +1,85 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 256,
+				"texture_height": 256,
+				"visible_bounds_width": 10,
+				"visible_bounds_height": 8.5,
+				"visible_bounds_offset": [0, 3.75, 0]
+			},
+			"bones": [
+				{
+					"name": "shield",
+					"pivot": [2, 29, 0],
+					"rotation": [0, 180, 0],
+					"cubes": [
+						{
+							"origin": [4.4, 0.2, -10.2],
+							"size": [2.4, 50.4, 21.6],
+							"uv": {
+								"north": {"uv": [22, 102], "uv_size": [2, 42]},
+								"east": {"uv": [0, 147], "uv_size": [18, 42]},
+								"south": {"uv": [24, 102], "uv_size": [2, 42]},
+								"west": {"uv": [18, 32], "uv_size": [18, 42]},
+								"up": {"uv": [11, 154], "uv_size": [2, 18]},
+								"down": {"uv": [13, 154], "uv_size": [-2, 8]}
+							}
+						},
+						{
+							"origin": [-0.3397, 0.2, -16.84264],
+							"size": [2.4, 50.4, 9.6],
+							"pivot": [0.8603, 26.6, -14.44264],
+							"rotation": [0, 45, 0],
+							"uv": {
+								"north": {"uv": [11, 147], "uv_size": [2, 42]},
+								"east": {"uv": [44, 32], "uv_size": [8, 42]},
+								"south": {"uv": [28, 102], "uv_size": [2, 42]},
+								"west": {"uv": [44, 32], "uv_size": [8, 42]},
+								"up": {"uv": [13, 154], "uv_size": [-2, 8]},
+								"down": {"uv": [13, 154], "uv_size": [-2, 8]}
+							}
+						},
+						{
+							"origin": [-0.3397, 0.2, 8.44264],
+							"size": [2.4, 50.4, 9.6],
+							"pivot": [0.8603, 26.6, 15.64264],
+							"rotation": [0, -45, 0],
+							"uv": {
+								"north": {"uv": [30, 102], "uv_size": [2, 42]},
+								"east": {"uv": [52, 32], "uv_size": [-8, 42]},
+								"south": {"uv": [11, 147], "uv_size": [2, 42]},
+								"west": {"uv": [52, 32], "uv_size": [-8, 42]},
+								"up": {"uv": [13, 154], "uv_size": [-2, 8]},
+								"down": {"uv": [13, 154], "uv_size": [-2, 8]}
+							}
+						}
+					]
+				},
+				{
+					"name": "shieldFX1",
+					"parent": "shield",
+					"pivot": [-8.8, -3.4, 0],
+					"cubes": [
+						{
+							"origin": [7.1, 22.91, -43.542],
+							"size": [0, 24.18, 91.884],
+							"pivot": [7.1, 35.3, -2.58],
+							"rotation": [0, 0, -180],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 16]},
+								"east": {"uv": [128, 162], "uv_size": [117, 31]},
+								"south": {"uv": [0, 0], "uv_size": [0, 16]},
+								"west": {"uv": [251, 8], "uv_size": [5, 6]},
+								"up": {"uv": [0, 0], "uv_size": [0, 59]},
+								"down": {"uv": [0, 59], "uv_size": [0, -59]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

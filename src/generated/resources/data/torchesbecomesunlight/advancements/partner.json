@@ -1,0 +1,36 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:partner_frostnova",
+          "torchesbecomesunlight:partner_pursuer",
+          "torchesbecomesunlight:partner_patriot"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.partner"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:rosmontis_ipad"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.partner"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

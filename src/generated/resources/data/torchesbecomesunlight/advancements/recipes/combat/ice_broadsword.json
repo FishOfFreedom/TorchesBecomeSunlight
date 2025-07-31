@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ice_broadsword": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:ice_broadsword"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "torchesbecomesunlight:ice_broadsword"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_ice_broadsword",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "torchesbecomesunlight:ice_broadsword"
+    ]
+  },
+  "sends_telemetry_event": false
+}

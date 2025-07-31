@@ -1,0 +1,39 @@
+{
+  "parent": "torchesbecomesunlight:cook",
+  "criteria": {
+    "has_polar_stew_meat": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:polar_stew_meat"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.cook_meal"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:polar_stew_meat",
+      "nbt": "{Damage:0}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.cook_meal"
+    }
+  },
+  "requirements": [
+    [
+      "has_polar_stew_meat"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

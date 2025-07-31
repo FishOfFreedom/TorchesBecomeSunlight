@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.AdvancementsHandle;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -26,7 +27,12 @@ public class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookup = registryProvider.getRegistryProvider();
         generator.addProvider(event.includeServer(), registryProvider);
         generator.addProvider(event.includeServer(), new TBSEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new TBSRecipeProvider(packOutput));
         generator.addProvider(event.includeServer(), new DamageTypeProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModItemModelProvider(packOutput, existingFileHelper));
+        generator.addProvider(event.includeServer(), new AdvancementsHandle(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new EMStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new DefaultTableProvider(output));
 
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
     }

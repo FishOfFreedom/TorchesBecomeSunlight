@@ -1,0 +1,7 @@
+{
+  "type": "torchesbecomesunlight:rhode_island_office",
+  "biomes": "#torchesbecomesunlight:has_structure/sankta_statue_biomes",
+  "terrain_adaptation": "none",
+  "step": "surface_structures",
+  "spawn_overrides": {}
+}

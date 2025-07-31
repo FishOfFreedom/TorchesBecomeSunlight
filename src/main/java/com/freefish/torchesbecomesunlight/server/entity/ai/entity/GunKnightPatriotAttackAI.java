@@ -13,8 +13,8 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
-import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity.NO_ANIMATION;
 import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
+import static com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity.NO_ANIMATION;
 
 public class GunKnightPatriotAttackAI extends Goal {
     private final GunKnightPatriot patriot;

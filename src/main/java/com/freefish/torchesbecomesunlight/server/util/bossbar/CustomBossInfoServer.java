@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkDirection;
 
 import java.util.*;
 
-public class CustomBossInfoServer extends ServerBossEvent {
+public class CustomBossInfoServer extends ServerBossEvent implements IBossInfoUpdate {
     private final FreeFishEntity entity;
     private final int renderType;
 
@@ -23,6 +23,7 @@ public class CustomBossInfoServer extends ServerBossEvent {
         this.renderType = renderType;
     }
 
+    @Override
     public void update() {
         updateHealth();
         Iterator<ServerPlayer> it = this.unFight.keySet().iterator();

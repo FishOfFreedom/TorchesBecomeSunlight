@@ -1,0 +1,49 @@
+{
+  "id": "pathfinder_findgun",
+  "title": "no",
+  "description": "寻路者建议你去看爱国者",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.pathfinder_findgun.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.pathfinder_findgun.main1_o1"
+        },
+        {
+          "nextid": "main3",
+          "text": "dialogue.pathfinder_findgun.main1_o2"
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.pathfinder_findgun.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main2",
+      "speaker": "pathfinder",
+      "text": "dialogue.pathfinder_findgun.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

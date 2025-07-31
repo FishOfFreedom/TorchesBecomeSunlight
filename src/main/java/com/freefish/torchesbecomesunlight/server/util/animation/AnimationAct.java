@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.util.animation;
 
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import software.bernie.geckolib.core.animation.Animation;
 import software.bernie.geckolib.core.animation.RawAnimation;
 
 public class  AnimationAct<T extends AnimatedEntity>{
@@ -28,6 +29,10 @@ public class  AnimationAct<T extends AnimatedEntity>{
 
     public AnimationAct(String rawAnimation, int duration) {
         this(RawAnimation.begin().thenLoop(rawAnimation),duration,3);
+    }
+
+    public AnimationAct(Animation.LoopType loopType, String rawAnimation, int duration) {
+        this(RawAnimation.begin().then(rawAnimation,loopType),duration,3);
     }
 
     public AnimationAct(String rawAnimation, int duration,int priority) {

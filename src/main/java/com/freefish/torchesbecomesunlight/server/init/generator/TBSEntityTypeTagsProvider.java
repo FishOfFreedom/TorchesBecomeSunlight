@@ -18,6 +18,6 @@ public class TBSEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        tag(Tags.EntityTypes.BOSSES).add(EntityHandle.FROST_NOVA.get(),EntityHandle.PURSUER.get(),EntityHandle.PATRIOT.get(),EntityHandle.GUN_KNIGHT_PATRIOT.get());
+        tag(Tags.EntityTypes.BOSSES).add(EntityHandle.FROST_NOVA.get(),EntityHandle.ROSMONTIS.get(),EntityHandle.PURSUER.get(),EntityHandle.PATRIOT.get(),EntityHandle.GUN_KNIGHT_PATRIOT.get());
     }
 }

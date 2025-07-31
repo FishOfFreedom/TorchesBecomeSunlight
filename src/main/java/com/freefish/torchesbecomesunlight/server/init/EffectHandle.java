@@ -2,8 +2,10 @@ package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.effect.*;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -25,4 +27,9 @@ public class EffectHandle {
 
     public static final RegistryObject<FullOfEnergyEffect> FULL_OF_ENERGY =
             POTIONS.<FullOfEnergyEffect>register("full_of_energy", () -> new FullOfEnergyEffect(MobEffectCategory.BENEFICIAL, 5882118));
+
+    public static void init(IEventBus bug){
+        POTIONS.register(bug);
+        ForceEffectHandle.init();
+    }
 }

@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity;
 
 import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.ShieldGuard;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
@@ -30,12 +29,13 @@ public class ManglerAttackAI extends Goal {
     @Override
     public boolean canUse() {
         LivingEntity target = this.mangler.getTarget();
-        return target != null && target.isAlive();
+        return target != null && target.isAlive()&&mangler.isAngryLevel()>1;
     }
 
     @Override
     public void start() {
         this.repath = 0;
+        mangler.setRun(true);
     }
 
     @Override
@@ -58,16 +58,14 @@ public class ManglerAttackAI extends Goal {
         }
 
         walk();
-        double dist = this.mangler.distanceToSqr(this.targetX, this.targetY, this.targetZ);
+        double dist = this.mangler.distanceTo(target);
         if (target.getY() - this.mangler.getY() >= -1 && target.getY() - this.mangler.getY() <= 3) {
-            if (dist < 7D * 7D && Math.abs(MathUtils.wrapDegrees(this.mangler.getAngleBetweenEntities(target, this.mangler) - this.mangler.yBodyRot)) < 35.0D) {
-                if(shouldFollowUp(3.5)) {
+            if (dist < 2&& Math.abs(MathUtils.wrapDegrees(this.mangler.getAngleBetweenEntities(target, this.mangler) - this.mangler.yBodyRot)) < 35.0D) {
                     float v = random.nextFloat();
                     if(v>0.5f)
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.mangler, Mangler.ATTACK2);
                     else
                         AnimationActHandler.INSTANCE.sendAnimationMessage(this.mangler, Mangler.ATTACK);
-                }
             }
         }
     }

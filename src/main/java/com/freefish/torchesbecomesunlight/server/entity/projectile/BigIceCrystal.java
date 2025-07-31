@@ -1,17 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
-import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
-import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
-import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
+import com.freefish.torchesbecomesunlight.server.init.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
@@ -93,8 +89,7 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
             List<LivingEntity> livingEntity = level().getEntitiesOfClass(LivingEntity.class,getBoundingBox().inflate(6),entity ->
                     !(entity instanceof GuerrillasEntity) && entity.distanceTo(this)<=3.5+entity.getBbWidth()/2);
             for(LivingEntity livingEntity1:livingEntity) {
-                FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(livingEntity1, CapabilityHandle.FROZEN_CAPABILITY);
-                if(data!=null) data.setFrozen(livingEntity1,200);
+                ForceEffectHandle.addForceEffect(livingEntity1,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,200));
             }
         }
 

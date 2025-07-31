@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "torchesbecomesunlight:block/glow_block_off"
+    },
+    "lit=true": {
+      "model": "torchesbecomesunlight:block/glow_block_on"
+    }
+  }
+}

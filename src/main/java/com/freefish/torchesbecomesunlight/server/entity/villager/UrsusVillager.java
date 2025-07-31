@@ -4,11 +4,8 @@ import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
 import com.freefish.torchesbecomesunlight.server.entity.villager.villager.UrsusVillagerGoalPackages;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.init.village.MemoryModuleTypeHandle;
 import com.freefish.torchesbecomesunlight.server.init.village.SensorTypeHandle;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -50,7 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
-public abstract class UrsusVillager extends AnimatedEntity implements IDialogueEntity {
+public abstract class UrsusVillager extends AnimatedEntity {
     private static final EntityDataAccessor<Integer> BODY = SynchedEntityData.defineId(UrsusVillager.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> HEAD = SynchedEntityData.defineId(UrsusVillager.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IS_ARMOR = SynchedEntityData.defineId(UrsusVillager.class, EntityDataSerializers.BOOLEAN);
@@ -261,26 +258,6 @@ public abstract class UrsusVillager extends AnimatedEntity implements IDialogueE
 
     public boolean removeWhenFarAway(double pDistanceToClosestPlayer) {
         return false;
-    }
-
-    @Override
-    public Dialogue getDialogue() {
-        return DialogueStore.pursuer_d_1;
-    }
-
-    @Override
-    public LivingEntity getDialogueEntity() {
-        return dialogueLivingEntity;
-    }
-
-    @Override
-    public void setDialogueEntity(LivingEntity dialogueEntity) {
-        dialogueLivingEntity = dialogueEntity;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
     }
 
     @Override

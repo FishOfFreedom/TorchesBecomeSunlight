@@ -1,12 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity;
 
 import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.util.MathUtils;
-import net.minecraft.world.entity.Entity;
+import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public class WhileDialogueAI extends Goal {
     private final FreeFishEntity entity;
@@ -18,8 +19,7 @@ public class WhileDialogueAI extends Goal {
 
     @Override
     public boolean canUse() {
-        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(DialogueEntity.class,entity.getBoundingBox().inflate(5)));
-        return dialogueEntity != null&&dialogueEntity.isAlive();
+        return true;
     }
 
     @Override
@@ -29,15 +29,15 @@ public class WhileDialogueAI extends Goal {
 
     @Override
     public void tick() {
-        entity.getNavigation().stop();
-        DialogueEntity dialogueEntity = MathUtils.getClosestEntity(entity,entity.level().getEntitiesOfClass(DialogueEntity.class,entity.getBoundingBox().inflate(5)));
-        if(dialogueEntity!=null&&dialogueEntity.isAlive()){
-            if(dialogueEntity.getChatEntities()!=null){
-                Entity play = dialogueEntity.getChatEntities()[0];
-                if(play!=null) {
-                    entity.getLookControl().setLookAt(play,30f,30f);
-                }
+        if(entity.tickCount==100){
+            List<Player> entitiesOfClass = entity.level().getEntitiesOfClass(Player.class, entity.getBoundingBox().inflate(5));
+            Player closestEntity = FFEntityUtils.getClosestEntity(entity, entitiesOfClass);
+            if(entity instanceof Pursuer p&&closestEntity!=null){
+                p.startDialogue(closestEntity);
             }
         }
+
+        entity.getNavigation().stop();
+        entity.getLookControl().setLookAt(entity.getEyePosition().add(-2,1,0));
     }
 }

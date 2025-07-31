@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 260,
+  "experience": 0.15,
+  "ingredient": {
+    "item": "torchesbecomesunlight:burdenbeast_meat"
+  },
+  "result": "torchesbecomesunlight:cooked_burdenbeast_meat"
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "torchesbecomesunlight:rhodes_3_rosmontis",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "rhodes_4_trust"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.rhodes_4_trust"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:rosmontis_ipad"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.rhodes_4_trust"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

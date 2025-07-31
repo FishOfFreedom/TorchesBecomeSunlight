@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 260,
+  "experience": 0.15,
+  "ingredient": {
+    "item": "torchesbecomesunlight:thigh_meat"
+  },
+  "result": "torchesbecomesunlight:cooked_thigh_meat"
+}

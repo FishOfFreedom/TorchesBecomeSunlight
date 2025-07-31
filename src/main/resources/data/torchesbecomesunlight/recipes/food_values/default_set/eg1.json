@@ -1,0 +1,13 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:egg",
+    "torchesbecomesunlight:ursus_bread",
+    "minecraft:bread"
+  ],
+  "values": {
+    "EGG": 1
+  },
+  "effects": [
+  ]
+}

@@ -1,37 +1,68 @@
 package com.freefish.torchesbecomesunlight.server.world.structure;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.world.structure.jigsaw.TBSJigsawPlacement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class SanktaStatueStructures extends FFStructures {
-    public static final Codec<SanktaStatueStructures> CODEC = RecordCodecBuilder.<SanktaStatueStructures>mapCodec(instance ->
-            instance.group(SanktaStatueStructures.settingsCodec(instance),
-                    StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(FFStructures::getStartPool),
-                    ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(FFStructures::getStartJigsawName),
-                    Codec.intRange(0, 30).fieldOf("size").forGetter(FFStructures::getSize),
-                    HeightProvider.CODEC.fieldOf("start_height").forGetter(FFStructures::getStartHeight),
-                    Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(FFStructures::getProjectStartToHeightmap),
-                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(FFStructures::getMaxDistanceFromCenter)
-            ).apply(instance, SanktaStatueStructures::new)).codec();
+    public static final Codec<SanktaStatueStructures> CODEC = simpleCodec(SanktaStatueStructures::new);
 
-    public SanktaStatueStructures(StructureSettings config, Holder<StructureTemplatePool> startPool, Optional<ResourceLocation> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter) {
-        super(config, startPool, startJigsawName, size, startHeight, projectStartToHeightmap, maxDistanceFromCenter);
+    public SanktaStatueStructures(StructureSettings settings) {
+        super(settings, ConfigHandler.COMMON.GLOBALSETTING.sanktaStatue, true, true, true,66,2);
+    }
+
+    public static Optional<Structure.GenerationStub> createPiecesGenerator(Predicate<GenerationContext> canGeneratePredicate, Structure.GenerationContext context,FFStructures ffStructures) {
+
+        if (!canGeneratePredicate.test(context)) {
+            return Optional.empty();
+        }
+
+        Structure.GenerationContext newContext = new Structure.GenerationContext(
+                context.registryAccess(),
+                context.chunkGenerator(),
+                context.biomeSource(),
+                context.randomState(),
+                context.structureTemplateManager(),
+                context.random(),
+                context.seed(),
+                context.chunkPos(),
+                context.heightAccessor(),
+                context.validBiome()
+        );
+
+        BlockPos blockpos = context.chunkPos().getMiddleBlockPosition(0);
+
+        Optional<Structure.GenerationStub> structurePiecesGenerator =
+                TBSJigsawPlacement.addPieces(
+                        newContext,
+                        Holder.direct(context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
+                                .get(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "sankta_statue/center"))),
+                        Optional.empty(),
+                        12,
+                        blockpos,
+                        false,
+                        Optional.of(Heightmap.Types.WORLD_SURFACE),
+                        128,
+                        ffStructures
+                );
+
+        return structurePiecesGenerator;
     }
 
     @Override
-    protected boolean checkLocation(GenerationContext context, boolean checkHeight, boolean avoidWater) {
-        if(!ConfigHandler.COMMON.GLOBALSETTING.ursusvillage.structureConfig.canGenerate.get()) return false;
-
-        return super.checkLocation(context, checkHeight, avoidWater);
+    public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
+        return createPiecesGenerator(t -> checkLocation(t), context,this);
     }
 
     @Override

@@ -1,0 +1,26 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"shot": {
+			"loop": true,
+			"bones": {
+				"zhuanguan": {
+					"rotation": {
+						"vector": [0, 0, "query.anim_time*1000"]
+					}
+				}
+			}
+		},
+		"idle": {
+			"loop": true,
+			"bones": {
+				"zhuanguan": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

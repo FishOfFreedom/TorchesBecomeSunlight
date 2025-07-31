@@ -1,12 +1,16 @@
 {
   "type": "torchesbecomesunlight:food_attribute",
   "items": [
-    "minecraft:apple"
+    "minecraft:glow_berries"
   ],
   "values": {
-    "VEGGIE": 1
+    "VEGGIE": 1.5
   },
   "effects": [
-    "minecraft:speed"
+    {
+      "effect_id":"minecraft:glowing",
+      "time":1200,
+      "level":1
+    }
   ]
 }

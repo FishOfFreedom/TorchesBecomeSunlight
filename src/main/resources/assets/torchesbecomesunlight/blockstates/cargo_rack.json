@@ -1,0 +1,60 @@
+{
+  "variants": {
+    "facing=east,line=line": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack"
+    },
+    "facing=west,line=line": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack"
+    },
+    "facing=north,line=line": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack",
+      "y": -90
+    },
+    "facing=south,line=line": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack",
+      "y": -90
+    },
+    "facing=east,line=liner": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_r"
+    },
+    "facing=west,line=liner": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_r"
+    },
+    "facing=north,line=liner": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_r",
+      "y": -90
+    },
+    "facing=south,line=liner": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_r",
+      "y": -90
+    },
+    "facing=east,line=linel": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_l"
+    },
+    "facing=west,line=linel": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_l"
+    },
+    "facing=north,line=linel": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_l",
+      "y": -90
+    },
+    "facing=south,line=linel": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_l",
+      "y": -90
+    },
+    "facing=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_line"
+    },
+    "facing=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_line"
+    },
+    "facing=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_line",
+      "y": -90
+    },
+    "facing=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/cargorack/cargo_rack_line",
+      "y": -90
+    }
+  }
+}

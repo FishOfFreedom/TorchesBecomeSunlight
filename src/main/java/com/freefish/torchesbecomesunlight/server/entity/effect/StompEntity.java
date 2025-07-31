@@ -1,9 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
-import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -15,10 +17,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
-public class StompEntity extends Entity {
+public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
     int continueTime,frame;
     LivingEntity owner;
     double maxDist;
@@ -86,7 +90,7 @@ public class StompEntity extends Entity {
                     List<LivingEntity> hits = world.getEntitiesOfClass(LivingEntity.class, selection);
                     for (LivingEntity hit : hits) {
                         if (hit.onGround()) {
-                            if (hit instanceof GuerrillasEntity||hit==owner) {
+                            if (hit==owner) {
                                 continue;
                             }
                             float applyKnockbackResistance = 0;
@@ -125,5 +129,27 @@ public class StompEntity extends Entity {
         else if(!level().isClientSide){
             kill();
         }
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        CompoundTag compoundTag = new CompoundTag();
+        if(owner!=null){
+            compoundTag.putInt("id",owner.getId());
+        }
+        buffer.writeNbt(compoundTag);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        CompoundTag compoundTag = additionalData.readNbt();
+        if(compoundTag.contains("id")){
+            owner = (LivingEntity) level().getEntity(compoundTag.getInt("id"));
+        }
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

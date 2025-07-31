@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "pattern": [
+    "B B",
+    "BIB",
+    "AAA"
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:stew_pot"
+  },
+  "show_notification": true
+}

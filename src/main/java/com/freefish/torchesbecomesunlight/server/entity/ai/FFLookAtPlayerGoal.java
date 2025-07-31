@@ -1,6 +1,5 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class FFLookAtPlayerGoal<T extends PathfinderMob & IDialogueEntity> extends Goal {
+public class FFLookAtPlayerGoal<T extends PathfinderMob> extends Goal {
     public static final float DEFAULT_PROBABILITY = 0.02F;
     protected final T mob;
     @Nullable
@@ -50,7 +49,7 @@ public class FFLookAtPlayerGoal<T extends PathfinderMob & IDialogueEntity> exten
     }
 
     public boolean canUse() {
-        if(mob.getTarget()!=null||mob.getDialogueEntity()!=null){
+        if(mob.getTarget()!=null&&mob.isAlive()){
             return false;
         }
         if (this.mob.getRandom().nextFloat() >= this.probability) {
@@ -73,7 +72,7 @@ public class FFLookAtPlayerGoal<T extends PathfinderMob & IDialogueEntity> exten
     }
 
     public boolean canContinueToUse() {
-        if(mob.getTarget()!=null||mob.getDialogueEntity()!=null){
+        if(mob.getTarget()!=null){
             return false;
         }
         if (!this.lookAt.isAlive()) {

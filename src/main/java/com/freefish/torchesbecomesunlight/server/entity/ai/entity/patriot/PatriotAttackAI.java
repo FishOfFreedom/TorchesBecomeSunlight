@@ -1,13 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity.patriot;
 
 
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -57,11 +56,16 @@ public class PatriotAttackAI extends Goal {
         timeSinceHunt++;
         timeSinceShield++;
 
+        double dist = this.patriot.distanceTo(target);
+        if (dist > 8 ) {
+            patriot.timeSinceThrow++;
+        }
+
+
         if(!(this.patriot.getAnimation() == NO_ANIMATION||patriot.getAnimation()==Patriot.RUN)) return;
         walk();
         if(patriot.getAnimation()==Patriot.RUN) return;
 
-        double dist = this.patriot.distanceTo(target);
 
         if(timeSinceStrengthen>=300){
             timeSinceStrengthen=0;
@@ -86,8 +90,8 @@ public class PatriotAttackAI extends Goal {
         else if(dist >= 12 &&timeSinceRun>=180) {
             timeSinceRun = 0;
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, Patriot.RUN);
-        } else if (target.getY() - this.patriot.getY() >= -1 && target.getY() - this.patriot.getY() <= 3) {
-            if (dist < 4D  && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
+        } else if (target.getY() - this.patriot.getY() >= -3 && target.getY() - this.patriot.getY() <= 6) {
+            if (dist < 5D  && Math.abs(MathUtils.wrapDegrees(this.patriot.getAngleBetweenEntities(target, this.patriot) - this.patriot.yBodyRot)) < 35.0D) {
                 double rand = random.nextDouble();
                 if (rand >= 0.6)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this.patriot, Patriot.ATTACK1);

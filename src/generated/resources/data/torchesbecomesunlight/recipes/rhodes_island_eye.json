@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:white_concrete"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "I": {
+      "item": "minecraft:gray_concrete"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "IEI",
+    "BBB"
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:rhodes_island_eye"
+  },
+  "show_notification": true
+}

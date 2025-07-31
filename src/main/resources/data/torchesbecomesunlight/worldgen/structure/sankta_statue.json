@@ -1,0 +1,7 @@
+{
+  "type": "torchesbecomesunlight:sankta_statue",
+  "biomes": "#torchesbecomesunlight:has_structure/sankta_statue_biomes",
+  "terrain_adaptation": "none",
+  "step": "surface_structures",
+  "spawn_overrides": {}
+}

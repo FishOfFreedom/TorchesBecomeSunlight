@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
-import com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils;
+import com.freefish.rosmontislib.sync.ITagSerializable;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,7 +21,7 @@ import static com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils.getMob
 public class FoodValues {
     private static final FoodCategory[] CATEGORIES = FoodCategory.values();
     private final float[] values = new float[CATEGORIES.length];
-    private final Set<MobEffect> effects = new HashSet<>();
+    private final Set<MobEffectInstance> effects = new HashSet<>();
     private int size;
 
     private FoodValues() {
@@ -79,11 +79,11 @@ public class FoodValues {
         return Math.max(values[category.ordinal()], 0.0F);
     }
 
-    public void putEffect(MobEffect mobEffect){
+    public void putEffect(MobEffectInstance mobEffect){
         this.effects.add(mobEffect);
     }
 
-    public Set<MobEffect> getEffects() {
+    public Set<MobEffectInstance> getEffects() {
         return effects;
     }
 
@@ -180,7 +180,17 @@ public class FoodValues {
 
         JsonArray jsonEffects = jsonArray.getAsJsonArray();
         jsonEffects.forEach(entry -> {
-            foodValues.putEffect(getMobEffects(entry.getAsString()));
+            JsonObject effect = entry.getAsJsonObject();
+
+            String effectId = effect.get("effect_id").getAsString();
+            int level = effect.get("level").getAsInt();
+            int time = effect.get("time").getAsInt();
+            MobEffectInstance mobEffectInstance = new MobEffectInstance();
+            mobEffectInstance.mobEffect = getMobEffects(effectId);
+            mobEffectInstance.level = level;
+            mobEffectInstance.time = time;
+
+            foodValues.putEffect(mobEffectInstance);
         });
 
         return foodValues;
@@ -203,7 +213,10 @@ public class FoodValues {
 
         var effectTag = buffer.readNbt();
         for(String key: effectTag.getAllKeys()){
-            foodValues.putEffect(getMobEffects(effectTag.getString(key)));
+            MobEffectInstance instance = new MobEffectInstance();
+            instance.deserializeNBT(effectTag.getCompound(key));
+
+            foodValues.putEffect(instance);
         }
 
         return foodValues;
@@ -218,10 +231,51 @@ public class FoodValues {
         });
         CompoundTag effectTag = new CompoundTag();
         int i = 0;
-        for(MobEffect mobEffect:effects){
-            effectTag.putString(String.valueOf(i), ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString());
+        for(MobEffectInstance mobEffect:effects){
+            effectTag.put(String.valueOf(i), mobEffect.serializeNBT());
             i++;
         }
         buffer.writeNbt(effectTag);
+    }
+
+    public static class MobEffectInstance implements ITagSerializable<CompoundTag> {
+        public MobEffect mobEffect;
+        public int time;
+        public int level;
+
+        @Override
+        public CompoundTag serializeNBT() {
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("effect", ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString());
+            compoundTag.putInt("level",level);
+            compoundTag.putInt("time",time);
+            return compoundTag;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag compoundTag) {
+            mobEffect =getMobEffects(compoundTag.getString("effect"));
+            level = compoundTag.getInt("level");
+            time =  compoundTag.getInt("time");
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mobEffect);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            MobEffectInstance that = (MobEffectInstance) o;
+            return mobEffect == that.mobEffect;
+        }
+
+        @Override
+        public String toString() {
+            return ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString()+" "+time+" "+level;
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai.entity;
 
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +20,7 @@ public class PursuerStartDialogueAI extends Goal {
     public boolean canUse() {
         this.pendingTarget = this.pursuer.level().getNearestPlayer(this.pursuer,96);
         LivingEntity target = pursuer.getTarget();
-        return this.pendingTarget != null&&!pendingTarget.isCreative()&&target==null&&pursuer.getDialogueEntity()==null;
+        return this.pendingTarget != null&&!pendingTarget.isCreative()&&target==null;
     }
 
     public boolean canContinueToUse() {
@@ -36,8 +35,8 @@ public class PursuerStartDialogueAI extends Goal {
     public void tick() {
         if (this.pendingTarget != null) {
             if(pursuer.isLookingAtMe(pendingTarget)) {
-                pursuer.setDialogueEntity(pendingTarget);
-                AnimationActHandler.INSTANCE.sendAnimationMessage(pursuer,Pursuer.TELE);
+                //pursuer.setDialogueEntity(pendingTarget);
+                //AnimationActHandler.INSTANCE.sendAnimationMessage(pursuer,Pursuer.TELE);
             }
             this.pendingTarget = null;
         }

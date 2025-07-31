@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_oven": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:sankta_statue_eye"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "torchesbecomesunlight:sankta_statue_eye"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_oven",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "torchesbecomesunlight:sankta_statue_eye"
+    ]
+  },
+  "sends_telemetry_event": false
+}

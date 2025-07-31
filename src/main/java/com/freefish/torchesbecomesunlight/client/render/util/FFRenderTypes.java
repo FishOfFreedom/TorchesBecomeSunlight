@@ -1,10 +1,9 @@
 package com.freefish.torchesbecomesunlight.client.render.util;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.client.shader.ShaderHandle;
+import com.freefish.torchesbecomesunlight.client.shader.TBSShaderHandle;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -28,7 +27,7 @@ public class FFRenderTypes extends RenderType{
     }
 
     public static final RenderType DEMON = create("demon", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256, false, false,
-            CompositeState.builder().setShaderState(new ShaderStateShard(ShaderHandle::getRenderTypeDemon)).setTextureState(MultiTextureStateShard.builder()
+            CompositeState.builder().setShaderState(new ShaderStateShard(TBSShaderHandle::getRenderTypeDemon)).setTextureState(MultiTextureStateShard.builder()
                     .add(DEMON_BACK, false, false)
                     .add(DEMON_1, false, false).build()).createCompositeState(false));
 }

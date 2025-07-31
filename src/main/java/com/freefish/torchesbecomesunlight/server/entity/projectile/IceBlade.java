@@ -1,12 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -141,12 +141,12 @@ public class IceBlade extends Projectile implements GeoEntity {
                     if (attribute != null) {
                         float damage = (float) attribute.getValue();
 
-                        FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
-                        boolean b = data!=null&&data.getFrozen();
+                        ForceEffectInstance forceEffect = ForceEffectHandle.getForceEffect(target, ForceEffectHandle.FROZEN_FORCE_EFFECT);
+                        boolean b = forceEffect!=null&&forceEffect.getLevel()>1;
                         if(target.hurt(this.damageSources().mobAttack(living), b?damage*2:damage)){
                             flad=true;
                             if(b){
-                                data.clearFrozen(target);
+                                forceEffect.discard(target);
                             }
                         }
                     }

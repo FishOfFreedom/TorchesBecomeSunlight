@@ -1,0 +1,34 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:rhodes_1"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.rhodes"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:rhodes_knife"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.rhodes"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

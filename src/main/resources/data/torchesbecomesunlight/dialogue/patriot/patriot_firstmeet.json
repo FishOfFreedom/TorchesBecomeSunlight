@@ -1,0 +1,66 @@
+{
+  "id": "pathfinder_firstmeet",
+  "title": "no",
+  "description": "和寻路者第一次相遇",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main6",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "main2",
+      "speaker": "pathfinder",
+      "text": "dialogue.patriot_firstmeet.main1",
+      "dialoguetime": "50",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "main3",
+      "speaker": "player",
+      "text": "dialogue.patriot_firstmeet.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main4",
+      "speaker": "player",
+      "text": "dialogue.patriot_firstmeet.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main5",
+      "speaker": "pathfinder",
+      "text": "dialogue.patriot_firstmeet.main4",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main5",
+      "nextid": "main6",
+      "speaker": "player",
+      "text": "dialogue.patriot_firstmeet.main5",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main6",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.patriot_firstmeet.main6",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

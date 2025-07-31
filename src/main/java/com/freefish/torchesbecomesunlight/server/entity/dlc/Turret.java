@@ -10,6 +10,9 @@ import com.freefish.torchesbecomesunlight.server.entity.projectile.Bullet;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -28,6 +31,8 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -42,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Turret extends Mob implements GeoEntity {
+public class Turret extends Mob implements GeoEntity, IEntityAdditionalSpawnData {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     @Nullable
@@ -113,8 +118,8 @@ public class Turret extends Mob implements GeoEntity {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return GuerrillasEntity.createMobAttributes().add(Attributes.MAX_HEALTH, 50.0D)
-                .add(Attributes.ATTACK_DAMAGE, 20.0f)
+        return GuerrillasEntity.createMobAttributes().add(Attributes.MAX_HEALTH, 70.0D)
+                .add(Attributes.ATTACK_DAMAGE, 15.0f)
                 .add(Attributes.ARMOR, 10.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE,1f);
     }
@@ -201,7 +206,7 @@ public class Turret extends Mob implements GeoEntity {
                         this.level().addFreshEntity(abstractarrow);
                     }
 
-                    lookAt(target, 3f, 3f);
+                    lookAt(target, 2.2f, 3f);
                 }
 
                 //if (tickCount % 5 == 0 && target != null && getPredicate() == 1) {
@@ -221,6 +226,7 @@ public class Turret extends Mob implements GeoEntity {
             for(Projectile arrow:list){
                 if(arrow instanceof Bullet bullet&&bullet.isHoly()) continue;
                 if(arrow.getDeltaMovement().dot(position().add(0,1.7,0).subtract(arrow.position()))<=0) continue;
+                if(arrow.getOwner()!=null&&arrow.getOwner().distanceTo(this)<4.5) continue;
                 //TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new sendAdvancedParticlePacket(getId(),arrow.position()));
                 arrow.discard();
             }
@@ -238,7 +244,13 @@ public class Turret extends Mob implements GeoEntity {
     protected void tickDeath() {
         ++this.deathTime;
         if(level().isClientSide){
-            level().addParticle(ParticleTypes.SMOKE, getRandomX(1), getY() + 1.1D, getRandomZ(1), 0.0D, 0.0D, 0.0D);
+            if(tickCount>=710-80){
+                for(int i = 0;i<8;i++){
+                    level().addParticle(ParticleTypes.SMOKE, getRandomX(1), getY() + 1.1D, getRandomZ(1), 0.0D, 0.0D, 0.0D);
+                }
+            }
+            else if(random.nextFloat()<0.1f)
+                level().addParticle(ParticleTypes.SMOKE, getRandomX(1), getY() + 1.1D, getRandomZ(1), 0.0D, 0.0D, 0.0D);
         }
         if (this.tickCount >= 710 && !this.level().isClientSide() && !this.isRemoved()) {
             this.level().broadcastEntityEvent(this, (byte)60);
@@ -254,6 +266,8 @@ public class Turret extends Mob implements GeoEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
+        tickCount = pCompound.getInt("tickCount");
+
         if (pCompound.hasUUID("Owner")) {
             this.ownerUUID = pCompound.getUUID("Owner");
             this.owner = null;
@@ -263,9 +277,26 @@ public class Turret extends Mob implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("tickCount",tickCount);
+
         if (this.ownerUUID != null) {
             pCompound.putUUID("Owner", this.ownerUUID);
         }
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeVarInt(tickCount);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        tickCount = additionalData.readVarInt();
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     public void setOwner(Entity owner) {

@@ -10,6 +10,8 @@ import net.minecraft.world.damagesource.DamageType;
 
 public class CustomResourceKey {
     public static final ResourceKey<DamageType> DEMON_ATTACK = registerResourceKey(Registries.DAMAGE_TYPE, "pursuer_demon_attack");
+    public static final ResourceKey<DamageType> NO_TRIGGER_ATTACK = registerResourceKey(Registries.DAMAGE_TYPE, "no_trigger_attack");
+    public static final ResourceKey<DamageType> NO_TRIGGER_WITHOUT_ARMOR_ATTACK = registerResourceKey(Registries.DAMAGE_TYPE, "no_trigger_no_armor_attack");
     public static final ResourceKey<DamageType> FROST_ATTACK = registerResourceKey(Registries.DAMAGE_TYPE, "frostnova_frost");
 
     private static <T> ResourceKey<T> registerResourceKey(ResourceKey<Registry<T>> registry, String key) {

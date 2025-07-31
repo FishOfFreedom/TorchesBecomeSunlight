@@ -1,8 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.entity.ai;
 
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +17,7 @@ import java.util.Objects;
 public class FFPathNavigateGround extends GroundPathNavigation {
     private static final float EPSILON = 1.0E-8F;
 
-    public FFPathNavigateGround(AnimatedEntity entity, Level world) {
+    public FFPathNavigateGround(PathfinderMob entity, Level world) {
         super(entity, world);
     }
 

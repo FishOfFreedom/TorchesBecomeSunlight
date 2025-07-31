@@ -1,0 +1,145 @@
+{
+  "id": "op_find_rosmontis",
+  "title": "no",
+  "description": "认识迷迭香，并开始战斗的对话",
+  "speakers": [
+    "op","player"
+  ],
+  "startid": "main1",
+  "skipid": "main11",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "main12",
+          "text": "dialogue.find_rosmontis.main1_o1"
+        },
+        {
+          "nextid": "main4",
+          "text": "dialogue.find_rosmontis.main1_o2"
+        }
+      ]
+    },
+    {
+      "id": "main12",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main12",
+      "dialoguetime": "60",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main5",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main4",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main5",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main5",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.find_rosmontis.main5_o1"
+        },
+        {
+          "nextid": "main6",
+          "text": "dialogue.find_rosmontis.main5_o2"
+        }
+      ]
+    },
+    {
+      "id": "main6",
+      "nextid": "main7",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main6",
+      "dialoguetime": "60",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main7",
+      "nextid": "main8",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main7",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main8",
+      "nextid": "main9",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main8",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main9",
+      "nextid": "main10",
+      "speaker": "player",
+      "text": "dialogue.find_rosmontis.main9",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main10",
+      "nextid": "main11",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main10",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main11",
+      "nextid": "main3",
+      "speaker": "op",
+      "text": "dialogue.find_rosmontis.main11",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "",
+      "dialoguetime": "20",
+      "triggers": [
+      ]
+    }
+  ]
+}

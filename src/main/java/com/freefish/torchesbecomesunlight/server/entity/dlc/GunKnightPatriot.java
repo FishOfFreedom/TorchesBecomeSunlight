@@ -21,62 +21,79 @@ import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.rosmontislib.client.utils.Range;
-
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.compat.rosmontis.EntityPosRotEffect;
-import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
-import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
-import com.freefish.torchesbecomesunlight.server.entity.ai.entity.HalberdKnightPatriotAttackAI;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.RibbonComponent;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.EntityPosRotEffect;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.GeoBoneEffect;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
+import com.freefish.torchesbecomesunlight.server.block.blockentity.BigBenBlockEntity;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
+import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.GunKnightPatriotAttackAI;
+import com.freefish.torchesbecomesunlight.server.entity.ai.entity.HalberdKnightPatriotAttackAI;
+import com.freefish.torchesbecomesunlight.server.entity.dlc.ai.GunPatriotAutoDialogueGoal;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.FXEntity;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.Bullet;
+import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ActRangeSignMessage;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.SynCapabilityMessage;
+import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
+import com.freefish.torchesbecomesunlight.server.story.PlayerStoryStoneData;
+import com.freefish.torchesbecomesunlight.server.story.data.Dialogue;
+import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.FFBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.IBossInfoUpdate;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.RangedAttackMob;
@@ -84,13 +101,11 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -106,7 +121,7 @@ import java.util.*;
 
 import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
 
-public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity, RangedAttackMob , IEntityAdditionalSpawnData, ITwoStateEntity {
+public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob , ITwoStateEntity, IDialogueEntity {
 
     @OnlyIn(Dist.CLIENT)
     public GeoBone halberd;
@@ -117,7 +132,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             NO_ANIMATION,SKILL_HALBERD_LIAN,SKILL_HALBERD_10,WIND_MILL,REMOTE_HALBERD_THROW,REMOTE_HALBERD_RL2,MOVE_HALBERD_BACK,SKILL_HALBERD_2,ACK_HALBERD_R,ACK_HALBERD_L,ACK_HALBERD_CR,ACK_HALBERD_CL,RACK_HALBERD_CHI, LACK_HALBERD_DOWNCHI,LACK_HALBERD_TIAOWIND
             ,RACK_HALBERD_HEAVY,RACK_HALBERD_CYCLE2,ACK_HALBERD_CHI3,ACK_HALBERD_CHILEFT,MOVE_HALBERD_LEFT,MOVE_HALBERD_RIGHT,
             MOVE_HALBERD_CYCLE,REMOTE_HALBERD_RZHOU,REMOTE_HALBERD_SUMMON1,SKILL_HALBERD_11,SKILL_HALBERD_12,SKILL_HALBERD_13,
-            REMOTE_HALBERD_SUMMON,MOVE_HALBERD_CYCLE1
+            REMOTE_HALBERD_SUMMON,MOVE_HALBERD_CYCLE1,BREAK,SANKTA
             ,SKILL_START,SUMMON_CHENG,SUMMON_TURRET,ALL_SHOT,RELOAD
             ,GUN1TO2,GUN1TO3,GUN3TO1,GUN2TO1,ATTACK1,ATTACK2,ATTACK3,SHIELD,STATE_2,STOMP,ARTILLERY_1,SHOTGUN_1,MACHINE_GUN_1,SKILL_LOOP,SKILL_END,DIE
     };
@@ -125,6 +140,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private static ParticleComponent.KeyTrack SUN = new ParticleComponent.KeyTrack(new float[] {0,1,1,0}, new float[] {0,0.25f,0.75f, 1});
 
     private static final EntityDataAccessor<Float> TARGET_POSX = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<CompoundTag> PARTICLE = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<Float> TARGET_POSY = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TARGET_POSZ = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> IS_GLOWING = SynchedEntityData.defineId(GunKnightPatriot.class, EntityDataSerializers.BOOLEAN);
@@ -138,7 +154,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private final AnimationController<GunKnightPatriot> animationController2 = new AnimationController<GunKnightPatriot>(this, "GunController", 5, this::basicGunAnimation);
     private final AnimationController<GunKnightPatriot> animationController3 = new AnimationController<GunKnightPatriot>(this, "Wind", 5, this::wingAnimation);
 
-    private Map<LivingEntity,DefendCounter> defendCounterMap = new HashMap<>();
+    public Map<LivingEntity,DefendCounter> defendCounterMap = new HashMap<>();
 
     public int time=0;
     public int normalAttackTime = -1;
@@ -148,7 +164,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     private State spawnState = State.NATURE;
     private int holyBulletAmount = 0;
 
-    private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this,4);
+    private final ServerBossEvent bossInfo= ConfigHandler.COMMON.GLOBALSETTING.healthBarIsNearShow.get()?new FFBossInfoServer(this,4): new CustomBossInfoServer(this,4);
 
     public GunKnightPatriot(EntityType<? extends GunKnightPatriot> entityType, Level level) {
         super(entityType, level);
@@ -159,16 +175,16 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        this.goalSelector.addGoal(1, new GunPatriotAutoDialogueGoal(this));
         this.goalSelector.addGoal(2, new GunKnightPatriotAttackAI(this));
         this.goalSelector.addGoal(2, new HalberdKnightPatriotAttackAI(this));
 
-        //this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
-        //this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
-        this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal<>(this , 0.33));
+        this.goalSelector.addGoal(7, new FFLookAtPlayerTotherGoal<>(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetNoPlayerGoal(this));
     }
 
     @Override
@@ -185,7 +201,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
             }
         }
 
-        if (tickCount % 4 == 0) bossInfo.update();
+        if (tickCount % 4 == 0&&bossInfo instanceof IBossInfoUpdate update) update.update();
 
         LivingEntity target = this.getTarget();
 
@@ -253,6 +269,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         doShootFX();
         doAllShotCheng();
         doSkillCheng();
+        doSankta();
         doState2();
         doSkillFeng();
         doSkillHalberd2();
@@ -272,6 +289,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
+        if(getAnimation()==BREAK) return false;
         float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
         if(amount>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) amount = limit;
         Entity entitySource = source.getDirectEntity();
@@ -292,11 +310,18 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
+        boolean b = super.doHurtEntity(livingEntity, source, damage);
+
         if(defendCounterMap.containsKey(livingEntity)){
             DefendCounter defendCounter = defendCounterMap.get(livingEntity);
-            defendCounter.effectiveAttackCounter -=1;
+            if(b||!(livingEntity instanceof Player)){
+                defendCounter.effectiveAttackCounter -= 1;
+            }
+            if(livingEntity instanceof Player&&defendCounter.effectiveAttackCounter<0){
+                defendCounter.effectiveAttackCounter = 0;
+            }
         }
-        return super.doHurtEntity(livingEntity, source, damage);
+        return b;
     }
 
     @Override
@@ -342,16 +367,23 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         Entity entitySource = source.getDirectEntity();
         if (entitySource instanceof LivingEntity living) {
             int attackTime = 1;
-            if(living.distanceTo(this)<8+living.getBbWidth()/2 && defendCounterMap.containsKey(living)){
-                DefendCounter defendCounter = defendCounterMap.get(living);
-                attackTime +=defendCounter.effectiveAttackCounter;
+            if(defendCounterMap.containsKey(living)){
+                if(living.distanceTo(this)<8+living.getBbWidth()/2){
+                    DefendCounter defendCounter = defendCounterMap.get(living);
+                    attackTime += defendCounter.effectiveAttackCounter;
 
-                if(defendCounter.effectiveAttackTick<=0&&living == getTarget()){
-                    defendCounter.effectiveAttackCounter+=1;
-                    defendCounter.effectiveAttackTick = 20;
+                    if (defendCounter.effectiveAttackTick <= 0 && living == getTarget() || (living instanceof Player player && player.isCreative())) {
+                        if (defendCounter.effectiveAttackCounter < 20)
+                            defendCounter.effectiveAttackCounter += 1;
+                        defendCounter.effectiveAttackTick = 20;
+                    }
+
+                    //if (entitySource instanceof Player player) {
+                    //    player.sendSystemMessage(Component.literal(String.valueOf(defendCounter.effectiveAttackCounter)));
+                    //}
                 }
             }else {
-                defendCounterMap.put(living,new DefendCounter(1,20));
+                defendCounterMap.put(living,new DefendCounter(living instanceof Player?10:1,20));
             }
             return super.hurt(source,amount/10*Math.max(1,attackTime));
         }
@@ -362,6 +394,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(TARGET_POSX, 0f);
+        this.entityData.define(PARTICLE, new CompoundTag());
         this.entityData.define(TARGET_POSY, 0f);
         this.entityData.define(TARGET_POSZ, 0f);
         this.entityData.define(IS_GLOWING, false);
@@ -397,36 +430,62 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
+        super.writeSpawnData(buffer);
         buffer.writeUtf(getSpawnState().toString());
     }
 
     @Override
     public void readSpawnData(FriendlyByteBuf additionalData) {
+        super.readSpawnData(additionalData);
         setSpawnState(State.valueOf(additionalData.readUtf()));
     }
 
     @Override
     public void transSpawnState(State spawnState) {
-        if(spawnState == State.TWO){
-            if(!level().isClientSide){
-                AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
-                if (maxHealthAttr != null) {
-                    double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
-                    maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
-                    setHealth(getMaxHealth());
+        if(getSpawnState() != State.TWO) {
+            if (spawnState == State.TWO) {
+                if (!level().isClientSide) {
+                    AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
+                    if (maxHealthAttr != null) {
+                        double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
+                        maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                        setHealth(getMaxHealth());
+                    }
+                    AttributeInstance maxActAttr = getAttribute(Attributes.ATTACK_DAMAGE);
+                    if (maxActAttr != null) {
+                        double difference = maxActAttr.getBaseValue() * 0.33333f;
+                        maxActAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-4a7d-cb0b-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                    }
                 }
             }
         }
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public void setHealth(float pHealth) {
+        float health = getHealth();
+        float healthOffset = pHealth-health;
+
+        DamageSource lastDamageSource = getLastDamageSource();
+        if(healthOffset>=0||lastDamageSource==null||(lastDamageSource.is(DamageTypeTags.BYPASSES_RESISTANCE)&&lastDamageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))){
+            super.setHealth(pHealth);
+        }else {
+            healthOffset*=-1;
+
+            float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.PATRIOT.damageConfig.damageCap.get());
+            if(healthOffset>limit) healthOffset = limit;
+            super.setHealth(health-healthOffset);
+        }
     }
 
     @Override
-    public SoundEvent getBossMusic() {
-        return SoundHandle.GUN_KNIGHT_MUSIC.get();
+    public SoundEvent getIntroMusic() {
+        return SoundHandle.GUN_KNIGHT_MUSIC_INTRO.get();
+    }
+
+    @Override
+    public SoundEvent getLoopMusic() {
+        return SoundHandle.GUN_KNIGHT_MUSIC_LOOP.get();
     }
 
     @Override
@@ -467,9 +526,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     @Override
     public void die(DamageSource pDamageSource) {
-        super.die(pDamageSource);
-        if (!this.isRemoved()) {
-            bossInfo.update();
+        BigBenBlockEntity tile = getTile();
+        if((tile==null||tile.challengePlayer==null||!tile.challengePlayer.isAlive())&&getSpawnState()==State.TWO){
+            super.die(pDamageSource);
+            if (!this.isRemoved() && bossInfo instanceof IBossInfoUpdate update) {
+                update.update();
+            }
         }
     }
 
@@ -484,6 +546,12 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         super.stopSeenByPlayer(player);
         this.bossInfo.removePlayer(player);
     }
+
+    @Override
+    protected ConfigHandler.NeutralProtectionConfig getNeutralProtectionConfig() {
+        return ConfigHandler.COMMON.MOBS.GUN_KNIGHT.neutralProtectionConfig;
+    }
+
 
     @Override
     public void load(CompoundTag compound) {
@@ -578,7 +646,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     public static AttributeSupplier.Builder createAttributes() {
         return GuerrillasEntity.createMobAttributes().add(Attributes.MAX_HEALTH, 300.0D)
-                .add(Attributes.ATTACK_DAMAGE, 20.0f)
+                .add(Attributes.ATTACK_DAMAGE, 15.0f)
                 .add(Attributes.ARMOR, 20.0D)
                 .add(Attributes.ARMOR_TOUGHNESS, 10.0D)
                 .add(Attributes.FOLLOW_RANGE, 48)
@@ -769,10 +837,10 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
     public void addLightTime(LivingEntity target,int lightingTime){
         if(level().isClientSide){
-            FrozenCapability.IFrozenCapability capability = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
+            ForceEffectInstance capability = ForceEffectHandle.getForceEffect(target, ForceEffectHandle.LIGHTING_FORCE_EFFECT);
             if (capability != null) {
-                int lightingTick = capability.getLightingTick();
-                capability.setLighting(lightingTick + lightingTime);
+                int lightingTick = capability.getTime();
+                capability.setTime(lightingTick + lightingTime);
             }
         }
     }
@@ -860,6 +928,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         float dist = distanceTo(target);
 
         Bullet abstractarrow = new Bullet(level(),this,2);
+        abstractarrow.len111 = getAnimation()==ALL_SHOT?6:10;
         abstractarrow.setPos(vec3);
 
         Vec3 motion = new Vec3(0,-0.01,1).yRot((float) (-this.getYRot() / 180 * Math.PI+Math.atan2(1,dist))).add(position());
@@ -942,26 +1011,6 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         if (clientVectors != null && clientVectors.length > index) {
             clientVectors[index] = pos;
         }
-    }
-
-    @Override
-    public Dialogue getDialogue() {
-        return DialogueStore.snownova_meet_1;
-    }
-
-    @Override
-    public LivingEntity getDialogueEntity() {
-        return dialogueLivingEntity;
-    }
-
-    @Override
-    public void setDialogueEntity(LivingEntity dialogueEntity) {
-        dialogueLivingEntity = dialogueEntity;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
     }
 
     @Override
@@ -1092,6 +1141,34 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
+    private void doSankta(){
+        if(getAnimation()==SANKTA){
+            int tick = getAnimationTick();
+            if(tick==20){
+                if(!level().isClientSide){
+                    if(sanktaEntity!=null){
+                        sendRingFX(sanktaEntity.position());
+                        ForceEffectHandle.addForceEffect(sanktaEntity,new ForceEffectInstance(ForceEffectHandle.SLOW_MOVE_FORCE_EFFECT,20,80));
+                    }
+                }
+            }
+            if(tick==100){
+                if(!level().isClientSide){
+                    if(sanktaEntity!=null&&sanktaEntity.isAlive()){
+                        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(sanktaEntity, CapabilityHandle.PLAYER_CAPABILITY);
+                        if(capability!=null){
+                            capability.setIsSankta(true);
+                            if(sanktaEntity instanceof ServerPlayer player){
+                                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_4_sakta");
+                            }
+                            ServerNetwork.toClientMessage(sanktaEntity, new SynCapabilityMessage(sanktaEntity, capability.writePlaySkillMessage()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void doState2(){
         if(getAnimation()==STATE_2){
             int tick = getAnimationTick();
@@ -1124,7 +1201,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                     EntityCameraShake.cameraShake(level(),position(),20,0.06f,90,10);
                 }
                 if(tick==142){
-                    FXEntity.SpawnFXEntity(level(),0, position().add(0,0.5f,0), this);
+                    FXEntity.SpawnFXEntity(level(),0,10, position().add(0,0.5f,0), this);
                 }
             }
         }
@@ -1137,6 +1214,35 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
             }
         }
+    }
+
+    public boolean isPlayerNearPiller(Entity player,Vec3 vec3){
+        Vec3 position = player.position();
+        Vec3 subtract = vec3.subtract(position);
+        Vec3 line = subtract.normalize();
+        int length = (int) subtract.length();
+
+        outerLoop: for(int i=0;i<length;i++){
+            Vec3 lineS = line.scale(i*1.4);
+            Vec3 add = position.add(lineS);
+            if(i>8) break;
+
+            for(int i1 = 0; i1 < 1; i1++) {
+                for(int i2 = 0; i2 < 1; i2++) {
+                    for(int i3 = 0; i3 < 3; i3++) {
+                        BlockPos blockPos = new BlockPos((int)add.x + i1, (int)add.y + i3, (int)add.z + i2);
+                        BlockState blockState = level().getBlockState(blockPos);
+                        if(blockState.isAir()) {
+                            ActRangeSignMessage.showBlockInter(this,blockPos,level());
+                            continue outerLoop;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     private void doSkillHalberd3(){
@@ -1186,7 +1292,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
                 for(LivingEntity entityHit:list) {
                     if(entityHit == this||(entityHit instanceof Player player&&player.isCreative())) continue;
 
-                    Vec3 move = this.position().subtract(entityHit.position()).normalize().scale(0.1);
+                    Vec3 move = this.position().subtract(entityHit.position()).normalize().scale(0.06);
                     entityHit.setDeltaMovement(entityHit.getDeltaMovement().add(move));
                 }
             }
@@ -2291,7 +2397,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
 
         rlParticle5.config.trails.open();
 
-        EntityPosRotEffect effect = new EntityPosRotEffect(level(),this);
+        EntityPosRotEffect effect = new EntityPosRotEffect(level(),this,new Vec3(0,0,0));
         rlParticle5.emmit(effect);
     }
 
@@ -2471,6 +2577,94 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle5.emmit(blockEffect);
         rlParticle6.emmit(blockEffect);
         rlParticle7.emmit(blockEffect);
+    }
+
+    private void sendRingFX(Vec3 vec3){
+        CompoundTag compoundTag = new CompoundTag();
+        compoundTag.putFloat("x",(float) vec3.x);
+        compoundTag.putFloat("y",(float) vec3.y);
+        compoundTag.putFloat("z",(float) vec3.z);
+        this.entityData.set(PARTICLE,compoundTag);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
+        super.onSyncedDataUpdated(pKey);
+        if(pKey==PARTICLE&&level().isClientSide){
+            CompoundTag compoundTag = this.entityData.get(PARTICLE);
+            Vec3 vec3 = new Vec3(compoundTag.getFloat("x"),compoundTag.getFloat("y"),compoundTag.getFloat("z"));
+            for(int i =0;i<10;i++){
+                ringFX(80,0,2-i/10f,vec3,level());
+            }
+        }
+    }
+
+    private void ringFX(int lifeTime, int delay, float scale, Vec3 vec3, Level level){
+        RLParticle rlParticle1 = new RLParticle(level);
+
+        rlParticle1.config.setDuration(lifeTime);
+        rlParticle1.config.setStartLifetime(NumberFunction.constant(lifeTime));
+        rlParticle1.config.setStartSpeed(NumberFunction.constant(0));
+        rlParticle1.config.setStartSize(new NumberFunction3(3));
+
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(1));
+        rlParticle1.config.getEmission().addBursts(burst1);
+
+        rlParticle1.config.getMaterial().setMaterial(TBSMaterialHandle.ROMA_TEXTURE_RING.create());
+        rlParticle1.config.getMaterial().setCull(false);
+        rlParticle1.config.getLights().open();
+
+        rlParticle1.config.getRenderer().setRenderMode(RendererSetting.Particle.Mode.Horizontal);
+        rlParticle1.config.getShape().setShape(new Dot());
+        rlParticle1.config.getColorOverLifetime().open();
+        rlParticle1.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(new float[]{0f,6f/lifeTime,1f},new int[]{0X00FFFFFF,0XFFFFFFFF,0XFFFFFFFF})));
+        rlParticle1.config.getSizeOverLifetime().open();
+        rlParticle1.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0f,6f/lifeTime,(lifeTime-4f)/lifeTime,1f},new float[]{1.4f,1f,1f,0})));
+        rlParticle1.config.getRotationOverLifetime().open();
+        rlParticle1.config.getRotationOverLifetime().setYaw(new Line(new float[]{0f,1f},new float[]{0,360/(scale*scale)}));
+
+        RLParticle rlParticle2 = new RLParticle(level);
+
+        rlParticle2.config.setDuration(lifeTime);
+        rlParticle2.config.setStartLifetime(NumberFunction.constant(lifeTime));
+        rlParticle2.config.setStartSpeed(NumberFunction.constant(0));
+        rlParticle2.config.setStartSize(new NumberFunction3(0.05));
+        rlParticle2.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(360,0,true)));
+
+        rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(0));
+        EmissionSetting.Burst burst2 = new EmissionSetting.Burst();burst2.setCount(NumberFunction.constant(50));
+        rlParticle2.config.getEmission().addBursts(burst2);
+
+        rlParticle2.config.getMaterial().setMaterial(MaterialHandle.GLOW.create());
+        Circle circle2 = new Circle();circle2.setRadiusThickness(0.1f);circle2.setRadius(2.8f);
+        rlParticle2.config.getLights().open();
+
+        rlParticle2.config.getShape().setShape(circle2);
+        rlParticle2.config.getColorOverLifetime().open();
+        rlParticle2.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(new float[]{0f,6f/lifeTime,(lifeTime-4f)/lifeTime,1f},new int[]{0X00FFFFFF,0XFFFFFFFF,0XFFFFFFFF,0X00FFFFFF})));
+        rlParticle2.config.getVelocityOverLifetime().open();
+        rlParticle2.config.getVelocityOverLifetime().setOrbital(new NumberFunction3(0,-1/(scale*scale),0));
+        rlParticle2.config.getRotationOverLifetime().open();
+        rlParticle2.config.getRotationOverLifetime().setRoll(new RandomLine(new float[]{0f,1f},new float[]{0,360},new float[]{0,0}));
+
+        rlParticle1.config.setStartDelay(NumberFunction.constant(delay));
+        rlParticle2.config.setStartDelay(NumberFunction.constant(delay));
+
+        BlockEffect blockEffect = new BlockEffect(level, vec3);
+        RandomSource random = level.random;
+        float v = (random.nextFloat()-0.5f) * 100f;
+        float x = (random.nextFloat()-0.5f) * 100f;
+        rlParticle1.config.getRotationOverLifetime().setRoll(NumberFunction.constant (v));
+        rlParticle1.config.getRotationOverLifetime().setPitch(NumberFunction.constant(x));
+
+        rlParticle2.updateRotation(new Vector3f(v/180f*3.14f,0,x/180f*3.14f));
+
+        rlParticle1.updateScale(new Vector3f(scale));
+        rlParticle2.updateScale(new Vector3f(scale));
+
+        rlParticle2.emmit(blockEffect);
+        rlParticle1.emmit(blockEffect);
     }
 
     public void skillHalberd10(){
@@ -2659,7 +2853,8 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.setStartColor(new Gradient(new GradientColor(0X31DFDDAF)));
 
         rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(0));
-        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(1000));
+        //maxcounter
+        EmissionSetting.Burst burst1 = new EmissionSetting.Burst();burst1.setCount(NumberFunction.constant(600));
         rlParticle1.config.getEmission().addBursts(burst1);
 
         rlParticle1.config.getMaterial().setMaterial(MaterialHandle.SMOKE.create());
@@ -2668,7 +2863,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         rlParticle1.config.getShape().setShape(circle1);
 
         rlParticle1.config.getPhysics().open();
-        rlParticle1.config.getPhysics().setHasCollision(false);
+        rlParticle1.config.getPhysics().setHasCollision(true);
         rlParticle1.config.getPhysics().setFriction(NumberFunction.constant(0.93));
 
         rlParticle1.config.getVelocityOverLifetime().open();
@@ -2758,9 +2953,9 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         Vec3 vec3 = clientVectors[0].subtract(clientVectors[1]);
         double d0 = vec3.horizontalDistance();
         float rotY =((float) (Mth.atan2(vec3.x, vec3.z)));
-        float rotX =((float) (Mth.atan2(vec3.y, d0)));
+        float rotX =-((float) (Mth.atan2(vec3.y, d0)));
 
-        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.BURST_MESSY.get(), clientVectors[0].x, clientVectors[0].y, clientVectors[0].z, 0, 0.01, 0, false, rotY, rotX, 0, 0, 50F, 1, 0.86, 0.12, 1, 1, 4, true, false, new ParticleComponent[]{
+        AdvancedParticleBase.spawnParticle(level(), ParticleHandler.BURST_MESSY.get(), clientVectors[0].x, clientVectors[0].y-1., clientVectors[0].z, 0, 0.01, 0, false, rotY, rotX, 0, 0, 50F, 1, 0.86, 0.12, 1, 1, 4, true, false, new ParticleComponent[]{
                 new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, ParticleComponent.KeyTrack.startAndEnd(0f, 10f), false),
                 new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
         });
@@ -2850,7 +3045,7 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
     }
 
-    class DefendCounter{
+    public static class DefendCounter{
         int effectiveAttackTick;
 
         public DefendCounter(int effectiveAttackCounter,int effectiveAttackTick) {
@@ -2859,5 +3054,116 @@ public class GunKnightPatriot extends AnimatedEntity implements IDialogueEntity,
         }
 
         int effectiveAttackCounter;
+    }
+
+    @Override
+    public void playDeathAnimationPre(DamageSource source) {
+        BigBenBlockEntity tile1 = getTile();
+        if(tile1!=null&&tile1.isChallengeType(BigBenBlockEntity.ChallengeType.GUN_NIGHT)){
+            setHealth(1);
+            tile1.endChallenge();
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this,BREAK);
+        }
+        else if(tile1!=null&&tile1.isChallengeType(BigBenBlockEntity.ChallengeType.FINAL)){
+            setHealth(1);
+            tile1.endChallenge();
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this,BREAK);
+        }
+    }
+
+    //Dialogue
+    private DialogueEntity dialogueEntity;
+    private Player sanktaEntity;
+
+
+    @Override
+    public boolean canDialogue() {
+        return getSpawnPos()!=null&&!isAggressive()&&getDialogueEntity()==null;
+    }
+
+    @Override
+    public void startDialogue(Player player) {
+        BigBenBlockEntity tile = getTile();
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(tile!=null&&capability!=null){
+            boolean flad;
+            if(player instanceof ServerPlayer p&&hasPlayerKilledDragon(p)){
+                flad = true;
+            }else {
+                flad = false;
+            }
+
+            PlayerStoryStoneData playerStory = capability.getPlayerStory();
+            if(playerStory.isWinPatriotFinal()&&!capability.isSankta()) {
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/gun_patriot/gunknight_fight_final.json", this, player);
+                Dialogue dialogue = dialogueEntity1.getAllDialogue();
+                DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
+                dialogueEntry.setRunnable(() -> {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this,SANKTA);
+                    sanktaEntity = player;
+                });
+            }
+            else if(playerStory.isWinPatriot()) {
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/gun_patriot/gunknight_finalfight.json", this, player);
+                Dialogue dialogue = dialogueEntity1.getAllDialogue();
+                DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
+                dialogueEntry.setRunnable(() -> {
+                    AnimationActHandler.INSTANCE.sendAnimationMessage(this,STATE_2);
+                    tile.startChallengePlayer(this, BigBenBlockEntity.ChallengeType.FINAL,player);
+                });
+                DialogueEntry dialogueEntry1 = dialogue.getDialogueEntry("main3");
+                dialogueEntry1.setRunnable(() -> {
+                    if(!playerStory.isHasPatriotGun()){
+                        player.getInventory().add(new ItemStack(ItemHandle.GUN.get()));
+                        playerStory.setHasPatriotGun(true);
+                    }
+                });
+            }
+            else if(playerStory.isWindPathfinder()||(flad&&playerStory.isSeenGunPatriot())) {
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/gun_patriot/gunknight_fight.json", this, player);
+                Dialogue dialogue = dialogueEntity1.getAllDialogue();
+                DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
+                dialogueEntry.setRunnable(() -> {
+                    tile.startChallengePlayer(this, BigBenBlockEntity.ChallengeType.GUN_NIGHT,player);
+                });
+            }else {
+                if(flad){
+                    DialogueEntity dialogueEntity1 = startTalk("dialogue/gun_patriot/gunknight_firstmeet1.json", this, player);
+                    Dialogue dialogue = dialogueEntity1.getAllDialogue();
+                    DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
+                    dialogueEntry.setRunnable(() -> {
+                        playerStory.setSeenGunPatriot(true);
+                    });
+                }else {
+                    DialogueEntity dialogueEntity1 = startTalk("dialogue/gun_patriot/gunknight_firstmeet.json", this, player);
+                    Dialogue dialogue = dialogueEntity1.getAllDialogue();
+                    DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
+                    dialogueEntry.setRunnable(() -> {
+                        playerStory.setSeenGunPatriot(true);
+                    });
+                }
+            }
+        }
+    }
+
+    public boolean hasPlayerKilledDragon(ServerPlayer player) {
+        Advancement advancement = player.server.getAdvancements().getAdvancement(new ResourceLocation("minecraft:end/kill_dragon"));
+        if (advancement != null) {
+            AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
+            return progress.isDone();
+        }
+        return false;
+    }
+
+    @Override
+    public DialogueEntity getDialogueEntity() {
+        if(dialogueEntity!=null&&!dialogueEntity.isAlive()) dialogueEntity = null;
+
+        return dialogueEntity;
+    }
+
+    @Override
+    public void setDialogueEntity(DialogueEntity dialogueEntity) {
+        this.dialogueEntity = dialogueEntity;
     }
 }

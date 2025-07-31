@@ -1,0 +1,14 @@
+{
+  "type": "torchesbecomesunlight:oven",
+  "cookingtime": 400,
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "torchesbecomesunlight:dough"
+    }
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "item": "torchesbecomesunlight:ursus_bread"
+  }
+}

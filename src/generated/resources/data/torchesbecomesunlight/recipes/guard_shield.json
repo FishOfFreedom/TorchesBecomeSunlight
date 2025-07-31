@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": {
+      "item": "minecraft:diamond"
+    },
+    "I": {
+      "item": "minecraft:shield"
+    }
+  },
+  "pattern": [
+    " B ",
+    "BIB",
+    " B "
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:guard_shield"
+  },
+  "show_notification": true
+}

@@ -3,20 +3,28 @@ package com.freefish.torchesbecomesunlight.client.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.particle.*;
+import com.freefish.torchesbecomesunlight.client.render.blockentity.*;
 import com.freefish.torchesbecomesunlight.client.render.entity.*;
+import com.freefish.torchesbecomesunlight.client.render.entity.player.SakataLayer;
 import com.freefish.torchesbecomesunlight.client.render.entity.village.ManRenderer;
 import com.freefish.torchesbecomesunlight.client.render.entity.village.WomanRenderer;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
 import com.freefish.torchesbecomesunlight.client.render.gui.recipebook.RecipeCategories;
-import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotScreen;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.cuttingborad.CuttingBoardScreen;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenScreen;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.stewpot.StewPotScreen;
 import com.freefish.torchesbecomesunlight.client.render.projectile.*;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleRibbon;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.MenuHandle;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
@@ -32,6 +40,7 @@ public class ClientEvent {
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(EntityHandle.FROST_NOVA.get(), SnowNovaRenderer::new);
         event.registerEntityRenderer(EntityHandle.SHIELD_GUARD.get(), ShieldGuardRenderer::new);
+        event.registerEntityRenderer(EntityHandle.PATHFINDER_BALL.get(), PathfinderBallistariusRenderer::new);
         event.registerEntityRenderer(EntityHandle.SAINT_GUARD.get(), SaintGuardRenderer::new);
         event.registerEntityRenderer(EntityHandle.MANGLER.get(), ManglerRenderer::new);
         event.registerEntityRenderer(EntityHandle.MALE.get(), ManRenderer::new);
@@ -42,9 +51,13 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityHandle.LIGHT_HALBERD.get(), HalberdOTI2Renderer::new);
         event.registerEntityRenderer(EntityHandle.BIG_ICE_CRYSTAL.get(), BigIceCrystalRenderer::new);
         event.registerEntityRenderer(EntityHandle.CAMERA_SHAKE.get(), VoidRenderer::new);
+        event.registerEntityRenderer(EntityHandle.CHAIR_ENTITY.get(), VoidRenderer::new);
+        event.registerEntityRenderer(EntityHandle.PLAYER_SKILL_ENTITY.get(), VoidRenderer::new);
         event.registerEntityRenderer(EntityHandle.ICE_TUFT.get(), IceTuftRenderer::new);
         event.registerEntityRenderer(EntityHandle.ICE_BLADE.get(), IceBladeRenderer::new);
         event.registerEntityRenderer(EntityHandle.FALLING_BLOCK.get(), RenderFallingBlock::new);
+        event.registerEntityRenderer(EntityHandle.ROS_MULTI_BLOCK.get(), RenderMultiBlock::new);
+        event.registerEntityRenderer(EntityHandle.ANIMATION_BLOCK.get(), RenderMultiBlock::new);
         event.registerEntityRenderer(EntityHandle.HALBERD_OTI_ENTITY.get(), HalberdOTIRenderer::new);
         event.registerEntityRenderer(EntityHandle.PATRIOT.get(), PatriotRenderer::new);
         event.registerEntityRenderer(EntityHandle.GUN_KNIGHT_PATRIOT.get(), GunKnightPatriotRenderer::new);
@@ -58,8 +71,25 @@ public class ClientEvent {
         event.registerEntityRenderer(EntityHandle.BLACK_TUFT.get(), BlackTuftRenderer::new);
         event.registerEntityRenderer(EntityHandle.TURRET.get(), TurretRenderer::new);
         event.registerEntityRenderer(EntityHandle.FX_ENTITY.get(), VoidRenderer::new);
+        event.registerEntityRenderer(EntityHandle.BURDENBEAST.get(), BurdenbeastRenderer::new);
+        event.registerEntityRenderer(EntityHandle.ROSMONTIS.get(), RosmontisRenderer::new);
+        event.registerEntityRenderer(EntityHandle.ROSMONTIS_INSTALLATION.get(), RosmontisInstallationRenderer::new);
+        event.registerEntityRenderer(EntityHandle.ROSMONTIS_LIVING_INSTALLATION.get(), RosmontisLivingInstallationRenderer::new);
+        event.registerEntityRenderer(EntityHandle.PREPARATION_OP.get(), PreparationOpRenderer::new);
+        event.registerEntityRenderer(EntityHandle.PATROL_CAPTAIN.get(), PatrolCaptainRenderer::new);
+        event.registerEntityRenderer(EntityHandle.YETI_ICE_LEAVER.get(), YetiIcecleaverRenderer::new);
+        event.registerEntityRenderer(EntityHandle.CRAZELYSEON.get(), CrazelyseonRenderer::new);
+        event.registerEntityRenderer(EntityHandle.EYE_OF_STRUCTURE.get(), (context) -> new ThrownItemRenderer<>(context, 1.5F, true));
+
+        event.registerBlockEntityRenderer(BlockEntityHandle.STEW_POT.get(), context -> new StewPotRenderer());
+        event.registerBlockEntityRenderer(BlockEntityHandle.CUTTING_BOARD.get(), context -> new CuttingBoardRenderer());
+        event.registerBlockEntityRenderer(BlockEntityHandle.ELEVATOR.get(), context -> new ElebatorRenderer());
+        event.registerBlockEntityRenderer(BlockEntityHandle.BIG_BEN.get(), context -> new BigBenRenderer());
+        event.registerBlockEntityRenderer(BlockEntityHandle.ELEVATOR_DOOR.get(), context -> new ElebatorDoorRenderer());
 
         MenuScreens.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
+        MenuScreens.register(MenuHandle.CUTTING_BORAD_MENU.get(), CuttingBoardScreen::new);
+        MenuScreens.register(MenuHandle.OVEN_MENU.get(), OvenScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -99,6 +129,23 @@ public class ClientEvent {
     @SubscribeEvent
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BulletRenderer.DecalModel.LAYER_LOCATION, BulletRenderer.DecalModel::createBodyLayer);
+    }
+
+
+    @SubscribeEvent
+    public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        addLayerToPlayerRenderer(event, "default");
+        addLayerToPlayerRenderer(event, "slim");
+    }
+
+    private static void addLayerToPlayerRenderer(EntityRenderersEvent.AddLayers event, String skinType) {
+        PlayerRenderer renderer = event.getSkin(skinType);
+        if (renderer != null) {
+            renderer.addLayer(new SakataLayer(
+                    renderer,
+                    Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer()
+            ));
+        }
     }
 
     @SubscribeEvent

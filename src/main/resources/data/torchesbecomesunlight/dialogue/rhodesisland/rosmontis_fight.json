@@ -1,0 +1,51 @@
+{
+  "id": "pathfinder_fight",
+  "title": "no",
+  "description": "开始挑战迷迭香",
+  "speakers": [
+    "op","player"
+  ],
+  "startid": "main11",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main11",
+      "nextid": "main1",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_fight.main11",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+      ]
+    },
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_fight.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.rosmontis_fight.main1_o1"
+        },
+        {
+          "nextid": "main2",
+          "text": "dialogue.rosmontis_fight.main1_o2"
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_fight.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

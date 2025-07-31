@@ -1,0 +1,36 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:main_8_2_patriot",
+          "torchesbecomesunlight:main_1_village",
+          "torchesbecomesunlight:main_8_1_frostnova"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.main"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:title"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.main"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

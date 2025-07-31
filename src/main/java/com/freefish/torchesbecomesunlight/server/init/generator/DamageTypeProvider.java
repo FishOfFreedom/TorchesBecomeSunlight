@@ -18,6 +18,7 @@ public class DamageTypeProvider extends DamageTypeTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(CustomResourceKey.FROST_ATTACK);
+        this.tag(DamageTypeTags.BYPASSES_ARMOR).add(CustomResourceKey.NO_TRIGGER_WITHOUT_ARMOR_ATTACK);
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(CustomResourceKey.DEMON_ATTACK);
     }
 }

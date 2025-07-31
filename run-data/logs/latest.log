@@ -1,54 +1,54 @@
-[303月2025 00:21:16.848] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\major\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, torchesbecomesunlight, --all, --output, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\generated\resources, --existing, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\main\resources, -mixin.config=torchesbecomesunlight.mixins.json, --mixin.config, torchesbecomesunlight.mixins.json]
-[303月2025 00:21:16.855] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.11 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
-[303月2025 00:21:16.926] [main/WARN] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Configuration file D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\run-data\config\fml.toml is not correct. Correcting
-[303月2025 00:21:16.928] [main/INFO] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [earlyWindowSkipGLVersions] was corrected from null to []
-[303月2025 00:21:16.928] [main/INFO] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [earlyWindowSquir] was corrected from null to false
-[303月2025 00:21:16.928] [main/INFO] [net.minecraftforge.fml.loading.FMLConfig/CORE]: Incorrect key [earlyWindowShowCPU] was corrected from null to false
-[303月2025 00:21:16.937] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
-[303月2025 00:21:16.971] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/major/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23132!/ Service=ModLauncher Env=CLIENT
-[303月2025 00:21:17.270] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[303月2025 00:21:17.272] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[303月2025 00:21:17.274] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
-[303月2025 00:21:17.278] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
-[303月2025 00:21:17.511] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
-[303月2025 00:21:18.641] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[303月2025 00:21:18.657] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\major\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, torchesbecomesunlight, --all, --output, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\generated\resources, --existing, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\main\resources]
-[303月2025 00:21:18.808] [main/INFO] [Xenon/]: Loaded configuration file for Xenon: 63 options available, 3 override(s) found
-[303月2025 00:21:18.811] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Searching for graphics cards...
-[303月2025 00:21:19.022] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Found graphics card: GraphicsAdapterInfo[vendor=NVIDIA, name=NVIDIA GeForce RTX 4060 Laptop GPU, version=DriverVersion=31.0.15.3161]
-[303月2025 00:21:19.022] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Found graphics card: GraphicsAdapterInfo[vendor=AMD, name=AMD Radeon(TM) Graphics, version=DriverVersion=32.0.11038.3]
-[303月2025 00:21:19.026] [main/WARN] [Xenon-Workarounds/]: Sodium has applied one or more workarounds to prevent crashes or other issues on your system: [NVIDIA_THREADED_OPTIMIZATIONS]
-[303月2025 00:21:19.026] [main/WARN] [Xenon-Workarounds/]: This is not necessarily an issue, but it may result in certain features or optimizations being disabled. You can sometimes fix these issues by upgrading your graphics driver.
-[303月2025 00:21:19.169] [main/INFO] [mixin/]: Remapping refMap xenon-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.171] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.175] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.176] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.176] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.176] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.178] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.178] [main/INFO] [mixin/]: Remapping refMap sodiumCompatibility-oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.182] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.183] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.184] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.185] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.185] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.185] [main/INFO] [mixin/]: Remapping refMap eeeabsmobs.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
-[303月2025 00:21:19.442] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.WorldRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.442] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.ClientWorldMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.442] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.BackgroundRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.442] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.gui.font.GlyphRendererMixin' as rule 'mixin.features.render.gui.font' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.445] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.gui.font.FontSetMixin' as rule 'mixin.features.render.gui.font' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.445] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.shadows.EntityRenderDispatcherMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.445] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.fast_render.ModelPartMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.445] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.fast_render.CuboidMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.445] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.cull.EntityRendererMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
-[303月2025 00:21:19.829] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.2.0).
-[303月2025 00:21:19.880] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [torchesbecomesunlight]
-[303月2025 00:21:22.381] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
-[303月2025 00:21:22.383] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
-[303月2025 00:21:22.488] [modloading-worker-0/WARN] [mixin/]: Static binding violation: PRIVATE @Overwrite method setSectionDirty in xenon.mixins.json:core.render.world.WorldRendererMixin cannot reduce visibiliy of PUBLIC target method, visibility will be upgraded.
-[303月2025 00:21:22.583] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
-[303月2025 00:21:22.583] [modloading-worker-0/ERROR] [Xenon/]: Failed to update fingerprint
+[107月2025 13:57:31.416] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\major\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, torchesbecomesunlight, --all, --output, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\generated\resources, --existing, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\main\resources, -mixin.config=torchesbecomesunlight.mixins.json, --mixin.config, torchesbecomesunlight.mixins.json]
+[107月2025 13:57:31.420] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.11 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[107月2025 13:57:31.500] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[107月2025 13:57:31.527] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/major/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23132!/ Service=ModLauncher Env=CLIENT
+[107月2025 13:57:31.757] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[107月2025 13:57:31.759] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[107月2025 13:57:31.759] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[107月2025 13:57:31.762] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\major\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[107月2025 13:57:31.895] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 3 dependencies adding them to mods collection
+[107月2025 13:57:32.954] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[107月2025 13:57:32.971] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\major\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, torchesbecomesunlight, --all, --output, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\generated\resources, --existing, D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\src\main\resources]
+[107月2025 13:57:33.044] [main/WARN] [mixin/]: Reference map 'torchesbecomesunlight.refmap.json' for torchesbecomesunlight.mixins.json could not be read. If this is a development environment you can ignore this message
+[107月2025 13:57:33.124] [main/INFO] [Xenon/]: Loaded configuration file for Xenon: 65 options available, 3 override(s) found
+[107月2025 13:57:33.125] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Searching for graphics cards...
+[107月2025 13:57:33.347] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Found graphics card: GraphicsAdapterInfo[vendor=NVIDIA, name=NVIDIA GeForce RTX 4060 Laptop GPU, version=DriverVersion=31.0.15.3161]
+[107月2025 13:57:33.347] [main/INFO] [Xenon-GraphicsAdapterProbe/]: Found graphics card: GraphicsAdapterInfo[vendor=AMD, name=AMD Radeon(TM) Graphics, version=DriverVersion=32.0.11038.3]
+[107月2025 13:57:33.351] [main/WARN] [Xenon-Workarounds/]: Sodium has applied one or more workarounds to prevent crashes or other issues on your system: [NVIDIA_THREADED_OPTIMIZATIONS]
+[107月2025 13:57:33.351] [main/WARN] [Xenon-Workarounds/]: This is not necessarily an issue, but it may result in certain features or optimizations being disabled. You can sometimes fix these issues by upgrading your graphics driver.
+[107月2025 13:57:33.544] [main/INFO] [mixin/]: Remapping refMap xenon-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.546] [main/INFO] [mixin/]: Remapping refMap geckolib.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.546] [main/INFO] [mixin/]: Remapping refMap eeeabsmobs.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.547] [main/INFO] [mixin/]: Remapping refMap rosmontislib.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.549] [main/INFO] [mixin/]: Remapping refMap neat.refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.550] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.551] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.554] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.556] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.556] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.558] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.560] [main/INFO] [mixin/]: Remapping refMap sodiumCompatibility-oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.562] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.562] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.566] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.568] [main/INFO] [mixin/]: Remapping refMap oculus-mixins-refmap.json using D:\mod\self\GatheringTorchesBecomeSunlight\GatheringTorchesBecomeSunlight\build\createSrgToMcp\output.srg
+[107月2025 13:57:33.911] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.WorldRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.911] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.ClientWorldMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.911] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.world.sky.BackgroundRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.gui.font.GlyphRendererMixin' as rule 'mixin.features.render.gui.font' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.gui.font.FontSetMixin' as rule 'mixin.features.render.gui.font' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.shadows.EntityRenderDispatcherMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.fast_render.ModelPartMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.fast_render.CuboidMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
+[107月2025 13:57:33.913] [main/WARN] [Xenon/]: Force-disabling mixin 'features.render.entity.cull.EntityRendererMixin' as rule 'mixin.features.render.entity' (added by mods [oculus]) disables it and children
+[107月2025 13:57:34.330] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.2.0).
+[107月2025 13:57:34.424] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [torchesbecomesunlight]
+[107月2025 13:57:36.841] [modloading-worker-0/INFO] [com.freefish.rosmontislib.RosmontisLib/]: create rosmontislib config folder
+[107月2025 13:57:36.907] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[107月2025 13:57:36.912] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
+[107月2025 13:57:37.223] [modloading-worker-0/WARN] [mixin/]: Static binding violation: PRIVATE @Overwrite method setSectionDirty in xenon.mixins.json:core.render.world.WorldRendererMixin cannot reduce visibiliy of PUBLIC target method, visibility will be upgraded.
+[107月2025 13:57:37.421] [modloading-worker-0/WARN] [software.bernie.geckolib.GeckoLib/]: Minecraft.getInstance() was null, could not register reload listeners
+[107月2025 13:57:37.421] [modloading-worker-0/ERROR] [Xenon/]: Failed to update fingerprint
 java.lang.NullPointerException: Cannot invoke "net.minecraft.client.Minecraft.getUser()" because the return value of "net.minecraft.client.Minecraft.getInstance()" is null
 	at me.jellysquid.mods.sodium.client.data.fingerprint.FingerprintMeasure.create(FingerprintMeasure.java:19) ~[xenon-564239-5216360_mapped_parchment_2023.06.26-1.20.1.jar%23199!/:?]
 	at me.jellysquid.mods.sodium.client.SodiumClientMod.updateFingerprint(SodiumClientMod.java:101) ~[xenon-564239-5216360_mapped_parchment_2023.06.26-1.20.1.jar%23199!/:?]
@@ -67,16 +67,24 @@ java.lang.NullPointerException: Cannot invoke "net.minecraft.client.Minecraft.ge
 	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655) ~[?:?]
 	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622) ~[?:?]
 	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165) ~[?:?]
-[303月2025 00:21:23.126] [main/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot from class com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer
-[303月2025 00:21:23.177] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/mod/self/GatheringTorchesBecomeSunlight/GatheringTorchesBecomeSunlight/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
-[303月2025 00:21:23.177] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/mod/self/GatheringTorchesBecomeSunlight/GatheringTorchesBecomeSunlight/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
-[303月2025 00:21:23.317] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
-[303月2025 00:21:23.357] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 40 ms
-[303月2025 00:21:23.357] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:entity_type mod id torchesbecomesunlight
-[303月2025 00:21:23.369] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:entity_type mod id torchesbecomesunlight finished after 10 ms
-[303月2025 00:21:23.369] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:damage_type mod id torchesbecomesunlight
-[303月2025 00:21:23.372] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:damage_type mod id torchesbecomesunlight finished after 3 ms
-[303月2025 00:21:23.372] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: torchesbecomesunlight
-[303月2025 00:21:23.430] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: torchesbecomesunlight finished after 56 ms
-[303月2025 00:21:23.430] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 112 ms
-[303月2025 00:21:23.432] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 7, old count: 6, new count: 6, removed stale: 2, written: 3
+[107月2025 13:57:38.206] [main/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot from class com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer
+[107月2025 13:57:38.208] [main/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.freefish.torchesbecomesunlight.server.entity.animal.Burdenbeast from class com.freefish.torchesbecomesunlight.server.entity.animal.Mangler
+[107月2025 13:57:38.208] [main/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.freefish.torchesbecomesunlight.server.entity.animal.Burdenbeast from class com.freefish.torchesbecomesunlight.server.entity.animal.Mangler
+[107月2025 13:57:38.257] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/mod/self/GatheringTorchesBecomeSunlight/GatheringTorchesBecomeSunlight/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[107月2025 13:57:38.257] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/mod/self/GatheringTorchesBecomeSunlight/GatheringTorchesBecomeSunlight/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.06.26-1.20.1.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[107月2025 13:57:38.399] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Registries
+[107月2025 13:57:38.455] [main/INFO] [net.minecraft.data.DataGenerator/]: Registries finished after 54 ms
+[107月2025 13:57:38.455] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:entity_type mod id torchesbecomesunlight
+[107月2025 13:57:38.468] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:entity_type mod id torchesbecomesunlight finished after 13 ms
+[107月2025 13:57:38.468] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:damage_type mod id torchesbecomesunlight
+[107月2025 13:57:38.473] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:damage_type mod id torchesbecomesunlight finished after 3 ms
+[107月2025 13:57:38.473] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: torchesbecomesunlight
+[107月2025 13:57:38.475] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: torchesbecomesunlight finished after 4 ms
+[107月2025 13:57:38.478] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Advancements
+[107月2025 13:57:38.573] [main/INFO] [net.minecraft.data.DataGenerator/]: Advancements finished after 95 ms
+[107月2025 13:57:38.573] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[107月2025 13:57:38.596] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 23 ms
+[107月2025 13:57:38.596] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: torchesbecomesunlight
+[107月2025 13:57:38.677] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: torchesbecomesunlight finished after 81 ms
+[107月2025 13:57:38.677] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 279 ms
+[107月2025 13:57:38.690] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 120, old count: 99, new count: 120, removed stale: 1, written: 41

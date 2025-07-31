@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:ice"
+    },
+    "B": {
+      "item": "minecraft:diamond"
+    },
+    "I": {
+      "item": "minecraft:netherite_sword"
+    }
+  },
+  "pattern": [
+    " BA",
+    "BIB",
+    "AB "
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:ice_broadsword"
+  },
+  "show_notification": true
+}

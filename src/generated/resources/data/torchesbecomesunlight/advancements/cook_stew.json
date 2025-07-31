@@ -1,0 +1,38 @@
+{
+  "parent": "torchesbecomesunlight:cook",
+  "criteria": {
+    "has_stew_pot": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:stew_pot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.cook_stew"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:stew_pot"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.cook_stew"
+    }
+  },
+  "requirements": [
+    [
+      "has_stew_pot"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

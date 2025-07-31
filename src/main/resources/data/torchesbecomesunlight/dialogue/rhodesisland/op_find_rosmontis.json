@@ -1,0 +1,90 @@
+{
+  "id": "op_find_rosmontis",
+  "title": "no",
+  "description": "找到迷迭香",
+  "speakers": [
+    "op","player"
+  ],
+  "startid": "main1",
+  "skipid": "main1",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.op_find_rosmontis.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.op_find_rosmontis.main1_o1"
+        },
+        {
+          "nextid": "main2",
+          "text": "dialogue.op_find_rosmontis.main1_o2",
+          "canOptions": {
+            "type": "is_seen_rosmontis",
+            "speakid": "player"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "main3",
+      "speaker": "op",
+      "text": "dialogue.op_find_rosmontis.main2",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main4",
+      "speaker": "player",
+      "text": "dialogue.op_find_rosmontis.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.op_find_rosmontis.main4",
+      "dialoguetime": "100",
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.op_find_rosmontis.main4_o1"
+        },
+        {
+          "nextid": "main6",
+          "text": "dialogue.op_find_rosmontis.main4_o2",
+          "choose": {
+            "type": "op_find_rosmontis",
+            "opEntityId": "op",
+            "tnextid": "main7",
+            "fnextid": "main6"
+          }
+        }
+      ]
+    },
+    {
+      "id": "main7",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.op_find_rosmontis.main7",
+      "dialoguetime": "100"
+    },
+    {
+      "id": "main6",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "dialogue.op_find_rosmontis.main6",
+      "dialoguetime": "100"
+    }
+  ]
+}

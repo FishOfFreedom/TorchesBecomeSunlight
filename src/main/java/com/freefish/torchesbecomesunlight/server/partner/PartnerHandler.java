@@ -1,59 +1,38 @@
 package com.freefish.torchesbecomesunlight.server.partner;
 
-import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.PacketDistributor;
-import org.apache.commons.lang3.ArrayUtils;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.partner.self.FrostNovaPartner;
+import com.freefish.torchesbecomesunlight.server.partner.self.PatriotPartner;
+import com.freefish.torchesbecomesunlight.server.partner.self.RosmontisPartner;
+import com.freefish.torchesbecomesunlight.server.partner.vanilla.SanktaPartner;
+import com.freefish.torchesbecomesunlight.server.partner.vanilla.WolfPartner;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 
-import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
-public enum PartnerHandler {
-    INSTANCE;
+public class PartnerHandler {
+    public static final BiMap<ResourceLocation,PartnerType<?>> PARTNER_TYPES = HashBiMap.create();
 
-    public static final PartnerType<LivingEntity, ? extends Partner>[] PLAYER_ABILITIES = new PartnerType[] {
-            };
+    public static PartnerType<WolfPartner> WOLF_PARTNER;
+    public static PartnerType<SanktaPartner> SANKTA_PARTNER;
+    public static PartnerType<RosmontisPartner> ROSMONTIS_PARTNER;
+    public static PartnerType<PatriotPartner> PATRIOT_PARTNER;
+    public static PartnerType<FrostNovaPartner> FROSTNOVA_PARTNER;
 
-    //@Nullable
-    //public AbilityCapability.IAbilityCapability getPartnerCapability(LivingEntity entity) {
-    //    return CapabilityHandle.getCapability(entity, CapabilityHandle.ABILITY_CAPABILITY);
-    //}
-//
-    //@Nullable
-    //public Partner getPartner(LivingEntity entity, PartnerType<?, ?> abilityType) {
-    //    AbilityCapability.IAbilityCapability abilityCapability = getPartnerCapability(entity);
-    //    if (abilityCapability != null) {
-    //        return abilityCapability.getPartnerMap().get(abilityType);
-    //    }
-    //    return null;
-    //}
-//
-    //public <T extends LivingEntity> void sendPartnerMessage(T entity, PartnerType<?, ?> abilityType) {
-    //    if (entity.level().isClientSide) {
-    //        return;
-    //    }
-    //    PartnerCapability.IPartnerCapability abilityCapability = getPartnerCapability(entity);
-    //    if (abilityCapability != null) {
-    //        Partner instance = abilityCapability.getPartnerMap().get(abilityType);
-    //        if (instance != null && instance.canUse()) {
-    //            abilityCapability.activatePartner(entity, abilityType);
-    //            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new MessageUsePartner(entity.getId(), ArrayUtils.indexOf(abilityCapability.getPartnerTypesOnEntity(entity), abilityType)));
-    //        }
-    //    }
-    //}
-//
-    //public <T extends LivingEntity> void sendInterruptPartnerMessage(T entity, PartnerType<?, ?> abilityType) {
-    //    if (entity.level().isClientSide) {
-    //        return;
-    //    }
-    //    PartnerCapability.IPartnerCapability abilityCapability = getPartnerCapability(entity);
-    //    if (abilityCapability != null) {
-    //        Partner instance = abilityCapability.getPartnerMap().get(abilityType);
-    //        if (instance.isUsing()) {
-    //            instance.interrupt();
-    //            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new MessageInterruptPartner(entity.getId(), ArrayUtils.indexOf(abilityCapability.getPartnerTypesOnEntity(entity), abilityType)));
-    //        }
-    //    }
-    //}
+    public static <T extends Partner<?>> PartnerType<T> init(ResourceLocation resourceLocation, EntityType<?> entityType, Supplier<T> supplier){
+        PartnerType<T> tPartnerType = new PartnerType<>(entityType,supplier);
+        PARTNER_TYPES.put(resourceLocation,tPartnerType);
+        return tPartnerType;
+    }
+
+    public static void init(){
+        WOLF_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"wolf"),EntityType.WOLF,WolfPartner::new);
+        ROSMONTIS_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rosmontis"), EntityHandle.ROSMONTIS.get(),RosmontisPartner::new);
+        PATRIOT_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"patriot"), EntityHandle.PATRIOT.get(),PatriotPartner::new);
+        FROSTNOVA_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"frostnova"), EntityHandle.FROST_NOVA.get(),FrostNovaPartner::new);
+    }
 }

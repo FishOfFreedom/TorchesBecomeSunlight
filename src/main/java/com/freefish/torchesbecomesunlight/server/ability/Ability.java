@@ -9,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.Event;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -318,5 +317,9 @@ public class Ability<T extends LivingEntity> {
         else {
             cooldownTimer = compound.getInt("cooldown_timer");
         }
+    }
+
+    public boolean canPlayAnimation(){
+        return true;
     }
 }

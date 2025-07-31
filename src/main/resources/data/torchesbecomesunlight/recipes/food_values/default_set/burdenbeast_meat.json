@@ -1,0 +1,17 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "torchesbecomesunlight:burdenbeast_meat",
+    "torchesbecomesunlight:cooked_burdenbeast_meat"
+  ],
+  "values": {
+    "MEAT": 2
+  },
+  "effects": [
+    {
+      "effect_id":"minecraft:resistance",
+      "time":1200,
+      "level":1
+    }
+  ]
+}

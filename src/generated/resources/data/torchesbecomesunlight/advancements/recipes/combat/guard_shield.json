@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_guard_shield": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "torchesbecomesunlight:guard_shield"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "torchesbecomesunlight:guard_shield"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_guard_shield",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "torchesbecomesunlight:guard_shield"
+    ]
+  },
+  "sends_telemetry_event": false
+}

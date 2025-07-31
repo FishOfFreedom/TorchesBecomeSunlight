@@ -5,19 +5,16 @@ import com.freefish.torchesbecomesunlight.client.render.layer.PulsatingGlowLayer
 import com.freefish.torchesbecomesunlight.client.render.model.GunKnightPatriotModel;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class GunKnightPatriotRenderer extends GeoEntityRenderer<GunKnightPatriot> {
     public GunKnightPatriotRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new GunKnightPatriotModel());
         addRenderLayer(new DialogueIconLayer(this));
-        addRenderLayer(new PulsatingGlowLayer<GunKnightPatriot>(this, GunKnightPatriotModel.TEXTURE_GLOW, 0.1F, 1.0F, 0.25F,gunKnightPatriot -> true));
+        addRenderLayer(new PulsatingGlowLayer<GunKnightPatriot>(this, GunKnightPatriotModel.TEXTURE_GLOW, 0.1F, 1.0F, 0.25F, gunKnightPatriot -> true));
     }
 
     @Override

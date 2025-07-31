@@ -1,24 +1,41 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotMenu;
+import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
+import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
+import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
+import com.freefish.rosmontislib.client.particle.advance.data.number.RandomConstant;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
+import com.freefish.rosmontislib.client.particle.advance.data.number.color.RandomColor;
+import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Line;
+import com.freefish.rosmontislib.client.particle.advance.data.number.curve.RandomLine;
+import com.freefish.rosmontislib.client.particle.advance.data.shape.Cone;
+import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
+import com.freefish.rosmontislib.client.utils.GradientColor;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.stewpot.StewPotMenu;
+import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
 import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
+import com.freefish.torchesbecomesunlight.server.block.StewPotBlock;
+import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.StewPotEnum;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.*;
 import com.freefish.torchesbecomesunlight.server.item.food.DishAttribute;
+import com.freefish.torchesbecomesunlight.server.item.food.TBSFood;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,12 +54,20 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
+import java.util.Set;
+
+public class StewPotBlockEntity extends BlockEntity implements MenuProvider, GeoBlockEntity {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
     public static final int OUTPUT_SLOT = 9;
     public static final int DECORATE_SHOT = 3;
     public static final int INVENTORY_SIZE = OUTPUT_SLOT + DECORATE_SHOT + 1;
@@ -118,7 +143,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
 
         if (cookingPot.hasInput()) {
             Optional<StewPotRecipe> recipe = cookingPot.getMatchingRecipe(new RecipeWrapper(cookingPot.inventory));
-            if (recipe.isPresent() && cookingPot.canCook(recipe.get())) {
+            if (state.getValue(StewPotBlock.STEW_POT_ENUM_PROPERTY)== StewPotEnum.Firewood_4&&recipe.isPresent() && cookingPot.canCook(recipe.get())) {
                 didInventoryChange = cookingPot.processCooking(recipe.get(), cookingPot);
             } else {
                 cookingPot.cookTime = 0;
@@ -131,9 +156,29 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
             cookingPot.inventoryChanged();
         }
     }
-
+    public int particleTime;
 
     public static void animationTick(Level level, BlockPos pos, BlockState state, StewPotBlockEntity cookingPot) {
+        RandomSource random = level.random;
+        Vec3 center = pos.getCenter();
+        StewPotEnum value = state.getValue(StewPotBlock.STEW_POT_ENUM_PROPERTY);
+        if(value==StewPotEnum.Firewood_4){
+            if(cookingPot.particleTime%19==0){
+                cookingPot.fireParticle();
+            }
+            cookingPot.particleTime++;
+        }
+        else  {
+            if (cookingPot.particleTime <= 0) {
+                level.addParticle(ParticleTypes.FLAME,
+                        center.x + ((random.nextDouble() - 0.5D)),
+                        center.y - 0.45,
+                        center.z + ((random.nextDouble() - 0.5D)),
+                        0, 0, 0);
+                cookingPot.particleTime = random.nextInt(10) + 20;
+            }
+            cookingPot.particleTime--;
+        }
     }
 
     private Optional<StewPotRecipe> getMatchingRecipe(RecipeWrapper inventoryWrapper) {
@@ -180,6 +225,68 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
             if (!inventory.getStackInSlot(i).isEmpty()) return true;
         }
         return false;
+    }
+
+    private void fireParticle(){
+        RLParticle rlParticle1 = new RLParticle(level);
+        rlParticle1.config.setDuration(20);
+        rlParticle1.config.setStartLifetime(new RandomConstant(6,13,true));
+        rlParticle1.config.setStartSpeed(new RandomConstant(1,2,true));
+        rlParticle1.config.setStartSize(new NumberFunction3(new RandomConstant(0.2,0.3,true)));
+        rlParticle1.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(120,240,true)));
+        rlParticle1.config.getEmission().setEmissionRate(NumberFunction.constant(1.3));
+        rlParticle1.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL.create());
+        Cone circle1 = new Cone();circle1.setRadius(0.1f);circle1.setAngle(80);
+        rlParticle1.config.getLights().open();
+        rlParticle1.config.getShape().setShape(circle1);
+
+        rlParticle1.config.getColorOverLifetime().open();
+        rlParticle1.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(new float[]{0,0.5f,0.8f,1f},new int[]{0X00000000,0XF8634C39,0XF8634C39,0XC83B342C})));
+        rlParticle1.config.getSizeOverLifetime().open();
+        rlParticle1.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,0.55f,1f},new float[]{0.6f,1,0.78f})));
+        rlParticle1.config.getRotationOverLifetime().open();
+        rlParticle1.config.getRotationOverLifetime().setRoll(new RandomLine(new float[]{0,1f},new float[]{0,45},new float[]{0,-45}));
+
+        RLParticle rlParticle2 = new RLParticle(level);
+        rlParticle2.config.setDuration(20);
+        rlParticle2.config.setStartLifetime(new RandomConstant(2,10,true));
+        rlParticle2.config.setStartSpeed(new RandomConstant(1,2,true));
+        rlParticle2.config.setStartSize(new NumberFunction3(new RandomConstant(0.3,0.7,true)));
+        rlParticle2.config.setStartRotation(new NumberFunction3(NumberFunction.constant(0),NumberFunction.constant(0),new RandomConstant(120,240,true)));
+        rlParticle2.config.getEmission().setEmissionRate(NumberFunction.constant(1.5));
+        rlParticle2.config.getMaterial().setMaterial(TBSMaterialHandle.PIXEL.create());
+        Cone circle2 = new Cone();circle2.setRadius(0.2f);circle2.setAngle(70);
+        rlParticle2.config.getLights().open();
+        rlParticle2.config.getShape().setShape(circle2);
+
+        rlParticle2.config.getColorOverLifetime().open();
+        rlParticle2.config.getColorOverLifetime().setColor(new Gradient(new GradientColor(new float[]{0,0.06f,0.4f,0.7f,1f},new int[]{0X00000000,0XFFE0C097,0XFFDC803C,0X9AFF1717,0X67FF4702})));
+        rlParticle2.config.getSizeOverLifetime().open();
+        rlParticle2.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,0.33f,1f},new float[]{0.6f,1,0f})));
+        rlParticle2.config.getRotationOverLifetime().open();
+        rlParticle2.config.getRotationOverLifetime().setRoll(new RandomLine(new float[]{0,1f},new float[]{0,45},new float[]{0,-45}));
+        rlParticle2.config.getNoise().open();
+        rlParticle2.config.getNoise().setFrequency(0.2f);
+
+        RLParticle rlParticle3 = new RLParticle(level);
+        rlParticle3.config.setDuration(20);
+        rlParticle3.config.setStartLifetime(new RandomConstant(6,8,true));
+        rlParticle3.config.setStartSpeed(new RandomConstant(1,3,true));
+        rlParticle3.config.setStartSize(new NumberFunction3(new RandomConstant(0.08,0.12,true)));
+        rlParticle3.config.setStartColor(new RandomColor(0XFFBD4D0D,0XFFDA6928));
+        rlParticle3.config.getEmission().setEmissionRate(NumberFunction.constant(0.8));
+        rlParticle3.config.getMaterial().setMaterial(MaterialHandle.CIRCLE.create());
+        Cone circle3 = new Cone();circle3.setRadius(0.5f);circle3.setAngle(50);
+        rlParticle3.config.getLights().open();
+        rlParticle3.config.getShape().setShape(circle3);
+        rlParticle3.config.getSizeOverLifetime().open();
+        rlParticle3.config.getSizeOverLifetime().setSize(new NumberFunction3(new Line(new float[]{0,0.33f,1f},new float[]{1,1,0f})));
+
+        BlockEffect blockEffect = new BlockEffect(level, getBlockPos().getCenter().add(0, -0.45, 0));
+        rlParticle1.emmit(blockEffect);
+        rlParticle2.emmit(blockEffect);
+        rlParticle3.emmit(blockEffect);
+
     }
 
     protected boolean canCook(StewPotRecipe recipe) {
@@ -235,26 +342,55 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
                 slotStack.shrink(1);
         }
 
+        for (int i = OUTPUT_SLOT; i < OUTPUT_SLOT+DECORATE_SHOT; ++i) {
+            ItemStack slotStack = inventory.getStackInSlot(i);
+            FoodValues foodValuesTemp = FoodValuesDefinition.getFoodValues(slotStack, level);
+            if(foodValuesTemp.get(FoodCategory.VEGGIE)!=0||foodValuesTemp.get(FoodCategory.MEAT)!=0|foodValuesTemp.get(FoodCategory.FISH)!=0|foodValuesTemp.get(FoodCategory.EGG)!=0){
+                if (slotStack.hasCraftingRemainingItem()) {
+                    ejectIngredientRemainder(slotStack.getCraftingRemainingItem());
+                }
+                if (!slotStack.isEmpty())
+                    slotStack.shrink(1);
+            }
+        }
+
         return true;
     }
 
     private void decorateFinalFood(){
         FoodValues foodValues = FoodValues.create();
-        for (int i = 0; i < OUTPUT_SLOT; ++i) {
+        FoodValues foodValues911 = null;
+
+        for (int i = 0; i < OUTPUT_SLOT+DECORATE_SHOT; ++i) {
             ItemStack slotStack = inventory.getStackInSlot(i);
             FoodValues foodValuesTemp = FoodValuesDefinition.getFoodValues(slotStack, level);
             for(FoodCategory category:FoodCategory.values()){
                 foodValues.add(category,foodValuesTemp.get(category));
             }
-            for(MobEffect effect:foodValuesTemp.getEffects()){
+
+            if(i<9) {
+                for (FoodValues.MobEffectInstance effect : foodValuesTemp.getEffects()) {
+                    foodValues.putEffect(effect);
+                }
+            }else {
+                Set<FoodValues.MobEffectInstance> effects = foodValuesTemp.getEffects();
+                if(!effects.isEmpty()){
+                    foodValues911 = foodValuesTemp;
+                }
+            }
+        }
+        DishAttribute dishAttribute = new DishAttribute(foodValues,1);
+        dishAttribute.resultNutrition(level.random);
+
+        if(foodValues911!=null&&dishAttribute.getIntegratedNutrition()>=1.5){
+            for (FoodValues.MobEffectInstance effect : foodValues911.getEffects()) {
                 foodValues.putEffect(effect);
             }
         }
-
-        DishAttribute dishAttribute = new DishAttribute(foodValues,1);
         ItemStack finalDish = inventory.getStackInSlot(OUTPUT_SLOT + DECORATE_SHOT);
-        CompoundTag orCreateTag = finalDish.getOrCreateTag();
-        orCreateTag.put("tbsdish",dishAttribute.save());
+        if(finalDish.getItem() instanceof TBSFood tbsFood){
+            tbsFood.setItemAdditionData(finalDish,dishAttribute);
+        }
     }
 
     protected void ejectIngredientRemainder(ItemStack remainderStack) {
@@ -266,7 +402,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         //        direction.getStepX() * 0.08F, 0.25F, direction.getStepZ() * 0.08F);
     }
 
-    public void setRecipeUsed(@javax.annotation.Nullable Recipe<?> recipe) {
+    public void setRecipeUsed(@Nullable Recipe<?> recipe) {
         if (recipe != null) {
             ResourceLocation recipeID = recipe.getId();
             usedRecipeTracker.addTo(recipeID, 1);
@@ -406,5 +542,15 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider {
         super.setChanged();
         if (level != null)
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

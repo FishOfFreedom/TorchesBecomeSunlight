@@ -35,6 +35,7 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
 
     @Override
     public void render(Pursuer entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        poseStack.pushPose();
         int tick = entity.getAnimationTick();
         AnimationAct animation = entity.getAnimation();
         if(((animation==Pursuer.TELE||animation==Pursuer.TELE1)&&tick>=8&&tick<20)||(animation==Pursuer.DEMON&&tick>=20&&tick<60))
@@ -53,6 +54,8 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
         }
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+
+        poseStack.popPose();
     }
 
     @Override

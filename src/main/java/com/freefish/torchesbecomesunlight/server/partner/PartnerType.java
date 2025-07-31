@@ -1,30 +1,22 @@
 package com.freefish.torchesbecomesunlight.server.partner;
 
-import net.minecraft.world.entity.LivingEntity;
+import lombok.Getter;
+import net.minecraft.world.entity.EntityType;
 
-public class PartnerType<M extends LivingEntity, T extends Partner<M>> implements Comparable<PartnerType<M, T>> {
-    private final PartnerType.IFactory<M, T> factory;
-    private final String name;
+import java.util.function.Supplier;
 
-    public PartnerType(String name, PartnerType.IFactory<M, T> factoryIn) {
-        factory = factoryIn;
-        this.name = name;
+public class PartnerType<T extends Partner> {
+    private Supplier<T> supplier;
+    @Getter
+    private EntityType<?> entityType;
+
+
+    public PartnerType(EntityType<?> entityType, Supplier<T> supplier) {
+        this.supplier = supplier;
+        this.entityType = entityType;
     }
 
-    public T makeInstance(LivingEntity user) {
-        return factory.create(this, (M) user);
-    }
-
-    public interface IFactory<M extends LivingEntity, T extends Partner<M>> {
-        T create(PartnerType<M, T> p_create_1_, M user);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int compareTo(PartnerType<M, T> o) {
-        return this.getName().compareTo(o.getName());
+    public T create(){
+        return supplier.get();
     }
 }

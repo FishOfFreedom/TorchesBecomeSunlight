@@ -1,11 +1,15 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -13,13 +17,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
-public class FXEntity extends Entity  {
+public class FXEntity extends Entity implements IEntityAdditionalSpawnData {
     //private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Integer> PREDICATE = SynchedEntityData.defineId(FXEntity.class, EntityDataSerializers.INT);
     private int predicateCa = -1;
@@ -27,6 +34,7 @@ public class FXEntity extends Entity  {
 
     public FXEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+
     }
 
     @Override
@@ -49,10 +57,19 @@ public class FXEntity extends Entity  {
                 if (getLiving() instanceof GunKnightPatriot gunKnightPatriot) {
                     float damage = (float) gunKnightPatriot.getAttributeValue(Attributes.ATTACK_DAMAGE);
                     List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(bombRange + 1), livingEntity ->
-                            !(livingEntity instanceof GunKnightPatriot) && livingEntity.distanceTo(gunKnightPatriot) < (bombRange + 1));
+                            !(livingEntity instanceof GunKnightPatriot) && livingEntity.distanceTo(this) < (bombRange + 1));
                     for (LivingEntity livingEntity : list) {
                         if (bombRange <= 4) livingEntity.invulnerableTime = 0;
-                        livingEntity.hurt(damageSources().mobAttack(gunKnightPatriot), damage * (21 - bombRange));
+                        livingEntity.hurt(damageSources().mobAttack(gunKnightPatriot), damage * (len111*2+1 - bombRange));
+                    }
+                }
+                if (getLiving() instanceof Player gunKnightPatriot) {
+                    float damage = ConfigHandler.COMMON.TOOLs.SACRED_GUN.attackDamage.get().floatValue();
+                    List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(bombRange + 1), livingEntity -> livingEntity.distanceTo(this) < (bombRange + 1));
+                    for (LivingEntity livingEntity : list) {
+                        if(getLiving() == livingEntity) continue;
+                        if (bombRange <= 4) livingEntity.invulnerableTime = 0;
+                        livingEntity.hurt(damageSources().mobAttack(gunKnightPatriot), damage * (len111*2+1 - bombRange)/2);
                     }
                 }
                 int len = (int) ((bombRange-2) * 1.5 * 3.14f);
@@ -72,7 +89,7 @@ public class FXEntity extends Entity  {
                 }
             }
 
-            if (tickCount > 10)
+            if (tickCount > len111)
                 kill();
         }
         super.tick();
@@ -127,11 +144,29 @@ public class FXEntity extends Entity  {
         level.addFreshEntity(fxEntity);
     }
 
-    public static void SpawnFXEntity(Level level, int type, Vec3 pos, LivingEntity living){
+    private int len111;
+
+    public static void SpawnFXEntity(Level level, int type,int len, Vec3 pos, LivingEntity living){
         FXEntity fxEntity = new FXEntity(EntityHandle.FX_ENTITY.get(), level);
+        fxEntity.len111 = len;
         fxEntity.setPredicate(type);
         fxEntity.setPos(pos);
         fxEntity.setLiving(living);
         level.addFreshEntity(fxEntity);
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeVarInt(len111);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        len111 = additionalData.readVarInt();
     }
 }

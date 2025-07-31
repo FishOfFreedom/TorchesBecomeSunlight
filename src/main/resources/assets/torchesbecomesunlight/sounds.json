@@ -1,4 +1,28 @@
 {
+  "ros.start": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/ros_start"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.start"
+  },
+  "ros.break": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/break_stone"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.break_stone"
+  },
+  "ros.end": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/ros_end"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.end"
+  },
+  "ros.skill_1": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/ros_skill_1"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.end"
+  },
+  "ros.skill_2": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/ros_skill_2"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.end"
+  },
+  "ros.skill_3": {
+    "sounds": ["torchesbecomesunlight:entity/rosmontis/ros_skill_3"],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis.end"
+  },
   "gunknight.glowing": {
     "sounds": ["torchesbecomesunlight:entity/gunknight/glowing"],
     "subtitle": "subtitles.torchesbecomesunlight.gunknight.glowing"
@@ -6,6 +30,10 @@
   "gunknight.artillery": {
     "sounds": ["torchesbecomesunlight:entity/gunknight/artillery"],
     "subtitle": "subtitles.torchesbecomesunlight.gunknight.artillery"
+  },
+  "gunknight.ben": {
+    "sounds": ["torchesbecomesunlight:entity/gunknight/ben"],
+    "subtitle": "subtitles.torchesbecomesunlight.gunknight.ben"
   },
   "gunknight.machinegun": {
     "sounds": ["torchesbecomesunlight:entity/gunknight/machinegun"],
@@ -92,6 +120,20 @@
     "sounds": [ "torchesbecomesunlight:entity/pursuer/skulsrsword" ],
     "subtitle": "subtitles.torchesbecomesunlight.pursuer.sword"
   },
+  "music.rosmontis_intro": {
+    "sounds": [
+      "torchesbecomesunlight:music/rosmontis/rosmontis_intro"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis",
+    "stream": true
+  },
+  "music.rosmontis_loop": {
+    "sounds": [
+      "torchesbecomesunlight:music/rosmontis/rosmontis_loop"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.rosmontis",
+    "stream": true
+  },
   "music.permafrost": {
     "sounds": [
       "torchesbecomesunlight:music/permafrost"
@@ -120,9 +162,16 @@
     "subtitle": "subtitles.torchesbecomesunlight.pursuer_1",
     "stream": true
   },
-  "music.gun_knight": {
+  "music.gun_knight_intro": {
     "sounds": [
-      "torchesbecomesunlight:music/malihirmam_benevolentes"
+      "torchesbecomesunlight:music/malihirmam/malihirmam_benevolentes_intro"
+    ],
+    "subtitle": "subtitles.torchesbecomesunlight.malihirmam_benevolentes",
+    "stream": true
+  },
+  "music.gun_knight_loop": {
+    "sounds": [
+      "torchesbecomesunlight:music/malihirmam/malihirmam_benevolentes_intro"
     ],
     "subtitle": "subtitles.torchesbecomesunlight.malihirmam_benevolentes",
     "stream": true

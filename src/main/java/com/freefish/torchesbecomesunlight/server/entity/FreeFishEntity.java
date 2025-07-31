@@ -2,8 +2,8 @@ package com.freefish.torchesbecomesunlight.server.entity;
 
 import com.freefish.torchesbecomesunlight.client.sound.BossMusicPlayer;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueAI;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ActRangeSignMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +59,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
         super.tick();
         if(!level().isClientSide){
         }
-        if (!level().isClientSide && getBossMusic() != null) {
+        if (!level().isClientSide && getIntroMusic() != null && getLoopMusic() != null) {
             if (canPlayMusic()) {
                 this.level().broadcastEntityEvent(this, MUSIC_PLAY_ID);
             }
@@ -72,7 +72,6 @@ public abstract class FreeFishEntity extends PathfinderMob {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1,new WhileDialogueAI(this));
     }
 
     @Override
@@ -87,6 +86,23 @@ public abstract class FreeFishEntity extends PathfinderMob {
     }
 
     @Override
+    public boolean hurt(DamageSource pSource, float pAmount) {
+        ConfigHandler.NeutralProtectionConfig neutralProtectionConfig = getNeutralProtectionConfig();
+        if(neutralProtectionConfig!=null){
+            LivingEntity target = getTarget();
+            if(target==null||!target.isAlive()){
+                if(!neutralProtectionConfig.healthMultiplier.get()&&pSource.getEntity()==null){
+                    return false;
+                }
+                if(pSource.getEntity()!=null&&pSource.getEntity().distanceTo(this)>neutralProtectionConfig.attackMultiplier.get()){
+                    return false;
+                }
+            }
+        }
+        return super.hurt(pSource, pAmount);
+    }
+
+    @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
     }
@@ -94,7 +110,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
     @Override
     public void handleEntityEvent(byte id) {
         if (id == MUSIC_PLAY_ID) {
-            BossMusicPlayer.playBossMusic(this);
+            BossMusicPlayer.playBossMusic(this,getLoopMusic(),true);
         }
         else if (id == MUSIC_STOP_ID) {
             BossMusicPlayer.stopBossMusic(this);
@@ -183,6 +199,7 @@ public abstract class FreeFishEntity extends PathfinderMob {
                 }
             }
         }
+        ActRangeSignMessage.showSectorInter(this,this.position().add(0,0.1,0),range,3.14f,0,this.level());
     }
 
     public boolean doRangeAttack(double range, double arc,float damage,boolean isBreakingShield){
@@ -303,6 +320,18 @@ public abstract class FreeFishEntity extends PathfinderMob {
         return null;
     }
 
+    public SoundEvent getIntroMusic() {
+        return null;
+    }
+
+    public int timeToLoop(){
+        return 200;
+    }
+
+    public SoundEvent getLoopMusic() {
+        return null;
+    }
+
     protected boolean canPlayMusic() {
         return !isSilent() && getTarget() instanceof Player;
     }
@@ -336,6 +365,10 @@ public abstract class FreeFishEntity extends PathfinderMob {
     }
 
     protected ConfigHandler.CombatConfig getCombatConfig() {
+        return null;
+    }
+
+    protected ConfigHandler.NeutralProtectionConfig getNeutralProtectionConfig() {
         return null;
     }
 

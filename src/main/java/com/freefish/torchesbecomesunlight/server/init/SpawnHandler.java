@@ -1,16 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -42,10 +36,20 @@ public class SpawnHandler {
             registerEntityWorldSpawn(builder, EntityHandle.PATRIOT.get(), ConfigHandler.COMMON.MOBS.PATRIOT.spawnConfig, MobCategory.MONSTER);
         }
         if(biomeKey.is(BiomeTags.HAS_IGLOO)) {
-            registerEntityWorldSpawn(builder, EntityHandle.PURSUER.get(), ConfigHandler.COMMON.MOBS.PURSUER.spawnConfig, MobCategory.MONSTER);
+            //registerEntityWorldSpawn(builder, EntityHandle.PURSUER.get(), ConfigHandler.COMMON.MOBS.PURSUER.spawnConfig, MobCategory.MONSTER);
+            registerEntityWorldSpawn(builder, EntityHandle.PATROL_CAPTAIN.get(),ConfigHandler.COMMON.MOBS.PATROL_CAPTAIN.spawnConfig, MobCategory.MONSTER);
+            registerEntityWorldSpawn(builder, EntityHandle.MANGLER.get(),ConfigHandler.COMMON.MOBS.MANGLER.spawnConfig, MobCategory.CREATURE);
+            registerEntityWorldSpawn(builder, EntityHandle.BURDENBEAST.get(),ConfigHandler.COMMON.MOBS.BURDENBEAST.spawnConfig, MobCategory.CREATURE);
+        }
+        if(biomeKey.is(Biomes.PLAINS)) {
+            registerEntityWorldSpawn(builder, EntityHandle.MANGLER.get(),ConfigHandler.COMMON.MOBS.MANGLER.spawnConfig, MobCategory.CREATURE);
+            registerEntityWorldSpawn(builder, EntityHandle.BURDENBEAST.get(),ConfigHandler.COMMON.MOBS.BURDENBEAST.spawnConfig, MobCategory.CREATURE);
         }
     }
     private static void registerEntityWorldSpawn(ModifiableBiomeInfo.BiomeInfo.Builder builder, EntityType<?> entity, ConfigHandler.SpawnConfig spawnConfig, MobCategory classification) {
         builder.getMobSpawnSettings().getSpawner(classification).add(new MobSpawnSettings.SpawnerData(entity, spawnConfig.spawnRate.get(), 1, 1));
+    }
+    private static void registerEntityWorldSpawn(ModifiableBiomeInfo.BiomeInfo.Builder builder, EntityType<?> entity, MobCategory classification) {
+        builder.getMobSpawnSettings().getSpawner(classification).add(new MobSpawnSettings.SpawnerData(entity, 5, 1, 1));
     }
 }

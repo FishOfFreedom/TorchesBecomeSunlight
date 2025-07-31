@@ -8,7 +8,6 @@ import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHand
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -99,7 +98,7 @@ public class HalberdKnightPatriotAttackAI extends Goal {
         }else if(dist>10&&remoteHalberdZhou>123){
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, REMOTE_HALBERD_RZHOU);
             remoteHalberdZhou = 0;
-        }else if(skillHalberd10>523){
+        }else if(skillHalberd10>523&&healthRadio<0.5){
             AnimationActHandler.INSTANCE.sendAnimationMessage(patriot, SKILL_HALBERD_10);
             skillHalberd10 = 0;
         }else if(dist<10&&windMill>423){

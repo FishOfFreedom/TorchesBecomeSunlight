@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUseAbility;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ProjectileHitEntityMessage;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.BlockPos;
@@ -26,7 +25,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -37,7 +35,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
-import org.apache.commons.lang3.ArrayUtils;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -86,6 +83,11 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         d0 *= 64.0D * getViewScale();
         return pDistance < d0 * d0;
+    }
+
+    @Override
+    public boolean displayFireAnimation() {
+        return false;
     }
 
     protected void defineSynchedData() {
@@ -378,6 +380,8 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         this.shakeTime = 7;
         this.setSoundEvent(SoundEvents.ARROW_HIT);
         isHitBlockSecond = true;
+
+        if(isHitBlockDiscard()) discard();
     }
 
     /**
@@ -440,8 +444,8 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         }
     }
 
-    protected Entity.MovementEmission getMovementEmission() {
-        return Entity.MovementEmission.NONE;
+    protected MovementEmission getMovementEmission() {
+        return MovementEmission.NONE;
     }
 
     public void setKnockback(int pKnockback) {
@@ -488,5 +492,9 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
     public boolean isHitEntityDiscard(Entity entity){
         return true;
+    }
+
+    public boolean isHitBlockDiscard(){
+        return false;
     }
 }

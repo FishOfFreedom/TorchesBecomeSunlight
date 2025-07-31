@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "torchesbecomesunlight:block/thermal_kettle"
+    },
+    "facing=east": {
+      "model": "torchesbecomesunlight:block/thermal_kettle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "torchesbecomesunlight:block/thermal_kettle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "torchesbecomesunlight:block/thermal_kettle",
+      "y": 270
+    }
+  }
+}

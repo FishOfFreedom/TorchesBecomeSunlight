@@ -11,6 +11,9 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 public class ShieldGuardModel extends GeoModel<ShieldGuard> {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/shield_guard.png");
+
+
     @Override
     public void setCustomAnimations(ShieldGuard animatable, long instanceId, AnimationState<ShieldGuard> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
@@ -29,7 +32,7 @@ public class ShieldGuardModel extends GeoModel<ShieldGuard> {
 
     @Override
     public ResourceLocation getTextureResource(ShieldGuard animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/shield_guard.png");
+        return TEXTURE;
     }
 
     @Override

@@ -1,0 +1,15 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:tropical_fish",
+    "minecraft:cooked_salmon",
+    "minecraft:cooked_cod"
+  ],
+  "values": {
+    "FISH": 1
+  },
+  "effects": [
+  ]
+}

@@ -11,34 +11,40 @@ import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradi
 import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
 import com.freefish.rosmontislib.client.particle.advance.effect.EntityEffect;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.DialogueCapability;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
-import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
+import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
+import com.freefish.torchesbecomesunlight.server.entity.TeamMemberStorage;
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.snownova.SnowNova1AttackAI;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
+import com.freefish.torchesbecomesunlight.server.entity.guerrillas.ai.FrostNovaAutoDialogueGoal;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BigIceCrystal;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceBlade;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.IceCrystal;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
+import com.freefish.torchesbecomesunlight.server.story.PlayerStoryStoneData;
+import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
-import net.minecraft.client.multiplayer.ClientLevel;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.FFBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.IBossInfoUpdate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
@@ -46,9 +52,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -61,13 +69,14 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -84,6 +93,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -95,20 +105,25 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     private static final EntityDataAccessor<Float> SECOND_HEALTH = SynchedEntityData.defineId(FrostNova.class, EntityDataSerializers.FLOAT);
 
     public int timeSinceJump;
-    private LivingEntity dialogueLivingEntity;
+    public TeamMemberStorage<YetiIcecleaver> teamMemberStorage;
     public int timeSinceBackJump;
     private int defendWilling;
     public int timeSinceIceBomb;
     public int timeSinceIceJump_1;
 
-    private final CustomBossInfoServer secondHealth = new CustomBossInfoServer(this,3){
+    private final ServerBossEvent secondHealth = ConfigHandler.COMMON.GLOBALSETTING.healthBarIsNearShow.get()?new FFBossInfoServer(this,3){
+        @Override
+        public void updateHealth() {
+            this.setProgress(getSecondHealth() / (getMaxHealth()/4));
+        }
+    }: new CustomBossInfoServer(this,3){
         @Override
         public void updateHealth() {
             this.setProgress(getSecondHealth() / (getMaxHealth()/4));
         }
     };
 
-    private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this,0);
+    private final ServerBossEvent bossInfo= ConfigHandler.COMMON.GLOBALSETTING.healthBarIsNearShow.get()?new FFBossInfoServer(this,0): new CustomBossInfoServer(this,0);
 
     public static final AnimationAct<FrostNova> WALK_PEACE =new AnimationAct<FrostNova>("walk_forward2",0);
     public static final AnimationAct<FrostNova> IDLE_PEACE = new AnimationAct<FrostNova>("idle_peace",0);
@@ -217,7 +232,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         }
     };
 
-    public static final AnimationAct<FrostNova> REMOTE_1 = new  AnimationAct<FrostNova>("remote_1",20){
+    public static final AnimationAct<FrostNova> REMOTE_1 = new  AnimationAct<FrostNova>("remote_1",30){
         @Override
         public void tickUpdate(FrostNova entity) {
             int tick = entity.getAnimationTick();
@@ -225,7 +240,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             LivingEntity target = entity.getTarget();
             if(target!=null) {
                 entity.getLookControl().setLookAt(target);
-                if (tick == 6) {
+                if (tick == 20) {
                     entity.shootIceCrystal(target,entity.position().add(new Vec3(0,1.5,0)));
                 }
             }
@@ -401,8 +416,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                     float dist = Math.lerp(3f,1,livingEntity.distanceTo(entity) / 12);
                     livingEntity.hurt(entity.damageSources().mobAttack(entity),damage*dist);
 
-                    FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(entity, CapabilityHandle.FROZEN_CAPABILITY);
-                    if(data!=null) data.setFrozen(livingEntity,100);
+                    ForceEffectHandle.addForceEffect(livingEntity,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,100));
                 }
             }
         }
@@ -502,11 +516,11 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             }
             RandomSource random = entity.random;
             if(target!=null&&tick>=20&&tick<=120&&tick%10==0){
-                IceCrystal.spawnWaitCrystal(entity.level(),new Vec3(4-random.nextInt(9),2+random.nextInt(5),4-random.nextInt(9)).add(entity.position()),entity,target);
+                IceCrystal.spawnNoWaitCrystal(entity.level(),new Vec3(4-random.nextInt(9),2+random.nextInt(5),4-random.nextInt(9)).add(entity.position()),entity,target);
             }
             if(target!=null&&tick==140){
                 for(int i=0;i<6;i++){
-                    IceCrystal.spawnWaitCrystal(entity.level(), new Vec3(4 - random.nextInt(9), 2 + random.nextInt(5), 4 - random.nextInt(9)).add(entity.position()), entity, target);
+                    IceCrystal.spawnNoWaitCrystal(entity.level(), new Vec3(4 - random.nextInt(9), 2 + random.nextInt(5), 4 - random.nextInt(9)).add(entity.position()), entity, target);
                 }
             }
         }
@@ -547,11 +561,28 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                 entity.setSecondHealth(entity.getMaxHealth()/4);
         }
     };
+    public static final AnimationAct<FrostNova> BREAK_START = new AnimationAct<FrostNova>("break_start",50,2){
+
+        @Override
+        public void tickUpdate(FrostNova entity) {
+            entity.setYRot(entity.yRotO);
+            int tick = entity.getAnimationTick();
+
+            entity.setLastHurtByMob(null);
+            entity.setTarget(null);
+
+            entity.locateEntity();
+            if(tick<=16&&tick%4==0){
+                float health = (tick+4)/20.f;
+                entity.setHealth(entity.getMaxHealth()*health);
+            }
+        }
+    };
 
     @Override
     public AnimationAct[] getAnimations() {
         return new AnimationAct[]{NO_ANIMATION,DEFEND,LULLABYE_2,CYCLE_WIND,ATTACK_1,ATTACK_2,RIGHT_JUMP,LEFT_JUMP,BACK_JUMP,REMOTE_1,REMOTE_12,REMOTE_2,REMOTE_3,ATTACK_PREPARE
-                ,DASH,ICE_JUMP,ICE_BOMB,ICE_GROUND,KICK,DIE,ICE_WIND,REBORN,DASH_RUN};
+                ,DASH,ICE_JUMP,ICE_BOMB,ICE_GROUND,KICK,DIE,ICE_WIND,REBORN,DASH_RUN,BREAK_START};
     }
 
     @Override
@@ -574,6 +605,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         super(entityType, level);
         if(!level.isClientSide){
             setSecondHealth(getMaxHealth()/4);
+            teamMemberStorage = new TeamMemberStorage<>(this);
         }
     }
 
@@ -599,6 +631,18 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     private PlayState flatPredicate(AnimationState<FrostNova> event) {
         event.setAnimation(RawAnimation.begin().thenLoop("idle_peace2"));
         return PlayState.CONTINUE;
+    }
+
+    public void spawnIceBreaker(){
+        if(!level().isClientSide){
+            int len = 2 + random.nextInt(2);
+            for (int i = 0; i < len; i++) {
+                YetiIcecleaver shieldGuard = new YetiIcecleaver(EntityHandle.YETI_ICE_LEAVER.get(), level());
+                shieldGuard.setPos(position());
+                teamMemberStorage.addMember(shieldGuard);
+                level().addFreshEntity(shieldGuard);
+            }
+        }
     }
 
     int timeSinceWithoutWind;
@@ -640,6 +684,10 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
 
         super.tick();
 
+        if(!level().isClientSide){
+            teamMemberStorage.tick();
+        }
+
         for(int i = 0;i<demonCounterList.size();i++){
             DemonCounter demonCounter = demonCounterList.get(i);
             demonCounter.update(level(),this);
@@ -651,14 +699,19 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             }
         }
 
-        if (tickCount % 4 == 0) {
-            bossInfo.update();
-            secondHealth.update();
+        if (tickCount % 4 == 0&&(bossInfo instanceof IBossInfoUpdate u1&&secondHealth instanceof IBossInfoUpdate u2)) {
+            u1.update();
+            u2.update();
         }
 
         if(!level().isClientSide()){
-            if(getSecondHealth()<=10&&timeSinceWithoutWind<300){
+            float secondHealth1 = getSecondHealth();
+            if(secondHealth1 <=10&&timeSinceWithoutWind<300){
                 timeSinceWithoutWind++;
+                LivingEntity target = getTarget();
+                if(target !=null&&target == challengePlayer&&secondHealth1>1){
+                    timeSinceWithoutWind = 0;
+                }
             }
             if(timeSinceWithoutWind>=(getState()==1?200:300)&&getAnimation()!=CYCLE_WIND){
                 timeSinceWithoutWind=-15;
@@ -768,16 +821,38 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         addIceWindParticle();
         addDashParticle();
 
+        if(waitTargetTime>=0){
+            if(waitTargetTime == 0){
+                if(challengePlayer!=null){
+                    setTarget(challengePlayer);
+                }
+            }
+            waitTargetTime--;
+        }
 
         if(getTarget() instanceof GunKnightPatriot) setTarget(null);
     }
 
     @Override
+    protected ConfigHandler.NeutralProtectionConfig getNeutralProtectionConfig() {
+        return ConfigHandler.COMMON.MOBS.FROSTNOVA.neutralProtectionConfig;
+    }
+
+
+    @Override
     public void die(DamageSource pDamageSource) {
-        super.die(pDamageSource);
-        if (!this.isRemoved()) {
-            bossInfo.update();
-            secondHealth.update();
+        if(challengePlayer==null||!challengePlayer.isAlive()){
+            super.die(pDamageSource);
+            if (!this.isRemoved() && (bossInfo instanceof IBossInfoUpdate u1 && secondHealth instanceof IBossInfoUpdate u2)) {
+                u1.update();
+                u2.update();
+            }
+            if (teamMemberStorage != null) {
+                Collection<YetiIcecleaver> members = teamMemberStorage.getMembers();
+                for (YetiIcecleaver shieldGuard : members) {
+                    shieldGuard.setLeader(null);
+                }
+            }
         }
     }
 
@@ -840,17 +915,18 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get())
-            this.goalSelector.addGoal(1, new DailyDialogueAI(this));
+        this.goalSelector.addGoal(1, new FrostNovaAutoDialogueGoal(this));
+        //if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get())
+        //    this.goalSelector.addGoal(1, new DailyDialogueAI(this));
         this.goalSelector.addGoal(2,new SnowNova1AttackAI(this));
 
-        this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
+        this.goalSelector.addGoal(7, new FFLookAtPlayerTotherGoal(this, Player.class, 5.0F));
+        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal(this));
         this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal(this , 0.31));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetNoPlayerGoal(this));
     }
 
     public boolean donDodge(){
@@ -860,9 +936,8 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
 
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
-        if(getDialogueEntity()!=null) return false;
-
         if(pSource.getEntity() instanceof GunKnightPatriot) return false;
+        if(getAnimation()==BREAK_START) return false;
 
         float limit = (float)(getMaxHealth()*ConfigHandler.COMMON.MOBS.FROSTNOVA.damageConfig.damageCap.get());
         if(pAmount>limit&&!pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) pAmount = limit;
@@ -896,19 +971,6 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                 defendWilling++;
             if(cycleTime!=-1)
                 cycleTime = -1;
-        }
-
-        if(pSource.getDirectEntity() instanceof Player&&getHasDialogue()){
-            DialogueCapability.IDialogueCapability capability = CapabilityHandle.getCapability(this, CapabilityHandle.DIALOGUE_CAPABILITY);
-            if(capability!=null&&capability.getDialogueNeedTime()>40){
-                if(pSource.getDirectEntity()instanceof Player player1){
-                    setDialogueEntity(player1);
-                    DialogueEntity dialogueEntity = new DialogueEntity(this,level(),getDialogue(),player1,this);
-                    dialogueEntity.setPos(position());
-                    level().addFreshEntity(dialogueEntity);
-                    return false;
-                }
-            }
         }
 
         return super.hurt(pSource, pAmount);
@@ -971,10 +1033,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             livingEntity.invulnerableTime=1;
         }
         if(b&& (act ==REMOTE_2||act==REBORN)&&!(livingEntity instanceof GuerrillasEntity)){
-            FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
-            if(data!=null){
-                data.setFrozen(livingEntity, 100);
-            }
+            ForceEffectHandle.addForceEffect(livingEntity,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,100));
         }
         return b;
     }
@@ -988,6 +1047,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         pCompound.putFloat("targetz",pos.z);
         pCompound.putFloat("second",getSecondHealth());
         pCompound.putInt("state",getState());
+        pCompound.put("menber",teamMemberStorage.serializeNBT());
     }
 
     @Override
@@ -996,6 +1056,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         setTargetPos(new Vector3f(pCompound.getFloat("targetx"),pCompound.getFloat("targetx"),pCompound.getFloat("targetx")));
         setSecondHealth(pCompound.getFloat("second"));
         this.entityData.set(STATE,pCompound.getInt("state"));
+        teamMemberStorage.deserializeNBT(pCompound.getCompound("menber"));
     }
 
     @Override
@@ -1043,11 +1104,11 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                 if(len>=0) {
                     float dis = (float) telePos.scale(len).subtract(offset).length();
                     if (dis < (livingEntity.getBbWidth() / 2 + 1.5)) {
-                        FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
+                        ForceEffectInstance data = ForceEffectHandle.getForceEffect(livingEntity, ForceEffectHandle.FROZEN_FORCE_EFFECT);
                         float damage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.5f;
 
-                        if (data!=null&&data.getFrozen()) {
-                            data.clearFrozen(livingEntity);
+                        if (data!=null&&data.getLevel()>1) {
+                            data.discard(livingEntity);
                             damage *= 2;
                         }
 
@@ -1174,6 +1235,11 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
                     playSound(SoundHandle.ICE_WHIRLWIND.get(), 1.0F, 1.0F / (random.nextFloat() * 0.4F + 0.8F));
             }
         }
+    }
+
+    @Override
+    public void setTicksFrozen(int pTicksFrozen) {
+        super.setTicksFrozen(0);
     }
 
     private void addRebornParticle(){
@@ -1383,26 +1449,6 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         return this.level().hasChunk(SectionPos.blockToSectionCoord(this.getX()), SectionPos.blockToSectionCoord(this.getZ()));
     }
 
-    @Override
-    public Dialogue getDialogue() {
-        return DialogueStore.snownova_meet_1;
-    }
-
-    @Override
-    public LivingEntity getDialogueEntity() {
-        return dialogueLivingEntity;
-    }
-
-    @Override
-    public void setDialogueEntity(LivingEntity dialogueEntity) {
-        dialogueLivingEntity = dialogueEntity;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
-    }
-
     private final List<DemonCounter> demonCounterList = new ArrayList<>();
 
     public void addDemonArea(int time,Vec3 pos,float yaw){
@@ -1493,6 +1539,104 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         }
     }
 
+    //Dialogue
+    private DialogueEntity dialogueEntity;
+    private int startBlack;
+    private int startBlackO;
+
+    public float getStartBlack(float pa){
+        return Mth.lerp(pa,startBlackO,startBlack);
+    }
+
+    public boolean isStartBlack(){
+        return startBlack != 0;
+    }
+
+    @Override
+    public boolean canDialogue() {
+        return !isAggressive()&&getDialogueEntity()==null;
+    }
+
+    @Override
+    public void playDeathAnimationPre(DamageSource source) {
+        if(challengePlayer!=null){
+            if(challengePlayer instanceof ServerPlayer serverPlayer){
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_1_frostnova");
+            }
+            setAggressive(false);
+            setHealth(1);
+            PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(challengePlayer, CapabilityHandle.PLAYER_CAPABILITY);
+            if(capability!=null){
+                PlayerStoryStoneData playerStory = capability.getPlayerStory();
+                playerStory.setWinFrostNova(true);
+                playerStory.setCanSummonFrostNova(true);
+            }
+            challengePlayer = null;
+            AnimationActHandler.INSTANCE.sendAnimationMessage(this,BREAK_START);
+        }else {
+            Entity entity = source.getEntity();
+            if(entity instanceof Player player){
+                PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+                if(capability!=null){
+                    PlayerStoryStoneData playerStory = capability.getPlayerStory();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void startDialogue(Player player) {
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null){
+            PlayerStoryStoneData playerStory = capability.getPlayerStory();
+            if(playerStory.isWinFrostNova()){
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/frost_nova/frostnova_win.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    Inventory inventory = player.getInventory();
+                    inventory.add(new ItemStack(ItemHandle.WINTER_SCRATCH.get()));
+                    inventory.add(new ItemStack(ItemHandle.WINTER_PASS.get()));
+                    inventory.add(new ItemStack(ItemHandle.FROSTED_TALISMAN.get()));
+                    playerStory.setWinFrostNova(false);
+                });
+            }
+            else if(playerStory.isSeenFrostNova()){
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/frost_nova/frostnova_fight.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    startChallengePlayer(player);
+                });
+            }else {
+                DialogueEntity dialogueEntity1 = startTalk("dialogue/frost_nova/frostnova_firstmeet.json", this, player);
+                DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
+                dialogueEntry.setRunnable(()->{
+                    playerStory.setSeenFrostNova(true);
+                });
+            }
+        }
+    }
+
+    @Override
+    public DialogueEntity getDialogueEntity() {
+        if(dialogueEntity!=null&&!dialogueEntity.isAlive()) dialogueEntity = null;
+
+        return dialogueEntity;
+    }
+
+    @Override
+    public void setDialogueEntity(DialogueEntity dialogueEntity) {
+        this.dialogueEntity = dialogueEntity;
+    }
+
+
+    public Player challengePlayer;
+    private int waitTargetTime = -1;
+
+    public void startChallengePlayer(Player player){
+        challengePlayer = player;
+        this.waitTargetTime = 120;
+    }
+
     private static class DailyDialogueAI extends Goal{
         FrostNova frostNova;
         Patriot patriot;
@@ -1543,12 +1687,12 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
             else {
                 frostNova.getNavigation().stop();
                 if(!isDialogue){
-                    frostNova.setDialogueEntity(patriot);
-                    patriot.setDialogueEntity(frostNova);
-                    DialogueEntity dialogueEntity = new DialogueEntity(frostNova,frostNova.level(),DialogueStore.daily_1,frostNova,patriot);
-                    dialogueEntity.setPos(frostNova.position());
-                    frostNova.level().addFreshEntity(dialogueEntity);
-                    isDialogue = true;
+                    //frostNova.setDialogueEntity(patriot);
+                    //patriot.setDialogueEntity(frostNova);
+                    //DialogueEntity dialogueEntity = new DialogueEntity(frostNova,frostNova.level(),DialogueStore.daily_1,frostNova,patriot);
+                    //dialogueEntity.setPos(frostNova.position());
+                    //frostNova.level().addFreshEntity(dialogueEntity);
+                    //isDialogue = true;
                 }
             }
         }

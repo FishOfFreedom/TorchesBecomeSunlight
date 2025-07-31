@@ -1,0 +1,17 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "torchesbecomesunlight:thigh_meat",
+    "torchesbecomesunlight:cooked_thigh_meat"
+  ],
+  "values": {
+    "MEAT": 2
+  },
+  "effects": [
+    {
+      "effect_id":"minecraft:strength",
+      "time":1200,
+      "level":1
+    }
+  ]
+}

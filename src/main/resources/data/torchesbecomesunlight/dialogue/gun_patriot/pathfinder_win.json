@@ -1,0 +1,58 @@
+{
+  "id": "pathfinder_fight",
+  "title": "no",
+  "description": "挑战寻路者",
+  "speakers": [
+    "pathfinder","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "main4",
+      "speaker": "pathfinder",
+      "text": "dialogue.pathfinder_win.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "null",
+      "speaker": "pathfinder",
+      "text": "dialogue.pathfinder_win.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": "null",
+          "text": "dialogue.pathfinder_win.main3_o1"
+        },
+        {
+          "nextid": "main2",
+          "text": "dialogue.pathfinder_win.main3_o2"
+        }
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main3",
+      "speaker": "player",
+      "text": "dialogue.pathfinder_win.main4.",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

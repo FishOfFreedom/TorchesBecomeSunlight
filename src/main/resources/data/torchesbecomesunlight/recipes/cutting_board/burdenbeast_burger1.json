@@ -1,0 +1,22 @@
+{
+  "type": "torchesbecomesunlight:cutting_board",
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "torchesbecomesunlight:cooked_burdenbeast_meat"
+    },
+    {
+      "item": "torchesbecomesunlight:cooked_burdenbeast_meat"
+    }
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "item": "torchesbecomesunlight:burdenbeast_burger"
+  }
+}

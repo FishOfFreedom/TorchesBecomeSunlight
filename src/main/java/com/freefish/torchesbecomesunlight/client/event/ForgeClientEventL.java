@@ -1,42 +1,37 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import com.freefish.torchesbecomesunlight.client.keybindings.ModKeyBindings;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoFirstPersonRenderer;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoPlayer;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoRenderPlayer;
 import com.freefish.torchesbecomesunlight.client.render.gui.CustomBossBar;
-import com.freefish.torchesbecomesunlight.client.render.gui.recipebook.RecipeCategories;
-import com.freefish.torchesbecomesunlight.client.render.layer.DialogueIconLayer;
+import com.freefish.torchesbecomesunlight.client.render.gui.hud.HudUtil;
+import com.freefish.torchesbecomesunlight.client.render.gui.hud.HudWidget;
 import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerFirstPerson;
 import com.freefish.torchesbecomesunlight.client.render.model.player.ModelGeckoPlayerThirdPerson;
 import com.freefish.torchesbecomesunlight.client.render.util.IceRenderer;
+import com.freefish.torchesbecomesunlight.compat.ModDetectionCache;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
 import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
 import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.event.packet.toserver.MiddelClickMessage;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueTrigger;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -44,10 +39,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import org.joml.Matrix4f;
+import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.event.GeoRenderEvent;
 
 import java.util.List;
@@ -62,8 +58,8 @@ public enum ForgeClientEventL {
         if (player == null) return;
         boolean shouldAnimate = false;
         AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(player);
-        if (abilityCapability != null) shouldAnimate = abilityCapability.getActiveAbility() != null;
-        if (shouldAnimate) {
+        if (abilityCapability != null) shouldAnimate = abilityCapability.getActiveAbility() != null && abilityCapability.getActiveAbility().canPlayAnimation();
+        if (!ModDetectionCache.hasSteveModelMod()&&ConfigHandler.CLIENT.playerAnimationF.get()&&shouldAnimate) {
             PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
             if (playerCapability != null) {
                 GeckoPlayer.GeckoPlayerFirstPerson geckoPlayer = GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON;
@@ -96,7 +92,7 @@ public enum ForgeClientEventL {
             float delta = event.getPartialTick();
             AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(player);
 //        shouldAnimate = (player.ticksExisted / 20) % 2 == 0;
-            if (abilityCapability != null && abilityCapability.getActiveAbility() != null) {
+            if (!ModDetectionCache.hasSteveModelMod()&&ConfigHandler.CLIENT.playerAnimationT.get()&&abilityCapability != null && abilityCapability.getActiveAbility() != null && abilityCapability.getActiveAbility().canPlayAnimation()) {
                 PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
                 if (playerCapability != null) {
                     GeckoPlayer.GeckoPlayerThirdPerson geckoPlayer = playerCapability.getGeckoPlayer();
@@ -128,6 +124,27 @@ public enum ForgeClientEventL {
             GeckoPlayer geckoPlayer = playerCapability.getGeckoPlayer();
             if (geckoPlayer != null) geckoPlayer.tick();
             if (player == Minecraft.getInstance().player) GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON.tick();
+
+            int skillAmount = playerCapability.getSkillAmount();
+            if(skillAmount==100){
+                if(HudUtil.skillIsOpen()) HudUtil.skillClose();
+            }else {
+                if(!HudUtil.skillIsOpen()) HudUtil.skillOpen();
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void levelTick(TickEvent.ClientTickEvent event){
+        //BossMusicSound bossMusic = BossMusicPlayer.bossMusic;
+        //if(bossMusic!=null&&bossMusic.getBoss()!=null&& bossMusic.isCanLoop()){
+        //    if(bossMusic.time>bossMusic.getBoss().timeToLoop()){
+        //        BossMusicPlayer.playBossMusic(bossMusic.getBoss(),bossMusic.getBoss().getLoopMusic(),false);
+        //    }
+        //    bossMusic.time++;
+        //}
+        for (HudWidget hud : HudWidget.STRING_WIDGET.values()) {
+            hud.tick();
         }
     }
 
@@ -211,9 +228,9 @@ public enum ForgeClientEventL {
     @SubscribeEvent
     public void onPostRenderLiving(RenderLivingEvent.Post event) {
         LivingEntity entity = event.getEntity();
-        FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(entity, CapabilityHandle.FROZEN_CAPABILITY);
-        if(data!=null&&data.getFrozen()){
-            IceRenderer.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), data.getFrozenTick());
+        ForceEffectInstance data = ForceEffectHandle.getForceEffect(entity, ForceEffectHandle.FROZEN_FORCE_EFFECT);
+        if(data!=null&&data.getLevel()>1){
+            IceRenderer.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), data.getTime());
         }
     }
 
@@ -229,9 +246,9 @@ public enum ForgeClientEventL {
 
         Level level = player.level();
 
-        List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(5));
+        List<DialogueEntity> entitiesOfClass = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(9));
         DialogueEntity dialogueEntity = MathUtils.getClosestEntity(player, entitiesOfClass);
-        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null&& !dialogueEntity.getDialogue().getOptions().isEmpty()) {
+        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.hasOptions()) {
             int len = dialogueEntity.getOptions();
             int number = dialogueEntity.getNumber();
             if (scrollAmount > 0) {
@@ -256,17 +273,12 @@ public enum ForgeClientEventL {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
-        if(player == null) return;
+        if((minecraft.screen instanceof PauseScreen)||player == null|| ModKeyBindings.SELECT_DIALOGUE.getKey().getValue()!=GLFW.GLFW_MOUSE_BUTTON_MIDDLE) return;
 
         Level level = player.level();
         List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class,player.getBoundingBox().inflate(9));
-        DialogueEntity dialogueEntity = null;
-        for (DialogueEntity dialogueEntity1 :entities){
-            if(dialogueEntity1.getChatEntities()!=null&&dialogueEntity1.getChatEntities().length!=0&&dialogueEntity1.getChatEntities()[0]==player){
-                dialogueEntity = dialogueEntity1;
-            }
-        }
-        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.getDialogue().getOptions()!=null){
+        DialogueEntity dialogueEntity = FFEntityUtils.getClosestEntity(player,entities);
+        if(dialogueEntity != null && dialogueEntity.getDialogue() != null && dialogueEntity.hasOptions()){
             if (event.getButton() == 2 && event.getAction() == 1) {
                 ServerNetwork.toServerMessage(new MiddelClickMessage(player.getId()));
                 dialogueEntity.setNumber(0);
@@ -291,6 +303,24 @@ public enum ForgeClientEventL {
             event.setPitch((float) (event.getPitch() + shakeAmplitude * Math.cos(ticksExistedDelta * 3 + 2) * 25));
             event.setYaw((float) (event.getYaw() + shakeAmplitude * Math.cos(ticksExistedDelta * 5 + 1) * 25));
             event.setRoll((float) (event.getRoll() + shakeAmplitude * Math.cos(ticksExistedDelta * 4) * 25));
+        }
+    }
+
+    @SubscribeEvent
+    public void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
+        Player player = event.getEntity();
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null){
+            capability.onLeftClickAir(event);
+        }
+    }
+
+    @SubscribeEvent
+    public void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
+        Player player = event.getEntity();
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null){
+            capability.onLeftClickAir(event);
         }
     }
 }

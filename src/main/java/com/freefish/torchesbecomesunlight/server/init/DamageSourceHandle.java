@@ -15,4 +15,14 @@ public class DamageSourceHandle {
         return new DamageSource(snowMonster.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).
                 getHolderOrThrow(CustomResourceKey.DEMON_ATTACK), snowMonster);
     }
+
+    public static DamageSource noTriggerAttack(Entity player) {
+        return new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).
+                getHolderOrThrow(CustomResourceKey.NO_TRIGGER_ATTACK), player);
+    }
+
+    public static DamageSource noTriggerNoArmorAttack(Entity player) {
+        return new DamageSource(player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).
+                getHolderOrThrow(CustomResourceKey.NO_TRIGGER_WITHOUT_ARMOR_ATTACK), player);
+    }
 }

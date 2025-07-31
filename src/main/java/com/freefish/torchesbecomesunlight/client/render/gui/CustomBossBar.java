@@ -2,7 +2,6 @@ package com.freefish.torchesbecomesunlight.client.render.gui;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -43,6 +42,11 @@ public class CustomBossBar {
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
                 new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/gun_patriot_bar_overlay.png"),
                 10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.GUN_KNIGHT.customBossBarConfig.isOpenCustombossbar));
+
+        customBossBars.put(5, new CustomBossBar(
+                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_base.png"),
+                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_overlay.png"),
+                10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.ROSMONTIS.customBossBarConfig.isOpenCustombossbar));
     }
 
     private final ResourceLocation baseTexture;
@@ -153,15 +157,18 @@ public class CustomBossBar {
         int l = Minecraft.getInstance().font.width(component);
         int i1 = i / 2 - l / 2;
         int j1 = j;
-        if(type!=3)
-            guiGraphics.drawString(Minecraft.getInstance().font, component, i1, j1, 16777215);
 
         if (hasOverlay()) {
             Minecraft.getInstance().getProfiler().push("customBossBarOverlay");
             RenderSystem.setShaderTexture(0, getOverlayTexture());
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             event.getGuiGraphics().blit(getOverlayTexture(), event.getX() + 1 + getOverlayOffsetX()+offX, y + getOverlayOffsetY() + getBaseOffsetY(), 0, 0, getOverlayWidth(), getOverlayHeight(), getOverlayWidth(), getOverlayHeight());
             Minecraft.getInstance().getProfiler().pop();
         }
+
+        RenderSystem.enableBlend();
+        if(type!=3)
+            guiGraphics.drawString(Minecraft.getInstance().font, component, i1, j1, 0XFFFFFFFF);
 
         event.setIncrement(getVerticalIncrement());
     }

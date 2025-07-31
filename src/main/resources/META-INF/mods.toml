@@ -7,13 +7,13 @@ license="GNU LESSER GENERAL PUBLIC LICENSE"
 [[mods]] #mandatory
 modId="${mod_id}"
 
-version="1.20.1-0.2.0"
+version="1.20.1-0.4.2"
 
 displayName="${mod_name}"
 
 logoFile="torchesbecomesunlight.png"
 
-authors="${mod_authors}"
+authors="free fish,浩古散人,塞戮尔seymour,生活不易蒂蒂叹气，NH37,罗德岛神经工程学博士,薯饼不好次,啦啦啦丢失的狗"
 
 description='''
 This mod is based on "Arknights" and adds powerful bosses, various items, and partners to fight alongside you.
@@ -39,4 +39,10 @@ This mod is based on "Arknights" and adds powerful bosses, various items, and pa
     # This version range declares a minimum of the current minecraft version up to but not including the next major version
     versionRange="${minecraft_version_range}"
     ordering="NONE"
+    side="BOTH"
+[[dependencies.torchesbecomesunlight]]
+    modId="geckolib"
+    mandatory=true
+    versionRange="[4.4.9,)"
+    ordering="BEFORE"
     side="BOTH"

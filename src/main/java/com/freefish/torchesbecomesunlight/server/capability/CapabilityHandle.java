@@ -1,6 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;

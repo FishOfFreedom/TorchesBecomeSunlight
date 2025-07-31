@@ -2,7 +2,6 @@ package com.freefish.torchesbecomesunlight.server.effect;
 
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.init.recipe.FoodCategory;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,11 +24,7 @@ public class FullOfEnergyEffect extends MobEffect {
         super.removeAttributeModifiers(pLivingEntity, pAttributeMap, pAmplifier);
         FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(pLivingEntity,CapabilityHandle.FROZEN_CAPABILITY);
         if(data!=null){
-            if(data.canDeleteDish()) {
-                data.onEffectUpdated(pLivingEntity, 0, 0, 0, 0);
-            }else {
-                data.setCanDeleteDish(true);
-            }
+            data.onEffectUpdated(pLivingEntity, 0, 0, 0, 0);
         }
     }
 }

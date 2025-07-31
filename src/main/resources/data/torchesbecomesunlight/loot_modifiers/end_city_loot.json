@@ -1,0 +1,17 @@
+{
+  "type": "torchesbecomesunlight:end_city_loot",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/end_city_treasure"
+        }
+      ]
+    }
+  ],
+  "item": "torchesbecomesunlight:time",
+  "probability": 0.75,
+  "in_ship_chest": true
+}

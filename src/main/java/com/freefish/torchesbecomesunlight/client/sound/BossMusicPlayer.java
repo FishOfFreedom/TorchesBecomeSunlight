@@ -9,12 +9,11 @@ import net.minecraft.world.entity.player.Player;
 public class BossMusicPlayer {
     public static BossMusicSound bossMusic;
 
-    public static void playBossMusic(FreeFishEntity entity) {
-        SoundEvent soundEvent = entity.getBossMusic();
+    public static void playBossMusic(FreeFishEntity entity,SoundEvent soundEvent,boolean isIntro) {
         if (soundEvent != null && entity.isAlive()) {
             Player player = Minecraft.getInstance().player;
             if (bossMusic != null) {
-                float f2 = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.MUSIC);
+                float f2 = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.RECORDS);
                 if (f2 <= 0) {
                     bossMusic = null;
                 }
@@ -27,7 +26,7 @@ public class BossMusicPlayer {
             }
             else {
                 if (entity.canPlayerHearMusic(player)) {
-                    bossMusic = new BossMusicSound(entity.getBossMusic(), entity);
+                    bossMusic = new BossMusicSound(soundEvent, entity);
                 }
             }
             if (bossMusic != null && !Minecraft.getInstance().getSoundManager().isActive(bossMusic)) {

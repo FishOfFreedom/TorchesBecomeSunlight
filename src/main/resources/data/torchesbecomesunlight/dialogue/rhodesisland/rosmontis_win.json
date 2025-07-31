@@ -1,0 +1,57 @@
+{
+  "id": "pathfinder_fight",
+  "title": "no",
+  "description": "领取奖励的对话",
+  "speakers": [
+    "op","player"
+  ],
+  "startid": "main1",
+  "skipid": "main2",
+  "entries": [
+    {
+      "id": "main1",
+      "nextid": "main3",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_win.main1",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main3",
+      "nextid": "main4",
+      "speaker": "player",
+      "text": "dialogue.rosmontis_win.main3",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main4",
+      "nextid": "main5",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_win.main4",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main5",
+      "nextid": "main2",
+      "speaker": "op",
+      "text": "dialogue.rosmontis_win.main5",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    },
+    {
+      "id": "main2",
+      "nextid": "null",
+      "speaker": "op",
+      "text": "",
+      "dialoguetime": "20",
+      "triggers": [
+      ]
+    }
+  ]
+}

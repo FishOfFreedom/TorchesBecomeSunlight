@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
@@ -119,7 +118,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
     @Override
     public void renderRecursively(PoseStack poseStack, Patriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         if(bone.getName().matches("shieldFX.*")){
-            super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, bone.getPosX());
+            super.renderRecursively(poseStack, animatable, bone, RenderType.entityTranslucent(PatriotModel.TEXTURE), bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, bone.getPosX());
         }
         else
             super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);

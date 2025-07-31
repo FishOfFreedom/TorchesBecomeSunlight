@@ -1,17 +1,19 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityFallingBlock;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
-import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvent;
@@ -31,6 +33,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -38,22 +41,26 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
-public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
+public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEntityAdditionalSpawnData {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private ItemStack tridentItem = new ItemStack(Items.TRIDENT);
     private boolean dealtDamage;
     public HashSet<LivingEntity> livingEntities = new HashSet<LivingEntity>();
     private boolean isFirstOnGround;
+    private boolean isLocate;
+    private int halberdUseTime = 20;
 
     public HalberdOTIEntity(EntityType<? extends HalberdOTIEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    public HalberdOTIEntity(Level pLevel, LivingEntity pShooter, ItemStack pStack) {
+    public HalberdOTIEntity(Level pLevel, LivingEntity pShooter, ItemStack pStack,boolean isLocate) {
         super(EntityHandle.HALBERD_OTI_ENTITY.get(), pShooter, pLevel);
         this.tridentItem = pStack.copy();
+        this.isLocate = isLocate;
     }
 
     protected void defineSynchedData() {
@@ -61,13 +68,14 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
     }
 
     public void tick() {
-        for(LivingEntity livingEntity : livingEntities){
+        Iterator<LivingEntity> iterator = livingEntities.iterator();
+        while (iterator.hasNext()){
+            LivingEntity livingEntity = iterator.next();
             Vec3 move = position().add(0,1,0).subtract(livingEntity.position());
-            if(move.length()>3){
-                livingEntities.remove(livingEntity);
-                continue;
-            }
             livingEntity.setDeltaMovement(move);
+            if(move.length()>4||!livingEntity.isAlive()){
+                iterator.remove();
+            }
         }
 
         if (this.inGroundTime > 4) {
@@ -84,6 +92,10 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
                 entity1.stopRiding();
             if(getOwner() instanceof Patriot)
                 this.kill();
+        }
+
+        if(!inGround&&halberdUseTime>30){
+            spawnRing();
         }
 
         super.tick();
@@ -123,14 +135,15 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
             float damage = (float) living.getAttribute(Attributes.ATTACK_DAMAGE).getValue()/2;
             List<LivingEntity> livingEntities = level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(6));
             for (LivingEntity livingEntity : livingEntities) {
-                if (livingEntity.distanceToSqr(this) > 25 || Math.abs(livingEntity.getY() - getY()) > 3)
+                if (livingEntity.distanceToSqr(this) > 25 || !livingEntity.onGround())
                     continue;
                 if(livingEntity instanceof GuerrillasEntity)
                     continue;
+
                 float d = 1.0f - (float) distanceToSqr(livingEntity)/25.0f;
                 Vec3 vector3d1 = livingEntity.position().subtract(this.position()).normalize();
                 livingEntity.setDeltaMovement(vector3d1.scale(d).add(0,0.5,0));
-                livingEntity.hurt(damageSources().trident(this,shooter), damage*d);
+                livingEntity.hurt(damageSources().mobAttack((LivingEntity) shooter), damage*d);
             }
         }
 
@@ -165,6 +178,12 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
         }
     }
 
+    public void setHalberdUseTime(int halberdUseTime) {
+        halberdUseTime = Mth.clamp(halberdUseTime,20,120);
+        this.halberdUseTime = halberdUseTime;
+    }
+
+
     protected ItemStack getPickupItem() {
         return this.tridentItem.copy();
     }
@@ -172,17 +191,15 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
         float f = 20.0F;
+
         if(getOwner()instanceof Patriot)
             f = (float) ((Patriot)getOwner()).getAttributeValue(Attributes.ATTACK_DAMAGE)*1.2f;
-        if (entity instanceof LivingEntity) {
-            LivingEntity livingentity = (LivingEntity)entity;
-            if(entity instanceof Player player){
-                ItemStack pPlayerItemStack = player.getUseItem();
-                if (!pPlayerItemStack.isEmpty() && pPlayerItemStack.is(Items.SHIELD)) {
-                    player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                    this.level().broadcastEntityEvent(player, (byte)30);
-                }
-            }
+        else if(getOwner()instanceof Player) {
+            f *= Mth.lerp((halberdUseTime-20.0f)/100,1.5f,5f);
+        }
+
+        if (entity instanceof Player player) {
+            FFEntityUtils.disableShield(player,200);
         }
         Entity entity1 = this.getOwner();
         DamageSource damagesource = damageSources().mobAttack((LivingEntity) entity1);
@@ -192,9 +209,11 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
         if (entity instanceof LivingEntity) {
             LivingEntity livingentity1 = (LivingEntity)entity;
             if(!livingEntities.contains(livingentity1)) {
-                livingentity1.setDeltaMovement(this.getDeltaMovement());
+                livingentity1.setDeltaMovement(this.getDeltaMovement().normalize().scale(0.5));
                 entity.hurt(damagesource, f);
-                livingEntities.add(livingentity1);
+                if(isLocate){
+                    livingEntities.add(livingentity1);
+                }
             }
         }
 
@@ -226,12 +245,16 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
             this.tridentItem = ItemStack.of(pCompound.getCompound("Trident"));
         }
         this.dealtDamage = pCompound.getBoolean("DealtDamage");
+        this.isLocate = pCompound.getBoolean("islocate");
+        this.halberdUseTime = pCompound.getInt("halberdUseTime");
     }
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.put("Trident", this.tridentItem.save(new CompoundTag()));
         pCompound.putBoolean("DealtDamage", this.dealtDamage);
+        pCompound.putBoolean("islocate", this.isLocate);
+        pCompound.putInt("halberdUseTime", this.halberdUseTime);
     }
 
     protected float getWaterInertia() {
@@ -253,5 +276,25 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    public void spawnRing(){
+        if(level().isClientSide&&tickCount%3==0){
+            //todo 粒子会消失
+            AdvancedParticleBase.spawnParticle(level(), ParticleHandler.RING_BIG.get(), getX(), getY(), getZ(), 0, 0, 0, false, Math.toRadians(getYRot()), -Math.toRadians(getXRot()), 0, 0, 4F, 1, 1, 1, 0.75, 1, 15, true, false, new ParticleComponent[]{
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, new ParticleComponent.KeyTrack(new float[]{0.2f,1,0},new float[]{0,0.5f,1}), false),
+                    new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.SCALE, new ParticleComponent.KeyTrack(new float[]{0,60,60},new float[]{0,0.5f,1}), false)
+            });
+        }
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        buffer.writeVarInt(halberdUseTime);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        halberdUseTime = additionalData.readVarInt();
     }
 }

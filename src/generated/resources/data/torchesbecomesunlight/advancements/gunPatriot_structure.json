@@ -1,0 +1,42 @@
+{
+  "parent": "torchesbecomesunlight:gunPatriot",
+  "criteria": {
+    "near_structure": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structure": "torchesbecomesunlight:sankta_statue"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gunPatriot_structure"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:big_ben"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gunPatriot_structure"
+    }
+  },
+  "requirements": [
+    [
+      "near_structure"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

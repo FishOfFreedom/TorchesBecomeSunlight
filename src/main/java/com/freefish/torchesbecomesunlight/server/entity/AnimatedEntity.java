@@ -1,13 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.entity;
 
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.IAwardEntity;
-import com.freefish.torchesbecomesunlight.server.entity.ursus.UrsusEntity;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
 import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -115,11 +114,18 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
         boolean attack = super.hurt(source, damage);
         if (attack) {
             if (getHealth() <= 0.0F) {
+                playDeathAnimationPre(source);
+            }
+            if (getHealth() <= 0.0F) {
                 if(getDeathAnimation()!=null)
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this, getDeathAnimation());
             }
         }
         return attack;
+    }
+
+    public void playDeathAnimationPre(DamageSource source){
+
     }
 
     public abstract AnimationAct getDeathAnimation();
@@ -184,6 +190,10 @@ public abstract class AnimatedEntity extends FreeFishEntity implements IAnimated
 
     @OnlyIn(Dist.CLIENT)
     public void setClientVectors(int index, Vec3 pos) {
+    }
+
+    public boolean canLookAnimation(){
+        return true;
     }
 
 //todo FrostNova is Influente

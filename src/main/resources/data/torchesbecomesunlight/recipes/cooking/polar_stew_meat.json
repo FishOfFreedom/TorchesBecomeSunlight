@@ -1,0 +1,29 @@
+{
+  "type": "torchesbecomesunlight:stew_pot",
+  "cookingtime": 600,
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "minecraft:beef"
+    },
+    {
+      "item": "torchesbecomesunlight:thigh_meat"
+    },
+    {
+      "item": "minecraft:egg"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:sweet_berries"
+    }
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "item": "torchesbecomesunlight:polar_stew_meat"
+  }
+}

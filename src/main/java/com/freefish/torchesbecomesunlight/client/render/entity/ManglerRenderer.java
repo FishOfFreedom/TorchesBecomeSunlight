@@ -14,10 +14,12 @@ public class ManglerRenderer extends GeoEntityRenderer<Mangler> {
 
     @Override
     public void render(Mangler entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        poseStack.scale(0.75f,0.75f,0.75f);
+        poseStack.pushPose();
+        poseStack.scale(0.85f,0.85f,0.85f);
         if(entity.isLeader()){
-            poseStack.scale(1.2f,1.2f,1.2f);
+            poseStack.scale(1.1f,1.1f,1.1f);
         }
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+        poseStack.popPose();
     }
 }

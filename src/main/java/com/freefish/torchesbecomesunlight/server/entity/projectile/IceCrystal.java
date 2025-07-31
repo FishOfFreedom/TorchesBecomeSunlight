@@ -1,27 +1,28 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
-import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
-import com.freefish.torchesbecomesunlight.server.capability.FrozenCapability;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
+import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
 import com.freefish.torchesbecomesunlight.server.entity.effect.EntityCameraShake;
 import com.freefish.torchesbecomesunlight.server.entity.effect.IceTuft;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
+import com.freefish.torchesbecomesunlight.server.init.DamageSourceHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
+import com.freefish.torchesbecomesunlight.server.partner.Partner;
+import com.freefish.torchesbecomesunlight.server.partner.PartnerUtil;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,6 +44,8 @@ public class IceCrystal extends Projectile implements GeoEntity {
     private int type1 = -1;
     private Vec3[] trailPositions = new Vec3[16];
     private int trailPointer = -1;
+    private LivingEntity waiterEntity;
+    private Vec3 waiterVec;
 
     private static final EntityDataAccessor<Integer> TYPE = SynchedEntityData.defineId(IceCrystal.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IS_HIT = SynchedEntityData.defineId(IceCrystal.class, EntityDataSerializers.BOOLEAN);
@@ -135,20 +138,36 @@ public class IceCrystal extends Projectile implements GeoEntity {
         }
 
         if(getType1()==2){
-            if(tickCount==27&&getOwner() instanceof FrostNova frostNova){
-                float speed = 40f;
-                LivingEntity target = frostNova.getTarget();
-                if(target!=null){
-                    double d0 = target.getX() - getX();
-                    double d2 = target.getZ() - getZ();
-                    float dist = (float) (org.joml.Math.sqrt(d0 * d0 + d2 * d2));
-                    float time = dist / speed;
+            if(tickCount==27){
+                if(getOwner() instanceof FrostNova frostNova){
+                    float speed = 40f;
+                    LivingEntity target = frostNova.getTarget();
+                    if (target != null) {
+                        double d0 = target.getX() - getX();
+                        double d2 = target.getZ() - getZ();
+                        float dist = (float) (org.joml.Math.sqrt(d0 * d0 + d2 * d2));
+                        float time = dist / speed;
+                        if(noWait) time = 0;
 
-                    Vec3 targetMoveVec = frostNova.getTargetMoveVec(target).scale(time).add(target.position());
+                        Vec3 targetMoveVec = frostNova.getTargetMoveVec(target).scale(time).add(target.position());
 
-                    Vec3 move = (new Vec3(targetMoveVec.x - getX(), target.getY(0.6) - getY(), targetMoveVec.z - getZ())).normalize().scale(2);
+                        Vec3 move = (new Vec3(targetMoveVec.x - getX(), target.getY(0.6) - getY(), targetMoveVec.z - getZ())).normalize().scale(2);
 
-                    this.shoot(move.x, move.y, move.z, 0);
+                        this.shoot(move.x, move.y, move.z, 0);
+                    }
+                }else if(getOwner() instanceof Player player){
+                    LivingEntity target = waiterEntity;
+                    if (target != null) {
+                        Vec3 targetMoveVec = target.position();
+
+                        Vec3 move = (new Vec3(targetMoveVec.x - getX(), target.getY(0.6) - getY(), targetMoveVec.z - getZ())).normalize().scale(2);
+
+                        this.shoot(move.x, move.y, move.z, 0);
+                    }else if(waiterVec !=null){
+                        Vec3 move = (new Vec3(waiterVec.x - getX(), waiterVec.y - getY(), waiterVec.z - getZ())).normalize().scale(2);
+
+                        this.shoot(move.x, move.y, move.z, 0);
+                    }
                 }
             }
         }
@@ -190,6 +209,7 @@ public class IceCrystal extends Projectile implements GeoEntity {
 
     private void doHurtTarget() {
         if(level().isClientSide() ) return;
+
         if (!isHit()) {
             List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(getDeltaMovement().length()+1));
             boolean flad = false;
@@ -208,8 +228,15 @@ public class IceCrystal extends Projectile implements GeoEntity {
                     float fa = (float) len.subtract(totarget).length();
                     if(fa<=0.1+target.getBbWidth()) flad1 = true;
                 }
-
-                if (flad1 && caster instanceof LivingEntity living) {
+                if (flad1 && caster instanceof Player living) {
+                    float damage = 10;
+                    if(target.hurt(DamageSourceHandle.noTriggerNoArmorAttack(living), damage)){
+                        flad=true;
+                        target.invulnerableTime=0;
+                        ForceEffectHandle.addForceEffect(target,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,60));
+                    }
+                }
+                else if (flad1 && caster instanceof LivingEntity living) {
                     AttributeInstance attribute = living.getAttribute(Attributes.ATTACK_DAMAGE);
                     if (attribute != null) {
                         float damage = (float) attribute.getValue();
@@ -218,8 +245,7 @@ public class IceCrystal extends Projectile implements GeoEntity {
                         if(target.hurt(this.damageSources().mobAttack(living), damage*bei)){
                             flad=true;
                             target.invulnerableTime=0;
-                            FrozenCapability.IFrozenCapability data = CapabilityHandle.getCapability(target, CapabilityHandle.FROZEN_CAPABILITY);
-                            if(data!=null) data.setFrozen(target,60);
+                            ForceEffectHandle.addForceEffect(target,new ForceEffectInstance(ForceEffectHandle.FROZEN_FORCE_EFFECT,1,60));
                         }
                     }
                 }
@@ -327,6 +353,40 @@ public class IceCrystal extends Projectile implements GeoEntity {
         iceCrystal.setOwner(caster);
         iceCrystal.setType(2);
         iceCrystal.setPos(vec3);
+        iceCrystal.waiterEntity = targetWait;
+        level.addFreshEntity(iceCrystal);
+    }
+
+    boolean noWait = false;
+
+    public static void spawnNoWaitCrystal(Level level,Vec3 vec3,LivingEntity caster,LivingEntity targetWait){
+        IceCrystal iceCrystal = new IceCrystal(EntityHandle.ICE_CRYSTAL.get(),level);
+        iceCrystal.setOwner(caster);
+        iceCrystal.setType(2);
+        iceCrystal.setPos(vec3);
+
+
+        iceCrystal.waiterEntity = targetWait;
+        if(caster instanceof Mob m){
+            Partner<?> partner = PartnerUtil.getPartner(m);
+            if(partner!=null){
+                LivingEntity instanceTarget = partner.getInstanceTarget();
+                if(instanceTarget!=null&&instanceTarget.isAlive()){
+                    iceCrystal.waiterEntity = instanceTarget;
+                }
+            }
+        }
+
+        level.addFreshEntity(iceCrystal);
+        iceCrystal.noWait = true;
+    }
+
+    public static void spawnWaitCrystal(Level level,Vec3 vec3,LivingEntity caster,Vec3 waiterVec){
+        IceCrystal iceCrystal = new IceCrystal(EntityHandle.ICE_CRYSTAL.get(),level);
+        iceCrystal.setOwner(caster);
+        iceCrystal.setType(2);
+        iceCrystal.setPos(vec3);
+        iceCrystal.waiterVec = waiterVec;
         level.addFreshEntity(iceCrystal);
     }
 }

@@ -1,7 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.freefish.torchesbecomesunlight.client.render.gui.screen.StewPotMenu;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.cuttingborad.CuttingBoardMenu;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenMenu;
+import com.freefish.torchesbecomesunlight.client.render.gui.screen.stewpot.StewPotMenu;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -17,6 +19,12 @@ public class MenuHandle {
 
     public static final RegistryObject<MenuType<StewPotMenu>> STEW_POT_MENU =
             registerMenuType("stew_pot_menu", StewPotMenu::new);
+
+    public static final RegistryObject<MenuType<CuttingBoardMenu>> CUTTING_BORAD_MENU =
+            registerMenuType("cutting_board_menu", CuttingBoardMenu::new);
+
+    public static final RegistryObject<MenuType<OvenMenu>> OVEN_MENU =
+            registerMenuType("oven_menu", OvenMenu::new);
 
 
     private static <T extends AbstractContainerMenu>RegistryObject<MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {

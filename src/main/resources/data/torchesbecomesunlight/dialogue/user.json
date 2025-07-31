@@ -1,0 +1,75 @@
+{
+  "id": "asfa",
+  "title": "asfa",
+  "description": "Alice",
+  "speakers": [
+    "1","2"
+  ],
+  "startid": "1",
+  "skipid": "2",
+  "entries": [
+    {
+      "id": "1",
+      "nextid": "2",
+      "speaker": "1",
+      "text": "1afhgoiahfolahfhlha",
+      "dialoguetime": "100",
+      "triggers": [
+      ],
+      "options": [
+        {
+          "nextid": 2,
+          "text": "afhjaifoafj"
+        },
+        {
+          "nextid": 3,
+          "text": "afhjaifoafj"
+        },
+        {
+          "nextid": 3,
+          "text": "这是第一段被锁住的剧情",
+          "canOptions": {
+            "type": "health_larger",
+            "speakid": "1",
+            "health": "21"
+          }
+        },
+        {
+          "nextid": 3,
+          "text": "这是第二段被锁住的剧情",
+          "canOptions": {
+            "type": "health_larger",
+            "speakid": "1",
+            "health": "14"
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "nextid": "3",
+      "speaker": "2",
+      "text": "text.text.text",
+      "generatext": {
+        "type": "find_villager",
+        "speakerid": "1"
+      },
+      "dialoguetime": "100",
+      "triggers": [
+        {
+          "type": "event",
+          "id": "666"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "nextid": "null",
+      "speaker": "2",
+      "text": "结束",
+      "dialoguetime": "100",
+      "triggers": [
+      ]
+    }
+  ]
+}

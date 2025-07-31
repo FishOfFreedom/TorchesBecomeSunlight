@@ -1,0 +1,19 @@
+{
+  "type": "torchesbecomesunlight:food_attribute",
+  "items": [
+    "minecraft:apple",
+    "minecraft:sweet_berries",
+    "minecraft:chorus_fruit",
+    "minecraft:carrot",
+    "minecraft:potato",
+    "minecraft:baked_potato",
+    "minecraft:carrot",
+    "minecraft:beetroot",
+    "minecraft:melon_slice"
+  ],
+  "values": {
+    "VEGGIE": 1
+  },
+  "effects": [
+  ]
+}

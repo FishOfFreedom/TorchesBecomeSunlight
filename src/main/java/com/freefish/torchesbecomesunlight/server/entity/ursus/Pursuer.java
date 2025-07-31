@@ -1,33 +1,34 @@
 package com.freefish.torchesbecomesunlight.server.entity.ursus;
 
-import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
-import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
-import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
 import com.freefish.torchesbecomesunlight.client.particle.BlackSpearParticle;
 import com.freefish.torchesbecomesunlight.client.particle.BladeParticle;
 import com.freefish.torchesbecomesunlight.client.particle.DemonHoleParticle;
 import com.freefish.torchesbecomesunlight.client.particle.DemonParticle;
+import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
+import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
+import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
+import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.ai.*;
-import com.freefish.torchesbecomesunlight.server.entity.ai.entity.PursuerStartDialogueAI;
-import com.freefish.torchesbecomesunlight.server.entity.ai.entity.WhileDialogueAI;
-import com.freefish.torchesbecomesunlight.server.entity.effect.*;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.entity.IDialogueEntity;
-import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
-import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.entity.ai.entity.PursuerAttackAI;
+import com.freefish.torchesbecomesunlight.server.entity.effect.*;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.GuerrillasEntity;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.BlackSpear;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
+import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.init.SoundHandle;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
+import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationAct;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.util.bossbar.CustomBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.FFBossInfoServer;
+import com.freefish.torchesbecomesunlight.server.util.bossbar.IBossInfoUpdate;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
 import com.freefish.torchesbecomesunlight.server.world.gen.biome.ModBiomes;
 import net.minecraft.core.BlockPos;
@@ -39,6 +40,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -53,6 +55,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -71,7 +74,10 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class Pursuer extends UrsusEntity implements IDialogueEntity {
     public static final AnimationAct<Pursuer> BATTACK1 = new AnimationAct<Pursuer>("attackB1",17){
@@ -666,13 +672,13 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
                     Vec3 vec3 = new Vec3(d0, firstBlockAbove != null ? firstBlockAbove.getY() : d1 + 7, d2);
                     entity.setSVec(vec3);
                     //todo
-                    LivingEntity dialogueEntity = entity.getDialogueEntity();
-                    if(dialogueEntity!=null){
-                        Vec3 move = new Vec3(0, 0, -1).yRot((float) (-dialogueEntity.yBodyRot / 180 * org.joml.Math.PI)).add(dialogueEntity.position());
-                        BlockPos secondBlockAbove = MathUtils.getFirstBlockAbove(entity.level(), new BlockPos((int) move.x, (int) move.y, (int) move.z));
-                        Vec3 vec31 = new Vec3(move.x, secondBlockAbove != null ? secondBlockAbove.getY() : move.y, move.z);
-                        entity.setSVec(vec31);
-                    }
+                    //LivingEntity dialogueEntity = entity.getDialogueEntity();
+                    //if(dialogueEntity!=null){
+                    //    Vec3 move = new Vec3(0, 0, -1).yRot((float) (-dialogueEntity.yBodyRot / 180 * org.joml.Math.PI)).add(dialogueEntity.position());
+                    //    BlockPos secondBlockAbove = MathUtils.getFirstBlockAbove(entity.level(), new BlockPos((int) move.x, (int) move.y, (int) move.z));
+                    //    Vec3 vec31 = new Vec3(move.x, secondBlockAbove != null ? secondBlockAbove.getY() : move.y, move.z);
+                    //    entity.setSVec(vec31);
+                    //}
                 }
                 else {
                     Entity pee = entity.getPee();
@@ -715,13 +721,13 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
 
         @Override
         public void stop(Pursuer entity) {
-            if(entity.getDialogueEntity() instanceof Player player&&ConfigHandler.COMMON.GLOBALSETTING.damageCap.get())
-            {
-                DialogueEntity dialogueEntity = new DialogueEntity(entity, entity.level(), DialogueStore.pursuer_meet_1, player, entity);
-                dialogueEntity.setEndDialogue(DialogueStore.pursuer_meet_5);
-                dialogueEntity.setPos(entity.position());
-                entity.level().addFreshEntity(dialogueEntity);
-            }
+            //if(entity.getDialogueEntity() instanceof Player player&&ConfigHandler.COMMON.GLOBALSETTING.damageCap.get())
+            //{
+                //DialogueEntity dialogueEntity = new DialogueEntity(entity, entity.level(), DialogueStore.pursuer_meet_1, player, entity);
+                //dialogueEntity.setEndDialogue(DialogueStore.pursuer_meet_5);
+                //dialogueEntity.setPos(entity.position());
+                //entity.level().addFreshEntity(dialogueEntity);
+            //}
             super.stop(entity);
         }
     };
@@ -810,9 +816,26 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     };
     public static final AnimationAct<Pursuer> DIE = new AnimationAct<Pursuer>("die",35,1);
 
-    private final List<DemonCounter> demonCounterList = new ArrayList<>();
+    public static final AnimationAct<Pursuer> BREAK_START = new AnimationAct<Pursuer>("break_start",50,2){
 
-    private final CustomBossInfoServer bossInfo= new CustomBossInfoServer(this,1);
+        @Override
+        public void tickUpdate(Pursuer entity) {
+            entity.setYRot(entity.yRotO);
+            int tick = entity.getAnimationTick();
+
+            entity.setLastHurtByMob(null);
+            entity.setTarget(null);
+
+            entity.locateEntity();
+            if(tick<=16&&tick%4==0){
+                float health = (tick+4)/20.f;
+                entity.setHealth(entity.getMaxHealth()*health);
+            }
+        }
+    };
+
+    private final List<DemonCounter> demonCounterList = new ArrayList<>();
+    private final ServerBossEvent bossInfo= ConfigHandler.COMMON.GLOBALSETTING.healthBarIsNearShow.get()?new FFBossInfoServer(this,1): new CustomBossInfoServer(this,1);
 
     private static final EntityDataAccessor<Integer> PREDICATE = SynchedEntityData.defineId(Pursuer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> SX = SynchedEntityData.defineId(Pursuer.class, EntityDataSerializers.FLOAT);
@@ -842,17 +865,19 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(2, new PursuerAttackAI(this));
-        if(ConfigHandler.COMMON.GLOBALSETTING.damageCap.get())
-            this.goalSelector.addGoal(3, new PursuerStartDialogueAI(this));
-        this.goalSelector.addGoal(1, new WhileDialogueAI(this));
+        //if(ConfigHandler.COMMON.GLOBALSETTING.canDialogue.get())
+        //    this.goalSelector.addGoal(3, new PursuerStartDialogueAI(this));
+        //this.goalSelector.addGoal(1, new WhileDialogueAI(this));
 
-        this.goalSelector.addGoal(7, new FFLookAtPlayerGoal<>(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal<>(this));
+        this.goalSelector.addGoal(7, new FFLookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(6, new FFRandomLookAroundGoal(this));
         this.goalSelector.addGoal(8, new FFWaterAvoidingRandomStrollGoal(this , 0.3));
 
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
     }
 
@@ -862,7 +887,6 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         if(damage>limit&&!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) damage = limit;
         AnimationAct a = getAnimation();
         if(a==FASTMOVE|a==DEMON|a==SKILL|a==PEACETOACT|a==REMOTE_2) return false;
-        if(getDialogueEntity()!=null&&getDialogueEntity().isAlive()) return false;
 
         //if(source.getDirectEntity() instanceof Player player&&getHasDialogue()){
         //    Optional<Boolean> map = player.getCapability(PlayerStoryStoneProvider.PLAYER_STORY_STONE_CAPABILITY).map(PlayerStoryStone::isCanDialogue);
@@ -918,14 +942,20 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         return Pursuer.DIE;
     }
 
+    @Override
+    public void playDeathAnimationPre(DamageSource source) {
+        if(source .getEntity() instanceof ServerPlayer player){
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "ursus_2_fight");
+        }
+    }
+
     private int targetIsLeave = 0;
-    private boolean isPlayerAttack = false;
 
     @Override
     public void tick() {
         super.tick();
 
-        if (tickCount % 4 == 0) bossInfo.update();
+        if (tickCount % 4 == 0&&bossInfo instanceof IBossInfoUpdate update) update.update();
 
         int tick = getAnimationTick();
 
@@ -947,26 +977,9 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
 
         if(!level().isClientSide()) {
             if (getHealth() <= getMaxHealth() / 4*3 && getHealth() > 1 && getPredicate() == 0&&getAnimation()!=PEACETOACT) {
-                if(!isPlayerAttack){
-                    LivingEntity target = getTarget();
-                    if(target instanceof Player player&&ConfigHandler.COMMON.GLOBALSETTING.damageCap.get()){
-                        DialogueEntity dialogueEntity = new DialogueEntity(this, this.level(), DialogueStore.pursuer_d_1, player, this);
-                        dialogueEntity.setEndDialogue(DialogueStore.pursuer_d_5);
-                        dialogueEntity.setPos(this.position());
-                        this.level().addFreshEntity(dialogueEntity);
-                        this.setHealth(this.getMaxHealth() / 4 * 3 + 1);
-                        setTarget(null);
-                        isPlayerAttack = true;
-                    }
-                    else {
-                        setState(1);
-                    }
-                }
-                else
-                    setState(1);
+                setState(1);
             }
             else if (getHealth() < getMaxHealth() / 4 && getPredicate() != 2) setState(2);
-            //else if (getHealth() > getMaxHealth() / 4*3 && getPredicate() == 1) setState(0);
         }
         if(((getAnimation()==TELE||getAnimation()==TELE1)&&tick==11)|(getAnimation()==DEMON&tick==54)){
             if(!level().isClientSide) {
@@ -1022,8 +1035,12 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     @Override
     public void die(DamageSource pDamageSource) {
         super.die(pDamageSource);
-        if (!this.isRemoved()) {
-            bossInfo.update();
+        Entity entity = pDamageSource.getEntity();
+        if(entity instanceof ServerPlayer s){
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(s,"ursus_2_fight");
+        }
+        if (!this.isRemoved()&&bossInfo instanceof IBossInfoUpdate update) {
+            update.update();
         }
     }
 
@@ -1648,27 +1665,6 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         return d1 > 1.0D - 0.025D / d0 ? pPlayer.hasLineOfSight(this) : false;
     }
 
-    @Override
-    public Dialogue getDialogue() {
-        return DialogueStore.pursuer_d_1;
-    }
-
-    @Override
-    public LivingEntity getDialogueEntity() {
-        return dialogueLivingEntity;
-    }
-
-    @Override
-    public void setDialogueEntity(LivingEntity dialogueEntity) {
-        setTarget(null);
-        dialogueLivingEntity = dialogueEntity;
-    }
-
-    @Override
-    public boolean getHasDialogue() {
-        return getDialogue()!=null;
-    }
-
     public void addDemonArea(int time,Vec3 pos,int radio){
         demonCounterList.add(new DemonCounter(time,pos,radio));
     }
@@ -1743,5 +1739,50 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     @Override
     public BossEvent.BossBarColor bossBarColor() {
         return BossEvent.BossBarColor.WHITE;
+    }
+
+    //Dialogue
+    private DialogueEntity dialogueEntity;
+    private int startBlack;
+    private int startBlackO;
+
+    public float getStartBlack(float pa){
+        return Mth.lerp(pa,startBlackO,startBlack);
+    }
+
+    public boolean isStartBlack(){
+        return startBlack != 0;
+    }
+
+    @Override
+    public boolean canDialogue() {
+        return false;
+    }
+
+    @Override
+    public void startDialogue(Player player) {
+        PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
+        if(capability!=null) {
+            DialogueEntity dialogueEntity1 = startTalk("dialogue/pursuer/xing_men.json", this, player);
+        }
+    }
+
+    @Override
+    public DialogueEntity getDialogueEntity() {
+        if(dialogueEntity!=null&&!dialogueEntity.isAlive()) dialogueEntity = null;
+
+        return dialogueEntity;
+    }
+
+    @Override
+    public void setDialogueEntity(DialogueEntity dialogueEntity) {
+        this.dialogueEntity = dialogueEntity;
+    }
+
+
+    public Player challengePlayer;
+
+    public void startChallengePlayer(Player player){
+        challengePlayer = player;
     }
 }

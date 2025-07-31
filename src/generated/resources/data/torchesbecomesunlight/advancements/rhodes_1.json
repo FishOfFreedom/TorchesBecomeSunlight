@@ -1,0 +1,43 @@
+{
+  "parent": "torchesbecomesunlight:rhodes",
+  "criteria": {
+    "near_structure": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structure": "torchesbecomesunlight:rhode_island_office"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.rhodes_1"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "torchesbecomesunlight:rhodes_shield",
+      "nbt": "{Damage:0}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.rhodes_1"
+    }
+  },
+  "requirements": [
+    [
+      "near_structure"
+    ]
+  ],
+  "sends_telemetry_event": false
+}

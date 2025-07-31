@@ -1,9 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.Dialogue;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
-import net.minecraft.client.Minecraft;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +19,6 @@ public class SynNumberEntity {
     public SynNumberEntity(int entityID , int dialogue) {
         this.entityID = entityID;
         this.dialogue = dialogue;
-
     }
 
     public static void serialize(final SynNumberEntity message, final FriendlyByteBuf buf) {

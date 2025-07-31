@@ -1,0 +1,404 @@
+{
+  "variants": {
+    "facing=up,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube"
+    },
+    "facing=down,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 180
+    },
+    "facing=north,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90
+    },
+    "facing=south,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": -90
+    },
+    "facing=west,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=north,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube"
+    },
+    "facing=down,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 180
+    },
+    "facing=north,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90
+    },
+    "facing=south,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": -90
+    },
+    "facing=west,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=south,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s"
+    },
+    "facing=down,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 180
+    },
+    "facing=north,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90
+    },
+    "facing=south,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": -90
+    },
+    "facing=west,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=west,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s"
+    },
+    "facing=down,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 180
+    },
+    "facing=north,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90
+    },
+    "facing=south,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": -90
+    },
+    "facing=west,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=east,line=line": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r"
+    },
+    "facing=down,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 180
+    },
+    "facing=north,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90
+    },
+    "facing=south,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": -90
+    },
+    "facing=west,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=north,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r"
+    },
+    "facing=down,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 180
+    },
+    "facing=north,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90
+    },
+    "facing=south,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": -90
+    },
+    "facing=west,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=south,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_r",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r"
+    },
+    "facing=down,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 180
+    },
+    "facing=north,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90
+    },
+    "facing=south,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": -90
+    },
+    "facing=west,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=west,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r"
+    },
+    "facing=down,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 180
+    },
+    "facing=north,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90
+    },
+    "facing=south,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": -90
+    },
+    "facing=west,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=east,line=liner": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_r",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l"
+    },
+    "facing=down,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 180
+    },
+    "facing=north,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90
+    },
+    "facing=south,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": -90
+    },
+    "facing=west,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=north,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l"
+    },
+    "facing=down,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 180
+    },
+    "facing=north,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90
+    },
+    "facing=south,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": -90
+    },
+    "facing=west,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=south,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_l",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l"
+    },
+    "facing=down,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 180
+    },
+    "facing=north,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90
+    },
+    "facing=south,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": -90
+    },
+    "facing=west,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=west,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l"
+    },
+    "facing=down,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 180
+    },
+    "facing=north,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90
+    },
+    "facing=south,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": -90
+    },
+    "facing=west,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=east,line=linel": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_l",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line"
+    },
+    "facing=down,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 180
+    },
+    "facing=north,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90
+    },
+    "facing=south,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": -90
+    },
+    "facing=west,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=north,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line"
+    },
+    "facing=down,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 180
+    },
+    "facing=north,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90
+    },
+    "facing=south,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": -90
+    },
+    "facing=west,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=south,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_line",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line"
+    },
+    "facing=down,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 180
+    },
+    "facing=north,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90
+    },
+    "facing=south,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": -90
+    },
+    "facing=west,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=west,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line"
+    },
+    "facing=down,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 180
+    },
+    "facing=north,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90
+    },
+    "facing=south,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": -90
+    },
+    "facing=west,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90,
+      "y": -90
+    },
+    "facing=east,corner=east,line=linerl": {
+      "model": "torchesbecomesunlight:block/lighttube/light_tube_s_line",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

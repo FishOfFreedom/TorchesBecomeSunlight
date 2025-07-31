@@ -1,0 +1,32 @@
+{
+  "variants": {
+    "eight_direction=east": {
+      "model": "torchesbecomesunlight:block/big_carton",
+      "y": 90
+    },
+    "eight_direction=east_south": {
+      "model": "torchesbecomesunlight:block/big_carton_xie"
+    },
+    "eight_direction=north": {
+      "model": "torchesbecomesunlight:block/big_carton"
+    },
+    "eight_direction=north_east": {
+      "model": "torchesbecomesunlight:block/big_carton_xie",
+      "y": 90
+    },
+    "eight_direction=south": {
+      "model": "torchesbecomesunlight:block/big_carton"
+    },
+    "eight_direction=south_west": {
+      "model": "torchesbecomesunlight:block/big_carton_xie",
+      "y": 90
+    },
+    "eight_direction=west": {
+      "model": "torchesbecomesunlight:block/big_carton",
+      "y": 90
+    },
+    "eight_direction=west_north": {
+      "model": "torchesbecomesunlight:block/big_carton_xie"
+    }
+  }
+}

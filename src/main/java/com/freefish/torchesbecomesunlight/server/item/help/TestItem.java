@@ -1,33 +1,15 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
-import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
-import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticleConfig;
-import com.freefish.rosmontislib.client.particle.advance.data.VelocityOverLifetimeSetting;
-import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
-import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
-import com.freefish.rosmontislib.client.particle.advance.data.shape.Circle;
-import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
-import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
-import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingBoom;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.LightingHalberd;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.NoGravityProjectileEntity;
-import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
-import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
-import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
-import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
-import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
-import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
-import com.freefish.torchesbecomesunlight.server.entity.projectile.Bullet;
-import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
-import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
-import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
-import com.freefish.torchesbecomesunlight.server.entity.effect.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
+import com.freefish.torchesbecomesunlight.server.entity.effect.AnimationBlock;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.shield.Patriot;
-import com.freefish.torchesbecomesunlight.server.story.dialogue.DialogueStore;
+import com.freefish.torchesbecomesunlight.server.init.EffectHandle;
+import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
+import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
+import com.freefish.torchesbecomesunlight.server.util.FFEntityUtils;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
-import net.minecraft.client.multiplayer.ClientLevel;
+import com.freefish.torchesbecomesunlight.server.util.animation.AnimationActHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -35,14 +17,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.apache.http.util.EntityUtils;
 
 import java.util.List;
 
@@ -76,9 +55,35 @@ public class TestItem extends Item {
             }
             else {
                 if(mode==Mode.MOVE) {
-                    Item item = ItemHandle.COOKED_THIGH_MEAT.get();
-                    ItemStack itemStack = new ItemStack(item);
-                    FoodProperties foodProperties = item.getFoodProperties(itemStack, player);
+                    AnimationBlock.spawnRing(player.position(),4,level);
+                    //RosmontisInstallation.SpawnInstallation(level,player,0);
+                    //RosmontisInstallation.SpawnInstallation(level,player,1);
+                    //RosmontisInstallation.SpawnInstallation(level,player,2);
+                    //RosmontisInstallation.SpawnInstallation(level,player,3);
+
+                    //Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue/user.json"), level);
+                    //DialogueEntity dialogueEntity = new DialogueEntity(player, level, dialogue, player, player);
+                    //level.addFreshEntity(dialogueEntity);
+
+                    //EntityMultiBlock entityMultiBlock = new EntityMultiBlock(EntityHandle.MULTI_BLOCK.get(), level);
+                    //entityMultiBlock.setPos(player.position().add(0,10,0));
+                    //BlockPos[]  blockPos =     new BlockPos[27]  ;
+                    //BlockState[] blockStates = new BlockState[27];
+                    //for(int i = 0;i<3;i++){
+                    //    for(int j = 0;j<3;j++){
+                    //        for(int k = 0;k<3;k++){
+                    //            int index = i*9+j*3+k;
+                    //            blockPos[index] = (new BlockPos(i,j,k));
+                    //            blockStates[index] = (Blocks.DIRT.defaultBlockState());
+                    //        }
+                    //    }
+                    //}
+                    //entityMultiBlock.setMultiBlock(blockStates,blockPos);
+                    //level.addFreshEntity(entityMultiBlock);
+
+                    //Item item = ItemHandle.COOKED_THIGH_MEAT.get();
+                    //ItemStack itemStack = new ItemStack(item);
+                    //FoodProperties foodProperties = item.getFoodProperties(itemStack, player);
                 }
                 else if(mode==Mode.CLEAN_ENTITY){
                     List<Entity> entities = level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(6));
@@ -88,7 +93,7 @@ public class TestItem extends Item {
                 }else if(mode==Mode.START_DIALOGUE){
                     List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(6));
                     DialogueEntity livingEntity = MathUtils.getClosestEntity(player, entities);
-                    livingEntity.startSpeak(DialogueStore.snownova_meet_1,100);
+                    //livingEntity.startSpeak(DialogueStore.snownova_meet_1,100);
                     //TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> livingEntity), new StartDialogueMessage(livingEntity.getId(),livingEntity.getId(), DialogueStore.snownova_meet_1));
                 }
                 else if(mode==Mode.PLAY_ANIMATION){
@@ -100,8 +105,16 @@ public class TestItem extends Item {
             }
         }
         if(mode==Mode.PARTICLE){
-            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 10));
+            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 4));
             if(level.isClientSide){
+                //ActRangeSignMessage.showSectorInter(player,player.position(),1,1,(float) (player.getYRot()),level);
+                //RLCubeParticle rlCubeParticle = new RLCubeParticle(level);
+                //rlCubeParticle.config.setStartColor(new Gradient(new GradientColor(0X1FFFFFFF)));
+                //rlCubeParticle.config.getRenderer().setRenderMode(RendererSetting.Particle.Mode.Vertical);
+                //rlCubeParticle.config.getMaterial().setMaterial(TBSMaterialHandle.NO_GLOW_PIXEL.create());
+                //BlockEffect effect = new BlockEffect(level,bodyRotVec);;
+                //rlCubeParticle.emmit(effect);
+
                 //level.addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(),player.getX(),player.getY(),player.getZ(),0,2,0);
                 //level.addParticle(new CycleWindParticle.CycleWindData(player.getId()),player.getX(),player.getY(),player.getZ(),0,0,0);
 
@@ -124,7 +137,7 @@ public class TestItem extends Item {
                 //    });
                 //}
 
-                //RLParticle rlParticle = new RLParticle((ClientLevel) level);
+                //RLParticle rlParticle = new RLParticle(level);
                 //rlParticle.setPos(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z);
                 //rlParticle.config.getShape().setShape(new Circle());
                 //rlParticle.config.getVelocityOverLifetime().setEnable(true);
@@ -134,25 +147,32 @@ public class TestItem extends Item {
                 //        NumberFunction.constant(1),
                 //        NumberFunction.constant(1)
                 //));
-                //rlParticle.emmit(new BlockEffect(level,player.position()));
+
+                //rlParticle.emmit(null);
             }
         }
         if(mode==Mode.SUMMON_GROUP&&!level.isClientSide){
-            LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
-            Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
-            lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,1.5f,0);
-            lightingBoom.setPos(player.getX(),player.getY(),player.getZ());
-            lightingBoom.setOwner(player);
-            level.addFreshEntity(lightingBoom);
+            Mangler mangler = new Mangler(EntityHandle.MANGLER.get(),level);
+            mangler.setPos(player.position());
+            mangler.spawnHerd();
+            level.addFreshEntity(mangler);
+
+            //LightingBoom lightingBoom = new LightingBoom(EntityHandle.LIGHT_BOOM.get(), level);
+            //Vec3 bodyRotVec = FFEntityUtils.getBodyRotVec(player, new Vec3(0, 0, 1)).subtract(player.position());
+            //lightingBoom.shoot(bodyRotVec.x,bodyRotVec.y,bodyRotVec.z,1.5f,0);
+            //lightingBoom.setPos(player.getX(),player.getY(),player.getZ());
+            //lightingBoom.setOwner(player);
+            //level.addFreshEntity(lightingBoom);
         }else if(mode==Mode.DIALOGUE){
 
-            Bullet abstractarrow = new Bullet(level,player,0);
+            //Bullet abstractarrow = new Bullet(level,player,0);
+            Arrow abstractarrow = new Arrow(level,player);
             abstractarrow.setPos(player.position());
             Vec3 target = new Vec3(0,0,10).yRot((float) (-player.getYRot() / 180 * Math.PI)).add(player.position());
             double d0 = target.x - player.position().x;
             double d1 = target.y - player.position().y;
             double d2 = target.z - player.position().z;
-            abstractarrow.shoot(d0, d1 , d2, 0.08F, 0);
+            abstractarrow.shoot(d0, d1 , d2, 40F, 0);
             level.addFreshEntity(abstractarrow);
             //List<Man> entitiesOfClass = level.getEntitiesOfClass(Man.class, player.getBoundingBox().inflate(8));
             //if(entitiesOfClass.size()>=2){

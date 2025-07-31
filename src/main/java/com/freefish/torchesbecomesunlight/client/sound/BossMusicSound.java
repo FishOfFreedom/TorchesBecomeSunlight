@@ -1,6 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.sound;
 
 import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -11,12 +13,15 @@ public class BossMusicSound extends AbstractTickableSoundInstance {
     private FreeFishEntity boss;
     private int ticksExisted = 0;
     private int timeUntilFade;
+    public int time;
+    @Setter@Getter
+    private boolean isCanLoop;
 
     private final SoundEvent soundEvent;
     ControlledAnimation volumeControl;
 
     public BossMusicSound(SoundEvent sound, FreeFishEntity boss) {
-        super(sound, SoundSource.MUSIC, SoundInstance.createUnseededRandom());
+        super(sound, SoundSource.RECORDS, SoundInstance.createUnseededRandom());
         this.boss = boss;
         this.soundEvent = sound;
         this.attenuation = Attenuation.NONE;
@@ -32,11 +37,21 @@ public class BossMusicSound extends AbstractTickableSoundInstance {
         timeUntilFade = 80;
     }
 
+    public void reset(){
+        time = 0;
+    }
+
     public boolean canPlaySound() {
         return BossMusicPlayer.bossMusic == this;
     }
 
     public void tick() {
+        //if(boss!=null&&isCanLoop){
+        //    System.out.println(time);
+        //    if(time>boss.timeToLoop()){
+        //        BossMusicPlayer.playBossMusic(boss,boss.getLoopMusic(),false);
+        //    }time++;
+        //}
         // If the music should stop playing
         if (boss == null || !boss.isAlive() || boss.isSilent()) {
             // If the boss is dead, skip the fade timer and fade out right away
@@ -62,6 +77,11 @@ public class BossMusicSound extends AbstractTickableSoundInstance {
             Minecraft.getInstance().getMusicManager().stopPlaying();
         }
         ticksExisted++;
+    }
+
+    @Override
+    public boolean isLooping() {
+        return super.isLooping();
     }
 
     public void setBoss(FreeFishEntity boss) {

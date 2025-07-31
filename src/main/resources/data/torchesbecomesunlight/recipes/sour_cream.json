@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:milk_bucket"
+    },
+    {
+      "tag": "forge:eggs"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ],
+  "result": {
+    "item": "torchesbecomesunlight:sour_cream",
+    "count": 4
+  },
+  "remainder": {
+    "item": "minecraft:bucket"
+  }
+}
