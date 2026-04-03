@@ -72,7 +72,6 @@
   "item.torchesbecomesunlight.female_villager_egg": "Female Villager Spawn Egg",
   "item.torchesbecomesunlight.burdenbeast_egg": "Burdenbeast Spawn Egg",
   "item.torchesbecomesunlight.yeti_ice_leaver_egg": "Yeti Icebreaker Spawn Egg",
-
   "item.torchesbecomesunlight.ursus_machete": "Ursus Machete",
   "item.torchesbecomesunlight.gun": "Heavy Rotary Pilgrim Gun",
   "item.torchesbecomesunlight.halberd": "Rusty Halberd",
@@ -281,6 +280,8 @@
   "text.torchesbecomesunlight.light": "First saint's cry to the Law. Humble, selfish, yet grand wish for survival.",
   "text.torchesbecomesunlight.sankta_ring": "PCS answered the first saint's prayer. An angelic mimic begins pilgrimage.",
   "text.torchesbecomesunlight.sankta_ring_tool": "When right-clicking, the player will \"empathize\" with a target entity and fight together",
+  "text.torchesbecomesunlight.sankta_ringtoold": "Die in the lava while carrying this item to exit Sankta",
+  "text.torchesbecomesunlight.sankta_ringctool": "Right-click to join or leave Sankta in Creative mode",
   "text.torchesbecomesunlight.sankta_ring_toold": "Carry this item and die in the lava to exit Sankta",
   "text.torchesbecomesunlight.sankta_ring_ctool": "Right-click in creative mode to join or exit Sankta",
   "text.torchesbecomesunlight.rhodes_knife": "Rhodes standard issue. Durable and reliable for field ops.",
@@ -327,6 +328,7 @@
   "text.torchesbecomesunlight.foodfish":  "SPD ",
   "text.torchesbecomesunlight.foodbuff":  "Buff ",
 
+  "_comment": "Obituary",
   "death.attack.snow_monster_frozen": "%1$s froze to death by %2$s",
 
   "entity.torchesbecomesunlight.frost_nova": "FrostNova",
