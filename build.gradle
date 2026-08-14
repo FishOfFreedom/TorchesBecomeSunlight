@@ -1,10 +1,9 @@
 plugins {
+    id 'java-library'
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id 'net.neoforged.moddev' version '2.0.144'
 }
 
 version = mod_version
@@ -14,175 +13,138 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
-    copyIdeResources = true
 
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        minecraftVersion = project.parchment_minecraft_version
+        mappingsVersion = project.parchment_mapping_version
+    }
+
+    // NeoForge 的 AT 使用 Mojang 官方映射名，不再是 SRG（f_109472_ 之类）
+    accessTransformers.from('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Mixin 由 NeoForge 内置支持：配置在 neoforge.mods.toml 的 [[mixins]] 中声明，
+    // 不再需要 mixin gradle 插件、-mixin.config 启动参数或 MixinConfigs manifest 属性。
+    // Mojang 映射下也不需要 refmap 重映射。
 
     runs {
         configureEach {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'info'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.INFO
         }
 
         client {
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            arg '-mixin.config=torchesbecomesunlight.mixins.json'
+            client()
         }
 
         server {
-            properties 'mixin.env.remapRefMap': 'true'
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
-
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            arg '-mixin.config=torchesbecomesunlight.mixins.json'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            server()
+            programArgument '--nogui'
         }
 
         data {
-            workingDirectory project.file('run-data')
-
-            properties 'mixin.env.remapRefMap': 'true'
-
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            arg '-mixin.config=torchesbecomesunlight.mixins.json'
+            data()
+            gameDirectory = project.file('run-data')
+            programArguments.addAll '--mod', mod_id, '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath()
         }
     }
-}
 
-mixin {
-    add sourceSets.main, "torchesbecomesunlight.refmap.json"
-    config "torchesbecomesunlight.mixins.json"
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    // RosmontisLib 没有公开 maven 坐标，直接用 libs/ 下的 jar
+    // （来源：整合包「最后的冬天」D:\MC\snow 的 mods 目录）
+    flatDir {
+        dirs 'libs'
+    }
     maven {
         name = 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
     }
     maven {
-        name = 'MinecraftForge'
-        url = 'https://maven.minecraftforge.net/'
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com/'
     }
     maven {
-        name = "CurseForge"
-        url = "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven { url = 'https://maven.parchmentmc.org' }
-    maven { url = 'https://repo.spongepowered.org/maven' }
-    maven {
-        url "https://jitpack.io"
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
+        content { includeGroup 'curse.maven' }
     }
     maven {
-        allowInsecureProtocol = true
-        url = "http://localhost:8081/repository/arknightsmod/"
-        credentials {
-            username = System.getenv("MAVENNAME")
-            password = System.getenv("PASSWORD")
-        }
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
     }
-    maven { url = "https://maven.blamejared.com/" }
+    mavenCentral()
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.9')
+    // 本地 jar：libs/rosmontislib-neoforge-1.21.1-0.5.0-port.1.jar
+    // flatDir 坐标为 :<name>:<version>，Gradle 拼成 <name>-<version>.jar
+    implementation ":rosmontislib-neoforge:${rosmontislib_version}"
 
-    runtimeOnly  fg.deobf("curse.maven:mob-battle-mod-268746:4748521")
-    runtimeOnly fg.deobf("curse.maven:eeeabs-mobs-921600:5931229")
-    runtimeOnly fg.deobf("curse.maven:neat-238372:5728641")
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    implementation fg.deobf("curse.maven:xenon-564239:5216360")
-    implementation fg.deobf("curse.maven:oculus-581495:5299671")
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    // at runtime, use the full JEI
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    // MixinExtras 已由 NeoForge 21.1 内置提供，不再需要单独引入或 jarJar。
 
-    //rosmontislib
-    //implementation jarJar(fg.deobf("com.github.fishoffreedom:rosmontislib:main-SNAPSHOT"))
-    implementation (fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250728.202116-28"))
-    jarJar(fg.deobf("com.freefish.rosmontislib:RosmontisLib:1.0.0-20250728.202116-28")) {
-        jarJar.ranged(it, "[0.2.0,)")
-    }
+    // TODO(移植): 整合包「最后的冬天」使用 Sodium，且不含 Oculus/Iris 或 Xenon。
+    //   原 1.20.1 的 compat 依赖需要重新决策：
+    //     implementation fg.deobf("curse.maven:xenon-564239:5216360")
+    //     implementation fg.deobf("curse.maven:oculus-581495:5299671")
+    //   compat/oculus/ForgeOculusHandle 与 TorchesBecomeSunlight.isUsingShaderPack()
+    //   目前直接引用 Oculus API，在剥离或改接 Iris 之前会编译失败。
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {
-        jarJar.ranged(it, "[0.2.0,)")
-    }
+    // TODO(移植): 原开发期运行时依赖（mob-battle-mod / eeeabs-mobs / neat）的
+    //   1.20.1 文件 ID 已失效，需要时再补 1.21.1 版本。
 }
 
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
+            minecraft_version    : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version          : neo_version,
+            neo_version_range    : neo_version_range,
+            loader_version_range : loader_version_range,
+            mod_id               : mod_id,
+            mod_name             : mod_name,
+            mod_license          : mod_license,
+            mod_version          : mod_version,
+            mod_authors          : mod_authors,
+            mod_description      : mod_description,
+            geckolib_version     : geckolib_version,
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
-}
-
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1',
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "torchesbecomesunlight.mixins.json"
-        ])
-    }
-
-    finalizedBy 'reobfJar'
 }
 
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            artifact jar
+            from components.java
         }
     }
     repositories {
@@ -194,4 +156,6 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    // 移植期：放开 javac 错误条数上限，便于一次性统计剩余工作量
+    options.compilerArgs << '-Xmaxerrs' << '100000'
 }
