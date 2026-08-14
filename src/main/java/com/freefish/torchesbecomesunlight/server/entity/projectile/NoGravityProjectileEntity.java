@@ -32,17 +32,17 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public abstract class NoGravityProjectileEntity extends Projectile implements GeoEntity, IEntityAdditionalSpawnData {
+public abstract class NoGravityProjectileEntity extends Projectile implements GeoEntity, IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Byte> ID_FLAGS = SynchedEntityData.defineId(NoGravityProjectileEntity.class, EntityDataSerializers.BYTE);
 
@@ -90,8 +90,8 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         return false;
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(ID_FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ID_FLAGS, (byte)0);
     }
 
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
@@ -283,10 +283,6 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         setYRot(additionalData.readFloat());
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -354,7 +350,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         boolean b = hitEntity(entity);
         if(!level().isClientSide&&b){
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new ProjectileHitEntityMessage(this, entity.getId()));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new ProjectileHitEntityMessage(this, entity.getId()));
         }
 
         if(isHitEntityDiscard(entity)) {
@@ -431,7 +427,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         this.inGround = pCompound.getBoolean("inGround");
 
         if (pCompound.contains("SoundEvent", 8)) {
-            this.soundEvent = BuiltInRegistries.SOUND_EVENT.getOptional(new ResourceLocation(pCompound.getString("SoundEvent"))).orElse(this.getDefaultHitGroundSoundEvent());
+            this.soundEvent = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(pCompound.getString("SoundEvent"))).orElse(this.getDefaultHitGroundSoundEvent());
         }
     }
 

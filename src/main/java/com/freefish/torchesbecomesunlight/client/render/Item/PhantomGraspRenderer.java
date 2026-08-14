@@ -12,8 +12,8 @@ public class PhantomGraspRenderer extends GeoItemRenderer<PhantomGrasp> {
     }
 
     public static class PhantomGraspModel extends GeoModel<PhantomGrasp> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/phantom_grasp.geo.json");
-        private static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/item/phantom_grasp.png");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/phantom_grasp.geo.json");
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/item/phantom_grasp.png");
 
         @Override
         public ResourceLocation getModelResource(PhantomGrasp animatable) {

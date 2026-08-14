@@ -22,12 +22,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.MovementInputUpdateEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.joml.Matrix4f;
 
 import java.util.Arrays;
@@ -35,10 +35,10 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, value = Dist.CLIENT)
 public class GuiDialogueRenderEvent {
-    private static final ResourceLocation DO = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/gui/dialogue_op.png");
+    private static final ResourceLocation DO = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/gui/dialogue_op.png");
 
     @SubscribeEvent
-    public static void onRenderGuiOverlay(RenderGuiOverlayEvent.Post event) {
+    public static void onRenderGuiOverlay(RenderGuiLayerEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
@@ -46,7 +46,7 @@ public class GuiDialogueRenderEvent {
             return;
 
         //todo skip
-        if (event.getOverlay().id() == VanillaGuiOverlay.HOTBAR.id()) {
+        if (event.getOverlay().id() == VanillaGuiLayers.HOTBAR.id()) {
             for(HudWidget hud:HudWidget.STRING_WIDGET.values()){
                 if(hud.canRenderer()){
                     hud.drawInBackground(event.getGuiGraphics(), 0, 0, event.getPartialTick());
@@ -108,7 +108,7 @@ public class GuiDialogueRenderEvent {
         }
     }
 
-    private static void renderChatCenter(RenderGuiOverlayEvent.Post event, DialogueEntity dialogueEntity){
+    private static void renderChatCenter(RenderGuiLayerEvent.Post event, DialogueEntity dialogueEntity){
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         GuiGraphics guiGraphics = event.getGuiGraphics();
@@ -140,7 +140,7 @@ public class GuiDialogueRenderEvent {
         guiGraphics.pose().popPose();
     }
 
-    private static void renderOptionsCenter(RenderGuiOverlayEvent.Post event,DialogueEntity dialogueEntity){
+    private static void renderOptionsCenter(RenderGuiLayerEvent.Post event,DialogueEntity dialogueEntity){
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         int fontHeight = font.lineHeight;

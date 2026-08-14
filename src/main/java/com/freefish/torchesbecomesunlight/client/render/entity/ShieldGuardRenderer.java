@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.GeoRenderer;
@@ -34,7 +34,7 @@ public class ShieldGuardRenderer extends GeoEntityRenderer<ShieldGuard> {
 
     @OnlyIn(Dist.CLIENT)
      class ShieldGuardGlowLayer extends GeoRenderLayer<ShieldGuard> {
-        public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/shield_guard_light.png");
+        public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/entity/shield_guard_light.png");
 
         public ShieldGuardGlowLayer(GeoRenderer<ShieldGuard> entityRendererIn) {
             super(entityRendererIn);

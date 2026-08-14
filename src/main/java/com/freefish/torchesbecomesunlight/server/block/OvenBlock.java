@@ -77,7 +77,7 @@ public class OvenBlock extends BaseEntityBlock{
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof OvenBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (OvenBlockEntity)entity, pPos);
+                ((ServerPlayer)pPlayer).openMenu((OvenBlockEntity)entity, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }

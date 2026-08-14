@@ -61,10 +61,10 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
                     Vec3 subtract1 = normalize.subtract(headRotVec);
                     //VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.lines());
 
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x + headRotVec.x), (float) (eye.y + headRotVec.y), (float) (eye.z + headRotVec.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x + normalize.x), (float) (eye.y + normalize.y), (float) (eye.z + normalize.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x), (float) (eye.y), (float) (eye.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (0.5), (float) (0.5), (float) (0.5)).color(255, 0, 0, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x + headRotVec.x), (float) (eye.y + headRotVec.y), (float) (eye.z + headRotVec.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last().setNormal(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x + normalize.x), (float) (eye.y + normalize.y), (float) (eye.z + normalize.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last().setNormal(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x), (float) (eye.y), (float) (eye.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last().setNormal(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (0.5), (float) (0.5), (float) (0.5)).setColor(255, 0, 0, 255).setNormal(poseStack.last().setNormal(), 0, 0, 0);
 
                     if (subtract1.length() < 0.1) {
                         message = "选中";

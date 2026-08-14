@@ -62,7 +62,7 @@ public class GuardShieldRenderer extends GeoItemRenderer<GuardShield> {
     }
 
     public static class GuardShieldModel extends GeoModel<GuardShield> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/guard_shield.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/guard_shield.geo.json");
 
         @Override
         public ResourceLocation getModelResource(GuardShield animatable) {

@@ -36,12 +36,12 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -53,7 +53,7 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
     private static final EntityDataAccessor<CompoundTag> ANIMATION = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<Boolean> RUN = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.BOOLEAN);
 
-    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADDITION);
+    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADD_VALUE);
     public int animationType;
     private int animationTime;
 
@@ -282,10 +282,10 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIMATION,new CompoundTag());
-        this.entityData.define(RUN,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIMATION,new CompoundTag());
+        builder.define(RUN,false);
     }
 
     public void setRun(boolean run){

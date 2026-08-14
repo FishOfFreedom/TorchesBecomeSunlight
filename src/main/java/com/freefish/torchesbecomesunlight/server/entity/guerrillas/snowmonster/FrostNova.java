@@ -86,11 +86,11 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1060,13 +1060,13 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_X,0f);
-        this.entityData.define(TARGET_Y,0f);
-        this.entityData.define(TARGET_Z,0f);
-        this.entityData.define(SECOND_HEALTH,0f);
-        this.entityData.define(STATE,0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TARGET_X,0f);
+        builder.define(TARGET_Y,0f);
+        builder.define(TARGET_Z,0f);
+        builder.define(SECOND_HEALTH,0f);
+        builder.define(STATE,0);
     }
 
     @Override

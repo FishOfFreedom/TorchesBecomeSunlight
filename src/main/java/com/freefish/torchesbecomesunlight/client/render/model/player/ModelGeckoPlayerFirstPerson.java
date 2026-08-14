@@ -7,9 +7,9 @@ import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.Mow
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import software.bernie.geckolib.core.animation.AnimationState;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import software.bernie.geckolib.animation.AnimationState;
 
 @OnlyIn(Dist.CLIENT)
 public class ModelGeckoPlayerFirstPerson extends MowzieGeoModel<GeckoPlayer> {
@@ -22,12 +22,12 @@ public class ModelGeckoPlayerFirstPerson extends MowzieGeoModel<GeckoPlayer> {
 	
 	@Override
 	public ResourceLocation getAnimationResource(GeckoPlayer animatable) {
-		return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/animated_player_first_person.animation.json");
+		return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/animated_player_first_person.animation.json");
 	}
 
 	@Override
 	public ResourceLocation getModelResource(GeckoPlayer animatable) {
-		return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/animated_player_first_person.geo.json");
+		return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/animated_player_first_person.geo.json");
 	}
 
 	@Override

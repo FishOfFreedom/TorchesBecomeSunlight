@@ -13,7 +13,7 @@ public class IceBroadswordRenderer extends GeoItemRenderer<IceBroadsword> {
     }
 
     public static class IceBroadswordModel extends GeoModel<IceBroadsword> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/ice_broadsword.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/ice_broadsword.geo.json");
 
         @Override
         public ResourceLocation getModelResource(IceBroadsword animatable) {

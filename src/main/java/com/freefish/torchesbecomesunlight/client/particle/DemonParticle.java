@@ -26,8 +26,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -95,10 +95,10 @@ public class DemonParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        portalStatic.addVertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
 
         multibuffersource$buffersource.endBatch();
     }

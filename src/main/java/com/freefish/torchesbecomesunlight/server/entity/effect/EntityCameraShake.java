@@ -47,7 +47,7 @@ public class EntityCameraShake extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         getEntityData().define(RADIUS, 10.0f);
         getEntityData().define(MAGNITUDE, 1.0f);
         getEntityData().define(DURATION, 0);

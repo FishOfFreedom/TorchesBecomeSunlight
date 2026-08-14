@@ -71,8 +71,8 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
     }
 
     public static class InfectedShieldModel extends GeoModel<InfectedShield> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/shield.geo.json");
-        private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/shield.animation.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/shield.geo.json");
+        private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/shield.animation.json");
 
         @Override
         public ResourceLocation getModelResource(InfectedShield animatable) {

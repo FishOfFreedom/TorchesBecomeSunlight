@@ -16,13 +16,13 @@ import org.joml.Vector3f;
 
 public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity> {
     private static final ResourceLocation[] TEXTURE = new ResourceLocation[]{
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire1.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire2.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire3.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire4.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire5.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire6.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire7.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire1.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire2.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire3.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire4.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire5.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire6.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/fire/fire7.png"),
     };
     public SacredRealmEntityRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
@@ -75,10 +75,10 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         while (len>0){
             float finalLen = Math.min(1f,len);
 
-            portalStatic.vertex(matrixstack$entry.pose(), x1+ v *(count), 0, z1+ v1 *(count)).color(1f, 0.8f, 0f, alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), x1+ v *(count), 1, z1+ v1 *(count)).color(1f, 0.8f, 0f, alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 1, z1+ v1 *(finalLen+count)).color(1f, 0.8f, 0f, alpha).uv(1-finalLen, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 0, z1+ v1 *(finalLen+count)).color(1f, 0.8f, 0f, alpha).uv(1-finalLen, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(count), 0, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(count), 1, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 1, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 0, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
 
             count+=1;
             len-=1;

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -17,12 +18,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
-public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
+public class StompEntity extends Entity implements IEntityWithComplexSpawn {
     int continueTime,frame;
     LivingEntity owner;
     double maxDist;
@@ -41,7 +42,7 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
@@ -148,8 +149,4 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 }

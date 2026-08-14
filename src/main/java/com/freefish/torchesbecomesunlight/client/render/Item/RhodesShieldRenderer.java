@@ -60,7 +60,7 @@ public class RhodesShieldRenderer extends GeoItemRenderer<RhodesShield> {
     }
 
     public static class RhodesShieldModel extends GeoModel<RhodesShield> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/rhodeshield.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/rhodeshield.geo.json");
 
         @Override
         public ResourceLocation getModelResource(RhodesShield animatable) {

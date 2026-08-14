@@ -58,7 +58,7 @@ public class PathfinderShieldRenderer extends GeoItemRenderer<PathfinderShield> 
     }
 
     public static class PathfinderShieldModel extends GeoModel<PathfinderShield> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/pathfindershield.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/pathfindershield.geo.json");
 
         @Override
         public ResourceLocation getModelResource(PathfinderShield animatable) {

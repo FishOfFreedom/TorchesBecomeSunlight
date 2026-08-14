@@ -14,7 +14,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 
 public class ModBiomes {
     public static final ResourceKey<Biome> DEMON_BIOME = ResourceKey.create(Registries.BIOME,
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "demon_biome"));
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "demon_biome"));
 
     public static void boostrap(BootstapContext<Biome> context) {
         context.register(DEMON_BIOME, demonBiome(context));

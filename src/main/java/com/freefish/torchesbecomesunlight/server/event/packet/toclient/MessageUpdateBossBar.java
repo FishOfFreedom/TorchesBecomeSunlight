@@ -1,17 +1,28 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+public class MessageUpdateBossBar implements CustomPacketPayload {
 
-public class MessageUpdateBossBar {
+    public static final CustomPacketPayload.Type<MessageUpdateBossBar> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "message_update_boss_bar"));
+
+    public static final StreamCodec<FriendlyByteBuf, MessageUpdateBossBar> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), MessageUpdateBossBar::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private UUID bossID;
     private int renderType;
 
@@ -33,10 +44,8 @@ public class MessageUpdateBossBar {
         return new MessageUpdateBossBar(buf.readUUID(), buf.readInt());
     }
 
-    public static class Handler implements BiConsumer<MessageUpdateBossBar, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final MessageUpdateBossBar message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final MessageUpdateBossBar message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 if (message.renderType == -1) {
                     TorchesBecomeSunlight.bossBarRegistryNames.remove(message.bossID);
@@ -45,7 +54,5 @@ public class MessageUpdateBossBar {
                     TorchesBecomeSunlight.bossBarRegistryNames.put(message.bossID, message.renderType);
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

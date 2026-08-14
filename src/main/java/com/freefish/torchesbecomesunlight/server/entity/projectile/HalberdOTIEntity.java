@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
@@ -33,18 +34,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEntityAdditionalSpawnData {
+public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private ItemStack tridentItem = new ItemStack(Items.TRIDENT);
     private boolean dealtDamage;
@@ -63,8 +64,8 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
         this.isLocate = isLocate;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     public void tick() {
@@ -265,10 +266,6 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
         return true;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar event) {}

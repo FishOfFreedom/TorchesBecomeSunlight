@@ -8,16 +8,16 @@ import software.bernie.geckolib.model.GeoModel;
 public class BlackHoleModel extends GeoModel<BlackHoleEntity> {
     @Override
     public ResourceLocation getModelResource(BlackHoleEntity animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/blackhole.geo.json");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/blackhole.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(BlackHoleEntity animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/projectile/black_spear.png");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/projectile/black_spear.png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(BlackHoleEntity animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/blackhole.animation.json");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/blackhole.animation.json");
     }
 }

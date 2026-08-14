@@ -11,7 +11,7 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 public final class PreparationOpArmorRenderer extends GeoArmorRenderer<PatrolCaptainArmorItem> {
     public PreparationOpArmorRenderer() {
-        super(new DefaultedItemGeoModel<>(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "armor/preparation_op_armor")));
+        super(new DefaultedItemGeoModel<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor/preparation_op_armor")));
     }
 
     @Override

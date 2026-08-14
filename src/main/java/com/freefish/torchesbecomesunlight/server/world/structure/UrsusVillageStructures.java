@@ -46,7 +46,7 @@ public class UrsusVillageStructures extends FFStructures {
                 TBSJigsawPlacement.addPieces(
                         newContext,
                         Holder.direct(context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
-                                .get(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "ursus_village/center"))),
+                                .get(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "ursus_village/center"))),
                         Optional.empty(),
                         16,
                         blockpos,

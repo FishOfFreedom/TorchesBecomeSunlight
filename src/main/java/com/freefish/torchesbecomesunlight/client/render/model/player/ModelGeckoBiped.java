@@ -14,8 +14,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.cache.object.GeoBone;
 
 @OnlyIn(Dist.CLIENT)
@@ -35,12 +35,12 @@ public class ModelGeckoBiped extends MowzieGeoModel<GeckoPlayer> {
 	
 	@Override
 	public ResourceLocation getAnimationResource(GeckoPlayer animatable) {
-		return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/animated_player.animation.json");
+		return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/animated_player.animation.json");
 	}
 
 	@Override
 	public ResourceLocation getModelResource(GeckoPlayer animatable) {
-		return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/animated_player.geo.json");
+		return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/animated_player.geo.json");
 	}
 
 	@Override

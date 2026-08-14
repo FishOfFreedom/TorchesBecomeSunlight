@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CuttingBoardScreen extends AbstractContainerScreen<CuttingBoardMenu> implements RecipeUpdateListener {
-    private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation("textures/gui/recipe_button.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
+    private static final ResourceLocation RECIPE_BUTTON_LOCATION = ResourceLocation.parse("textures/gui/recipe_button.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 33, 0, 17);
 

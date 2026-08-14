@@ -1,14 +1,26 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+public class AnimationActMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<AnimationActMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animation_act_message"));
 
-public class AnimationActMessage {
+    public static final StreamCodec<FriendlyByteBuf, AnimationActMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), AnimationActMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private int index;
 
@@ -33,10 +45,8 @@ public class AnimationActMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<AnimationActMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final AnimationActMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final AnimationActMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 IAnimatedEntity entity = (IAnimatedEntity) Minecraft.getInstance().level.getEntity(message.entityID);
                 if (entity != null) {
@@ -48,7 +58,5 @@ public class AnimationActMessage {
                     entity.setAnimationTick(0);
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

@@ -11,7 +11,7 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 public final class DeerHalmetRenderer extends GeoArmorRenderer<DeerHelmetItem> {
     public DeerHalmetRenderer() {
-        super(new DefaultedItemGeoModel<>(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "armor/deer_helmet")));
+        super(new DefaultedItemGeoModel<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor/deer_helmet")));
     }
 
     @Override

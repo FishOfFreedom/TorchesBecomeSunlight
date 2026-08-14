@@ -25,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -252,7 +252,7 @@ public class GunKnightPatriotAnimations {
         public void stop(GunKnightPatriot entity) {
             entity.transSpawnState(ITwoStateEntity.State.TWO);
             entity.setSpawnState(ITwoStateEntity.State.TWO);
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),new InitClientEntityMessage(entity,InitClientEntityMessage.InitDataType.ISTWOSTATE));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new InitClientEntityMessage(entity,InitClientEntityMessage.InitDataType.ISTWOSTATE));
             super.stop(entity);
         }
     };

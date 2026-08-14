@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
@@ -20,13 +24,21 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+public class ActRangeSignMessage implements CustomPacketPayload {
 
-public class ActRangeSignMessage {
+    public static final CustomPacketPayload.Type<ActRangeSignMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "act_range_sign_message"));
+
+    public static final StreamCodec<FriendlyByteBuf, ActRangeSignMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), ActRangeSignMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private CompoundTag component;
 
@@ -51,10 +63,8 @@ public class ActRangeSignMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<ActRangeSignMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final ActRangeSignMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final ActRangeSignMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 Entity entity = Minecraft.getInstance().level.getEntity(message.entityID);
                 if (entity != null) {
@@ -71,9 +81,7 @@ public class ActRangeSignMessage {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 
     public static final boolean FLAD = false;
 
@@ -83,7 +91,7 @@ public class ActRangeSignMessage {
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.put("block", NbtUtils.writeBlockPos(vec3));
                 compoundTag.putInt("type", 0);
-                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ActRangeSignMessage(entity.getId(), compoundTag));
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new ActRangeSignMessage(entity.getId(), compoundTag));
             } else {
                 showBlock(vec3, level);
             }
@@ -115,7 +123,7 @@ public class ActRangeSignMessage {
                 compoundTag.putFloat("radius", radius);
                 compoundTag.putFloat("roffset", roffset);
                 compoundTag.putInt("type", 1);
-                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ActRangeSignMessage(entity.getId(), compoundTag));
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new ActRangeSignMessage(entity.getId(), compoundTag));
             } else {
                 showSector(vec3, scale, radius, roffset, level);
             }

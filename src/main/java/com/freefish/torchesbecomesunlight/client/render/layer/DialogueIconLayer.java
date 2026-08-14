@@ -20,13 +20,13 @@ import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 
 public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<T> {
     private static final ResourceLocation[] DIALOGUE = new ResourceLocation[]{
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon1.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon2.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon3.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon4.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon5.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon6.png"),
-            new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon7.png")
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon1.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon2.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon3.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon4.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon5.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon6.png"),
+            ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/dialogue/dialogueicon7.png")
     };
 
     public DialogueIconLayer(GeoRenderer<T> entityRendererIn) {
@@ -78,6 +78,6 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
     }
 
     public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
-        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(1f, 1f, 1f, alpha).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normals, 1.0F, 1.0F, 1.0F).endVertex();
+        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 }

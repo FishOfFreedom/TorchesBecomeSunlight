@@ -6,8 +6,8 @@ import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunct
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
 import com.freefish.rosmontislib.client.utils.Vector3fHelper;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.particle.base.cube.CubeParticle;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)

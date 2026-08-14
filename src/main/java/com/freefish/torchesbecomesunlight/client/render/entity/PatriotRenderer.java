@@ -23,7 +23,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
-    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/trail.png");
+    private static final ResourceLocation TRAIL_TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/trail.png");
 
     public PatriotRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new PatriotModel());
@@ -76,7 +76,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
     }
 
     public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
-        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(1f, 1f, 1f, alpha).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normals, 1.0F, 1.0F, 1.0F).endVertex();
+        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -106,10 +106,10 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
             Matrix3f matrix3f = posestack$pose.normal();
-            vertexconsumer.vertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).color(1f, 1f, 1f, trailA).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).color(1f, 1f, 1f, trailA).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).color(1f, 1f, 1f, trailA).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).color(1f, 1f, 1f, trailA).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            vertexconsumer.addVertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }

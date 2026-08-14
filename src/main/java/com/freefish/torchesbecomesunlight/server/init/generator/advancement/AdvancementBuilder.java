@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.advancement;
 
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.google.common.collect.Maps;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -8,7 +10,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -61,11 +63,11 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         return this;
     }
 
-    public AdvancementBuilder display(ItemStack pStack, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, FrameType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
+    public AdvancementBuilder display(ItemStack pStack, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, AdvancementType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
         return this.display(new DisplayInfo(pStack, pTitle, pDescription, pBackground, pFrame, pShowToast, pAnnounceToChat, pHidden));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, FrameType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
+    public AdvancementBuilder display(ItemLike pItem, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, AdvancementType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
         return this.display(new DisplayInfo(new ItemStack(pItem.asItem()), pTitle, pDescription, pBackground, pFrame, pShowToast, pAnnounceToChat, pHidden));
     }
 
@@ -75,20 +77,20 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     }
 
     // The following displays cannot be used for roots.
-    public AdvancementBuilder display(ItemStack pItem, FrameType pFrame) {
+    public AdvancementBuilder display(ItemStack pItem, AdvancementType pFrame) {
         return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), null, pFrame, true, true, false));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, FrameType pFrame) {
+    public AdvancementBuilder display(ItemLike pItem, AdvancementType pFrame) {
         return this.display(new ItemStack(pItem), pFrame);
     }
 
     // The following displays cannot be used for roots.
-    public AdvancementBuilder display(ItemStack pItem, FrameType pFrame, boolean hidden) {
+    public AdvancementBuilder display(ItemStack pItem, AdvancementType pFrame, boolean hidden) {
         return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), null, pFrame, true, true, hidden));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, FrameType pFrame, boolean hidden) {
+    public AdvancementBuilder display(ItemLike pItem, AdvancementType pFrame, boolean hidden) {
         return this.display(new ItemStack(pItem), pFrame, hidden);
     }
 
@@ -130,11 +132,11 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     }
 
     public AdvancementBuilder normalItemRequirement(ItemLike item){
-        return this.display(item, FrameType.TASK).requireItem(item);
+        return this.display(item, AdvancementType.TASK).requireItem(item);
     }
 
     public AdvancementBuilder requireItem(ItemLike item){
-        return this.addCriterion("has_" + ForgeRegistries.ITEMS.getKey(item.asItem()).getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(item));
+        return this.addCriterion("has_" + BuiltInRegistries.ITEM.getKey(item.asItem()).getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(item));
     }
 
     public MutableComponent getComponent(String type){
@@ -171,13 +173,13 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     }
 
     public Advancement save(Consumer<Advancement> pConsumer, String pId) {
-        Advancement advancement = this.build(new ResourceLocation(pId));
+        Advancement advancement = this.build(ResourceLocation.parse(pId));
         pConsumer.accept(advancement);
         return advancement;
     }
 
     public Advancement save(Consumer<Advancement> pConsumer) {
-        return this.save(pConsumer, new ResourceLocation(modid, fileKey).toString());
+        return this.save(pConsumer, ResourceLocation.fromNamespaceAndPath(modid, fileKey).toString());
     }
 
     public String toString() {

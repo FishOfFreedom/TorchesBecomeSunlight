@@ -1,15 +1,27 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+public class SynNumberEntity implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<SynNumberEntity> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "syn_number_entity"));
 
-public class SynNumberEntity {
+    public static final StreamCodec<FriendlyByteBuf, SynNumberEntity> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), SynNumberEntity::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private int dialogue;
 
@@ -32,18 +44,14 @@ public class SynNumberEntity {
         message.dialogue = buf.readVarInt();
         return message;
     }
-    public static class Handler implements BiConsumer<SynNumberEntity, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(SynNumberEntity data, Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
-            final ServerPlayer player = context.getSender();
+        public static void handle(final SynNumberEntity data, final IPayloadContext context) {
+            
+            final ServerPlayer player = ((ServerPlayer) context.player());
             context.enqueueWork(() -> {
                 Entity entity = player.level().getEntity(data.entityID);
                 if(entity instanceof DialogueEntity dialogueEntity){
                     dialogueEntity.setNumber(data.dialogue);
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

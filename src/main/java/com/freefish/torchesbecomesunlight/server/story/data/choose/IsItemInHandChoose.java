@@ -24,7 +24,7 @@ public class IsItemInHandChoose extends Choose{
         LivingEntity chatEntities = dialogueEntity.getChatEntities(playerId);
         String[] split = item.split(":");
         if(split.length == 2){
-            Item item1 = dialogueEntity.level().registryAccess().registryOrThrow(Registries.ITEM).get(new ResourceLocation(split[0], split[1]));
+            Item item1 = dialogueEntity.level().registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.fromNamespaceAndPath(split[0], split[1]));
             if (chatEntities instanceof Player player) {
                 for (ItemStack itemStack : player.getInventory().items) {
                     if(itemStack.is(item1)){

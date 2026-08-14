@@ -18,8 +18,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,8 +31,8 @@ import static net.minecraft.client.renderer.LevelRenderer.getLightColor;
 @OnlyIn(value = Dist.CLIENT)
 public class SkyRenderer {
 
-    public static final ResourceLocation EYES = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/eyes.png");
-    public static final ResourceLocation DEMON = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/darkstream.png");
+    public static final ResourceLocation EYES = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/environment/eyes.png");
+    public static final ResourceLocation DEMON = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/environment/darkstream.png");
 
     public static final float[] rainxs = new float[1024];
     public static final float[] rainzs = new float[1024];
@@ -63,10 +63,10 @@ public class SkyRenderer {
             Matrix4f matrix4f1 = poseStack.last().pose();
             matrix4f1.rotate(quatY);
             matrix4f1.rotate(quatX);
-            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, -f12*scale).uv(0.0F, 0.0F).color(1, 1, 1, 1).endVertex();
-            bufferbuilder.vertex(matrix4f1, f12, 100.0F, -f12*scale).uv(1.0F, 0.0F).color(1, 1, 1, 1).endVertex();
-            bufferbuilder.vertex(matrix4f1, f12, 100.0F, f12*scale).uv(1.0F, 1.0F).color(1, 1, 1, 1).endVertex();
-            bufferbuilder.vertex(matrix4f1, -f12, 100.0F, f12*scale).uv(0.0F, 1.0F).color(1, 1, 1, 1).endVertex();
+            bufferbuilder.addVertex(matrix4f1, -f12, 100.0F, -f12*scale).setUv(0.0F, 0.0F).setColor(1, 1, 1, 1);
+            bufferbuilder.addVertex(matrix4f1, f12, 100.0F, -f12*scale).setUv(1.0F, 0.0F).setColor(1, 1, 1, 1);
+            bufferbuilder.addVertex(matrix4f1, f12, 100.0F, f12*scale).setUv(1.0F, 1.0F).setColor(1, 1, 1, 1);
+            bufferbuilder.addVertex(matrix4f1, -f12, 100.0F, f12*scale).setUv(0.0F, 1.0F).setColor(1, 1, 1, 1);
             poseStack.popPose();
         }
     }
@@ -226,11 +226,11 @@ public class SkyRenderer {
                             int j4 = i4 >> 16 & 65535;
                             int k4 = i4 & 65535;
                             float z1 = (float)pCamY * 0.125F;
-                            bufferbuilder.vertex(k1 - pCamX - rx + 0.5D, l, j1 - pCamZ - ry + 0.5D).uv(0.0F + d9, d8 + d10 - z1).color(1.0F, 1.0F, 1.0F, f5).uv2(j4, k4).endVertex();
-                            bufferbuilder.vertex(k1 - pCamX + rx + 0.5D, l, j1 - pCamZ + ry + 0.5D).uv(1.0F + d9, d8 + d10 - z1).color(1.0F, 1.0F, 1.0F, f5).uv2(j4, k4).endVertex();
+                            bufferbuilder.addVertex(k1 - pCamX - rx + 0.5D, l, j1 - pCamZ - ry + 0.5D).setUv(0.0F + d9, d8 + d10 - z1).setColor(1.0F, 1.0F, 1.0F, f5).setUv2(j4, k4);
+                            bufferbuilder.addVertex(k1 - pCamX + rx + 0.5D, l, j1 - pCamZ + ry + 0.5D).setUv(1.0F + d9, d8 + d10 - z1).setColor(1.0F, 1.0F, 1.0F, f5).setUv2(j4, k4);
                             float pV = l * 0.25F + d8 + d10 - z1;
-                            bufferbuilder.vertex(k1 - pCamX + rx + 0.5D, -l, j1 - pCamZ + ry + 0.5D).uv(1.0F + d9, pV).color(1.0F, 1.0F, 1.0F, f5).uv2(j4, k4).endVertex();
-                            bufferbuilder.vertex(k1 - pCamX - rx + 0.5D, -l, j1 - pCamZ - ry + 0.5D).uv(0.0F + d9, pV).color(1.0F, 1.0F, 1.0F, f5).uv2(j4, k4).endVertex();
+                            bufferbuilder.addVertex(k1 - pCamX + rx + 0.5D, -l, j1 - pCamZ + ry + 0.5D).setUv(1.0F + d9, pV).setColor(1.0F, 1.0F, 1.0F, f5).setUv2(j4, k4);
+                            bufferbuilder.addVertex(k1 - pCamX - rx + 0.5D, -l, j1 - pCamZ - ry + 0.5D).setUv(0.0F + d9, pV).setColor(1.0F, 1.0F, 1.0F, f5).setUv2(j4, k4);
                         }
                     }
                 }

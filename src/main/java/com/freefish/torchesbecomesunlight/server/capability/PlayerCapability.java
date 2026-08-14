@@ -65,25 +65,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerCapability {
-    public static ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "player_cap");
+    public static ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "player_cap");
 
     public interface IPlayerCapability extends INBTSerializable<CompoundTag> {
 
@@ -95,9 +95,9 @@ public class PlayerCapability {
 
         void tick(TickEvent.PlayerTickEvent event);
 
-        void playerHurt(LivingHurtEvent event,Player player);
+        void playerHurt(LivingIncomingDamageEvent event,Player player);
 
-        void playerByDamage(LivingHurtEvent event,Player player);
+        void playerByDamage(LivingIncomingDamageEvent event,Player player);
 
         void onPlayerEmptyInteract(Player player, boolean isRightClick, boolean isMainHand);
 
@@ -198,7 +198,7 @@ public class PlayerCapability {
                     BlockHitResult hitResult = (BlockHitResult) player.pick(20.0D, 0.0F, false);
                     BlockTrigger blockTrigger = new BlockTrigger(hitResult.getLocation());
                     int i = partnerManager.getCurrentPartner().getSkillManager().getPartnerCommandBasics().indexOf(partnerCommandBasic);
-                    TorchesBecomeSunlight.NETWORK.sendToServer(new PartnerCommandTriggerMessage(player.getId(), i, blockTrigger.serializeNBT()));
+                    PacketDistributor.sendToServer(new PartnerCommandTriggerMessage(player.getId(), i, blockTrigger.serializeNBT()));
                     partnerManager.getCurrentPartner().getSkillManager().setCurrentCommand(null);
                 }else if(triggerType == TriggerBasicHandle.TARGER_TRIGGER){
                     Vec3 add = FFEntityUtils.getHeadRotVec(player, new Vec3(0, 0, 20)).add(0, player.getEyeHeight(), 0);
@@ -206,7 +206,7 @@ public class PlayerCapability {
                     if (entityHitResult!=null&&entityHitResult.getEntity() instanceof LivingEntity living) {
                         TargerTrigger blockTrigger = new TargerTrigger(living.getId());
                         int i = partnerManager.getCurrentPartner().getSkillManager().getPartnerCommandBasics().indexOf(partnerCommandBasic);
-                        TorchesBecomeSunlight.NETWORK.sendToServer(new PartnerCommandTriggerMessage(player.getId(), i, blockTrigger.serializeNBT()));
+                        PacketDistributor.sendToServer(new PartnerCommandTriggerMessage(player.getId(), i, blockTrigger.serializeNBT()));
                         partnerManager.getCurrentPartner().getSkillManager().setCurrentCommand(null);
                     }
                 }
@@ -342,7 +342,7 @@ public class PlayerCapability {
                             compoundTag.putInt("partnerid",partnerMob.getId());
                             compoundTag.putString("partnertype",PartnerUtil.getKey(partner.getPartnerType()).toString());
                             all.put("partnerdata",compoundTag);
-                            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SynCapabilityMessage(player,all));
+                            PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SynCapabilityMessage(player,all));
                         }else {
                             partner.remove();
                         }
@@ -435,7 +435,7 @@ public class PlayerCapability {
         boolean isright;
 
         @Override
-        public void playerHurt(LivingHurtEvent event,Player player) {
+        public void playerHurt(LivingIncomingDamageEvent event,Player player) {
             Level level = player.level();
 
             if(event.getSource().is(CustomResourceKey.NO_TRIGGER_ATTACK)|event.getSource().is(CustomResourceKey.NO_TRIGGER_WITHOUT_ARMOR_ATTACK)) return;
@@ -480,7 +480,7 @@ public class PlayerCapability {
         }
 
         @Override
-        public void playerByDamage(LivingHurtEvent event, Player player) {
+        public void playerByDamage(LivingIncomingDamageEvent event, Player player) {
             if(player.getMainHandItem().is(ItemHandle.SACRED_HALBERD.get())){
                 if(sacredHalberdActTime<0){
                     float amount = event.getAmount();

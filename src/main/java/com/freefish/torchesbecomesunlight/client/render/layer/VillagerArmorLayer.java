@@ -136,7 +136,7 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
         ResourceLocation resourcelocation = ARMOR_LOCATION_CACHE.get(s1);
 
         if (resourcelocation == null) {
-            resourcelocation = new ResourceLocation(s1);
+            resourcelocation = ResourceLocation.parse(s1);
             ARMOR_LOCATION_CACHE.put(s1, resourcelocation);
         }
 

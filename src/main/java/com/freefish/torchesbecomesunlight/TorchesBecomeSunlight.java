@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.loading.FMLEnvironment;
 import com.freefish.rosmontislib.gui.factory.UIFactory;
 import com.freefish.torchesbecomesunlight.client.ClientProxy;
 import com.freefish.torchesbecomesunlight.client.event.ForgeClientEventL;
@@ -10,7 +14,6 @@ import com.freefish.torchesbecomesunlight.client.render.layer.ClientLayerRegistr
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MowzieModelFactory;
 import com.freefish.torchesbecomesunlight.client.shader.TBSShaderHandle;
 import com.freefish.torchesbecomesunlight.compat.ModDetectionCache;
-import com.freefish.torchesbecomesunlight.compat.oculus.ForgeOculusHandle;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
 import com.freefish.torchesbecomesunlight.server.CommonProxy;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
@@ -36,23 +39,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.RecipeBookType;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
-import software.bernie.geckolib.core.animation.EasingType;
+import software.bernie.geckolib.animation.EasingType;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashMap;
@@ -68,19 +67,19 @@ public class TorchesBecomeSunlight
     public static final Map<UUID, Integer> bossBarRegistryNames = new HashMap<>();
     public static CommonProxy PROXY;
 
-    public static SimpleChannel NETWORK;
     public static final Random random = new Random();
 
-    public static final RecipeBookType RECIPE_TYPE_COOKING = RecipeBookType.create("STEW");
+    public static final RecipeBookType RECIPE_TYPE_COOKING = RecipeBookType.CRAFTING /* TODO(移植): NeoForge 1.21.1 需用 enumextender.json 扩展 RecipeBookType，暂用原版值占位 */;
 
-    public TorchesBecomeSunlight()
+    // NeoForge 1.21.1：mod 总线由构造函数注入，不再有 FMLJavaModLoadingContext
+    public TorchesBecomeSunlight(IEventBus bus, ModContainer container)
     {
         GeckoLibUtil.addCustomBakedModelFactory(MOD_ID, new MowzieModelFactory());
         GeckoLibUtil.addCustomEasingType("custom_step",value -> EasingType.easeIn((d)->1));
         GeckoLib.initialize();
 
-        PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        // DistExecutor 在 1.21.1 已被移除，改用 FMLEnvironment.dist 判断
+        PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
 
         ItemHandle.ITEMS.register(bus);
         BlockHandle.BLOCKS.register(bus);
@@ -107,9 +106,14 @@ public class TorchesBecomeSunlight
         bus.addListener(this::complete);
         bus.addListener(CapabilityHandle::registerCapabilities);
 
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new EventListener());
-        MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, CapabilityHandle::attachEntityCapability);
+        if (FMLEnvironment.dist.isClient()) {
+            bus.addListener(ClientLayerRegistry::onAddLayers);
+            bus.addListener(TBSShaderHandle::registerShaders);
+        }
+
+        NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new EventListener());
+        // NeoForge 已移除 AttachCapabilitiesEvent，capability 改为在 RegisterCapabilitiesEvent 中按实体类型注册
     }
 
     @SubscribeEvent
@@ -121,7 +125,6 @@ public class TorchesBecomeSunlight
     }
 
     private void complete(FMLLoadCompleteEvent event) {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ItemHandle.initializeAttributes();
     }
 
@@ -138,36 +141,34 @@ public class TorchesBecomeSunlight
         SpawnHandler.registerSpawnPlacementTypes();
         event.enqueueWork(()->{
             PartnerHandler.init();
-            ServerNetwork.initNetwork();
+            // 封包注册已改为 ServerNetwork 上的 RegisterPayloadHandlersEvent，无需在此初始化
             ProcessorHandler.registerStructureProcessors();
         });
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientLayerRegistry::onAddLayers);
+        // ClientLayerRegistry / TBSShaderHandle 的监听已在构造函数中挂到注入的 mod 总线上
         event.enqueueWork(()->{
-            IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-            bus.addListener(TBSShaderHandle::registerShaders);
             TBSShaderHandle.init();
             TBSDrawerHelper.init();
             TBSMaterialHandle.init();
-            MinecraftForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
+            NeoForge.EVENT_BUS.register(ForgeClientEventL.INSTANCE);
         });
     }
 
-    public static <MSG> void sendMSGToAll(MSG message) {
-        for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-            NETWORK.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-        }
+    public static void sendMSGToAll(CustomPacketPayload message) {
+        PacketDistributor.sendToAllPlayers(message);
     }
 
-    public static <MSG> void sendToLevel(MSG msg, ServerLevel serverLevel) {
-        for(ServerPlayer player:serverLevel.players()){
-            NETWORK.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-        }
+    public static void sendToLevel(CustomPacketPayload msg, ServerLevel serverLevel) {
+        PacketDistributor.sendToPlayersInDimension(serverLevel, msg);
     }
 
+    /**
+     * 目标整合包「最后的冬天」使用 Sodium，不含 Oculus/Iris，compat/oculus 已在移植时剥离。
+     * 若之后要接 Iris，在这里改判即可。
+     */
     public static boolean isUsingShaderPack() {
-        return ForgeOculusHandle.INSTANCE!=null && ForgeOculusHandle.INSTANCE.underShaderPack();
+        return false;
     }
 }

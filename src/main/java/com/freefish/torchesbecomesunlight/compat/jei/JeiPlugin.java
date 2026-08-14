@@ -24,7 +24,7 @@ public class JeiPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "main");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "main");
     }
 
     @Override

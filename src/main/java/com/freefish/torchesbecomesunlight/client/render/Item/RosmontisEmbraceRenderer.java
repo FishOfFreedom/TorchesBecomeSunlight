@@ -8,6 +8,6 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 public final class RosmontisEmbraceRenderer extends GeoArmorRenderer<RosmontisEmbraceItem> {
     public RosmontisEmbraceRenderer() {
-        super(new DefaultedItemGeoModel<>(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "armor/rosmontis_embrace")));
+        super(new DefaultedItemGeoModel<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor/rosmontis_embrace")));
     }
 }

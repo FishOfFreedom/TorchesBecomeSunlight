@@ -27,15 +27,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
+public class TwoStateSpawnEggItem extends DeferredSpawnEggItem {
     ITwoStateEntity.State state = ITwoStateEntity.State.NATURE;
 
     public TwoStateSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props) {
@@ -81,7 +81,7 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                     if(spawn instanceof ITwoStateEntity twoStateEntity) {
                         twoStateEntity.setSpawnState(state);
                         twoStateEntity.transSpawnState(state);
-                        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> spawn),new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
+                        PacketDistributor.sendToPlayersTrackingEntityAndSelf(spawn, new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
                     }
                     itemstack.shrink(1);
                     level.gameEvent(pContext.getPlayer(), GameEvent.ENTITY_PLACE, blockpos);

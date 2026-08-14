@@ -22,7 +22,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import javax.annotation.Nonnull;
 
 public class OvenRecipeCategory implements IRecipeCategory<OvenRecipe> {
-    public final static ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
+    public final static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
 
     private final IDrawable background;
     private final IDrawable icon;

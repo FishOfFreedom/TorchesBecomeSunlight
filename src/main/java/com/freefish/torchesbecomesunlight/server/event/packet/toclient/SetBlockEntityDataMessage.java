@@ -1,5 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.AutoSynTagBlockEntity;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import net.minecraft.client.Minecraft;
@@ -7,14 +12,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+public class SetBlockEntityDataMessage implements CustomPacketPayload {
 
-public class SetBlockEntityDataMessage {
+    public static final CustomPacketPayload.Type<SetBlockEntityDataMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "set_block_entity_data_message"));
+
+    public static final StreamCodec<FriendlyByteBuf, SetBlockEntityDataMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), SetBlockEntityDataMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private List<SynchedBlockEntityData.DataValue<?>> pValues;
     private BlockPos blockPos;
 
@@ -47,17 +59,13 @@ public class SetBlockEntityDataMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<SetBlockEntityDataMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final SetBlockEntityDataMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final SetBlockEntityDataMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.blockPos);
                 if(blockEntity instanceof AutoSynTagBlockEntity autoSynTagBlockEntity){
                     autoSynTagBlockEntity.blockEntityData.assignValues(message.pValues);
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

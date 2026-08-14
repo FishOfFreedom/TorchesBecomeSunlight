@@ -33,7 +33,7 @@ public class InfectedHalberdRenderer extends GeoItemRenderer<InfectedHalberd> {
     }
 
     public static class InfectedHalberdModel extends GeoModel<InfectedHalberd> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/halberd.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/halberd.geo.json");
 
         @Override
         public ResourceLocation getModelResource(InfectedHalberd animatable) {

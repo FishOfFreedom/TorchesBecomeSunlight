@@ -1,8 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.util.animation;
 
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
-import software.bernie.geckolib.core.animation.Animation;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.Animation;
+import software.bernie.geckolib.animation.RawAnimation;
 
 public class  AnimationAct<T extends AnimatedEntity>{
     public RawAnimation getRawAnimation() {

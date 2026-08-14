@@ -19,10 +19,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 
-public abstract class EntityMultiBlock extends Entity implements IEntityAdditionalSpawnData {
+public abstract class EntityMultiBlock extends Entity implements IEntityWithComplexSpawn {
     private BlockState[] blockStates = new BlockState[]{};
     private BlockPos[] blockPoss = new BlockPos[]{};
     @Getter
@@ -69,7 +69,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         getEntityData().define(TICKS_EXISTED, 0);
     }
 
@@ -165,10 +165,6 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
         getEntityData().set(TICKS_EXISTED, ticksExisted);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public EntityDimensions getDimensions(Pose pPose) {

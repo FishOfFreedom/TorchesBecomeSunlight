@@ -16,7 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 public class RosmontisPartner extends Partner<Rosmontis> {
     public int continueTime;
@@ -56,7 +56,7 @@ public class RosmontisPartner extends Partner<Rosmontis> {
     }
 
     @Override
-    public boolean playerHurt(LivingHurtEvent event) {
+    public boolean playerHurt(LivingIncomingDamageEvent event) {
         Rosmontis partnerMob = getPartnerMob();
         Player player = getPlayer();
         float amount = event.getAmount();

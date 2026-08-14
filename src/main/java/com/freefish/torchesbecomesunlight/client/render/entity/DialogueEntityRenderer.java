@@ -22,7 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public class DialogueEntityRenderer extends EntityRenderer<DialogueEntity> {
-    private static final ResourceLocation DIALOGUE =new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/ribbon_flat.png");
+    private static final ResourceLocation DIALOGUE =ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/ribbon_flat.png");
     public DialogueEntityRenderer(EntityRendererProvider.Context mgr) {
         super(mgr);
     }
@@ -70,10 +70,10 @@ public class DialogueEntityRenderer extends EntityRenderer<DialogueEntity> {
                     font.drawInBatch(message, startX, 0, 0XFFFFFF, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, packedLightIn);
                     RenderSystem.enableBlend();
                     VertexConsumer ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE, true));
-                    ivertexbuilder.vertex(matrix4f, startX, -1, 0.01f).color(0, 0, 0, 0.3f).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(poseStack.last().normal(), 1.0F, 1.0F, 1.0F).endVertex();
-                    ivertexbuilder.vertex(matrix4f, startX, height, 0.01f).color(0, 0, 0, 0.3f).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(poseStack.last().normal(), 1.0F, 1.0F, 1.0F).endVertex();
-                    ivertexbuilder.vertex(matrix4f, startX + width, height, 0.01f).color(0, 0, 0, 0.3f).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(poseStack.last().normal(), 1.0F, 1.0F, 1.0F).endVertex();
-                    ivertexbuilder.vertex(matrix4f, startX + width, -1, 0.01f).color(0, 0, 0, 0.3f).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(poseStack.last().normal(), 1.0F, 1.0F, 1.0F).endVertex();
+                    ivertexbuilder.addVertex(matrix4f, startX, -1, 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, startX, height, 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, startX + width, height, 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, startX + width, -1, 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
                     RenderSystem.disableBlend();
                 }
             }

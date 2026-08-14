@@ -26,7 +26,7 @@ import java.util.Random;
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer{
     @Shadow
-    private static final ResourceLocation SNOW_LOCATION = new ResourceLocation("textures/environment/snow.png");
+    private static final ResourceLocation SNOW_LOCATION = ResourceLocation.parse("textures/environment/snow.png");
 
     @Shadow
     private ClientLevel level;
@@ -45,7 +45,7 @@ public abstract class MixinLevelRenderer{
     @ModifyArg(method = "renderSnowAndRain",at = @At(value = "INVOKE",target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/resources/ResourceLocation;)V"),index = 1)
     public ResourceLocation renderSnowAndRain(ResourceLocation resourceLocation){
         if(ClientStorage.INSTANCE.isBossActive()&&resourceLocation == SNOW_LOCATION)
-            return new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/blizzard.png");
+            return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/environment/blizzard.png");
         else
             return resourceLocation;
     }

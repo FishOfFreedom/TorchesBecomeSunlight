@@ -28,15 +28,15 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData {
+public class DialogueEntity extends Entity implements IEntityWithComplexSpawn {
     private final Map<String, LivingEntity> stringLivingEntityMap = new HashMap<>();;
 
     private int oldOptionNumber;
@@ -224,9 +224,9 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(IS_FLOAT,false);
-        this.entityData.define(FLOAT_SCALE,0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(IS_FLOAT,false);
+        builder.define(FLOAT_SCALE,0);
     }
 
     @Override
@@ -252,7 +252,7 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
 
         if(!level().isClientSide&&dialogue != null){
             currentOptions = dialogue.getUsefulOptions(this);
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this),new StartDialogueMessage(this));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new StartDialogueMessage(this));
         }
     }
 
@@ -311,10 +311,6 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
         return Mth.lerp(p,floatOldNumber,floatNumber)/10f;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
 
     @Override

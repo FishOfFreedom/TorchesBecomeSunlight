@@ -81,7 +81,7 @@ public class PartnerPlayerManager implements ITagSerializable<CompoundTag> {
         for(int i=0;i<list.size();i++){
             CompoundTag partnerTag = list.getCompound(i);
             String[] split = partnerTag.getString("type").split(":");
-            PartnerType key = PartnerUtil.getValue(new ResourceLocation(split[0],split[1]));
+            PartnerType key = PartnerUtil.getValue(ResourceLocation.fromNamespaceAndPath(split[0],split[1]));
             Partner partner = key.create();
             partner.deserializeNBT(partnerTag);
             partnerList.add(partner);

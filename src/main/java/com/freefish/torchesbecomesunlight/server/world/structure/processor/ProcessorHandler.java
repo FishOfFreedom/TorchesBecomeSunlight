@@ -14,6 +14,6 @@ public class ProcessorHandler {
     }
 
     private static void register(String name, StructureProcessorType<?> codec) {
-        Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, new ResourceLocation(TorchesBecomeSunlight.MOD_ID, name), codec);
+        Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, name), codec);
     }
 }

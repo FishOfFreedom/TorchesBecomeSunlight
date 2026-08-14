@@ -47,7 +47,7 @@ public class SanktaStatueStructures extends FFStructures {
                 TBSJigsawPlacement.addPieces(
                         newContext,
                         Holder.direct(context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
-                                .get(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "sankta_statue/center"))),
+                                .get(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "sankta_statue/center"))),
                         Optional.empty(),
                         12,
                         blockpos,

@@ -104,17 +104,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -391,15 +391,15 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_POSX, 0f);
-        this.entityData.define(PARTICLE, new CompoundTag());
-        this.entityData.define(TARGET_POSY, 0f);
-        this.entityData.define(TARGET_POSZ, 0f);
-        this.entityData.define(IS_GLOWING, false);
-        this.entityData.define(GUN_MODE,0);
-        this.entityData.define(IS_RUN,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TARGET_POSX, 0f);
+        builder.define(PARTICLE, new CompoundTag());
+        builder.define(TARGET_POSY, 0f);
+        builder.define(TARGET_POSZ, 0f);
+        builder.define(IS_GLOWING, false);
+        builder.define(GUN_MODE,0);
+        builder.define(IS_RUN,false);
     }
 
     @Override
@@ -448,13 +448,13 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                     AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
                     if (maxHealthAttr != null) {
                         double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
-                        maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                        maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
                         setHealth(getMaxHealth());
                     }
                     AttributeInstance maxActAttr = getAttribute(Attributes.ATTACK_DAMAGE);
                     if (maxActAttr != null) {
                         double difference = maxActAttr.getBaseValue() * 0.33333f;
-                        maxActAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-4a7d-cb0b-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                        maxActAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-4a7d-cb0b-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
                     }
                 }
             }
@@ -3147,7 +3147,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     public boolean hasPlayerKilledDragon(ServerPlayer player) {
-        Advancement advancement = player.server.getAdvancements().getAdvancement(new ResourceLocation("minecraft:end/kill_dragon"));
+        Advancement advancement = player.server.getAdvancements().getAdvancement(ResourceLocation.parse("minecraft:end/kill_dragon"));
         if (advancement != null) {
             AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
             return progress.isDone();

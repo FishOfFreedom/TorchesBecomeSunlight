@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class Freeze extends MobEffect {
     public Freeze() {
         super(MobEffectCategory.BENEFICIAL, 9643043);
-        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", (double)-0.5F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", (double)-0.5F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     @Override

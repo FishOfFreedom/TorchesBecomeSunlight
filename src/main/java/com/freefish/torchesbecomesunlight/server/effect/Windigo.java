@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class Windigo extends MobEffect {
     public Windigo() {
         super(MobEffectCategory.BENEFICIAL, 9643043);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, "7107DE5E-7CE8-4535-940E-514C1F160890", (double)0.2F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, "7107DE5E-7CE8-4535-940E-514C1F160890", (double)0.2F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     @Override

@@ -14,7 +14,7 @@ import com.freefish.torchesbecomesunlight.server.partner.goal.FollowPlayerGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 public class FrostNovaPartner extends Partner<FrostNova> {
     public int continueTime;
@@ -54,7 +54,7 @@ public class FrostNovaPartner extends Partner<FrostNova> {
     }
 
     @Override
-    public boolean playerHurt(LivingHurtEvent event) {
+    public boolean playerHurt(LivingIncomingDamageEvent event) {
         return super.playerHurt(event);
     }
 

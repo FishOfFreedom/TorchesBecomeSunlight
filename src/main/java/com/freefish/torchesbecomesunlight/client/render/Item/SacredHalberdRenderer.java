@@ -34,7 +34,7 @@ public class SacredHalberdRenderer extends GeoItemRenderer<SacredHalberd> {
     }
 
     public static class SacredHalberdModel extends GeoModel<SacredHalberd> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/sacred_halberd.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/sacred_halberd.geo.json");
 
         @Override
         public ResourceLocation getModelResource(SacredHalberd animatable) {

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.food;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.rosmontislib.item.ItemAdditionData;
 import com.freefish.torchesbecomesunlight.server.init.recipe.FoodCategory;
 import com.freefish.torchesbecomesunlight.server.init.recipe.FoodValues;
@@ -11,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -73,7 +74,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
                         .map(this::toS)
                         .collect(Collectors.joining(", "));
                 //String collect = effects.stream()
-                //        .map(in -> ForgeRegistries.MOB_EFFECTS.getKey(in.mobEffect).toString())
+                //        .map(in -> BuiltInRegistries.MOB_EFFECT.getKey(in.mobEffect).toString())
                 //        .collect(Collectors.joining(","));
                 pTooltipComponents.add(Component.translatable("text.torchesbecomesunlight.foodbuff").append(Component.literal(collect)));
             }

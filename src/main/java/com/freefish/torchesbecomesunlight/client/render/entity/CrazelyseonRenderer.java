@@ -21,7 +21,7 @@ import org.joml.Vector3f;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class CrazelyseonRenderer extends GeoEntityRenderer<Crazelyseon> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/crazelyseon/crazelyseon_eye.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/entity/crazelyseon/crazelyseon_eye.png");
 
     public CrazelyseonRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new CrazelyseonModel());
@@ -71,10 +71,10 @@ public class CrazelyseonRenderer extends GeoEntityRenderer<Crazelyseon> {
             float f5 = 0;
             float f6 = 1;
             int j = 240;
-            portalStatic.vertex(matrixstack$entry.pose(), (float) avector3f[0].x(), (float) avector3f[0].y(), (float) avector3f[0].z()).color(1f, 1f, 1f, 1f).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), (float) avector3f[1].x(), (float) avector3f[1].y(), (float) avector3f[1].z()).color(1f, 1f, 1f, 1f).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), (float) avector3f[2].x(), (float) avector3f[2].y(), (float) avector3f[2].z()).color(1f, 1f, 1f, 1f).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex(matrixstack$entry.pose(), (float) avector3f[3].x(), (float) avector3f[3].y(), (float) avector3f[3].z()).color(1f, 1f, 1f, 1f).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+            portalStatic.addVertex(matrixstack$entry.pose(), (float) avector3f[0].x(), (float) avector3f[0].y(), (float) avector3f[0].z()).setColor(1f, 1f, 1f, 1f).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), (float) avector3f[1].x(), (float) avector3f[1].y(), (float) avector3f[1].z()).setColor(1f, 1f, 1f, 1f).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), (float) avector3f[2].x(), (float) avector3f[2].y(), (float) avector3f[2].z()).setColor(1f, 1f, 1f, 1f).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(matrixstack$entry.pose(), (float) avector3f[3].x(), (float) avector3f[3].y(), (float) avector3f[3].z()).setColor(1f, 1f, 1f, 1f).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
 
             poseStack.popPose();
         }

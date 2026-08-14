@@ -8,19 +8,19 @@ import software.bernie.geckolib.model.GeoModel;
 public class IceTuftModel extends GeoModel<IceTuft> {
     @Override
     public ResourceLocation getModelResource(IceTuft animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/ice_tuft.geo.json");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/ice_tuft.geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(IceTuft animatable) {
         if(animatable.getTypeNumber()==0)
-            return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/projectile/ice_tuft.png");
+            return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/projectile/ice_tuft.png");
         else
-            return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/projectile/black_spear.png");
+            return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/projectile/black_spear.png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(IceTuft animatable) {
-        return new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/ice_tuft.animation.json");
+        return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/ice_tuft.animation.json");
     }
 }

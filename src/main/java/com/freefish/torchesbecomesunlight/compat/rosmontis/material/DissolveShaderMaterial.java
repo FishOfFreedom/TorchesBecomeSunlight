@@ -20,8 +20,8 @@ public class DissolveShaderMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
     private final ResourceLocation texture;
     private final float len;
-    public ResourceLocation shader = new ResourceLocation("torchesbecomesunlight:dissolve");
-    public static final ResourceLocation dissolve = new ResourceLocation("torchesbecomesunlight:textures/shader/noise.png");
+    public ResourceLocation shader = ResourceLocation.parse("torchesbecomesunlight:dissolve");
+    public static final ResourceLocation dissolve = ResourceLocation.parse("torchesbecomesunlight:textures/shader/noise.png");
     private String compiledErrorMessage = "";
     private Runnable uniformCache = null;
 

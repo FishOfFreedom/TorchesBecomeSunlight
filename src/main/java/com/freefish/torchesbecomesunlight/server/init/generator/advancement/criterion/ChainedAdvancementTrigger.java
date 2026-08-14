@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ChainedAdvancementTrigger extends TBSTrigger<ChainedAdvancementTrigger.Instance, ChainedAdvancementTrigger.Listener> {
-    public static final ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "chained_advancement");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "chained_advancement");
 
     public ChainedAdvancementTrigger() {
     }
@@ -37,11 +37,11 @@ public class ChainedAdvancementTrigger extends TBSTrigger<ChainedAdvancementTrig
                 JsonArray array = advancementsElement.getAsJsonArray();
                 for (JsonElement element : array) {
                     String advancementId = element.getAsString();
-                    advancements.add(new ResourceLocation(advancementId));
+                    advancements.add(ResourceLocation.parse(advancementId));
                 }
             } else if (advancementsElement.isJsonPrimitive()) {
                 String advancementId = advancementsElement.getAsString();
-                advancements.add(new ResourceLocation(advancementId));
+                advancements.add(ResourceLocation.parse(advancementId));
             }
         }
         int len = advancements.size();

@@ -13,7 +13,7 @@ public class RhodesKnifeRenderer extends GeoItemRenderer<RhodesKnife> {
     }
 
     public static class RhodesKnifeModel extends GeoModel<RhodesKnife> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/rhodeknife.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/rhodeknife.geo.json");
 
         @Override
         public ResourceLocation getModelResource(RhodesKnife animatable) {

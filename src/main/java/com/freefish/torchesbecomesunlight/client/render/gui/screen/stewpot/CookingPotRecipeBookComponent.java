@@ -14,7 +14,7 @@ import java.util.List;
 
 public class CookingPotRecipeBookComponent extends RecipeBookComponent
 {
-	protected static final ResourceLocation RECIPE_BOOK_BUTTONS = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/recipe_book_buttons.png");
+	protected static final ResourceLocation RECIPE_BOOK_BUTTONS = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/recipe_book_buttons.png");
 
 	@Override
 	protected void initFilterButtonTextures() {

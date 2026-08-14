@@ -18,7 +18,7 @@ import java.util.Map;
 public class XingMenMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
     private final float len;
-    public ResourceLocation shader = new ResourceLocation("torchesbecomesunlight:xingmen2");
+    public ResourceLocation shader = ResourceLocation.parse("torchesbecomesunlight:xingmen2");
     private String compiledErrorMessage = "";
     private Runnable uniformCache = null;
 

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
@@ -24,7 +25,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,7 +62,7 @@ public class FoodValuesDefinition implements Recipe<Container> {
     @Override
     public boolean matches(Container pContainer, Level pLevel) {
         var stack = pContainer.getItem(0);
-        return item ? names.stream().anyMatch(name -> name.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) :
+        return item ? names.stream().anyMatch(name -> name.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()))) :
                 names.stream().anyMatch(name -> stack.is(ItemTags.create(name)));
     }
 
@@ -127,21 +128,21 @@ public class FoodValuesDefinition implements Recipe<Container> {
         // make vanilla items and Crock Pot mod items at the top of the collection
         var builder = ImmutableSortedSet.orderedBy(
                 Comparator.comparing((ItemStack stack) -> getFoodValues(stack, level).get(category))
-                        .thenComparing(stack -> ForgeRegistries.ITEMS.getKey(stack.getItem()),
+                        .thenComparing(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()),
                                 Comparator.comparing((ResourceLocation key) -> !"minecraft".equals(key.getNamespace()))
                                         .thenComparing(Comparator.naturalOrder())
                         )
         );
         var allDefs = level.getRecipeManager().getAllRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get()).stream().filter(def -> def.getFoodValues().has(category)).toList();
         allDefs.stream().filter(FoodValuesDefinition::isItem).forEach(itemDef -> itemDef.getNames().forEach(name -> {
-            var item = ForgeRegistries.ITEMS.getValue(name);
+            var item = BuiltInRegistries.ITEM.getValue(name);
             if (item != null && item != Items.AIR) {
                 builder.add(item.getDefaultInstance());
             }
         }));
         allDefs.stream().filter(def -> !def.isItem()).forEach(tagDef -> tagDef.getNames().forEach(name -> {
             var tag = ItemTags.create(name);
-            if (ForgeRegistries.ITEMS.tags().isKnownTagName(tag)) {
+            if (BuiltInRegistries.ITEM.tags().isKnownTagName(tag)) {
                 // get all items with the tag
                 var tagIngredient = new Ingredient.TagValue(tag);
                 tagIngredient.getItems().forEach(stack -> {
@@ -176,7 +177,7 @@ public class FoodValuesDefinition implements Recipe<Container> {
             } else if (serializedRecipe.has("items") || serializedRecipe.has("tags")) {
                 var names = new HashSet<ResourceLocation>();
                 var isItem = serializedRecipe.has("items");
-                GsonHelper.getAsJsonArray(serializedRecipe, isItem ? "items" : "tags").forEach(name -> names.add(new ResourceLocation(GsonHelper.convertToString(name, isItem ? "item" : "tag"))));
+                GsonHelper.getAsJsonArray(serializedRecipe, isItem ? "items" : "tags").forEach(name -> names.add(ResourceLocation.parse(GsonHelper.convertToString(name, isItem ? "item" : "tag"))));
                 return new FoodValuesDefinition(recipeId, names, foodValues, isItem);
             } else {
                 throw new JsonParseException("A food value definition entry needs either tags or items");

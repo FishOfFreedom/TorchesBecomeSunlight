@@ -13,6 +13,6 @@ public class TBSTagKey {
     public static final TagKey<Structure> EYE_OF_SANKTA_STATUE = registerTagKey(Registries.STRUCTURE, "eye_of_sankta_statue");
 
     private static <T> TagKey<T> registerTagKey(ResourceKey<Registry<T>> registry, String key) {
-        return TagKey.create(registry, new ResourceLocation(TorchesBecomeSunlight.MOD_ID, key));
+        return TagKey.create(registry, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, key));
     }
 }

@@ -16,8 +16,8 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -171,10 +171,10 @@ public class ParticleRibbon extends AdvancedParticleBase {
             float f2 = this.getV0();
             float f3 = this.getV1();
 
-            buffer.vertex(vertices2[0].x(), vertices2[0].y(), vertices2[0].z()).uv(f1, f3).color(prevR, prevG, prevB, prevA).uv2(j).endVertex();
-            buffer.vertex(vertices2[1].x(), vertices2[1].y(), vertices2[1].z()).uv(f1, f2).color(prevR, prevG, prevB, prevA).uv2(j).endVertex();
-            buffer.vertex(vertices2[2].x(), vertices2[2].y(), vertices2[2].z()).uv(f, f2).color(r, g, b, a).uv2(j).endVertex();
-            buffer.vertex(vertices2[3].x(), vertices2[3].y(), vertices2[3].z()).uv(f, f3).color(r, g, b, a).uv2(j).endVertex();
+            buffer.addVertex(vertices2[0].x(), vertices2[0].y(), vertices2[0].z()).setUv(f1, f3).setColor(prevR, prevG, prevB, prevA).setLight(j);
+            buffer.addVertex(vertices2[1].x(), vertices2[1].y(), vertices2[1].z()).setUv(f1, f2).setColor(prevR, prevG, prevB, prevA).setLight(j);
+            buffer.addVertex(vertices2[2].x(), vertices2[2].y(), vertices2[2].z()).setUv(f, f2).setColor(r, g, b, a).setLight(j);
+            buffer.addVertex(vertices2[3].x(), vertices2[3].y(), vertices2[3].z()).setUv(f, f3).setColor(r, g, b, a).setLight(j);
 
             prevR = r;
             prevG = g;

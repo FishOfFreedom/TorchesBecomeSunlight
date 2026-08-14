@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.compat;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public class ModDetectionCache {
     private static final String STEVE_MOD_ID = "ysm"; // 替换为实际模组ID

@@ -40,8 +40,8 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -266,11 +266,11 @@ public abstract class UrsusVillager extends AnimatedEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(BODY,0);
-        this.entityData.define(HEAD,0);
-        this.entityData.define(IS_ARMOR,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(BODY,0);
+        builder.define(HEAD,0);
+        builder.define(IS_ARMOR,false);
     }
 
     @Override

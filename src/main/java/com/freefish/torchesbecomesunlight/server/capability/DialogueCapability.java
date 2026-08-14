@@ -10,17 +10,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public class DialogueCapability {
-    public static ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue_cap");
+    public static ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "dialogue_cap");
 
     public interface IDialogueCapability extends INBTSerializable<CompoundTag> {
         int getDialogueNeedTime();

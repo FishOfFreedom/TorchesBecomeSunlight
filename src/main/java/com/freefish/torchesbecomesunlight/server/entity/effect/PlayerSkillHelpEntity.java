@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
 
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.rosmontislib.client.particle.advance.base.beam.RLBeamParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
 import com.freefish.rosmontislib.client.particle.advance.data.number.curve.Line;
@@ -24,13 +25,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 import org.joml.Vector3f;
 
 import java.util.List;
 
-public class PlayerSkillHelpEntity extends EffectEntity implements IEntityAdditionalSpawnData {
+public class PlayerSkillHelpEntity extends EffectEntity implements IEntityWithComplexSpawn {
     private static final int MAX_ACTIVE = 200;
     private Vec3 reVec3 = Vec3.ZERO;
 
@@ -47,7 +48,7 @@ public class PlayerSkillHelpEntity extends EffectEntity implements IEntityAdditi
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
@@ -152,10 +153,6 @@ public class PlayerSkillHelpEntity extends EffectEntity implements IEntityAdditi
     @Setter
     int type1;
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {

@@ -17,7 +17,7 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class XingMenRingMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
-    public ResourceLocation shader = new ResourceLocation("torchesbecomesunlight:xingmen");
+    public ResourceLocation shader = ResourceLocation.parse("torchesbecomesunlight:xingmen");
     private String compiledErrorMessage = "";
     private Runnable uniformCache = null;
 

@@ -90,20 +90,20 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.Animation;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.Animation;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IEntityAdditionalSpawnData {
+public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IEntityWithComplexSpawn {
     public static final AnimationAct<Rosmontis> IDLE_TO_ACT = new AnimationAct<Rosmontis>("idletoact",46){
         @Override
         public void tickUpdate(Rosmontis entity) {
@@ -1098,10 +1098,6 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     }
 
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
@@ -1122,14 +1118,14 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(RUN,false);
-        this.entityData.define(STATE,false);
-        this.entityData.define(START_BLACK,false);
-        //this.entityData.define(IS_FLAYING,false);
-        this.entityData.define(GRAVITATION,new CompoundTag());
-        this.entityData.define(ARMOR_REGION,new CompoundTag());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(RUN,false);
+        builder.define(STATE,false);
+        builder.define(START_BLACK,false);
+        //builder.define(IS_FLAYING,false);
+        builder.define(GRAVITATION,new CompoundTag());
+        builder.define(ARMOR_REGION,new CompoundTag());
     }
 
     @Override

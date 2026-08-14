@@ -337,7 +337,7 @@ public class RhodesOfficeJigsawPlacement {
       }
 
       private static ResourceKey<StructureTemplatePool> readPoolName(StructureTemplate.StructureBlockInfo pStructureBlockInfo) {
-         return ResourceKey.create(Registries.TEMPLATE_POOL, new ResourceLocation(pStructureBlockInfo.nbt().getString("pool")));
+         return ResourceKey.create(Registries.TEMPLATE_POOL, ResourceLocation.parse(pStructureBlockInfo.nbt().getString("pool")));
       }
    }
 }

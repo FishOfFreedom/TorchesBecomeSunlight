@@ -24,8 +24,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -33,11 +33,11 @@ import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.HashMap;
 
@@ -196,13 +196,13 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
             MowzieRenderUtils.translateMirror(matrixStack, bone);
             MowzieRenderUtils.moveToPivotMirror(matrixStack, bone);
             MowzieRenderUtils.rotateMirror(matrixStack, bone);
-            RenderUtils.scaleMatrixForBone(matrixStack, bone);
+            RenderUtil.scaleMatrixForBone(matrixStack, bone);
         }
         else {
-            RenderUtils.translateMatrixToBone(matrixStack, bone);
-            RenderUtils.translateToPivotPoint(matrixStack, bone);
-            RenderUtils.rotateMatrixAroundBone(matrixStack, bone);
-            RenderUtils.scaleMatrixForBone(matrixStack, bone);
+            RenderUtil.translateMatrixToBone(matrixStack, bone);
+            RenderUtil.translateToPivotPoint(matrixStack, bone);
+            RenderUtil.rotateMatrixAroundBone(matrixStack, bone);
+            RenderUtil.scaleMatrixForBone(matrixStack, bone);
         }
         // Record xform matrices for relevant bones
         if (bone instanceof MowzieGeoBone) {
@@ -219,7 +219,7 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
             MowzieRenderUtils.translateAwayFromPivotPointMirror(matrixStack, bone);
         }
         else {
-            RenderUtils.translateAwayFromPivotPoint(matrixStack, bone);
+            RenderUtil.translateAwayFromPivotPoint(matrixStack, bone);
         }
         renderCubesOfBone(matrixStack, bone, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 

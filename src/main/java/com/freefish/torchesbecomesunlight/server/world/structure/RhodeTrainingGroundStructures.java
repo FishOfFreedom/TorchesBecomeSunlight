@@ -47,7 +47,7 @@ public class RhodeTrainingGroundStructures extends FFStructures {
                 RhodesOfficeJigsawPlacement.addPieces(
                         newContext,
                         Holder.direct(context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
-                                .get(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "banshichu/office"))),
+                                .get(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "banshichu/office"))),
                         Optional.empty(),
                         16,
                         blockpos,

@@ -9,6 +9,6 @@ public class TBSLevelEntityHandle {
     public static InstanceLevelEntityType<RhodesIslandLevelEntity> RHODES_ISLAND_DATA;
 
     public static void init(){
-        RHODES_ISLAND_DATA = LevelEntityHandle.registerInstance(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rhodes_island"),RhodesIslandLevelEntity::new);
+        RHODES_ISLAND_DATA = LevelEntityHandle.registerInstance(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"rhodes_island"),RhodesIslandLevelEntity::new);
     }
 }

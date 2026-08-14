@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.object.Color;
+import software.bernie.geckolib.util.Color;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class RosmontisRenderer extends GeoEntityRenderer<Rosmontis> {

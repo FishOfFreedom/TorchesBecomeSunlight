@@ -9,6 +9,6 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 public final class WinterScratchRenderer extends GeoArmorRenderer<WolfArmorItem> {
     public WinterScratchRenderer() {
-        super(new DefaultedItemGeoModel<>(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "armor/winter_scratch")));
+        super(new DefaultedItemGeoModel<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor/winter_scratch")));
     }
 }

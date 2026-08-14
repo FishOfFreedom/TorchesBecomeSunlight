@@ -5,7 +5,7 @@ import com.freefish.torchesbecomesunlight.server.ability.AbilityType;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.List;
 

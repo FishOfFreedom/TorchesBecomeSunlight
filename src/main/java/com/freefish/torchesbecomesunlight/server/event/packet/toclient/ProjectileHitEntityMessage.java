@@ -1,15 +1,27 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.entity.projectile.NoGravityProjectileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+public class ProjectileHitEntityMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<ProjectileHitEntityMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "projectile_hit_entity_message"));
 
-public class ProjectileHitEntityMessage {
+    public static final StreamCodec<FriendlyByteBuf, ProjectileHitEntityMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), ProjectileHitEntityMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private int hitEntityID;
 
@@ -39,10 +51,8 @@ public class ProjectileHitEntityMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<ProjectileHitEntityMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final ProjectileHitEntityMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final ProjectileHitEntityMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 NoGravityProjectileEntity entity =(NoGravityProjectileEntity) Minecraft.getInstance().level.getEntity(message.entityID);
                 Entity target = Minecraft.getInstance().level.getEntity(message.hitEntityID);
@@ -50,7 +60,5 @@ public class ProjectileHitEntityMessage {
                     entity.hitEntity(target);
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

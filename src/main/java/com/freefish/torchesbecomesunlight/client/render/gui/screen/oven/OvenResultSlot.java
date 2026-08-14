@@ -3,8 +3,8 @@ package com.freefish.torchesbecomesunlight.client.render.gui.screen.oven;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.OvenBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;

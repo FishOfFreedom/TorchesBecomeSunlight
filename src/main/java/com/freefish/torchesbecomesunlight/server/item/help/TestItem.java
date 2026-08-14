@@ -61,7 +61,7 @@ public class TestItem extends Item {
                     //RosmontisInstallation.SpawnInstallation(level,player,2);
                     //RosmontisInstallation.SpawnInstallation(level,player,3);
 
-                    //Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue/user.json"), level);
+                    //Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "dialogue/user.json"), level);
                     //DialogueEntity dialogueEntity = new DialogueEntity(player, level, dialogue, player, player);
                     //level.addFreshEntity(dialogueEntity);
 
@@ -94,7 +94,7 @@ public class TestItem extends Item {
                     List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(6));
                     DialogueEntity livingEntity = MathUtils.getClosestEntity(player, entities);
                     //livingEntity.startSpeak(DialogueStore.snownova_meet_1,100);
-                    //TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> livingEntity), new StartDialogueMessage(livingEntity.getId(),livingEntity.getId(), DialogueStore.snownova_meet_1));
+                    //PacketDistributor.sendToPlayersTrackingEntityAndSelf(livingEntity, new StartDialogueMessage(livingEntity.getId(),livingEntity.getId(), DialogueStore.snownova_meet_1));
                 }
                 else if(mode==Mode.PLAY_ANIMATION){
                     List<AnimatedEntity> entities = level.getEntitiesOfClass(AnimatedEntity.class, player.getBoundingBox().inflate(6));

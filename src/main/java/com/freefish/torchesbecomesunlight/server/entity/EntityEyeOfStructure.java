@@ -87,7 +87,7 @@ public class EntityEyeOfStructure extends Entity implements ItemSupplier {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
         this.getEntityData().define(DATA_ITEM_STACK, ItemStack.EMPTY);
         this.getEntityData().define(R, 0F);
         this.getEntityData().define(G, 0F);

@@ -25,18 +25,18 @@ public class TBSMaterialHandle {
     public static  MaterialType<DemonEyeMaterial> DEMON_EYE;
 
     public static void init(){
-        PIXEL = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/pixel1.png")));
-        FACE = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/face.png")));
-        BIG_SMOKE = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/big_smoke.png")));
-        NO_GLOW_PIXEL = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/pixel.png")));
-        BEAM = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/ribbon_glow.png")));
-        ROS_RING = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/ros/ros_ring.png")));
-        ROS_SAN = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/ros/ros_san.png")));
-        BIG_CIRCLE = new MaterialType<>(() -> new CustomShaderMaterial(new ResourceLocation("rosmontislib:circle")));
-        ROSMONTIS_DIAN = new MaterialType<>(() -> new FadeShaderMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/entity/rosmontis_installation/dian.png"),30));
-        GUN_FADE_RING = new MaterialType<>(() -> new GunFadeRingShaderMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/holy_city.png"),600));
-        ROMA_RING = new MaterialType<>(() -> new DissolveShaderMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/roma_ring.png"),600));
-        ROMA_TEXTURE_RING = new MaterialType<>(() -> new TextureMaterial(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/roma_ring.png")));
+        PIXEL = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/pixel1.png")));
+        FACE = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/face.png")));
+        BIG_SMOKE = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/big_smoke.png")));
+        NO_GLOW_PIXEL = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/pixel.png")));
+        BEAM = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/ribbon_glow.png")));
+        ROS_RING = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/ros/ros_ring.png")));
+        ROS_SAN = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/ros/ros_san.png")));
+        BIG_CIRCLE = new MaterialType<>(() -> new CustomShaderMaterial(ResourceLocation.parse("rosmontislib:circle")));
+        ROSMONTIS_DIAN = new MaterialType<>(() -> new FadeShaderMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/entity/rosmontis_installation/dian.png"),30));
+        GUN_FADE_RING = new MaterialType<>(() -> new GunFadeRingShaderMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/holy_city.png"),600));
+        ROMA_RING = new MaterialType<>(() -> new DissolveShaderMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/roma_ring.png"),600));
+        ROMA_TEXTURE_RING = new MaterialType<>(() -> new TextureMaterial(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/roma_ring.png")));
         STARGATE = new MaterialType<>(() -> new XingMenMaterial(60));
         STARGATE_RING = new MaterialType<>(XingMenRingMaterial::new);
         DEMON_EYE = new MaterialType<>(DemonEyeMaterial::new);

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -32,8 +33,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePrope
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -124,7 +125,7 @@ public class DefaultTableProvider extends LootTableProvider {
             dropSelf(block);
         }
 
-        public void registerDropSelf(RegistryObject<Block> block) {
+        public void registerDropSelf(DeferredHolder<Block, Block> block) {
             list.add(block.get());
             dropSelf(block.get());
         }
@@ -136,7 +137,7 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> ForgeRegistries.BLOCKS.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
+            return BuiltInRegistries.BLOCK.getValues().stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
         }
     }
 
@@ -353,7 +354,7 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Stream<EntityType<?>> getKnownEntityTypes() {
-            return ForgeRegistries.ENTITY_TYPES.getValues().stream().filter(block -> ForgeRegistries.ENTITY_TYPES.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
+            return BuiltInRegistries.ENTITY_TYPE.getValues().stream().filter(block -> BuiltInRegistries.ENTITY_TYPE.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
         }
     }
 }

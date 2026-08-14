@@ -17,7 +17,7 @@ public interface IDialogueEntity {
     default DialogueEntity startTalk(String dialoguePath, LivingEntity ... livingEntities) {
         Entity self = selfDialogue();
         Level level = self.level();
-        Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, dialoguePath), level);
+        Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, dialoguePath), level);
         DialogueEntity dialogueEntity = new DialogueEntity(self, level, dialogue,  livingEntities);
         setDialogueEntity(dialogueEntity);
         level.addFreshEntity(dialogueEntity);

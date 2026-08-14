@@ -16,7 +16,7 @@ import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -105,14 +105,14 @@ public abstract class Partner<T extends Mob> implements ITagSerializable<Compoun
             AttributeInstance maxHealthAttr = partnerMob.getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue() * partnerConfig.healthMultiplier.get() - maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier(HEALTH_CONFIG_MODIFIER_UUID, "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(HEALTH_CONFIG_MODIFIER_UUID, "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
                 partnerMob.setHealth(partnerMob.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = partnerMob.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * partnerConfig.attackMultiplier.get() - attackDamageAttr.getBaseValue();
-                attackDamageAttr.addTransientModifier(new AttributeModifier(ATTACK_CONFIG_MODIFIER_UUID, "Attack config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ATTACK_CONFIG_MODIFIER_UUID, "Attack config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }
@@ -144,7 +144,7 @@ public abstract class Partner<T extends Mob> implements ITagSerializable<Compoun
         }
     }
 
-    public boolean playerHurt(LivingHurtEvent event){
+    public boolean playerHurt(LivingIncomingDamageEvent event){
         return true;
     }
 

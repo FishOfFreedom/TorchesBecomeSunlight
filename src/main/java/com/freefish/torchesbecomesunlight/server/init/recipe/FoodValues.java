@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.rosmontislib.sync.ITagSerializable;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
@@ -10,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -246,7 +247,7 @@ public class FoodValues {
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag compoundTag = new CompoundTag();
-            compoundTag.putString("effect", ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString());
+            compoundTag.putString("effect", BuiltInRegistries.MOB_EFFECT.getKey(mobEffect).toString());
             compoundTag.putInt("level",level);
             compoundTag.putInt("time",time);
             return compoundTag;
@@ -275,7 +276,7 @@ public class FoodValues {
 
         @Override
         public String toString() {
-            return ForgeRegistries.MOB_EFFECTS.getKey(mobEffect).toString()+" "+time+" "+level;
+            return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect).toString()+" "+time+" "+level;
         }
     }
 }

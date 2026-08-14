@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.BossEvent;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,33 +19,33 @@ public class CustomBossBar {
     public static Map<Integer, CustomBossBar> customBossBars = new HashMap<>();
     static {
         customBossBars.put(0, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay.png"),
                 10, 32, 13, -5, -22, 256, 64, 36, ChatFormatting.WHITE,183.0F, ConfigHandler.COMMON.MOBS.FROSTNOVA.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(1, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/pursuer_bar_overlay.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/pursuer_bar_overlay.png"),
                 10, 32, 17, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.PURSUER.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(2, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/patriot_bar_overlay.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/patriot_bar_overlay.png"),
                 10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.PATRIOT.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(3, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base_2.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay_2.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base_2.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_overlay_2.png"),
                 10, 32, -6, -5, -22, 256, 64, 10, ChatFormatting.WHITE,73.0F,ConfigHandler.COMMON.MOBS.FROSTNOVA.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(4, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/gun_patriot_bar_overlay.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/snownova_bar_base.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/gun_patriot_bar_overlay.png"),
                 10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.GUN_KNIGHT.customBossBarConfig.isOpenCustombossbar));
 
         customBossBars.put(5, new CustomBossBar(
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_base.png"),
-                new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_overlay.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_base.png"),
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/boss_bar/rosmontis_bar_overlay.png"),
                 10, 32, 13, -5, -22, 256, 64, 32, ChatFormatting.WHITE,183.0F,ConfigHandler.COMMON.MOBS.ROSMONTIS.customBossBarConfig.isOpenCustombossbar));
     }
 

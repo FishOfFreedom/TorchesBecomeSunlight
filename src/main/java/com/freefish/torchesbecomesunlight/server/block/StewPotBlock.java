@@ -91,7 +91,7 @@ public class StewPotBlock extends BaseEntityBlock {
             else {
                 BlockEntity entity = pLevel.getBlockEntity(pPos);
                 if (entity instanceof StewPotBlockEntity) {
-                    NetworkHooks.openScreen(((ServerPlayer) pPlayer), (StewPotBlockEntity) entity, pPos);
+                    ((ServerPlayer) pPlayer).openMenu((StewPotBlockEntity) entity, pPos);
                 } else {
                     throw new IllegalStateException("Our Container provider is missing!");
                 }

@@ -18,8 +18,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -119,10 +119,10 @@ public class WindParticle extends TextureSheetParticle {
                 };
 
                 int light = getLightColor(partialTicks);
-                buffer.vertex(quadVertices[0].x(), quadVertices[0].y(), quadVertices[0].z()).uv(quadUVs[0][0], quadUVs[0][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
-                buffer.vertex(quadVertices[1].x(), quadVertices[1].y(), quadVertices[1].z()).uv(quadUVs[1][0], quadUVs[1][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
-                buffer.vertex(quadVertices[2].x(), quadVertices[2].y(), quadVertices[2].z()).uv(quadUVs[2][0], quadUVs[2][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
-                buffer.vertex(quadVertices[3].x(), quadVertices[3].y(), quadVertices[3].z()).uv(quadUVs[3][0], quadUVs[3][1]).color(1.f,1.f,1.f,alpha).uv2(light).endVertex();
+                buffer.addVertex(quadVertices[0].x(), quadVertices[0].y(), quadVertices[0].z()).setUv(quadUVs[0][0], quadUVs[0][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex(quadVertices[1].x(), quadVertices[1].y(), quadVertices[1].z()).setUv(quadUVs[1][0], quadUVs[1][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex(quadVertices[2].x(), quadVertices[2].y(), quadVertices[2].z()).setUv(quadUVs[2][0], quadUVs[2][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex(quadVertices[3].x(), quadVertices[3].y(), quadVertices[3].z()).setUv(quadUVs[3][0], quadUVs[3][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
             }
         }
     }

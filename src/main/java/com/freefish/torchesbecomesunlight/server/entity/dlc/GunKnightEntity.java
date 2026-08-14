@@ -17,11 +17,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class GunKnightEntity extends AnimatedEntity implements IEntityAdditionalSpawnData {
+public abstract class GunKnightEntity extends AnimatedEntity implements IEntityWithComplexSpawn {
     @Getter
     private BlockPos controlBen;
 
@@ -69,10 +69,6 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityA
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     public BigBenBlockEntity getTile(){
         if(tile==null&&controlBen!=null){

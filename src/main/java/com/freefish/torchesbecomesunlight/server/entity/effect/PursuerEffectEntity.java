@@ -31,15 +31,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class PursuerEffectEntity extends Entity implements IEntityAdditionalSpawnData {
+public class PursuerEffectEntity extends Entity implements IEntityWithComplexSpawn {
     @Nullable
     private UUID ownerUUID;
     @Nullable
@@ -101,7 +101,7 @@ public class PursuerEffectEntity extends Entity implements IEntityAdditionalSpaw
                     }
 
                     if (tickCount == 1) {
-                        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> pursuer), new SetDemonCentreMessage(pursuer.getId(), position()));
+                        PacketDistributor.sendToPlayersTrackingEntityAndSelf(pursuer, new SetDemonCentreMessage(pursuer.getId(), position()));
                     }
 
                     float health = pursuer.getHealth();
@@ -184,8 +184,8 @@ public class PursuerEffectEntity extends Entity implements IEntityAdditionalSpaw
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(LOCATE,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(LOCATE,false);
     }
 
     protected void addAdditionalSaveData(CompoundTag pCompound) {
@@ -235,10 +235,6 @@ public class PursuerEffectEntity extends Entity implements IEntityAdditionalSpaw
         return this.entityData.get(LOCATE);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {

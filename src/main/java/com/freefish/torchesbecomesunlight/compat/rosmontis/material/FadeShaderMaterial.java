@@ -20,7 +20,7 @@ public class FadeShaderMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
     private final ResourceLocation texture;
     private final float len;
-    public ResourceLocation shader = new ResourceLocation("rosmontislib:fadeintoring");
+    public ResourceLocation shader = ResourceLocation.parse("rosmontislib:fadeintoring");
     private String compiledErrorMessage = "";
     private Runnable uniformCache = null;
 

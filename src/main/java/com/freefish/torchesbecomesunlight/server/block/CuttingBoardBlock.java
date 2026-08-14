@@ -77,7 +77,7 @@ public class CuttingBoardBlock extends BaseEntityBlock{
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof CuttingBoradBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (CuttingBoradBlockEntity)entity, pPos);
+                ((ServerPlayer)pPlayer).openMenu((CuttingBoradBlockEntity)entity, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }

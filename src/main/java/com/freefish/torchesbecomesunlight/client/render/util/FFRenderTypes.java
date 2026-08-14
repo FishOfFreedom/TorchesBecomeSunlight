@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 public class FFRenderTypes extends RenderType{
-    public static ResourceLocation DEMON_1 = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon.png");
-    public static ResourceLocation DEMON_BACK = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon_back.png");
+    public static ResourceLocation DEMON_1 = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon.png");
+    public static ResourceLocation DEMON_BACK = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/effects/demon_back.png");
 
     public FFRenderTypes(String pName, VertexFormat pFormat, VertexFormat.Mode pMode, int pBufferSize, boolean pAffectsCrumbling, boolean pSortOnUpload, Runnable pSetupState, Runnable pClearState) {
         super(pName, pFormat, pMode, pBufferSize, pAffectsCrumbling, pSortOnUpload, pSetupState, pClearState);

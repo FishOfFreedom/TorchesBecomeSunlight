@@ -27,9 +27,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -37,12 +37,12 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.cache.texture.AnimatableTexture;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 import software.bernie.geckolib.renderer.GeoRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.HashMap;
 
@@ -301,8 +301,8 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
     }
 
     public void renderEntity(AbstractClientPlayer entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        net.minecraftforge.client.event.RenderNameTagEvent renderNameplateEvent = new net.minecraftforge.client.event.RenderNameTagEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
-        MinecraftForge.EVENT_BUS.post(renderNameplateEvent);
+        net.neoforged.neoforge.client.event.RenderNameTagEvent renderNameplateEvent = new net.neoforged.neoforge.client.event.RenderNameTagEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
+        NeoForge.EVENT_BUS.post(renderNameplateEvent);
         if (renderNameplateEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameplateEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(entityIn))) {
             this.renderNameTag(entityIn, renderNameplateEvent.getContent(), matrixStackIn, bufferIn, packedLightIn);
         }
@@ -412,10 +412,10 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
     @Override
     public void renderRecursively(PoseStack poseStack, GeckoPlayer animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         poseStack.pushPose();
-        RenderUtils.translateMatrixToBone(poseStack, bone);
-        RenderUtils.translateToPivotPoint(poseStack, bone);
-        RenderUtils.rotateMatrixAroundBone(poseStack, bone);
-        RenderUtils.scaleMatrixForBone(poseStack, bone);
+        RenderUtil.translateMatrixToBone(poseStack, bone);
+        RenderUtil.translateToPivotPoint(poseStack, bone);
+        RenderUtil.rotateMatrixAroundBone(poseStack, bone);
+        RenderUtil.scaleMatrixForBone(poseStack, bone);
         // Record xform matrices for relevant bones
         if (bone instanceof MowzieGeoBone) {
             MowzieGeoBone mowzieBone = (MowzieGeoBone)bone;
@@ -449,7 +449,7 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
                 poseStack.popPose();
             }
         }
-        RenderUtils.translateAwayFromPivotPoint(poseStack, bone);
+        RenderUtil.translateAwayFromPivotPoint(poseStack, bone);
         renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, red, green, blue, alpha);
 
         if (!isReRender)

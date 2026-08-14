@@ -16,8 +16,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
 import org.joml.Vector3f;
 
@@ -88,10 +88,10 @@ public class BlackFlatParticle extends TextureSheetParticle {
         float f5 = this.getV1();
         int j = this.getLightColor(partialTicks);
 
-        buffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).uv(f6, f5).color(0, 0, 0, this.alpha).uv2(j).endVertex();
+        buffer.addVertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).setUv(f7, f5).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).setUv(f7, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).setUv(f6, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).setUv(f6, f5).setColor(0, 0, 0, this.alpha).setLight(j);
     }
 
     @OnlyIn(Dist.CLIENT)

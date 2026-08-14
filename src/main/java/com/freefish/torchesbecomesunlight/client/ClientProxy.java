@@ -3,9 +3,9 @@ package com.freefish.torchesbecomesunlight.client;
 import com.freefish.torchesbecomesunlight.client.render.gui.hud.HudWidget;
 import com.freefish.torchesbecomesunlight.server.CommonProxy;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
 
 public class ClientProxy extends CommonProxy {
 

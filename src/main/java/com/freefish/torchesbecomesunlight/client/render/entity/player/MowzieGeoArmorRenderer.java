@@ -15,7 +15,7 @@ import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoArmorRenderer<T> {
     public boolean usingCustomPlayerAnimations = false;
@@ -45,7 +45,7 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
             poseStack.translate(0, -1.5, 0);
         }
         else {
-            RenderUtils.prepMatrixForBone(poseStack, bone);
+            RenderUtil.prepMatrixForBone(poseStack, bone);
         }
         renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         renderChildBones(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
@@ -62,7 +62,7 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
             thisBone.setForceMatrixTransform(true);
         }
         else {
-            RenderUtils.matchModelPartRot(modelPart, geoBone);
+            RenderUtil.matchModelPartRot(modelPart, geoBone);
             geoBone.updatePosition(modelPart.x + offsetX, -modelPart.y + offsetY, modelPart.z + offsetZ);
         }
     }

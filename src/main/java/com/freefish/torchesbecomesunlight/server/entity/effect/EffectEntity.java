@@ -26,8 +26,8 @@ public abstract class EffectEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(DATA_CASTER_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_CASTER_ID, -1);
     }
 
     public void setCasterId(int id) {
@@ -112,9 +112,5 @@ public abstract class EffectEntity extends Entity {
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
 }

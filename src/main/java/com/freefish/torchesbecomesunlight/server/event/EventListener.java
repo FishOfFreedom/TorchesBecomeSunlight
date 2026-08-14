@@ -46,15 +46,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.AdvancementEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.Set;
 
@@ -104,7 +104,7 @@ public final class EventListener {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onEntityHurt(LivingHurtEvent event) {
+    public void onEntityHurt(LivingIncomingDamageEvent event) {
         if (!event.isCanceled()) {
             LivingEntity entity = event.getEntity();
 
@@ -299,7 +299,7 @@ public final class EventListener {
         CompoundTag interact = new CompoundTag();
         interact.putBoolean("isMainHand",event.getHand()== InteractionHand.MAIN_HAND);
         all.put("interact",interact);
-        TorchesBecomeSunlight.NETWORK.sendToServer(new PlayerInteractMessage(player.getId(),all));
+        PacketDistributor.sendToServer(new PlayerInteractMessage(player.getId(),all));
     }
 
     @SubscribeEvent
@@ -309,7 +309,7 @@ public final class EventListener {
         CompoundTag interact = new CompoundTag();
         interact.putBoolean("isMainHand",event.getHand()== InteractionHand.MAIN_HAND);
         all.put("interactoff",interact);
-        TorchesBecomeSunlight.NETWORK.sendToServer(new PlayerInteractMessage(player.getId(),all));
+        PacketDistributor.sendToServer(new PlayerInteractMessage(player.getId(),all));
     }
 
     @SubscribeEvent

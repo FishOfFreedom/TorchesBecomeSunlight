@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PartnerUtil {
     public static Partner<?> getPartner(Mob mob){
@@ -23,7 +23,7 @@ public class PartnerUtil {
         compoundTag.putInt("partnerid",mob.getId());
         all.put("removepartnerdata",compoundTag);
 
-        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SynCapabilityMessage(player,all));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SynCapabilityMessage(player,all));
         if(partner!=null) partner.remove();
         ((IMobPartner) mob).setPartner(null);
     }
@@ -36,7 +36,7 @@ public class PartnerUtil {
         compoundTag.putInt("partnerid",mob.getId());
         all.put("removepartnerdata",compoundTag);
 
-        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SynCapabilityMessage(player,all));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SynCapabilityMessage(player,all));
         if(partner!=null) partner.remove();
         ((IMobPartner) mob).setPartner(null);
     }
@@ -60,7 +60,7 @@ public class PartnerUtil {
                 compoundTag.putString("partnertype",PartnerUtil.getKey(partnerType).toString());
                 all.put("partnerdata",compoundTag);
 
-                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new SynCapabilityMessage(player,all));
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new SynCapabilityMessage(player,all));
             }
         }
     }

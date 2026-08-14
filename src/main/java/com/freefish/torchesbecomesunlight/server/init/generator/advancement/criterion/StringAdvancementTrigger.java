@@ -12,7 +12,7 @@ import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 
 public class StringAdvancementTrigger extends TBSTrigger<StringAdvancementTrigger.Instance, StringAdvancementTrigger.Listener> {
-    public static final ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "string_advancement");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "string_advancement");
 
     public StringAdvancementTrigger() {
     }

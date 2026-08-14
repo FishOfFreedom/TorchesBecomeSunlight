@@ -1,15 +1,27 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.entity.ursus.Pursuer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+public class SetDemonCentreMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<SetDemonCentreMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "set_demon_centre_message"));
 
-public class SetDemonCentreMessage {
+    public static final StreamCodec<FriendlyByteBuf, SetDemonCentreMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), SetDemonCentreMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private Vec3 centre;
 
@@ -36,17 +48,13 @@ public class SetDemonCentreMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<SetDemonCentreMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final SetDemonCentreMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final SetDemonCentreMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 Pursuer entity = (Pursuer) Minecraft.getInstance().level.getEntity(message.entityID);
                 if (entity != null) {
                     entity.DemonCentre=message.centre;
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }
