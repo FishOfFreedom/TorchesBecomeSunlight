@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.resources.ResourceLocation;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.Item.MacheteRenderer;
@@ -38,7 +40,7 @@ public class Machete extends SwordItem implements GeoItem{
     private static final UUID ENTITY_REACH_UUID = UUID.fromString("5393EB63-DAD9-4B73-A551-C3EFA1F10347");
 
     public Machete(Properties pProperties) {
-        super(Tiers.NETHERITE,(int)(-5 + ConfigHandler.COMMON.TOOLs.MACHETE.attackDamageValue), 4, pProperties);
+        super(Tiers.NETHERITE, pProperties.attributes(SwordItem.createAttributes(Tiers.NETHERITE, (int)(-5 + ConfigHandler.COMMON.TOOLs.MACHETE.attackDamageValue), 4.0F)));
     }
 
 
@@ -107,7 +109,7 @@ public class Machete extends SwordItem implements GeoItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.machete"));
         tooltip.add(Component.translatable("text.torchesbecomesunlight.machete_tool"));

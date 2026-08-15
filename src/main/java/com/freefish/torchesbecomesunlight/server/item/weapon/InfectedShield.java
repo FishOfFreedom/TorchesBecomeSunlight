@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.client.render.Item.InfectedShieldRenderer;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
@@ -106,7 +107,7 @@ public class InfectedShield extends ShieldItem implements GeoItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.shield"));
         tooltip.add(Component.translatable("text.torchesbecomesunlight.shield_tool"));

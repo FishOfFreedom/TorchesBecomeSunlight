@@ -23,7 +23,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -145,7 +144,7 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
 
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
-            Matrix3f matrix3f = posestack$pose.normal();
+            PoseStack.Pose matrix3f = posestack$pose;
             vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
@@ -168,7 +167,7 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         PoseStack poseStack1 = new PoseStack();
         poseStack1.translate(vector4f.x,vector4f.y,vector4f.z);
         Matrix4f matrix4f = poseStack1.last().pose();
-        Matrix3f matrix3f = matrixstack$entry.normal();
+        PoseStack.Pose matrix3f = matrixstack$entry;
 
         VertexConsumer ivertexbuilder = bufferSource.getBuffer(FFRenderTypes.getGlowingEffect(SUN));
         drawSun(matrix4f, matrix3f, ivertexbuilder,time);
@@ -176,7 +175,7 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         poseStack.popPose();
     }
 
-    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
+    private void drawSun(Matrix4f matrix4f, PoseStack.Pose matrix3f, VertexConsumer builder, float alpha) {
         RenderSystem.enableBlend();
         this.drawVertex(matrix4f, matrix3f, builder, -alpha, -alpha, 0, 0, 0,1);
         this.drawVertex(matrix4f, matrix3f, builder, -alpha,  alpha,  0, 0, 1,1);
@@ -185,7 +184,7 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         RenderSystem.disableBlend();
     }
 
-    public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
+    public void drawVertex(Matrix4f matrix, PoseStack.Pose normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
         vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 

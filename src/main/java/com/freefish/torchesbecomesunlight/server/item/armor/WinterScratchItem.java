@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.armor;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.core.Holder;
 import com.freefish.torchesbecomesunlight.client.render.Item.WinterScratchRenderer;
 import net.minecraft.client.model.HumanoidModel;
@@ -80,7 +81,7 @@ public final class WinterScratchItem extends ArmorItem implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.winter_scratch"));
         tooltip.add(Component.translatable("text.torchesbecomesunlight.winter_scratch_tool"));

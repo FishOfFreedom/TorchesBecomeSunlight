@@ -87,9 +87,9 @@ public class TBSDrawerHelper {
         RenderSystem.disableDepthTest();//VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         BufferBuilder vertexbuffer = Tesselator.getInstance().getBuilder();
         vertexbuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        vertexbuffer.addVertex(posX1, (double) posY1 + height1, 0.0D).setColor(f, f1, f2, f3);
-        vertexbuffer.addVertex((double) posX2 + width2, (double) posY2 + height2, 0.0D).setColor(f, f1, f2, f3);
-        vertexbuffer.addVertex((double) posX1 + width1, posY2, 0.0D).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex(posX1, (float) posY1 + height1, 0.0D).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX2 + width2, (float) posY2 + height2, 0.0D).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX1 + width1, posY2, 0.0D).setColor(f, f1, f2, f3);
         vertexbuffer.addVertex(posX2, posY1, 0.0D).setColor(f, f1, f2, f3);
 
         BufferUploader.drawWithShader(vertexbuffer.end());

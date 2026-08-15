@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.item.DemonEye;
@@ -112,9 +114,9 @@ public class ItemHandle {
 
     public static final DeferredHolder<Item, Item> MACHETE =
             ITEMS.register("machete", () ->
-                    new SwordItem(Tiers.DIAMOND, 3, -2.4F, new Item.Properties()){
+                    new SwordItem(Tiers.DIAMOND, new Item.Properties().attributes(SwordItem.createAttributes(Tiers.DIAMOND, 3, -2.4F))){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.machete1"));
                         }
@@ -128,7 +130,7 @@ public class ItemHandle {
             ITEMS.register("blessing_of_sami", () ->
                     new Item(new Item.Properties()){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
                             pTooltipComponents.add(Component.translatable("text.torchesbecomesunlight.blessing_of_sami"));
                             pTooltipComponents.add(Component.translatable("text.torchesbecomesunlight.blessing_of_sami_tool"));
@@ -163,7 +165,7 @@ public class ItemHandle {
             ITEMS.register("thorn_ring", () ->
                     new Item(new Item.Properties()){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.thorn_ring"));
                         }
@@ -173,7 +175,7 @@ public class ItemHandle {
             ITEMS.register("bronze_skin", () ->
                     new Item(new Item.Properties()){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.bronze_skin"));
                         }
@@ -191,7 +193,7 @@ public class ItemHandle {
             ITEMS.register("thigh_meat", () ->
                     new Item(new Item.Properties().food(CustomFoodProperties.THIGH_MEAT)){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.thigh_meat"));
                         }
@@ -201,7 +203,7 @@ public class ItemHandle {
             ITEMS.register("cooked_thigh_meat", () ->
                     new Item(new Item.Properties().food(CustomFoodProperties.COOKED_THIGH_MEAT)){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.cooked_thigh_meat"));
                         }
@@ -210,7 +212,7 @@ public class ItemHandle {
     public static final DeferredHolder<Item, Item> BURDENBEAST_MEAT =
             ITEMS.register("burdenbeast_meat", () -> new Item(new Item.Properties().food(CustomFoodProperties.BURDENBEAST_MEAT)){
                 @Override
-                public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                     super.appendHoverText(stack, level, tooltip, flagIn);
                     tooltip.add(Component.translatable("text.torchesbecomesunlight.burdenbeast_meat"));
                 }
@@ -220,7 +222,7 @@ public class ItemHandle {
             ITEMS.register("cooked_burdenbeast_meat", () ->
                     new Item(new Item.Properties().food(CustomFoodProperties.COOKED_BURDENBEAST_MEAT)){
                         @Override
-                        public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+                        public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
                             super.appendHoverText(stack, level, tooltip, flagIn);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.cooked_burdenbeast_meat"));
                         }
@@ -231,7 +233,7 @@ public class ItemHandle {
             ITEMS.register("borscht", () ->
                     new TBSFood(12,0.6f,2){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.borscht"));
                         }
@@ -241,7 +243,7 @@ public class ItemHandle {
             ITEMS.register("polar_stew_meat", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.polar_stew_meat"));
                         }
@@ -251,7 +253,7 @@ public class ItemHandle {
             ITEMS.register("baked_cod_potato", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.baked_cod_potato"));
                         }
@@ -261,7 +263,7 @@ public class ItemHandle {
             ITEMS.register("oil_salad", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.oil_salad"));
                         }
@@ -271,7 +273,7 @@ public class ItemHandle {
             ITEMS.register("mashed_potato_steak", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.mashed_potato_steak"));
                         }
@@ -281,7 +283,7 @@ public class ItemHandle {
             ITEMS.register("apple_pie", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.apple_pie"));
                         }
@@ -291,7 +293,7 @@ public class ItemHandle {
             ITEMS.register("beef_beet_dumpling", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.beef_beet_dumpling"));
                         }
@@ -301,7 +303,7 @@ public class ItemHandle {
             ITEMS.register("ursus_bread", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.ursus_bread"));
                         }
@@ -311,7 +313,7 @@ public class ItemHandle {
             ITEMS.register("burdenbeast_burger", () ->
                     new TBSFood(18,0.8f,3){
                         @Override
-                        public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
+                        public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> tooltip, TooltipFlag pIsAdvanced) {
                             super.appendHoverText(pStack, pLevel, tooltip, pIsAdvanced);
                             tooltip.add(Component.translatable("text.torchesbecomesunlight.burdenbeast_burger"));
                         }

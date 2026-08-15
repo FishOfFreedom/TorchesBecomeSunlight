@@ -91,10 +91,10 @@ public class BladeParticle extends TextureSheetParticle {
         float f4 = this.getV0();
         float f5 = this.getV1();
         int j = this.getLightColor(pPartialTicks);
-        pBuffer.addVertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).setUv(f7, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
-        pBuffer.addVertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).setUv(f7, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
-        pBuffer.addVertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).setUv(f6, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
-        pBuffer.addVertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).setUv(f6, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (double)avector3f[0].z()).setUv(f7, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (double)avector3f[1].z()).setUv(f7, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (double)avector3f[2].z()).setUv(f6, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (double)avector3f[3].z()).setUv(f6, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.client.render.Item.RhodesKnifeRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
@@ -21,7 +22,7 @@ public class RhodesKnife extends SwordItem implements GeoItem{
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     public RhodesKnife(Properties pProperties) {
-        super(Tiers.NETHERITE,(int)(-5 + 7.5f), -2.4f, pProperties);
+        super(Tiers.NETHERITE, pProperties.attributes(SwordItem.createAttributes(Tiers.NETHERITE, (int)(-5 + 7.5f), -2.4f)));
     }
 
 
@@ -67,7 +68,7 @@ public class RhodesKnife extends SwordItem implements GeoItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.rhodes_knife"));
     }

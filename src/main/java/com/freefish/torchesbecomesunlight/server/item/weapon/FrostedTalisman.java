@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
@@ -55,7 +56,7 @@ public class FrostedTalisman extends SummonItem<FrostNova> {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.frosted_talisman"));
     }

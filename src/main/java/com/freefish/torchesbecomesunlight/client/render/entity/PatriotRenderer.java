@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -67,7 +66,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         //poseStack.popPose();
     }
 
-    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
+    private void drawSun(Matrix4f matrix4f, PoseStack.Pose matrix3f, VertexConsumer builder, float alpha) {
         float sunRadius = 0.3f;
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, -sunRadius, 0, 0, 0,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, sunRadius,  0, 0, 1,alpha);
@@ -75,7 +74,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         this.drawVertex(matrix4f, matrix3f, builder, sunRadius, -sunRadius,  0, 1, 0,alpha);
     }
 
-    public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
+    public void drawVertex(Matrix4f matrix, PoseStack.Pose normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
         vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 
@@ -105,7 +104,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
 
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
-            Matrix3f matrix3f = posestack$pose.normal();
+            PoseStack.Pose matrix3f = posestack$pose;
             vertexconsumer.addVertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
             vertexconsumer.addVertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
             vertexconsumer.addVertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);

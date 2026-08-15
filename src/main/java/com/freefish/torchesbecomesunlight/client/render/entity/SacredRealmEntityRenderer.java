@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Math;
-import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity> {
@@ -33,7 +32,7 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
         poseStack.pushPose();
-        PoseStack.Pose matrixstack$entry = poseStack.last();
+        PoseStack.Pose posestack$pose = poseStack.last();
 
         VertexConsumer portalStatic = bufferSource.getBuffer(FFRenderTypes.getGlowingEffect(TEXTURE[entity.tickCount%7]));
         PoseStack posestack = new PoseStack();
@@ -43,23 +42,23 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         float scale =Math.min(1,(partialTick+entity.tickCount)/10);
         float len1 = 1.5f*scale;
         float len2 = 2.5f*scale;
-        renderFire(-len1,-len2,len1,-len2,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len1,-len2,len1,-len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len1,-len1,len2,-len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len2,-len1,len2,len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len2,len1,len1,len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len1,len1,len1,len2,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(len1,len2,-len1,len2,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(-len1,len2,-len1,len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(-len1,len1,-len2,len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(-len2,len1,-len2,-len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(-len2,-len1,-len1,-len1,portalStatic,matrixstack$entry,matrix3f,scale);
-        renderFire(-len1,-len1,-len1,-len2,portalStatic,matrixstack$entry,matrix3f,scale);
+        renderFire(-len1,-len2,len1,-len2,portalStatic,posestack$pose,scale);
+        renderFire(len1,-len2,len1,-len1,portalStatic,posestack$pose,scale);
+        renderFire(len1,-len1,len2,-len1,portalStatic,posestack$pose,scale);
+        renderFire(len2,-len1,len2,len1,portalStatic,posestack$pose,scale);
+        renderFire(len2,len1,len1,len1,portalStatic,posestack$pose,scale);
+        renderFire(len1,len1,len1,len2,portalStatic,posestack$pose,scale);
+        renderFire(len1,len2,-len1,len2,portalStatic,posestack$pose,scale);
+        renderFire(-len1,len2,-len1,len1,portalStatic,posestack$pose,scale);
+        renderFire(-len1,len1,-len2,len1,portalStatic,posestack$pose,scale);
+        renderFire(-len2,len1,-len2,-len1,portalStatic,posestack$pose,scale);
+        renderFire(-len2,-len1,-len1,-len1,portalStatic,posestack$pose,scale);
+        renderFire(-len1,-len1,-len1,-len2,portalStatic,posestack$pose,scale);
 
         poseStack.popPose();
     }
 
-    private void renderFire(float x1,float z1,float x2 , float z2,VertexConsumer portalStatic,PoseStack.Pose matrixstack$entry,Matrix3f matrix3f,float alpha){
+    private void renderFire(float x1,float z1,float x2 , float z2,VertexConsumer portalStatic,PoseStack.Pose posestack$pose,float alpha){
         float f8 = 1;
         float f5 = 0;
         float f6 = 1;
@@ -75,10 +74,10 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         while (len>0){
             float finalLen = Math.min(1f,len);
 
-            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(count), 0, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(count), 1, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 1, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(matrixstack$entry.pose(), x1+ v *(finalLen+count), 0, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(count), 0, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(count), 1, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(finalLen+count), 1, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(finalLen+count), 0, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
 
             count+=1;
             len-=1;

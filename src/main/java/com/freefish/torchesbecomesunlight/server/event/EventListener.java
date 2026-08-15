@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -475,7 +476,7 @@ public final class EventListener {
         Player player = (Player) event.getEntity();
 
         ItemStack usedItem = event.getItem();
-        if (!usedItem.isEdible() && usedItem.getItem() != Items.CAKE)
+        if (!usedItem.has(net.minecraft.core.component.DataComponents.FOOD) && usedItem.getItem() != Items.CAKE)
             return;
 
         eat(usedItem,usedItem.getItem(),player);

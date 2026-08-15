@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
@@ -44,7 +43,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         PoseStack poseStack1 = new PoseStack();
         poseStack1.translate(vector4f.x,vector4f.y,vector4f.z);
         Matrix4f matrix4f = poseStack1.last().pose();
-        Matrix3f matrix3f = matrixstack$entry.normal();
+        PoseStack.Pose matrix3f = matrixstack$entry;
 
         DialogueCapability.IDialogueCapability data = CapabilityHandle.getCapability(animatable, CapabilityHandle.DIALOGUE_CAPABILITY);
         if(data!=null){
@@ -67,7 +66,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         poseStack.popPose();
     }
 
-    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
+    private void drawSun(Matrix4f matrix4f, PoseStack.Pose matrix3f, VertexConsumer builder, float alpha) {
         float sunRadius = 0.3f;
         RenderSystem.enableBlend();
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, -sunRadius, 0, 0, 0,alpha);
@@ -77,7 +76,7 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
         RenderSystem.disableBlend();
     }
 
-    public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
+    public void drawVertex(Matrix4f matrix, PoseStack.Pose normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
         vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 }

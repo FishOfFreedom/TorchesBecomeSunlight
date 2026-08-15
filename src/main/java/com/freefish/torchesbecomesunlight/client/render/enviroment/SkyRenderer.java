@@ -90,7 +90,7 @@ public class SkyRenderer {
         if (fogType != FogType.POWDER_SNOW && fogType != FogType.LAVA) {
 
             PoseStack poseStack = new PoseStack();
-            poseStack.mulPoseMatrix(modelViewMatrix);
+            poseStack.mulPose(modelViewMatrix);
 
             Vec3 vec3 = level.getSkyColor(minecraft.gameRenderer.getMainCamera().getPosition(), partialTicks);
             float g = (float) vec3.x;
@@ -108,13 +108,13 @@ public class SkyRenderer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 
-            BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+            BufferBuilder bufferbuilder;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, EYES);
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
             renderEyes(poseStack,bufferbuilder,demonA,0,0,120.0F,0.90f,1);
             //renderEyes(poseStack,bufferbuilder,demonA,1,3.14f,25.0F,0.2f,0.4f);
@@ -128,7 +128,7 @@ public class SkyRenderer {
             //renderEyes(poseStack,bufferbuilder,demonA,1.4f,1.9f,20.0F,0,0.2f);
             //renderEyes(poseStack,bufferbuilder,demonA,1.4f,2.4f,20.0F,0,0.2f);
 
-            BufferUploader.drawWithShader(bufferbuilder.end());
+            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 
             float v = 1.0f;
             RenderSystem.setShaderColor(v, 0, 0, demonA);
@@ -163,7 +163,7 @@ public class SkyRenderer {
             int j = Mth.floor(pCamY);
             int k = Mth.floor(pCamZ);
             Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder bufferbuilder = tesselator.getBuilder();
+            BufferBuilder bufferbuilder;
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();
@@ -207,12 +207,12 @@ public class SkyRenderer {
                             blockpos$mutableblockpos.set(k1, minY, j1);
                                 if (i1 != 0) {
                                     if (i1 >= 0) {
-                                        tesselator.end();
+                                        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
                                     }
 
                                     i1 = 0;
                                     RenderSystem.setShaderTexture(0, DEMON);
-                                    bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+                                    bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
                                 }
 
                             float d8 = -((ticks & 511) + pPartialTick) / 512.0F;
@@ -236,7 +236,7 @@ public class SkyRenderer {
                 }
             }
             if (i1 >= 0) {
-                tesselator.end();
+                BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
             }
             RenderSystem.enableCull();
             RenderSystem.disableBlend();

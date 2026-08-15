@@ -44,7 +44,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(pStack.getItem() instanceof TBSFood tbsFood){
             DishAttribute itemAdditionData = getItemAdditionData(pStack, DishAttribute::new);
             FoodValues foodValues = itemAdditionData.getFoodValues();
