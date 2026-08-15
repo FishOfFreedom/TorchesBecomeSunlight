@@ -47,7 +47,7 @@ public class RhodesIslandEntity extends AnimatedEntity {
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if(pCompound.contains("spawnPos")){
-            spawnPos = NbtUtils.readBlockPos(pCompound.getCompound("spawnPos"));
+            spawnPos = NbtUtils.readBlockPos(pCompound, "spawnPos").orElse(net.minecraft.core.BlockPos.ZERO);
         }
     }
 

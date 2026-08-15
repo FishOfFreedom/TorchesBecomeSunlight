@@ -73,55 +73,55 @@ public class BlockHandle {
             () -> new CargoRack(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()),false);
 
     //vertical_slab
-    public static final DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> GRAY_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("gray_concrete_vertical_slab",Blocks.GRAY_CONCRETE);
-    public static final DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> WHITE_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("white_concrete_vertical_slab",Blocks.WHITE_CONCRETE);
-    public static final DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> YELLOW_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("yellow_concrete_vertical_slab",Blocks.YELLOW_CONCRETE);
-    public static final DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> LIGHT_GRAY_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("light_gray_concrete_vertical_slab",Blocks.LIGHT_GRAY_CONCRETE);
+    public static final DeferredHolder<Block, VerticalSlabBlock> GRAY_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("gray_concrete_vertical_slab",Blocks.GRAY_CONCRETE);
+    public static final DeferredHolder<Block, VerticalSlabBlock> WHITE_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("white_concrete_vertical_slab",Blocks.WHITE_CONCRETE);
+    public static final DeferredHolder<Block, VerticalSlabBlock> YELLOW_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("yellow_concrete_vertical_slab",Blocks.YELLOW_CONCRETE);
+    public static final DeferredHolder<Block, VerticalSlabBlock> LIGHT_GRAY_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("light_gray_concrete_vertical_slab",Blocks.LIGHT_GRAY_CONCRETE);
     //slab
-    public static final DeferredHolder<SlabBlock, SlabBlock> GRAY_CONCRETE_SLAB = registerSlab("gray_concrete_slab",Blocks.GRAY_CONCRETE);
-    public static final DeferredHolder<SlabBlock, SlabBlock> WHITE_CONCRETE_SLAB = registerSlab("white_concrete_slab",Blocks.WHITE_CONCRETE);
-    public static final DeferredHolder<SlabBlock, SlabBlock> YELLOW_CONCRETE_SLAB = registerSlab("yellow_concrete_slab",Blocks.YELLOW_CONCRETE);
-    public static final DeferredHolder<SlabBlock, SlabBlock> LIGHT_GRAY_CONCRETE_SLAB = registerSlab("light_gray_concrete_slab",Blocks.LIGHT_GRAY_CONCRETE);
+    public static final DeferredHolder<Block, SlabBlock> GRAY_CONCRETE_SLAB = registerSlab("gray_concrete_slab",Blocks.GRAY_CONCRETE);
+    public static final DeferredHolder<Block, SlabBlock> WHITE_CONCRETE_SLAB = registerSlab("white_concrete_slab",Blocks.WHITE_CONCRETE);
+    public static final DeferredHolder<Block, SlabBlock> YELLOW_CONCRETE_SLAB = registerSlab("yellow_concrete_slab",Blocks.YELLOW_CONCRETE);
+    public static final DeferredHolder<Block, SlabBlock> LIGHT_GRAY_CONCRETE_SLAB = registerSlab("light_gray_concrete_slab",Blocks.LIGHT_GRAY_CONCRETE);
     //stairs
-    public static final DeferredHolder<StairBlock, StairBlock> GRAY_CONCRETE_STAIRS = registerStairs("gray_concrete_stairs",Blocks.GRAY_CONCRETE);
-    public static final DeferredHolder<StairBlock, StairBlock> WHITE_CONCRETE_STAIRS = registerStairs("white_concrete_stairs",Blocks.WHITE_CONCRETE);
-    public static final DeferredHolder<StairBlock, StairBlock> YELLOW_CONCRETE_STAIRS = registerStairs("yellow_concrete_stairs",Blocks.YELLOW_CONCRETE);
-    public static final DeferredHolder<StairBlock, StairBlock> LIGHT_GRAY_CONCRETE_STAIRS = registerStairs("light_gray_concrete_stairs",Blocks.LIGHT_GRAY_CONCRETE);
+    public static final DeferredHolder<Block, StairBlock> GRAY_CONCRETE_STAIRS = registerStairs("gray_concrete_stairs",Blocks.GRAY_CONCRETE);
+    public static final DeferredHolder<Block, StairBlock> WHITE_CONCRETE_STAIRS = registerStairs("white_concrete_stairs",Blocks.WHITE_CONCRETE);
+    public static final DeferredHolder<Block, StairBlock> YELLOW_CONCRETE_STAIRS = registerStairs("yellow_concrete_stairs",Blocks.YELLOW_CONCRETE);
+    public static final DeferredHolder<Block, StairBlock> LIGHT_GRAY_CONCRETE_STAIRS = registerStairs("light_gray_concrete_stairs",Blocks.LIGHT_GRAY_CONCRETE);
 
     public static void registerBlockFurniture(final String name, final Block t){
         registerStairs(name,t);
         registerSlab(name,t);
         registryVerticalSlab(name,t);
     }
-    public static DeferredHolder<StairBlock, StairBlock> registerStairs(final String name, final Block t){
+    public static DeferredHolder<Block, StairBlock> registerStairs(final String name, final Block t){
         return registryBlock(name, () -> new StairBlock(() -> t.defaultBlockState(), Block.Properties.ofFullCopy(t)),false);
     }
-    public static DeferredHolder<SlabBlock, SlabBlock> registerSlab(final String name, final Block t){
+    public static DeferredHolder<Block, SlabBlock> registerSlab(final String name, final Block t){
         return registryBlock(name, () -> new SlabBlock(Block.Properties.ofFullCopy(t)),false);
     }
-    private static DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> registryVerticalSlab(String name, Block blockState) {
+    private static DeferredHolder<Block, VerticalSlabBlock> registryVerticalSlab(String name, Block blockState) {
         return registryBlock(name,
                 () -> new VerticalSlabBlock(() -> blockState.defaultBlockState(),BlockBehaviour.Properties.ofFullCopy(blockState).noOcclusion()),false);
     }
 
-    private static <T extends Block> DeferredHolder<T, T> registryBlock(String name, Supplier<T> block, boolean isEntity) {
+    private static <T extends Block> DeferredHolder<Block, T> registryBlock(String name, Supplier<T> block, boolean isEntity) {
         DeferredHolder<Block, T> register = BLOCKS.register(name, block);
         registerBlockItem(name, register, new Item.Properties(), isEntity);
         return register;
     }
 
-    private static <T extends Block> DeferredHolder<T, T> registryBlockNoItem(String name, Supplier<T> block, boolean isEntity) {
+    private static <T extends Block> DeferredHolder<Block, T> registryBlockNoItem(String name, Supplier<T> block, boolean isEntity) {
         DeferredHolder<Block, T> register = BLOCKS.register(name, block);
         return register;
     }
 
-    private static <T extends Block> DeferredHolder<T, T> registryBlock(String name, Supplier<T> block, boolean isEntity, Item.Properties properties) {
+    private static <T extends Block> DeferredHolder<Block, T> registryBlock(String name, Supplier<T> block, boolean isEntity, Item.Properties properties) {
         DeferredHolder<Block, T> register = BLOCKS.register(name, block);
         registerBlockItem(name, register, properties, isEntity);
         return register;
     }
 
-    private static <T extends Block> void registerBlockItem(String name, DeferredHolder<T, T> block, Item.Properties properties, boolean isEntityBlock) {
+    private static <T extends Block> void registerBlockItem(String name, DeferredHolder<Block, T> block, Item.Properties properties, boolean isEntityBlock) {
         ItemHandle.ITEMS.register(name, () -> new BlockItem(block.get(), properties));
     }
 }

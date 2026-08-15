@@ -72,7 +72,7 @@ public class ActRangeSignMessage implements CustomPacketPayload {
                     if(component1.contains("type")){
                         int type = component1.getInt("type");
                         if(type==0){
-                            BlockPos blockPos = NbtUtils.readBlockPos(component1.getCompound("block"));
+                            BlockPos blockPos = NbtUtils.readBlockPos(component1, "block").orElse(net.minecraft.core.BlockPos.ZERO);
                             showBlock(blockPos,entity.level());
                         }else if (type==1){
                             Vec3 v = new Vec3(component1.getFloat("vx"),component1.getFloat("vy"),component1.getFloat("vz"));

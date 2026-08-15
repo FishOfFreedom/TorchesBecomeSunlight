@@ -65,7 +65,7 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityW
     public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
-            init(NbtUtils.readBlockPos(compoundTag.getCompound("controlBen1")),NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));
+            init(NbtUtils.readBlockPos(compoundTag, "controlBen1").orElse(net.minecraft.core.BlockPos.ZERO),NbtUtils.readBlockPos(compoundTag, "spawn").orElse(net.minecraft.core.BlockPos.ZERO));
         }
     }
 
@@ -122,10 +122,10 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityW
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if(pCompound.contains("controlBen")){
-            controlBen = NbtUtils.readBlockPos(pCompound.getCompound("controlBen"));
+            controlBen = NbtUtils.readBlockPos(pCompound, "controlBen").orElse(net.minecraft.core.BlockPos.ZERO);
         }
         if(pCompound.contains("spawnPos")){
-            spawnPos = NbtUtils.readBlockPos(pCompound.getCompound("spawnPos"));
+            spawnPos = NbtUtils.readBlockPos(pCompound, "spawnPos").orElse(net.minecraft.core.BlockPos.ZERO);
         }
     }
 }

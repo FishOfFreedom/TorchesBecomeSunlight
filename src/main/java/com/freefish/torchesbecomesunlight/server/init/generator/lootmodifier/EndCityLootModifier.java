@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.lootmodifier;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.mojang.serialization.Codec;
@@ -49,7 +50,7 @@ public class EndCityLootModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static final Codec<EndCityLootModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<EndCityLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
             BuiltInRegistries.ITEM.getCodec().fieldOf("item").forGetter(modifier -> modifier.item),
             Codec.FLOAT.fieldOf("probability").forGetter(modifier -> modifier.probability),
@@ -58,7 +59,7 @@ public class EndCityLootModifier extends LootModifier {
 
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC;
     }
 }

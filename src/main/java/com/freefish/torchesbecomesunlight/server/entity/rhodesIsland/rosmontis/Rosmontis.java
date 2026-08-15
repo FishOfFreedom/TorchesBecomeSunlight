@@ -1113,7 +1113,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
-            init(NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));
+            init(NbtUtils.readBlockPos(compoundTag, "spawn").orElse(net.minecraft.core.BlockPos.ZERO));
         }
     }
 

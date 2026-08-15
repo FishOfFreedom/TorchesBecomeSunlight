@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
@@ -430,13 +431,13 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         buffer.writeUtf(getSpawnState().toString());
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         setSpawnState(State.valueOf(additionalData.readUtf()));
     }

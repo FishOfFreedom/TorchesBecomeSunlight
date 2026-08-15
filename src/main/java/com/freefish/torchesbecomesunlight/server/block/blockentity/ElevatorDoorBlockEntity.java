@@ -113,8 +113,8 @@ public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements Ge
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        super.onDataPacket(net, pkt, registries);
     }
 
     @Override
