@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.core.BlockPos;
@@ -132,7 +133,7 @@ public class StompEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag compoundTag = new CompoundTag();
         if(owner!=null){
             compoundTag.putInt("id",owner.getId());
@@ -141,7 +142,7 @@ public class StompEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("id")){
             owner = (LivingEntity) level().getEntity(compoundTag.getInt("id"));

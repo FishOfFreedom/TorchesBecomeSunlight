@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -448,13 +449,13 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                     AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
                     if (maxHealthAttr != null) {
                         double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
-                        maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                        maxHealthAttr.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                         setHealth(getMaxHealth());
                     }
                     AttributeInstance maxActAttr = getAttribute(Attributes.ATTACK_DAMAGE);
                     if (maxActAttr != null) {
                         double difference = maxActAttr.getBaseValue() * 0.33333f;
-                        maxActAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-4a7d-cb0b-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                        maxActAttr.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                     }
                 }
             }

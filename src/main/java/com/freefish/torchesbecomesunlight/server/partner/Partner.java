@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.partner;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.rosmontislib.sync.ITagSerializable;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.partner.command.AttackTargetCommand;
@@ -105,14 +107,14 @@ public abstract class Partner<T extends Mob> implements ITagSerializable<Compoun
             AttributeInstance maxHealthAttr = partnerMob.getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue() * partnerConfig.healthMultiplier.get() - maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier(HEALTH_CONFIG_MODIFIER_UUID, "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 partnerMob.setHealth(partnerMob.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = partnerMob.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * partnerConfig.attackMultiplier.get() - attackDamageAttr.getBaseValue();
-                attackDamageAttr.addTransientModifier(new AttributeModifier(ATTACK_CONFIG_MODIFIER_UUID, "Attack config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }

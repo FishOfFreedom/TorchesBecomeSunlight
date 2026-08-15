@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
 import com.freefish.torchesbecomesunlight.server.entity.effect.AnimationBlock;
@@ -36,7 +38,7 @@ public class TestItem extends Item {
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
             if (!entity.level().isClientSide) {
-                MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+                MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL);
                 if(effect!=null){
                     //System.out.println(effect.getAmplifier());
                 }

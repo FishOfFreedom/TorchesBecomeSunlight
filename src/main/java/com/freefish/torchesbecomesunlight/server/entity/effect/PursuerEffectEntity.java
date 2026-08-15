@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
@@ -236,7 +237,7 @@ public class PursuerEffectEntity extends Entity implements IEntityWithComplexSpa
 
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(type);
 
         CompoundTag compoundTag = new CompoundTag();
@@ -249,7 +250,7 @@ public class PursuerEffectEntity extends Entity implements IEntityWithComplexSpa
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         type = additionalData.readVarInt();
 
         CompoundTag compoundTag = additionalData.readNbt();

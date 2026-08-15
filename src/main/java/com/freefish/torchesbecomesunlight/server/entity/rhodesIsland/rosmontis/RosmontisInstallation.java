@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.rhodesIsland.rosmontis;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.RLClientUseUtils;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
@@ -964,13 +965,13 @@ public class RosmontisInstallation extends Entity implements GeoEntity , IEntity
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(animationType);
         buffer.writeVarInt(animationTime);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         animationType = additionalData.readVarInt();
         animationTime = additionalData.readVarInt();
     }

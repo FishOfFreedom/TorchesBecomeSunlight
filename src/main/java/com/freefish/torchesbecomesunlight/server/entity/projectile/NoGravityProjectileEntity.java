@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ProjectileHitEntityMessage;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -265,7 +266,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         Vec3 deltaMovement = getDeltaMovement();
         buffer.writeDouble(deltaMovement.x);
         buffer.writeDouble(deltaMovement.y);
@@ -275,7 +276,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         Vec3 deltaMovement = new Vec3(additionalData.readDouble(),additionalData.readDouble(),additionalData.readDouble());
         setDeltaMovement(deltaMovement);
         setXRot(additionalData.readFloat());

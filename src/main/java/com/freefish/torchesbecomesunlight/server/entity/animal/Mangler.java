@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.animal;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
@@ -154,7 +156,7 @@ public class Mangler extends AnimatedEntity {
     private Mangler leader;
     public boolean isAttacked;
     private List<Mangler> followers = new ArrayList<>();
-    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADD_VALUE);
+    private AttributeModifier attributeModifier = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), 0.8, AttributeModifier.Operation.ADD_VALUE);
 
     public Mangler(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -283,14 +285,14 @@ public class Mangler extends AnimatedEntity {
             AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier("Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 this.setHealth(this.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * 0.5f;
-                attackDamageAttr.addTransientModifier(new AttributeModifier("Attack config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
 
@@ -334,14 +336,14 @@ public class Mangler extends AnimatedEntity {
             AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier("Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 this.setHealth(this.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * 0.5f;
-                attackDamageAttr.addTransientModifier(new AttributeModifier("Attack config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
 

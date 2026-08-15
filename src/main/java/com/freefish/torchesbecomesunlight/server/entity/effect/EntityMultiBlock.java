@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -110,7 +111,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityWithComp
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void writeSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag blocksTag = new CompoundTag();
         ListTag blocks = new ListTag();
         for(int i = 0;i<blockStates.length;i++){
@@ -130,7 +131,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityWithComp
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void readSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag blocksTag = friendlyByteBuf.readNbt();
         ListTag list = blocksTag.getList("blockstag", 10);
 

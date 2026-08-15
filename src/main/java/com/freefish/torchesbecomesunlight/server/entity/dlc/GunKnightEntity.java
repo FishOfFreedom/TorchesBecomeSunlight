@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.BigBenBlockEntity;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.ai.GunKnightRandomStrollGoal;
@@ -49,7 +50,7 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityW
         }
     }
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
         BlockPos spawnPos = getSpawnPos();
         BlockPos controlBen1 = getControlBen();
@@ -61,7 +62,7 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityW
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
             init(NbtUtils.readBlockPos(compoundTag.getCompound("controlBen1")),NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));

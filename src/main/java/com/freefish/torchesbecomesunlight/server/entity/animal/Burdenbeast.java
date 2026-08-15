@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.animal;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
@@ -53,7 +55,7 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
     private static final EntityDataAccessor<CompoundTag> ANIMATION = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<Boolean> RUN = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.BOOLEAN);
 
-    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADD_VALUE);
+    private AttributeModifier attributeModifier = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), 0.8, AttributeModifier.Operation.ADD_VALUE);
     public int animationType;
     private int animationTime;
 

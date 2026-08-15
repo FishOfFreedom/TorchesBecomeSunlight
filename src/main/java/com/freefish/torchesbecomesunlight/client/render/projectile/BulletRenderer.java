@@ -115,11 +115,11 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
 
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
-            Matrix3f matrix3f = posestack$pose.normal();
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }
@@ -146,15 +146,15 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
             Matrix3f matrix3f = posestack$pose.normal();
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
 
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec1.x, (float) draw1.y + (float) bottomAngleVec1.y, (float) draw1.z + (float) bottomAngleVec1.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec1.x, (float) draw2.y + (float) bottomAngleVec1.y, (float) draw2.z + (float) bottomAngleVec1.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec1.x, (float) draw2.y + (float) topAngleVec1.y, (float) draw2.z + (float) topAngleVec1.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec1.x, (float) draw1.y + (float) topAngleVec1.y, (float) draw1.z + (float) topAngleVec1.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) bottomAngleVec1.x, (float) draw1.y + (float) bottomAngleVec1.y, (float) draw1.z + (float) bottomAngleVec1.z).setColor(1,1,1, 0.8f).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) bottomAngleVec1.x, (float) draw2.y + (float) bottomAngleVec1.y, (float) draw2.z + (float) bottomAngleVec1.z).setColor(1,1,1, 0.8f).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2.x + (float) topAngleVec1.x, (float) draw2.y + (float) topAngleVec1.y, (float) draw2.z + (float) topAngleVec1.z)         .setColor(1,1,1, 0.8f).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1.x + (float) topAngleVec1.x, (float) draw1.y + (float) topAngleVec1.y, (float) draw1.z + (float) topAngleVec1.z)         .setColor(1,1,1, 0.8f).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }

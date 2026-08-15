@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.rhodesIsland.rosmontis;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.RLClientUseUtils;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
@@ -1099,7 +1100,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
 
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
         BlockPos spawnPos = getSpawnPos();
         if(spawnPos!=null){
@@ -1109,7 +1110,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
             init(NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));

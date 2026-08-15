@@ -114,10 +114,10 @@ public class FrozenCapability {
         }
 
         public void onEffectUpdated(LivingEntity pEntity,float act,float move,float armor,float health) {
-            AttributeModifier healthAttribute = new AttributeModifier(uuids[0], "Health", health, AttributeModifier.Operation.ADD_VALUE);
-            AttributeModifier attackAttribute = new AttributeModifier(uuids[1], "Attack", act, AttributeModifier.Operation.ADD_VALUE);
-            AttributeModifier armorAttribute =  new AttributeModifier(uuids[2], "Armor", armor, AttributeModifier.Operation.ADD_VALUE);
-            AttributeModifier speedAttribute =  new AttributeModifier(uuids[3], "Speed", move/4, AttributeModifier.Operation.ADD_VALUE);
+            AttributeModifier healthAttribute = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health"), health, AttributeModifier.Operation.ADD_VALUE);
+            AttributeModifier attackAttribute = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack"), act, AttributeModifier.Operation.ADD_VALUE);
+            AttributeModifier armorAttribute =  new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor"), armor, AttributeModifier.Operation.ADD_VALUE);
+            AttributeModifier speedAttribute =  new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "speed"), move/4, AttributeModifier.Operation.ADD_VALUE);
 
             AttributeInstance healthAt = pEntity.getAttribute(Attributes.MAX_HEALTH);
             AttributeInstance actAt = pEntity.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -125,17 +125,17 @@ public class FrozenCapability {
             AttributeInstance speed = pEntity.getAttribute(Attributes.MOVEMENT_SPEED);
 
             if(act==0&&move==0&&armor==0&&health==0) {
-                healthAt.removeModifier(uuids[0]);
-                actAt.removeModifier(uuids[1]);
-                armorAt.removeModifier(uuids[2]);
-                speed.removeModifier(uuids[3]);
+                healthAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health"));
+                actAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack"));
+                armorAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor"));
+                speed.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "speed"));
                 isDishEffectOn = false;
             }else {
                 if(isDishEffectOn){
-                    healthAt.removeModifier(uuids[0]);
-                    actAt.removeModifier(uuids[1]);
-                    armorAt.removeModifier(uuids[2]);
-                    speed.removeModifier(uuids[3]);
+                    healthAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health"));
+                    actAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack"));
+                    armorAt.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor"));
+                    speed.removeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "speed"));
 
                     healthAt.addPermanentModifier(healthAttribute);
                     actAt.addPermanentModifier(attackAttribute);

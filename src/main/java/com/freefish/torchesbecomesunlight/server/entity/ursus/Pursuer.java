@@ -1720,7 +1720,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     }
 
     public void addCollapsalEffect(LivingEntity livingEntity,int time,int amplifier){
-        MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+        MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL);
         int addTime = 0;
         int addAmplifier = 0;
 

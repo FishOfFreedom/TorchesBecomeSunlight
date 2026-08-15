@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogueentity;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.StartDialogueMessage;
@@ -313,7 +314,7 @@ public class DialogueEntity extends Entity implements IEntityWithComplexSpawn {
 
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void writeSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeNbt(allDialogue.serializeNBT());
 
         CompoundTag entities = new CompoundTag();
@@ -340,7 +341,7 @@ public class DialogueEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void readSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag compoundTag = friendlyByteBuf.readNbt();
         Dialogue dialogue1 = new Dialogue();
         dialogue1.deserializeNBT(compoundTag);

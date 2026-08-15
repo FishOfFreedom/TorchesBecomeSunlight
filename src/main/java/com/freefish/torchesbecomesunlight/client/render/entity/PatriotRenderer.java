@@ -56,7 +56,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         //PoseStack poseStack1 = new PoseStack();
         //poseStack1.translate(vector4f.x,vector4f.y,vector4f.z);
         //Matrix4f matrix4f = poseStack1.last().pose();
-        //Matrix3f matrix3f = matrixstack$entry.normal();
+        //
         //VertexConsumer ivertexbuilder = bufferSource.getBuffer(FFRenderTypes.HOLE);
         //float alpha = 0;
         //Player player = Minecraft.getInstance().player;
@@ -106,10 +106,10 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
             Matrix3f matrix3f = posestack$pose.normal();
-            vertexconsumer.addVertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
-            vertexconsumer.addVertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrixstack$entry, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }

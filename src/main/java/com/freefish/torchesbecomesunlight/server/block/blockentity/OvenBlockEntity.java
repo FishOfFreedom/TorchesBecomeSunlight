@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenMenu;
 import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
@@ -77,8 +78,8 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         inventory.deserializeNBT(compound.getCompound("Inventory"));
         cookTime = compound.getInt("CookTime");
         cookTimeTotal = compound.getInt("CookTimeTotal");
@@ -93,8 +94,8 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putInt("CookTime", cookTime);
         compound.putInt("CookTimeTotal", cookTimeTotal);
         compound.put("Container", mealContainerStack.serializeNBT());
@@ -108,7 +109,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private CompoundTag writeItems(CompoundTag compound) {
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, registries);
         compound.put("Container", mealContainerStack.serializeNBT());
         compound.put("Inventory", inventory.serializeNBT());
         return compound;

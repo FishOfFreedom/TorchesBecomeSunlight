@@ -161,7 +161,7 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 ### 进行中：Java 代码
 
-编译错误从 **3518 降到 1440**（591 个文件里受影响的从 379 降到 260；`net.minecraftforge` 残留仅剩 8 个文件）。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
+编译错误从 **3518 降到 1323**（591 个文件里受影响的从 379 降到 252；`net.minecraftforge` 残留仅剩 8 个文件）。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
 
 **方法论**：所有批量改写都基于**从 jar 里提取的真实类索引**自动生成映射，不靠记忆猜包名 —— 解压 `neoforge-21.1.242-universal.jar` / `geckolib-*.jar` 建立 `简单名 → 全限定名` 索引，再比对项目里的 import；MC 侧的成员名和方法签名一律用 1.21.1 官方 mappings（`piston-meta` 下载的 `client.txt`）核对。改名类**必须同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
 

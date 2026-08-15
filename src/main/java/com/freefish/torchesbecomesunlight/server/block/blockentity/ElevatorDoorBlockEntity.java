@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.block.ElevatorDoorBlock;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.Door;
@@ -90,8 +91,8 @@ public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements Ge
         }
     }
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
     }
 
     @Override

@@ -81,7 +81,7 @@ public class DemonHoleParticle extends Particle {
         VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(FFRenderTypes.getGlowingEffect(HOLE));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
-        Matrix3f matrix3f = posestack$pose.normal();
+        
 
         Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1, -1.0F, 0), new Vector3f(-1, 1.0F, 0), new Vector3f(1, 1.0F, 0), new Vector3f(1, -1.0F, 0)};
         float f4 = 0.5F;
@@ -100,10 +100,10 @@ public class DemonHoleParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        portalStatic.addVertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(matrix3f, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
 
         multibuffersource$buffersource.endBatch();
     }

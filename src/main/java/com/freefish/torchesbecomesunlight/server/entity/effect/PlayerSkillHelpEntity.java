@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.rosmontislib.client.particle.advance.base.beam.RLBeamParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.number.color.Gradient;
@@ -154,7 +155,7 @@ public class PlayerSkillHelpEntity extends EffectEntity implements IEntityWithCo
 
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeInt(type1);
         buffer.writeDouble(reVec3.x);
         buffer.writeDouble(reVec3.y);
@@ -168,7 +169,7 @@ public class PlayerSkillHelpEntity extends EffectEntity implements IEntityWithCo
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         type1 = additionalData.readInt();
         reVec3 = new Vec3(additionalData.readDouble(),additionalData.readDouble(),additionalData.readDouble());
 

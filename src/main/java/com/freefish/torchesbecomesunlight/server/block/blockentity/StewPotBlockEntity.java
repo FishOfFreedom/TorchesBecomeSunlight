@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
@@ -99,8 +100,8 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         inventory.deserializeNBT(compound.getCompound("Inventory"));
         cookTime = compound.getInt("CookTime");
         cookTimeTotal = compound.getInt("CookTimeTotal");
@@ -115,8 +116,8 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putInt("CookTime", cookTime);
         compound.putInt("CookTimeTotal", cookTimeTotal);
         compound.put("Container", mealContainerStack.serializeNBT());
@@ -130,7 +131,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
     }
 
     private CompoundTag writeItems(CompoundTag compound) {
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, registries);
         compound.put("Container", mealContainerStack.serializeNBT());
         compound.put("Inventory", inventory.serializeNBT());
         return compound;

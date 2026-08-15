@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.client.sound.BossMusicPlayer;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
@@ -43,14 +45,14 @@ public abstract class FreeFishEntity extends PathfinderMob {
             AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue() * getCombatConfig().healthMultiplier.get() - maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier(HEALTH_CONFIG_MODIFIER_UUID, "Health config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 this.setHealth(this.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * getCombatConfig().attackMultiplier.get() - attackDamageAttr.getBaseValue();
-                attackDamageAttr.addTransientModifier(new AttributeModifier(ATTACK_CONFIG_MODIFIER_UUID, "Attack config multiplier", difference, AttributeModifier.Operation.ADD_VALUE));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }

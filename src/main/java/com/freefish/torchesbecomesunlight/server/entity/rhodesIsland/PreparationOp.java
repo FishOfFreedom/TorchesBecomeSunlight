@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.rhodesIsland;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFLookAtPlayerTotherGoal;
@@ -115,7 +116,7 @@ public class PreparationOp extends RhodesIslandEntity implements IDialogueEntity
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
         BlockPos spawnPos = getSpawnPos();
         if(spawnPos!=null){
@@ -125,7 +126,7 @@ public class PreparationOp extends RhodesIslandEntity implements IDialogueEntity
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
             init(NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));

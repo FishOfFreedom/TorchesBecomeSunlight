@@ -33,7 +33,7 @@ public class MixinGuiGraphics {
             this.pose.pushPose();
             LocalPlayer localplayer = this.minecraft.player;
             if(localplayer!=null) {
-                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
+                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL);
 
                 float f = 1;
                 if (effect != null && localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
@@ -53,7 +53,7 @@ public class MixinGuiGraphics {
         if (!pStack.isEmpty()) {
             LocalPlayer localplayer = this.minecraft.player;
             if(localplayer!=null) {
-                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL.get());
+                MobEffectInstance effect = localplayer.getEffect(EffectHandle.COLLAPSAL);
                 if (effect != null && localplayer.getCooldowns().isOnCooldown(pStack.getItem())) {
                     info.cancel();
                 }

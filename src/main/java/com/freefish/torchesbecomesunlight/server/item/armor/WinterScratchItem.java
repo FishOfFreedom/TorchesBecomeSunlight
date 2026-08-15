@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.armor;
 
+import net.minecraft.core.Holder;
 import com.freefish.torchesbecomesunlight.client.render.Item.WinterScratchRenderer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ import java.util.function.Consumer;
 public final class WinterScratchItem extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public WinterScratchItem(ArmorMaterial armorMaterial, Type type, Properties properties) {
+    public WinterScratchItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties) {
         super(armorMaterial, type, properties);
     }
 

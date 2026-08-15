@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.cuttingborad.CuttingBoardMenu;
 import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
@@ -72,8 +73,8 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         inventory.deserializeNBT(compound.getCompound("Inventory"));
         mealContainerStack = ItemStack.of(compound.getCompound("Container"));
         if (compound.contains("CustomName", 8)) {
@@ -86,8 +87,8 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.put("Container", mealContainerStack.serializeNBT());
         if (customName != null) {
             compound.putString("CustomName", Component.Serializer.toJson(customName));
@@ -99,7 +100,7 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     }
 
     private CompoundTag writeItems(CompoundTag compound) {
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, registries);
         compound.put("Container", mealContainerStack.serializeNBT());
         compound.put("Inventory", inventory.serializeNBT());
         return compound;
