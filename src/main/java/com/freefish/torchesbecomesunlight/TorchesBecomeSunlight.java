@@ -76,8 +76,6 @@ public class TorchesBecomeSunlight
     {
         GeckoLibUtil.addCustomBakedModelFactory(MOD_ID, new MowzieModelFactory());
         GeckoLibUtil.addCustomEasingType("custom_step",value -> EasingType.easeIn((d)->1));
-        GeckoLib.initialize();
-
         // DistExecutor 在 1.21.1 已被移除，改用 FMLEnvironment.dist 判断
         PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
 
@@ -100,7 +98,7 @@ public class TorchesBecomeSunlight
         MenuHandle.register(bus);
         TBSAttachments.ATTACHMENT_TYPES.register(bus);
 
-        PROXY.init(bus);
+        PROXY.init(bus, container);
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
         bus.addListener(this::onModConfigEvent);

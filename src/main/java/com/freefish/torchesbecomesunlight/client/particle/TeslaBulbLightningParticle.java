@@ -51,7 +51,7 @@ public class TeslaBulbLightningParticle extends Particle {
     }
 
     private boolean canSeeBlock(Vec3 from, Vec3 to) {
-        BlockHitResult result = this.level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null));
+        BlockHitResult result = this.level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, (net.minecraft.world.entity.Entity) null));
         return Vec3.atCenterOf(result.getBlockPos()).distanceTo(to) < 3.0F;
     }
 

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.StewPotBlockEntity;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.StewPotEnum;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
@@ -36,6 +37,13 @@ public class StewPotBlock extends BaseEntityBlock {
         this.registerDefaultState(this.defaultBlockState().setValue(STEW_POT_ENUM_PROPERTY, StewPotEnum.Firewood_1));
     }
 
+    public static final MapCodec<StewPotBlock> CODEC = simpleCodec(StewPotBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(STEW_POT_ENUM_PROPERTY);
@@ -64,7 +72,7 @@ public class StewPotBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             StewPotEnum value = pState.getValue(STEW_POT_ENUM_PROPERTY);
             ItemStack mainHandItem = pPlayer.getMainHandItem();

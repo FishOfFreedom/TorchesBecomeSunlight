@@ -46,7 +46,7 @@ public class VillagerHeadLayer<T extends UrsusVillager> extends GeoRenderLayer<T
         }
 
         RenderType glowRenderType = FFRenderTypes.armorCutoutNoCull(headTexture);
-        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, packedOverlay, 1, 1, 1, 1);
+        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, packedOverlay, 0xFFFFFFFF);
         super.render(poseStack, animatable, bakedModel, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
     }
 }

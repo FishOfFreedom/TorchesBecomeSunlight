@@ -642,7 +642,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
             else {
                 Vec3 move = entity.getSVec();
                 if(move!=null) {
-                    entity.setDeltaMovement(move.x,-entity.getAttributeValue(NeoForgeMod.ENTITY_GRAVITY.get()) * 5.0F,move.z);
+                    entity.setDeltaMovement(move.x,-entity.getAttributeValue(Attributes.GRAVITY) * 5.0F,move.z);
                 }
                 if(tick%2==0){
                     entity.setSVec(move.yRot(move.y>0?-0.35f:0.35f));
@@ -1728,7 +1728,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
             addAmplifier = effect.getAmplifier()+1;
             addTime = effect.getDuration();
         }
-        livingEntity.addEffect(new MobEffectInstance(EffectHandle.COLLAPSAL.get(),addTime+time,Math.min(4,amplifier+addAmplifier)));
+        livingEntity.addEffect(new MobEffectInstance(EffectHandle.COLLAPSAL,addTime+time,Math.min(4,amplifier+addAmplifier)));
     }
 
     @Override

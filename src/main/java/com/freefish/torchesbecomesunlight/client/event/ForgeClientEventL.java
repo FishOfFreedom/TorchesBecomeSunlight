@@ -69,7 +69,7 @@ public enum ForgeClientEventL {
                     GeckoFirstPersonRenderer firstPersonRenderer = (GeckoFirstPersonRenderer) geckoPlayer.getPlayerRenderer();
 
                     if (geckoFirstPersonModel != null && firstPersonRenderer != null) {
-                        if (!geckoFirstPersonModel.isUsingSmallArms() && ((AbstractClientPlayer) player).getModelName().equals("slim")) {
+                        if (!geckoFirstPersonModel.isUsingSmallArms() && ((AbstractClientPlayer) player).getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM) {
                             firstPersonRenderer.setSmallArms();
                         }
                         event.setCanceled(true);
@@ -239,7 +239,7 @@ public enum ForgeClientEventL {
     public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         if (event.isCanceled()) return;
 
-        double scrollAmount = event.getScrollDelta();
+        double scrollAmount = event.getScrollDeltaY();
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
@@ -291,7 +291,7 @@ public enum ForgeClientEventL {
     @SubscribeEvent
     public void onSetupCamera(ViewportEvent.ComputeCameraAngles event) {
         Player player = Minecraft.getInstance().player;
-        float delta = Minecraft.getInstance().getFrameTime();
+        float delta = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         float ticksExistedDelta = player.tickCount + delta;
         if (player != null) {
             float shakeAmplitude = 0;

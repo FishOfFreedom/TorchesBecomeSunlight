@@ -36,29 +36,29 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
 
         VertexConsumer portalStatic = bufferSource.getBuffer(FFRenderTypes.getGlowingEffect(TEXTURE[entity.tickCount%7]));
         PoseStack posestack = new PoseStack();
-        PoseStack.Pose posestack$pose = posestack.last();
+        PoseStack.Pose identityPose = posestack.last();
         
 
         float scale =Math.min(1,(partialTick+entity.tickCount)/10);
         float len1 = 1.5f*scale;
         float len2 = 2.5f*scale;
-        renderFire(-len1,-len2,len1,-len2,portalStatic,posestack$pose,scale);
-        renderFire(len1,-len2,len1,-len1,portalStatic,posestack$pose,scale);
-        renderFire(len1,-len1,len2,-len1,portalStatic,posestack$pose,scale);
-        renderFire(len2,-len1,len2,len1,portalStatic,posestack$pose,scale);
-        renderFire(len2,len1,len1,len1,portalStatic,posestack$pose,scale);
-        renderFire(len1,len1,len1,len2,portalStatic,posestack$pose,scale);
-        renderFire(len1,len2,-len1,len2,portalStatic,posestack$pose,scale);
-        renderFire(-len1,len2,-len1,len1,portalStatic,posestack$pose,scale);
-        renderFire(-len1,len1,-len2,len1,portalStatic,posestack$pose,scale);
-        renderFire(-len2,len1,-len2,-len1,portalStatic,posestack$pose,scale);
-        renderFire(-len2,-len1,-len1,-len1,portalStatic,posestack$pose,scale);
-        renderFire(-len1,-len1,-len1,-len2,portalStatic,posestack$pose,scale);
+        renderFire(-len1,-len2,len1,-len2,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len1,-len2,len1,-len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len1,-len1,len2,-len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len2,-len1,len2,len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len2,len1,len1,len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len1,len1,len1,len2,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(len1,len2,-len1,len2,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(-len1,len2,-len1,len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(-len1,len1,-len2,len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(-len2,len1,-len2,-len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(-len2,-len1,-len1,-len1,portalStatic,posestack$pose,identityPose,scale);
+        renderFire(-len1,-len1,-len1,-len2,portalStatic,posestack$pose,identityPose,scale);
 
         poseStack.popPose();
     }
 
-    private void renderFire(float x1,float z1,float x2 , float z2,VertexConsumer portalStatic,PoseStack.Pose posestack$pose,float alpha){
+    private void renderFire(float x1,float z1,float x2 , float z2,VertexConsumer portalStatic,PoseStack.Pose posestack$pose,PoseStack.Pose normalPose,float alpha){
         float f8 = 1;
         float f5 = 0;
         float f6 = 1;
@@ -66,7 +66,7 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
 
         float offX = x2  - x1;
         float offZ = z2  - z1;
-        float len = Math.sqrt(offX*offX+offZ*offZ);
+        float len = (float) Math.sqrt(offX*offX+offZ*offZ);
         int count = 0;
         float v = offX / len;
         float v1 = offZ / len;
@@ -74,10 +74,10 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         while (len>0){
             float finalLen = Math.min(1f,len);
 
-            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 0F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 1F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 1F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 0F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 0F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(normalPose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 1F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(normalPose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 1F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(normalPose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 0F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(normalPose, 0.0F, -1.0F, 0.0F);
 
             count+=1;
             len-=1;

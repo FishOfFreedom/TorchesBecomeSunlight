@@ -53,10 +53,10 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
-    public void onAddedToWorld() {
+    public void onAddedToLevel() {
         if (getDeltaMovement().x() > 0 || getDeltaMovement().z() > 0) setYRot((float) ((180f/Math.PI) * Math.atan2(getDeltaMovement().x(), getDeltaMovement().z())));
         setXRot(getXRot() + random.nextFloat() * 360);
-        super.onAddedToWorld();
+        super.onAddedToLevel();
     }
 
     @Override

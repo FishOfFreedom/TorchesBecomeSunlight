@@ -1,17 +1,17 @@
 package com.freefish.torchesbecomesunlight.server.util;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.Objects;
 
 public class TBSJsonUtils {
-    public static MobEffect getMobEffects(String effectName)
-    {
+    /**
+     * 1.21 起 MobEffectInstance 只接受 Holder&lt;MobEffect&gt;，故这里直接返回 Holder。
+     */
+    public static Holder<MobEffect> getMobEffects(String effectName) {
         ResourceLocation itemKey = ResourceLocation.parse(effectName);
-        MobEffect item = BuiltInRegistries.MOB_EFFECT.getValue(itemKey);
-        return Objects.requireNonNull(item);
+        return BuiltInRegistries.MOB_EFFECT.getHolder(itemKey)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown mob effect: " + effectName));
     }
 }

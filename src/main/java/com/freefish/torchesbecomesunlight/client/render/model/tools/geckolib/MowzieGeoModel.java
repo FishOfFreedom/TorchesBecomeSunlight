@@ -39,9 +39,9 @@ public abstract class MowzieGeoModel<T extends GeoAnimatable> extends GeoModel<T
     }
 
     @Override
-    public void applyMolangQueries(T animatable, double animTime) {
+    public void applyMolangQueries(AnimationState<T> animationState, double animTime) {
         getAnimationProcessor().getRegisteredBones().forEach(this::resetBoneToSnapshot);
-        super.applyMolangQueries(animatable, animTime);
+        super.applyMolangQueries(animationState, animTime);
     }
 
     public void codeAnimations(T entity, Integer uniqueID, AnimationState<?> customPredicate) {

@@ -70,7 +70,7 @@ public class StompEntity extends Entity implements IEntityWithComplexSpawn {
         if (tick <= continueTime){
             int hitY = Mth.floor(this.getBoundingBox().minY - 0.5);
             if (tick == 1) {
-                this.playSound(SoundEvents.GENERIC_EXPLODE, 2, 1F + this.random.nextFloat() * 0.1F);
+                this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2, 1F + this.random.nextFloat() * 0.1F);
                 EntityCameraShake.cameraShake(world, this.position(), 25, 0.1f, 0, 20);
             }
             if (tick % 2 == 0) {

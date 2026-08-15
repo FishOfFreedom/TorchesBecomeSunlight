@@ -425,7 +425,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
             if(tick == 11){
                 List<GuerrillasEntity> entitiesNearby = entity.level().getEntitiesOfClass(GuerrillasEntity.class, entity.getBoundingBox().inflate(12));
                 for(GuerrillasEntity guerrilla:entitiesNearby){
-                    guerrilla.addEffect(new MobEffectInstance(EffectHandle.SONG_OF_GUERRILLA.get(),400,1));
+                    guerrilla.addEffect(new MobEffectInstance(EffectHandle.SONG_OF_GUERRILLA,400,1));
                 }
             }
         }
@@ -459,7 +459,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
                 StompEntity stompEntity = new StompEntity(entity.level(),8,entity,3);
                 stompEntity.setPos(entity.position().add(new Vec3(0, 0, 5.5).yRot((float) (-entity.yBodyRot / 180 * Math.PI))));
                 entity.level().addFreshEntity(stompEntity);
-                entity.addEffect(new MobEffectInstance(EffectHandle.WINDIGO.get()));
+                entity.addEffect(new MobEffectInstance(EffectHandle.WINDIGO));
             }
             if(tick == 6) entity.isCanBeAttacking = true;
             else if(tick == 50) entity.isCanBeAttacking = false;

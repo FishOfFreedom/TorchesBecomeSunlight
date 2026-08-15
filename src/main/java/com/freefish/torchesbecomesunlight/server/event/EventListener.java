@@ -42,6 +42,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import com.freefish.torchesbecomesunlight.server.effect.FullOfEnergyEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -64,6 +65,20 @@ import net.neoforged.bus.api.SubscribeEvent;
 import java.util.Set;
 
 public final class EventListener {
+    /**
+     * 1.21 的 MobEffect#removeAttributeModifiers(AttributeMap) 已不带 LivingEntity，
+     * 原先写在 FullOfEnergyEffect 里的冻结状态复位改到这里，行为等价。
+     */
+    @SubscribeEvent
+    public void onEffectEnd(MobEffectEvent event) {
+        if (!(event instanceof MobEffectEvent.Expired) && !(event instanceof MobEffectEvent.Remove)) return;
+        MobEffectInstance instance = event.getEffectInstance();
+        if (instance == null || !instance.is(EffectHandle.FULL_OF_ENERGY)) return;
+        if (EffectHandle.FULL_OF_ENERGY.get() instanceof FullOfEnergyEffect effect) {
+            effect.resetFrozenState(event.getEntity());
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public void spawnEntityLimit(FinalizeSpawnEvent event){
         Mob entity = event.getEntity();
@@ -185,7 +200,7 @@ public final class EventListener {
         if(entity instanceof Mob mob){
             Partner<?> partner = PartnerUtil.getPartner(mob);
             if(partner!=null){
-                if(partner.getPlayer() == event.getNewTarget()){
+                if(partner.getPlayer() == event.getNewAboutToBeSetTarget()){
                     event.setCanceled(true);
                     return;
                 }
@@ -424,7 +439,7 @@ public final class EventListener {
     @SubscribeEvent
     public void onAdvancementEarned(AdvancementEvent.AdvancementEarnEvent event) {
         Player player = event.getEntity();
-        ResourceLocation advancementId = event.getAdvancement().getId();
+        ResourceLocation advancementId = event.getAdvancement().id();
 
         if (player instanceof ServerPlayer) TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.trigger((ServerPlayer)player,advancementId);
     }

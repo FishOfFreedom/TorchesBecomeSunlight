@@ -206,7 +206,7 @@ public abstract class GeckoPlayer implements GeoEntity {
 		}
 
 		public boolean isPlayerSlim() {
-			return ((AbstractClientPlayer) getPlayer()).getModelName().equals("slim");
+			return ((AbstractClientPlayer) getPlayer()).getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM;
 		}
 
 		@Override

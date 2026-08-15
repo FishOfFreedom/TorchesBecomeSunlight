@@ -45,7 +45,7 @@ public class PulsatingGlowLayer<T extends LivingEntity & GeoEntity> extends GeoR
         {
             RenderType glowRenderType = FFRenderTypes.eyes(textureLocation);
             float glow = Math.max(minimumPulseAmount, Mth.cos(partialTick * pulseSpeed) * pulseAmount);
-            getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, glow, glow, glow, glow);
+            getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(glow, glow, glow, glow));
         }
     }
 }

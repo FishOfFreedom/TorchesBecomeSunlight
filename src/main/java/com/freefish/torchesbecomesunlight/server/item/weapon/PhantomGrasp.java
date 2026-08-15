@@ -99,7 +99,7 @@ public class PhantomGrasp extends PickaxeItem implements GeoItem {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
         if (pHand != InteractionHand.MAIN_HAND) {
             return InteractionResultHolder.fail(itemstack);
-        } else if (EnchantmentHelper.getRiptide(itemstack) > 0 && !pPlayer.isInWaterOrRain()) {
+        } else if (EnchantmentHelper.getTridentSpinAttackStrength(itemstack, pPlayer) > 0 && !pPlayer.isInWaterOrRain()) {
             return InteractionResultHolder.fail(itemstack);
         }else  {
             pPlayer.startUsingItem(pHand);

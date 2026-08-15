@@ -153,10 +153,10 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
                 }
             }
             return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, itemstack);
-        } else if (EnchantmentHelper.getRiptide(itemstack) > 0 && !pPlayer.isInWaterOrRain()) {
+        } else if (EnchantmentHelper.getTridentSpinAttackStrength(itemstack, pPlayer) > 0 && !pPlayer.isInWaterOrRain()) {
             return InteractionResultHolder.fail(itemstack);
         }else  {
-            int i = this.getUseDuration(itemstack, pLivingEntity) - pPlayer.getUseItemRemainingTicks();
+            int i = this.getUseDuration(itemstack, pPlayer) - pPlayer.getUseItemRemainingTicks();
             CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
             orCreateTag.putBoolean("tbsisActive", true);
             TBSItemData.setTag(itemstack, orCreateTag);

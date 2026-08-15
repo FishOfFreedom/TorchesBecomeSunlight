@@ -113,7 +113,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
             });
 
-            playSound(SoundEvents.GENERIC_EXPLODE, 3, 1F + random.nextFloat() * 0.1F);
+            playSound(SoundEvents.GENERIC_EXPLODE.value(), 3, 1F + random.nextFloat() * 0.1F);
             for(int j = 0;j<6;j++) {
                 for (int i = 0; i < 6; i++) {
                     if(random.nextBoolean()) {

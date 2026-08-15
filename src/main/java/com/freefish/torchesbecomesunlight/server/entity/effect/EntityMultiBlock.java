@@ -51,8 +51,8 @@ public abstract class EntityMultiBlock extends Entity implements IEntityWithComp
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
     }
 
     @Override

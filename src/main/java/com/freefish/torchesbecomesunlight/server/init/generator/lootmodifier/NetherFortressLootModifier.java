@@ -43,7 +43,7 @@ public class NetherFortressLootModifier extends LootModifier {
 
     public static final MapCodec<NetherFortressLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
-            BuiltInRegistries.ITEM.getCodec().fieldOf("item").forGetter(modifier -> modifier.item),
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(modifier -> modifier.item),
             Codec.FLOAT.fieldOf("probability").forGetter(modifier -> modifier.probability)
     ).apply(instance, NetherFortressLootModifier::new));
 

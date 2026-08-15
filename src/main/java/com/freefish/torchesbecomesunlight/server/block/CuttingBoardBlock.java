@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.CuttingBoradBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import net.minecraft.core.BlockPos;
@@ -33,6 +34,13 @@ public class CuttingBoardBlock extends BaseEntityBlock{
     public CuttingBoardBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(EIGHT_DIRECTION, Direction.NORTH));
+    }
+
+    public static final MapCodec<CuttingBoardBlock> CODEC = simpleCodec(CuttingBoardBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -72,7 +80,7 @@ public class CuttingBoardBlock extends BaseEntityBlock{
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof CuttingBoradBlockEntity) {

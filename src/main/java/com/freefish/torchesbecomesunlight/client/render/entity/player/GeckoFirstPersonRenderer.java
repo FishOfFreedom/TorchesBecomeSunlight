@@ -76,11 +76,11 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
             long instanceId = getInstanceId(geckoPlayer);
 
             AnimatableManager<GeckoPlayer> animatableManager = geckoPlayer.getAnimatableInstanceCache().getManagerForId(instanceId);
-            animationState.setData(DataTickets.TICK, geckoPlayer.getTick(geckoPlayer) + animatableManager.getFirstTickTime() +  + Minecraft.getInstance().getFrameTime());
+            animationState.setData(DataTickets.TICK, geckoPlayer.getTick(geckoPlayer) + animatableManager.getFirstTickTime() +  + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
             AbstractClientPlayer entity = (AbstractClientPlayer) geckoPlayer.getPlayer();
             animationState.setData(DataTickets.ENTITY, entity);
             this.geoModel.addAdditionalStateData(geckoPlayer, instanceId, animationState::setData);
-            this.geoModel.handleAnimations(geckoPlayer, instanceId, animationState);
+            this.geoModel.handleAnimations(geckoPlayer, instanceId, animationState, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
 
             RenderType rendertype = RenderType.itemEntityTranslucentCull(getTextureLocation(geckoPlayer));
             VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
@@ -166,7 +166,7 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
 
     @Override
     public ResourceLocation getTextureLocation(GeckoPlayer geckoPlayer) {
-        return ((AbstractClientPlayer)geckoPlayer.getPlayer()).getSkinTextureLocation();
+        return ((AbstractClientPlayer)geckoPlayer.getPlayer()).getSkin().texture();
     }
 
     @Override

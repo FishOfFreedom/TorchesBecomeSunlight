@@ -145,8 +145,8 @@ public class VerticalSlabBlock extends Block implements SimpleWaterloggedBlock {
         ((com.freefish.torchesbecomesunlight.mixin.accessor.BlockBehaviourAccessor) this.base).callTick(p_222513_, p_222514_, p_222515_, p_222516_);
     }
 
-    public InteractionResult use(BlockState p_56901_, Level p_56902_, BlockPos p_56903_, Player p_56904_, InteractionHand p_56905_, BlockHitResult p_56906_) {
-        return this.baseState.use(p_56902_, p_56904_, p_56905_, p_56906_);
+    protected InteractionResult useWithoutItem(BlockState p_56901_, Level p_56902_, BlockPos p_56903_, Player p_56904_, BlockHitResult p_56906_) {
+        return this.baseState.useWithoutItem(p_56902_, p_56904_, p_56906_);
     }
 
     public void wasExploded(Level p_56878_, BlockPos p_56879_, Explosion p_56880_) {

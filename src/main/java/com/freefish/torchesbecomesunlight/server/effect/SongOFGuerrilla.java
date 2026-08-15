@@ -1,8 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.effect;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -10,13 +11,18 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class SongOFGuerrilla extends MobEffect {
     public SongOFGuerrilla() {
         super(MobEffectCategory.BENEFICIAL, 9643043);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, "7107DE5E-7CE8-8677-940E-514C1F160890", (double)0.2F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-        addAttributeModifier(Attributes.ARMOR, "7107DE5E-7CE8-3474-940E-514C1F160890", (double)0.2F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        // 1.21 起属性修饰符以 ResourceLocation 而非 UUID 标识
+        addAttributeModifier(Attributes.ATTACK_DAMAGE,
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "effect.song_of_guerrilla.attack_damage"),
+                0.2F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ARMOR,
+                ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "effect.song_of_guerrilla.armor"),
+                0.2F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     @Override
-    public void addAttributeModifiers(LivingEntity pLivingEntity, AttributeMap pAttributeMap, int pAmplifier) {
-        super.addAttributeModifiers(pLivingEntity, pAttributeMap, pAmplifier);
+    public void addAttributeModifiers(AttributeMap pAttributeMap, int pAmplifier) {
+        super.addAttributeModifiers(pAttributeMap, pAmplifier);
     }
 
     @Override

@@ -320,7 +320,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         int k = entity.getRemainingFireTicks();
         if (this.isOnFire()) {
-            entity.setSecondsOnFire(5);
+            entity.igniteForSeconds(5);
         }
 
         if (entity.hurt(damagesource, (float)i)) {

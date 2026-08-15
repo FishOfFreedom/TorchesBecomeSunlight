@@ -69,6 +69,6 @@ public class ModelGeckoPlayerFirstPerson extends MowzieGeoModel<GeckoPlayer> {
 	}
 
 	public void setTextureFromPlayer(AbstractClientPlayer player) {
-		this.textureLocation = player.getSkinTextureLocation();
+		this.textureLocation = player.getSkin().texture();
 	}
 }

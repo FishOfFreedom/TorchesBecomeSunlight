@@ -213,8 +213,10 @@ public class PlayerCapability {
             if(hookPlayerClick!=null){
                 if(hookPlayerClick.isLocalPlayerLooked){
                     hookPlayerClick.click(player);
-                    if (!(event instanceof PlayerInteractEvent.LeftClickEmpty)) {
-                        event.setCanceled(true);
+                    // NeoForge 把可取消性下放到了具体子事件（LeftClickEmpty 本就不可取消）
+                    if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable
+                            && !(event instanceof PlayerInteractEvent.LeftClickEmpty)) {
+                        cancellable.setCanceled(true);
                     }
                     hookPlayerClick = null;
                 }

@@ -7,7 +7,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -144,7 +143,7 @@ public class FoodValuesDefinition implements Recipe<RecipeInput> {
         }));
         allDefs.stream().filter(def -> !def.value().isItem()).forEach(tagDef -> tagDef.value().getNames().forEach(name -> {
             var tag = ItemTags.create(name);
-            if (BuiltInRegistries.ITEM.tags().isKnownTagName(tag)) {
+            if (BuiltInRegistries.ITEM.getTag(tag).isPresent()) {
                 // get all items with the tag
                 var tagIngredient = new Ingredient.TagValue(tag);
                 tagIngredient.getItems().forEach(stack -> {
@@ -180,7 +179,7 @@ public class FoodValuesDefinition implements Recipe<RecipeInput> {
                         d -> d.isItem() ? List.of() : List.copyOf(d.getNames())),
                 Codec.unboundedMap(Codec.STRING, Codec.FLOAT).fieldOf("values").forGetter(
                         d -> d.getFoodValues().toValueMap()),
-                MobEffectInstance.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(
+                FoodValues.MobEffectInstance.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(
                         d -> List.copyOf(d.getFoodValues().getEffects()))
         ).apply(inst, (items, tags, values, effects) -> new FoodValuesDefinition(
                 items.isEmpty() ? Set.copyOf(tags) : Set.copyOf(items),

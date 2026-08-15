@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.ElevatorDoorBlockEntity;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.Door;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
@@ -30,6 +31,13 @@ public class ElevatorDoorBlock extends BaseEntityBlock {
     public ElevatorDoorBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(DOOR_ENUM_PROPERTY, Door.CLOSE_R));
+    }
+
+    public static final MapCodec<ElevatorDoorBlock> CODEC = simpleCodec(ElevatorDoorBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override

@@ -10,7 +10,10 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -240,14 +243,31 @@ public class FoodValues {
     }
 
     public static class MobEffectInstance implements ITagSerializable<CompoundTag> {
-        public MobEffect mobEffect;
+        /** 1.21 的配方序列化统一走 Codec，故这里也补一份 */
+        public static final Codec<MobEffectInstance> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(i -> i.mobEffect),
+                Codec.INT.fieldOf("time").forGetter(i -> i.time),
+                Codec.INT.fieldOf("level").forGetter(i -> i.level)
+        ).apply(inst, MobEffectInstance::new));
+
+        /** 1.21 起效果实例只接受 Holder */
+        public Holder<MobEffect> mobEffect;
         public int time;
         public int level;
+
+        public MobEffectInstance() {
+        }
+
+        public MobEffectInstance(Holder<MobEffect> mobEffect, int time, int level) {
+            this.mobEffect = mobEffect;
+            this.time = time;
+            this.level = level;
+        }
 
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag compoundTag = new CompoundTag();
-            compoundTag.putString("effect", BuiltInRegistries.MOB_EFFECT.getKey(mobEffect).toString());
+            compoundTag.putString("effect", BuiltInRegistries.MOB_EFFECT.getKey(mobEffect.value()).toString());
             compoundTag.putInt("level",level);
             compoundTag.putInt("time",time);
             return compoundTag;
@@ -276,7 +296,7 @@ public class FoodValues {
 
         @Override
         public String toString() {
-            return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect).toString()+" "+time+" "+level;
+            return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect.value()).toString()+" "+time+" "+level;
         }
     }
 
@@ -294,7 +314,7 @@ public class FoodValues {
 
     /** 供 1.21 的配方 codec 使用：从分类名与效果重建 */
     public static FoodValues fromCodec(java.util.Map<String, Float> values,
-                                       java.util.List<net.minecraft.world.effect.MobEffectInstance> effects) {
+                                       java.util.List<MobEffectInstance> effects) {
         FoodValues fv = create();
         values.forEach((k, v) -> fv.put(FoodCategory.valueOf(k.toUpperCase(java.util.Locale.ROOT)), v));
         fv.getEffects().addAll(effects);

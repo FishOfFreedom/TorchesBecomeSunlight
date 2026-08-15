@@ -38,7 +38,7 @@ public class DemonEye extends Item {
     public Component getName(ItemStack stack) {
         return Component.literal(GLITCH_TEXT)
                 .setStyle(Style.EMPTY
-                        .withColor(TextColor.parseColor("#FF5555")) // 红色
+                        .withColor(TextColor.parseColor("#FF5555").getOrThrow()) // 红色
                         .withObfuscated(true)  // §k 动态乱码效果
                 );
     }

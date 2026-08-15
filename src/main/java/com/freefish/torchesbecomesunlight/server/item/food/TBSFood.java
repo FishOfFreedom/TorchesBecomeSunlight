@@ -21,12 +21,7 @@ import java.util.stream.Collectors;
 
 public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
     public TBSFood(int nutrition,float saturation,int during) {
-        super(new Item.Properties().food((new FoodProperties.Builder()).nutrition(nutrition).saturationModifier(saturation).alwaysEat().build()).durability(during));
-    }
-
-    @Override
-    public boolean isEdible() {
-        return super.isEdible();
+        super(new Item.Properties().food((new FoodProperties.Builder()).nutrition(nutrition).saturationModifier(saturation).alwaysEdible().build()).durability(during));
     }
 
     @Override

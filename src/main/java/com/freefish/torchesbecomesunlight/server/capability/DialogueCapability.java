@@ -53,7 +53,7 @@ public class DialogueCapability {
         }
 
         public void tick(EntityTickEvent.Post event) {
-            LivingEntity entity = event.getEntity();
+            if (!(event.getEntity() instanceof LivingEntity entity)) return;
             Level level = entity.level();
 
             if(entity instanceof IDialogueEntity dialogue){

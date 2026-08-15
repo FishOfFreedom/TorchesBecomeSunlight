@@ -35,6 +35,6 @@ public class TuftGlowLayer extends GeoRenderLayer<IceTuft> {
         float glow = 0f;
 
         if(animatable.tickCount>40) glow = (animatable.tickCount-40)/50f;
-        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, glow, glow, glow, glow);
+        getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(glow, glow, glow, glow));
     }
 }

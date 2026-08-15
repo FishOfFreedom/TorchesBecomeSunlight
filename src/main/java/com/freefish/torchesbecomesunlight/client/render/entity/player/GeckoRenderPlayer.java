@@ -155,7 +155,7 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
         }
         if (rendertype != null) {
             VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
-            defaultRender(matrixStackIn, animatable, bufferIn, rendertype, net.minecraft.util.FastColor.ARGB32.colorFromFloat(packedLightIn, ivertexbuilder, 0, partialTicks));
+            defaultRender(matrixStackIn, animatable, bufferIn, rendertype, ivertexbuilder, 0, partialTicks, packedLightIn);
         }
 
         matrixStackIn.popPose();
@@ -244,11 +244,11 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
             long instanceId = getInstanceId(animatable);
 
             AnimatableManager<GeckoPlayer> animatableManager = animatable.getAnimatableInstanceCache().getManagerForId(instanceId);
-            animationState.setData(DataTickets.TICK, animatable.getTick(animatable) + animatableManager.getFirstTickTime() + Minecraft.getInstance().getFrameTime());
+            animationState.setData(DataTickets.TICK, animatable.getTick(animatable) + animatableManager.getFirstTickTime() + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
             animationState.setData(DataTickets.ENTITY, entity);
             animationState.setData(DataTickets.ENTITY_MODEL_DATA, new EntityModelData(shouldSit, entity.isBaby(), -f2_netHeadYaw, -headPitch));
             this.getGeckoModel().addAdditionalStateData(animatable, instanceId, animationState::setData);
-            this.getGeckoModel().handleAnimations(animatable, instanceId, animationState);
+            this.getGeckoModel().handleAnimations(animatable, instanceId, animationState, partialTick);
         }
 
         if (this.geoModel.isInitialized()) {
@@ -310,7 +310,7 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
         // NeoForge 用 TriState 取代了 Event.Result，语义不变：显式 DENY 则不渲染，显式 ALLOW 则强制渲染
         if (!renderNameplateEvent.canRender().isFalse()
                 && (renderNameplateEvent.canRender().isTrue() || this.shouldShowName(entityIn))) {
-            this.renderNameTag(entityIn, renderNameplateEvent.getContent(), matrixStackIn, bufferIn, packedLightIn);
+            this.renderNameTag(entityIn, renderNameplateEvent.getContent(), matrixStackIn, bufferIn, packedLightIn, partialTicks);
         }
     }
 
