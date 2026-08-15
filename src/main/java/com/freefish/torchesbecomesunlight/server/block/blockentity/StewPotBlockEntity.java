@@ -16,7 +16,6 @@ import com.freefish.rosmontislib.client.particle.advance.effect.BlockEffect;
 import com.freefish.rosmontislib.client.utils.GradientColor;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.stewpot.StewPotMenu;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.TBSMaterialHandle;
-import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.StewPotBlock;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.StewPotEnum;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
@@ -185,13 +184,12 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            Recipe<RecipeWrapper> recipe = ((RecipeManagerAccessor) level.getRecipeManager())
-                    .getRecipeMap(RecipesHandle.STEW_POT_RECIPE_TYPE.get())
-                    .get(lastRecipeID);
+            RecipeHolder<StewPotRecipe> holder = level.getRecipeManager()
+                    .byKeyTyped(RecipesHandle.STEW_POT_RECIPE_TYPE.get(), lastRecipeID);
             if (holder != null) {
                 StewPotRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {
-                    return Optional.of((StewPotRecipe) recipe);
+                    return Optional.of(recipe);
                 }
                 if (ItemStack.isSameItem(recipe.getResultItem(this.level.registryAccess()), getMeal())) {
                     return Optional.empty();

@@ -1050,7 +1050,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         pCompound.putFloat("targetz",pos.z);
         pCompound.putFloat("second",getSecondHealth());
         pCompound.putInt("state",getState());
-        pCompound.put("menber",teamMemberStorage.serializeNBT());
+        pCompound.put("menber",teamMemberStorage.serializeNBT(registryAccess()));
     }
 
     @Override
@@ -1059,7 +1059,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         setTargetPos(new Vector3f(pCompound.getFloat("targetx"),pCompound.getFloat("targetx"),pCompound.getFloat("targetx")));
         setSecondHealth(pCompound.getFloat("second"));
         this.entityData.set(STATE,pCompound.getInt("state"));
-        teamMemberStorage.deserializeNBT(pCompound.getCompound("menber"));
+        teamMemberStorage.deserializeNBT(registryAccess(), pCompound.getCompound("menber"));
     }
 
     @Override

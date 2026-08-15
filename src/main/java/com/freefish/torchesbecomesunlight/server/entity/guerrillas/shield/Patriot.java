@@ -925,7 +925,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         compound.putFloat("targetPosX",vector3f.x);
         compound.putFloat("targetPosY",vector3f.y);
         compound.putFloat("targetPosZ",vector3f.z);
-        compound.put("menber",teamMemberStorage.serializeNBT());
+        compound.put("menber",teamMemberStorage.serializeNBT(registryAccess()));
     }
 
     @Override
@@ -935,7 +935,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         float y = compound.getFloat("targetPosY");
         float z = compound.getFloat("targetPosZ");
         setTargetPos(new Vec3(x,y,z));
-        teamMemberStorage.deserializeNBT(compound.getCompound("menber"));
+        teamMemberStorage.deserializeNBT(registryAccess(), compound.getCompound("menber"));
     }
 
     @Override

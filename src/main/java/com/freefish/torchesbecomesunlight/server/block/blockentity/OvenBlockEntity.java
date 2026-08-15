@@ -3,7 +3,6 @@ package com.freefish.torchesbecomesunlight.server.block.blockentity;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenMenu;
-import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.*;
@@ -143,13 +142,12 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            Recipe<RecipeWrapper> recipe = ((RecipeManagerAccessor) level.getRecipeManager())
-                    .getRecipeMap(RecipesHandle.OVEN_RECIPE_TYPE.get())
-                    .get(lastRecipeID);
+            RecipeHolder<OvenRecipe> holder = level.getRecipeManager()
+                    .byKeyTyped(RecipesHandle.OVEN_RECIPE_TYPE.get(), lastRecipeID);
             if (holder != null) {
                 OvenRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {
-                    return Optional.of((OvenRecipe) recipe);
+                    return Optional.of(recipe);
                 }
                 if (ItemStack.isSameItem(recipe.getResultItem(this.level.registryAccess()), getMeal())) {
                     return Optional.empty();

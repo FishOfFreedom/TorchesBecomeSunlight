@@ -3,7 +3,6 @@ package com.freefish.torchesbecomesunlight.server.block.blockentity;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.cuttingborad.CuttingBoardMenu;
-import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.*;
@@ -137,13 +136,12 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            Recipe<RecipeWrapper> recipe = ((RecipeManagerAccessor) level.getRecipeManager())
-                    .getRecipeMap(RecipesHandle.CUTTING_BOARD_RECIPE_TYPE.get())
-                    .get(lastRecipeID);
+            RecipeHolder<CuttingBoardRecipe> holder = level.getRecipeManager()
+                    .byKeyTyped(RecipesHandle.CUTTING_BOARD_RECIPE_TYPE.get(), lastRecipeID);
             if (holder != null) {
                 CuttingBoardRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {
-                    return Optional.of((CuttingBoardRecipe) recipe);
+                    return Optional.of(recipe);
                 }
                 if (ItemStack.isSameItem(recipe.getResultItem(this.level.registryAccess()), getMeal())) {
                     return Optional.empty();
