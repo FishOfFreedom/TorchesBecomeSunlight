@@ -287,18 +287,18 @@ public class RosmontisLivingInstallation extends Mob implements GeoEntity {
 
     @Override
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.addEffect(effectInstance, entity);
     }
 
     @Override
     public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
+        if (FFEntityUtils.isBeneficial(effectInstance.getEffect().value()))
             super.forceAddEffect(effectInstance, entity);
     }
 
     @Override
     public boolean canBeAffected(MobEffectInstance effectInstance) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.canBeAffected(effectInstance);
     }
 
     @Override

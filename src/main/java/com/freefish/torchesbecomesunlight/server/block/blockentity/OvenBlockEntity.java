@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenMenu;
 import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
@@ -85,7 +86,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         cookTimeTotal = compound.getInt("CookTimeTotal");
         mealContainerStack = ItemStack.parseOptional(registries, compound.getCompound("Container"));
         if (compound.contains("CustomName", 8)) {
-            customName = Component.Serializer.fromJson(compound.getString("CustomName", registries));
+            customName = Component.Serializer.fromJson(compound.getString("CustomName"), registries);
         }
         CompoundTag compoundRecipes = compound.getCompound("RecipesUsed");
         for (String key : compoundRecipes.getAllKeys()) {
@@ -145,7 +146,8 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
             Recipe<RecipeWrapper> recipe = ((RecipeManagerAccessor) level.getRecipeManager())
                     .getRecipeMap(RecipesHandle.OVEN_RECIPE_TYPE.get())
                     .get(lastRecipeID);
-            if (recipe instanceof OvenRecipe) {
+            if (holder != null) {
+                OvenRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {
                     return Optional.of((OvenRecipe) recipe);
                 }
@@ -156,14 +158,14 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         if (checkNewRecipe) {
-            Optional<OvenRecipe> recipe = level.getRecipeManager().getRecipeFor(RecipesHandle.OVEN_RECIPE_TYPE.get(), inventoryWrapper, level);
+            Optional<RecipeHolder<OvenRecipe>> recipe = level.getRecipeManager().getRecipeFor(RecipesHandle.OVEN_RECIPE_TYPE.get(), inventoryWrapper, level);
             if (recipe.isPresent()) {
-                ResourceLocation newRecipeID = recipe.get().getId();
+                ResourceLocation newRecipeID = recipe.get().id();
                 if (lastRecipeID != null && !lastRecipeID.equals(newRecipeID)) {
                     cookTime = 0;
                 }
                 lastRecipeID = newRecipeID;
-                return recipe;
+                return Optional.of(recipe.get().value());
             }
         }
 
@@ -297,21 +299,21 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         //        direction.getStepX() * 0.08F, 0.25F, direction.getStepZ() * 0.08F);
     }
 
-    public void setRecipeUsed(@Nullable Recipe<?> recipe) {
+    public void setRecipeUsed(@Nullable RecipeHolder<?> recipe) {
         if (recipe != null) {
-            ResourceLocation recipeID = recipe.getId();
+            ResourceLocation recipeID = recipe.id();
             usedRecipeTracker.addTo(recipeID, 1);
         }
     }
 
     public void awardUsedRecipes(Player player, List<ItemStack> items) {
-        List<Recipe<?>> usedRecipes = getUsedRecipesAndPopExperience(player.level(), player.position());
+        List<RecipeHolder<?>> usedRecipes = getUsedRecipesAndPopExperience(player.level(), player.position());
         player.awardRecipes(usedRecipes);
         usedRecipeTracker.clear();
     }
 
-    public List<Recipe<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
-        List<Recipe<?>> list = Lists.newArrayList();
+    public List<RecipeHolder<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
+        List<RecipeHolder<?>> list = Lists.newArrayList();
 
         for (Object2IntMap.Entry<ResourceLocation> entry : usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) -> {

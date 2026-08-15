@@ -28,7 +28,7 @@ public class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookup = registryProvider.getRegistryProvider();
         generator.addProvider(event.includeServer(), registryProvider);
         generator.addProvider(event.includeServer(), new TBSEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new TBSRecipeProvider(packOutput));
+        generator.addProvider(event.includeServer(), new TBSRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new DamageTypeProvider(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeServer(), new AdvancementsHandle(packOutput, lookupProvider, existingFileHelper));

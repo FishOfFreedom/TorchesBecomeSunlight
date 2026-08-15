@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
@@ -52,8 +53,8 @@ public class DefaultTableProvider extends LootTableProvider {
     public static class ModBlockLootSubProvider extends BlockLootSubProvider {
         public List<Block> list = new ArrayList<>();
 
-        protected ModBlockLootSubProvider() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), new HashMap<>());
+        protected ModBlockLootSubProvider(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), new HashMap<>(), registries);
         }
 
         @Override
@@ -144,8 +145,8 @@ public class DefaultTableProvider extends LootTableProvider {
     public static class ModEntityLootSubProvider extends EntityLootSubProvider {
         private final Map<EntityType<?>, Map<ResourceLocation, LootTable.Builder>> map = Maps.newHashMap();
 
-        protected ModEntityLootSubProvider() {
-            super(FeatureFlags.REGISTRY.allFlags());
+        protected ModEntityLootSubProvider(HolderLookup.Provider registries) {
+            super(FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override
@@ -154,13 +155,13 @@ public class DefaultTableProvider extends LootTableProvider {
                     .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.THIGH_MEAT.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
             );
             add(EntityHandle.BURDENBEAST.get(), LootTable.lootTable()
                     .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.BURDENBEAST_MEAT.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
             );
             add(EntityHandle.FROST_NOVA.get(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
@@ -179,7 +180,7 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.ICE_BROADSWORD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             add(EntityHandle.PATRIOT.get(), LootTable.lootTable()
@@ -199,7 +200,7 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.GUARD_SHIELD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             //rhodes
@@ -220,13 +221,13 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.RHODES_SHIELD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             ))
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.RHODES_KNIFE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             //ursus
@@ -242,35 +243,35 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.MACHETE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_BOOTS.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_CHESTPLATE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_HELMET.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_LEGGINGS.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
 
