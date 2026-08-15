@@ -19,7 +19,7 @@ public class AutoSynTagBlockEntity extends BlockEntity{
     public AutoSynTagBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
         this.blockEntityData = new SynchedBlockEntityData(this);
-        defineSynchedData();
+        defineSynchedData(this.blockEntityData);
     }
 
     public <T> void onSyncedDataUpdated(EntityDataAccessor<T> pKey) {
@@ -28,7 +28,7 @@ public class AutoSynTagBlockEntity extends BlockEntity{
     public <T> void onSyncedDataUpdated(List<SynchedBlockEntityData.DataValue<?>> pEntries) {
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder){
+    protected void defineSynchedData(SynchedBlockEntityData data){
 
     }
 

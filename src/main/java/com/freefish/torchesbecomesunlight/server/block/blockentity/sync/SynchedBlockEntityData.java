@@ -14,6 +14,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -246,18 +247,18 @@ public class SynchedBlockEntityData {
          return new DataValue<>(pDataAccessor.id(), entitydataserializer, entitydataserializer.copy(pValue));
       }
 
-      public void write(FriendlyByteBuf pBuffer) {
+      public void write(RegistryFriendlyByteBuf pBuffer) {
          int i = EntityDataSerializers.getSerializedId(this.serializer);
          if (i < 0) {
             throw new EncoderException("Unknown serializer type " + this.serializer);
          } else {
             pBuffer.writeByte(this.id);
             pBuffer.writeVarInt(i);
-            this.serializer.write(pBuffer, this.value);
+            this.serializer.codec().encode(pBuffer, this.value);
          }
       }
 
-      public static DataValue<?> read(FriendlyByteBuf pBuffer, int pId) {
+      public static DataValue<?> read(RegistryFriendlyByteBuf pBuffer, int pId) {
          int i = pBuffer.readVarInt();
          EntityDataSerializer<?> entitydataserializer = EntityDataSerializers.getSerializer(i);
          if (entitydataserializer == null) {
@@ -267,8 +268,8 @@ public class SynchedBlockEntityData {
          }
       }
 
-      private static <T> DataValue<T> read(FriendlyByteBuf pBuffer, int pId, EntityDataSerializer<T> pSerializer) {
-         return new DataValue<>(pId, pSerializer, pSerializer.read(pBuffer));
+      private static <T> DataValue<T> read(RegistryFriendlyByteBuf pBuffer, int pId, EntityDataSerializer<T> pSerializer) {
+         return new DataValue<>(pId, pSerializer, pSerializer.codec().decode(pBuffer));
       }
    }
 }

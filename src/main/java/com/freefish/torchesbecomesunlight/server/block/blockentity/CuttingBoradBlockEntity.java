@@ -209,7 +209,8 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
         ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
         inventory.setStackInSlot(OUTPUT_SLOT+DECORATE_SHOT, resultStack.copy());
 
-        cookingPot.setRecipeUsed(recipe);
+        cookingPot.setRecipeUsed(cookingPot.lastRecipeID == null ? null
+                : level.getRecipeManager().byKey(cookingPot.lastRecipeID).orElse(null));
 
         decorateFinalFood();
 
@@ -309,7 +310,7 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
         for (Object2IntMap.Entry<ResourceLocation> entry : usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) -> {
                 list.add(recipe);
-                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((CuttingBoardRecipe) recipe).getExperience());
+                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((CuttingBoardRecipe) recipe.value()).getExperience());
             });
         }
 

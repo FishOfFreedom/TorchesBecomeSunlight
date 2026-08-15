@@ -227,7 +227,8 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         }else {
             return false;
         }
-        cookingPot.setRecipeUsed(recipe);
+        cookingPot.setRecipeUsed(cookingPot.lastRecipeID == null ? null
+                : level.getRecipeManager().byKey(cookingPot.lastRecipeID).orElse(null));
 
         decorateFinalFood();
 
@@ -319,7 +320,7 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         for (Object2IntMap.Entry<ResourceLocation> entry : usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) -> {
                 list.add(recipe);
-                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((OvenRecipe) recipe).getExperience());
+                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((OvenRecipe) recipe.value()).getExperience());
             });
         }
 

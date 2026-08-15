@@ -1,7 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.block.ElevatorDoorBlock;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.Door;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
@@ -118,7 +118,7 @@ public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements Ge
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
     }
 
     private final AnimationController<ElevatorDoorBlockEntity> animationController = new AnimationController<ElevatorDoorBlockEntity>(this, "Controller", 5, this::predicate);

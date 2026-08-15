@@ -9,8 +9,7 @@ import com.freefish.torchesbecomesunlight.server.block.blockentity.AutoSynTagBlo
 import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class SetBlockEntityDataMessage implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SetBlockEntityDataMessage> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "set_block_entity_data_message"));
 
-    public static final StreamCodec<FriendlyByteBuf, SetBlockEntityDataMessage> STREAM_CODEC =
+    public static final StreamCodec<RegistryFriendlyByteBuf, SetBlockEntityDataMessage> STREAM_CODEC =
             StreamCodec.of((buf, msg) -> serialize(msg, buf), SetBlockEntityDataMessage::deserialize);
 
     @Override
@@ -39,17 +38,17 @@ public class SetBlockEntityDataMessage implements CustomPacketPayload {
         this.blockPos = blockPos;
     }
 
-    public static void serialize(final SetBlockEntityDataMessage message, final FriendlyByteBuf buf) {
-        buf.writeNbt(NbtUtils.writeBlockPos(message.blockPos));
+    public static void serialize(final SetBlockEntityDataMessage message, final RegistryFriendlyByteBuf buf) {
+        buf.writeBlockPos(message.blockPos);
         for(SynchedBlockEntityData.DataValue<?> datavalue : message.pValues) {
             datavalue.write(buf);
         }
         buf.writeByte(255);
     }
 
-    public static SetBlockEntityDataMessage deserialize(final FriendlyByteBuf buf) {
+    public static SetBlockEntityDataMessage deserialize(final RegistryFriendlyByteBuf buf) {
         final SetBlockEntityDataMessage message = new SetBlockEntityDataMessage();
-        message.blockPos = NbtUtils.readBlockPos(buf.readNbt());
+        message.blockPos = buf.readBlockPos();
         List<SynchedBlockEntityData.DataValue<?>> list = new ArrayList<>();
         int i;
         while((i = buf.readUnsignedByte()) != 255) {

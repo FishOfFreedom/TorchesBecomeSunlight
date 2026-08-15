@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.block.ElevatorBlock;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
@@ -240,7 +239,7 @@ public class ElevatorBlockEntity extends AutoSynTagBlockEntity implements GeoBlo
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
         this.blockEntityData.define(TEST,0);
     }
 
@@ -277,9 +276,5 @@ public class ElevatorBlockEntity extends AutoSynTagBlockEntity implements GeoBlo
         return cache;
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return super.getRenderBoundingBox().move(new Vec3(0,upCurrentHeight,0));
-    }
 
 }

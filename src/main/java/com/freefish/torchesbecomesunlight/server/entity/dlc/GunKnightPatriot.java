@@ -601,7 +601,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    public boolean canBeLeashed(Player pPlayer) {
+    public boolean canBeLeashed() {
         return false;
     }
 
@@ -3149,7 +3149,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     public boolean hasPlayerKilledDragon(ServerPlayer player) {
-        Advancement advancement = player.server.getAdvancements().getAdvancement(ResourceLocation.parse("minecraft:end/kill_dragon"));
+        net.minecraft.advancements.AdvancementHolder advancement = player.server.getAdvancements().get(ResourceLocation.parse("minecraft:end/kill_dragon"));
         if (advancement != null) {
             AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
             return progress.isDone();

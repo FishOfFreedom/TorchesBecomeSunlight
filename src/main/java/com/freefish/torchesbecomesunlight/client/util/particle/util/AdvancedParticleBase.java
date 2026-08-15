@@ -221,11 +221,6 @@ public class AdvancedParticleBase extends TextureSheetParticle {
         }
     }
 
-    @Override
-    public boolean shouldCull() {
-        return super.shouldCull();
-    }
-
     public float getAge() {
         return age;
     }

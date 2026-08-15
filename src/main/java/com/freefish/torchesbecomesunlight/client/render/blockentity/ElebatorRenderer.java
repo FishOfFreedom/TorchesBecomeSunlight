@@ -29,6 +29,16 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
         return true;
     }
 
+    /**
+     * NeoForge 1.21.1 把 getRenderBoundingBox 从 BlockEntity 挪到了 BlockEntityRenderer，
+     * 原先写在 ElevatorBlockEntity 上的实现移到这里。
+     */
+    @Override
+    public net.minecraft.world.phys.AABB getRenderBoundingBox(ElevatorBlockEntity blockEntity) {
+        return new net.minecraft.world.phys.AABB(blockEntity.getBlockPos())
+                .move(0, blockEntity.getUpCurrentHeight(1.0F), 0);
+    }
+
     @Override
     public void actuallyRender(PoseStack poseStack, ElevatorBlockEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;

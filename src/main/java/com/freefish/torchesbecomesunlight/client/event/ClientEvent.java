@@ -141,11 +141,11 @@ public class ClientEvent {
 
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
-        addLayerToPlayerRenderer(event, "default");
-        addLayerToPlayerRenderer(event, "slim");
+        addLayerToPlayerRenderer(event, net.minecraft.client.resources.PlayerSkin.Model.WIDE);
+        addLayerToPlayerRenderer(event, net.minecraft.client.resources.PlayerSkin.Model.SLIM);
     }
 
-    private static void addLayerToPlayerRenderer(EntityRenderersEvent.AddLayers event, String skinType) {
+    private static void addLayerToPlayerRenderer(EntityRenderersEvent.AddLayers event, net.minecraft.client.resources.PlayerSkin.Model skinType) {
         PlayerRenderer renderer = event.getSkin(skinType);
         if (renderer != null) {
             renderer.addLayer(new SakataLayer(

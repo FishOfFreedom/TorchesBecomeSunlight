@@ -269,7 +269,7 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void onMiddleClick(InputEvent.MouseButton event) {
+    public void onMiddleClick(InputEvent.MouseButton.Pre event) {
         if (event.isCanceled()) return;
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;

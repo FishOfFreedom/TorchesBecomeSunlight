@@ -47,10 +47,10 @@ public class GuiDialogueRenderEvent {
             return;
 
         //todo skip
-        if (event.getOverlay().id() == VanillaGuiLayers.HOTBAR.id()) {
+        if (event.getName().equals(VanillaGuiLayers.HOTBAR)) {
             for(HudWidget hud:HudWidget.STRING_WIDGET.values()){
                 if(hud.canRenderer()){
-                    hud.drawInBackground(event.getGuiGraphics(), 0, 0, event.getPartialTick());
+                    hud.drawInBackground(event.getGuiGraphics(), 0, 0, event.getPartialTick().getGameTimeDeltaPartialTick(false));
                 }
             }
 
@@ -113,7 +113,7 @@ public class GuiDialogueRenderEvent {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         GuiGraphics guiGraphics = event.getGuiGraphics();
-        float partialTick = event.getPartialTick();
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
         //i18
         String message = cuttingString(dialogueEntity.currentText, MathUtils.easeOutCubic(Math.min(1,2f*dialogueEntity.getDialogueScale())));
         LivingEntity chatEntity = dialogueEntity.getChatEntities(dialogueEntity.getDialogue().getSpeaker());
@@ -154,7 +154,7 @@ public class GuiDialogueRenderEvent {
 
         int width = minecraft.getWindow().getGuiScaledWidth() / 4;
 
-        float floatOp = dialogueEntity.getFloatOp(event.getPartialTick());
+        float floatOp = dialogueEntity.getFloatOp(event.getPartialTick().getGameTimeDeltaPartialTick(false));
         int height1 = minecraft.getWindow().getGuiScaledHeight() / 5 * 4;
 
         guiGraphics.pose().pushPose();

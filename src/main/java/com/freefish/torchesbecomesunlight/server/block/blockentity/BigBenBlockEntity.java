@@ -1,7 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -672,7 +671,7 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
         this.blockEntityData.define(TEST,new CompoundTag());
         this.blockEntityData.define(IS_GLOWING,false);
     }
