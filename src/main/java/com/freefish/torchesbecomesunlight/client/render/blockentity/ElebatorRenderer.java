@@ -30,7 +30,11 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
     }
 
     @Override
-    public void actuallyRender(PoseStack poseStack, ElevatorBlockEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void actuallyRender(PoseStack poseStack, ElevatorBlockEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         LocalPlayer player = Minecraft.getInstance().player;
 
         poseStack.pushPose();
@@ -42,7 +46,7 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
         //        living.setPos(living.getX(),animatable.getBlockPos().getY()+upCurrentHeight+0.01f,living.getZ());
         //    }
         //}
-        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         poseStack.popPose();
 
         PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);

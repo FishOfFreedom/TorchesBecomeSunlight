@@ -24,53 +24,53 @@ public class BlockHandle {
     public static final DeferredHolder<Block, Block> ORE_AND_ICE = registryBlockNoItem("ore_and_ice",() -> new WoolCarpetBlock(DyeColor.WHITE, BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.1F).sound(SoundType.GLASS).friction(0.98F)),false);
 
     public static final DeferredHolder<Block, Block> STEW_POT = BLOCKS.register("stew_pot",
-            () -> new StewPotBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+            () -> new StewPotBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
 
     public static final DeferredHolder<Block, Block> CUTTING_BOARD = BLOCKS.register("cutting_board",
-            () -> new CuttingBoardBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+            () -> new CuttingBoardBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
 
     public static final DeferredHolder<Block, Block> OVEN = BLOCKS.register("oven",
-            () -> new OvenBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()));
+            () -> new OvenBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
 
     public static final DeferredHolder<Block, Block> BIG_BEN = BLOCKS.register("big_ben",
-            () -> new BigBenBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)));
+            () -> new BigBenBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)));
 
     public static final DeferredHolder<Block, Block> STARGATE_FLAME = registryBlock("stargate_flame", GlowBlock::new,false);
 
     public static final DeferredHolder<Block, Block> STARGATE_CONTROLER = registryBlock("stargate_controler", StargateControlerBlock::new,true);
 
     public static final DeferredHolder<Block, Block> ELEVATOR = registryBlock("elevator",
-            () -> new ElevatorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().noCollission()),true);
+            () -> new ElevatorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion().noCollission()),true);
 
     public static final DeferredHolder<Block, Block> ELEVATOR_DOOR = registryBlock("elevator_door",
-            () -> new ElevatorDoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion().noCollission()),true);
+            () -> new ElevatorDoorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion().noCollission()),true);
 
     public static final DeferredHolder<Block, Block> ELEVATOR_CONTROLLER = registryBlock("elevator_controller",
-            () -> new ElevatorControlBlock(BlockBehaviour.Properties.copy(Blocks.REDSTONE_WIRE).noOcclusion()),true);
+            () -> new ElevatorControlBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_WIRE).noOcclusion()),true);
 
     public static final DeferredHolder<Block, Block> PATH_SIGN = registryBlock("path_sign",
-            () -> new DirectionalBlock(BlockBehaviour.Properties.copy(Blocks.REDSTONE_WIRE).noOcclusion()),false);
+            () -> new DirectionalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_WIRE).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> PATH_SIGN_2 = registryBlock("path_sign_2",
-            () -> new DirectionalBlock(BlockBehaviour.Properties.copy(Blocks.REDSTONE_WIRE).noOcclusion()),false);
+            () -> new DirectionalBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.REDSTONE_WIRE).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> ROUND_STOOL = registryBlock("round_stool",
-            () -> new RoundStool(BlockBehaviour.Properties.copy(Blocks.OAK_WOOD).noOcclusion()),false);
+            () -> new RoundStool(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_WOOD).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> THERMAL_KETTLE = registryBlock("thermal_kettle",
-            () -> new ThermalKettle(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),false);
+            () -> new ThermalKettle(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> CARTON = registryBlock("carton",
-            () -> new Carton(BlockBehaviour.Properties.copy(Blocks.HAY_BLOCK).noOcclusion()),false);
+            () -> new Carton(BlockBehaviour.Properties.ofFullCopy(Blocks.HAY_BLOCK).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> BIG_CARTON = registryBlock("big_carton",
-            () -> new BigCarton(BlockBehaviour.Properties.copy(Blocks.HAY_BLOCK).noOcclusion()),false);
+            () -> new BigCarton(BlockBehaviour.Properties.ofFullCopy(Blocks.HAY_BLOCK).noOcclusion()),false);
 
     public static final DeferredHolder<Block, Block> LIGHT_TUBE = registryBlock("light_tube",
-            () -> new LightTube(BlockBehaviour.Properties.copy(Blocks.GLASS).noOcclusion().lightLevel(state -> 15)),false);
+            () -> new LightTube(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).noOcclusion().lightLevel(state -> 15)),false);
 
     public static final DeferredHolder<Block, Block> CARGO_RACK = registryBlock("cargo_rack",
-            () -> new CargoRack(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).noOcclusion()),false);
+            () -> new CargoRack(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()),false);
 
     //vertical_slab
     public static final DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> GRAY_CONCRETE_VERTICAL_SLAB = registryVerticalSlab("gray_concrete_vertical_slab",Blocks.GRAY_CONCRETE);
@@ -94,14 +94,14 @@ public class BlockHandle {
         registryVerticalSlab(name,t);
     }
     public static DeferredHolder<StairBlock, StairBlock> registerStairs(final String name, final Block t){
-        return registryBlock(name, () -> new StairBlock(() -> t.defaultBlockState(), Block.Properties.copy(t)),false);
+        return registryBlock(name, () -> new StairBlock(() -> t.defaultBlockState(), Block.Properties.ofFullCopy(t)),false);
     }
     public static DeferredHolder<SlabBlock, SlabBlock> registerSlab(final String name, final Block t){
-        return registryBlock(name, () -> new SlabBlock(Block.Properties.copy(t)),false);
+        return registryBlock(name, () -> new SlabBlock(Block.Properties.ofFullCopy(t)),false);
     }
     private static DeferredHolder<VerticalSlabBlock, VerticalSlabBlock> registryVerticalSlab(String name, Block blockState) {
         return registryBlock(name,
-                () -> new VerticalSlabBlock(() -> blockState.defaultBlockState(),BlockBehaviour.Properties.copy(blockState).noOcclusion()),false);
+                () -> new VerticalSlabBlock(() -> blockState.defaultBlockState(),BlockBehaviour.Properties.ofFullCopy(blockState).noOcclusion()),false);
     }
 
     private static <T extends Block> DeferredHolder<T, T> registryBlock(String name, Supplier<T> block, boolean isEntity) {

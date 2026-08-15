@@ -9,8 +9,9 @@
 包根目录：`com.freefish.torchesbecomesunlight`。代码注释与对话描述大量使用中文；语言文件同时提供 `en_us` 与 `zh_cn`。
 
 > ⚠️ **本分支正在从 Forge 1.20.1 移植到 NeoForge 1.21.1**（分支 `feature/1.21.1-neoforge`）。
-> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 1323）。
-> 三个架构级重写（注册表、网络、Capability）已完成，剩余为分散的 API 细节。
+> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 755）。
+> 架构级重写（注册表、网络、Capability、粒子、进度触发器）均已完成，
+> **符号解析阶段已清零**，剩余错误全部来自其后的类型/访问检查阶段。
 > 详见文末「移植状态」。`master` 分支保持 1.20.1 Forge 不变。
 >
 > 下文架构描述已同步到 NeoForge 现状；涉及尚未移植部分会另行标注。
@@ -168,7 +169,7 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 ### 进行中：Java 代码
 
-编译错误从 **3518 降到 1323**（591 个文件里受影响的从 379 降到 252；`net.minecraftforge` 残留仅剩 8 个文件）。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
+编译错误从 **3518 降到 755**（受影响文件 379 → 187）。**符号解析阶段已清零**，即全项目不再有"找不到类/方法"；当前错误全部来自其后的类型/访问检查阶段。注意 javac 分阶段，前一阶段没通过时后一阶段的错误根本不会显示——所以清零符号阶段时曾出现"剩 1 个"随即跳到 819 的情况，那不是回退。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
 
 **方法论**：所有批量改写都基于**从 jar 里提取的真实类索引**自动生成映射，不靠记忆猜包名 —— 解压 `neoforge-21.1.242-universal.jar` / `geckolib-*.jar` 建立 `简单名 → 全限定名` 索引，再比对项目里的 import；MC 侧的成员名和方法签名一律用 1.21.1 官方 mappings（`piston-meta` 下载的 `client.txt`）核对。改名类**必须同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
 

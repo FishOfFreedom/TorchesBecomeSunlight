@@ -137,7 +137,7 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return BuiltInRegistries.BLOCK.getValues().stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
+            return BuiltInRegistries.BLOCK.stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
         }
     }
 
@@ -354,7 +354,7 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Stream<EntityType<?>> getKnownEntityTypes() {
-            return BuiltInRegistries.ENTITY_TYPE.getValues().stream().filter(block -> BuiltInRegistries.ENTITY_TYPE.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
+            return BuiltInRegistries.ENTITY_TYPE.stream().filter(block -> BuiltInRegistries.ENTITY_TYPE.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
         }
     }
 }

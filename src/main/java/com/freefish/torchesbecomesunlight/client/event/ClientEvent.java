@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
 
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.particle.*;
@@ -88,9 +89,14 @@ public class ClientEvent {
         event.registerBlockEntityRenderer(BlockEntityHandle.BIG_BEN.get(), context -> new BigBenRenderer());
         event.registerBlockEntityRenderer(BlockEntityHandle.ELEVATOR_DOOR.get(), context -> new ElebatorDoorRenderer());
 
-        MenuScreens.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
-        MenuScreens.register(MenuHandle.CUTTING_BORAD_MENU.get(), CuttingBoardScreen::new);
-        MenuScreens.register(MenuHandle.OVEN_MENU.get(), OvenScreen::new);
+    }
+
+    /** 1.21 把 MenuScreens.register 收为私有，屏幕注册改由该事件承担 */
+    @SubscribeEvent
+    public static void registerMenuScreens(final RegisterMenuScreensEvent event) {
+        event.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
+        event.register(MenuHandle.CUTTING_BORAD_MENU.get(), CuttingBoardScreen::new);
+        event.register(MenuHandle.OVEN_MENU.get(), OvenScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

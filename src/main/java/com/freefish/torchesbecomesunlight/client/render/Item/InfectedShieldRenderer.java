@@ -63,8 +63,8 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
             //    poseStack.pushPose();
             //    poseStack.last().pose().translate(-0.65f,0.5f,0);
             //    GeoBone geoBone = leftArm.get();
-            //    renderRecursively(poseStack,animatable,geoBone,armorRenderType,bufferSource,bufferSource.getBuffer(armorRenderType),false,0
-            //            ,packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1,1);
+            //    renderRecursively(poseStack, animatable, geoBone, armorRenderType, bufferSource, bufferSource.getBuffer(armorRenderType), false, 0
+            //, packedLight, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(1, 1, 1, 1));
             //    poseStack.popPose();
             //}
 

@@ -25,14 +25,22 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
+        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         usingCustomPlayerAnimations = false;
     }
 
     @Override
     public void renderRecursively(PoseStack poseStack, T animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferIn, VertexConsumer buffer, boolean isReRender, float partialTick,
-                                  int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+                                  int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         poseStack.pushPose();
         if (usingCustomPlayerAnimations && bone instanceof MowzieGeoBone && ((MowzieGeoBone) bone).isForceMatrixTransform()) {
             PoseStack.Pose last = poseStack.last();
@@ -47,10 +55,10 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
         else {
             RenderUtil.prepMatrixForBone(poseStack, bone);
         }
-        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderChildBones(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
+        renderChildBones(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         poseStack.popPose();
-//        super.renderRecursively(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+//        super.renderRecursively(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
     }
 
     public void copyFrom(ModelPart modelPart, GeoBone geoBone, float offsetX, float offsetY, float offsetZ) {

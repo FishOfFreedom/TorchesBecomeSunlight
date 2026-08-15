@@ -85,13 +85,13 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         VertexConsumer vertexconsumer1 = pBuffer.getBuffer(model.renderType(TEXTURE));
         pMatrixStack.pushPose();
         pMatrixStack.last().pose().scale(0.7f+baseScale);
-        this.model.renderToBuffer(pMatrixStack, vertexconsumer1, 15728880, NO_OVERLAY, 1, 0.8f, 0, 1F);
+        this.model.renderToBuffer(pMatrixStack, vertexconsumer1, 15728880, NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(1F, 1, 0.8f, 0));
         pMatrixStack.popPose();
 
         pMatrixStack.pushPose();
         pMatrixStack.last().pose().scale(1f+baseScale);
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.eyes(TEXTURE));
-        this.model.renderToBuffer(pMatrixStack, vertexconsumer, 15728880, NO_OVERLAY, 1f,1f,1F, 1F);
+        this.model.renderToBuffer(pMatrixStack, vertexconsumer, 15728880, NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(1F, 1f, 1f, 1F));
         pMatrixStack.popPose();
 
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
@@ -220,7 +220,11 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         }
 
         @Override
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
             bb_main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         }
     }

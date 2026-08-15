@@ -116,11 +116,15 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
     }
 
     @Override
-    public void renderRecursively(PoseStack poseStack, Patriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderRecursively(PoseStack poseStack, Patriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         if(bone.getName().matches("shieldFX.*")){
-            super.renderRecursively(poseStack, animatable, bone, RenderType.entityTranslucent(PatriotModel.TEXTURE), bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, bone.getPosX());
+            super.renderRecursively(poseStack, animatable, bone, RenderType.entityTranslucent(PatriotModel.TEXTURE), bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(bone.getPosX(), red, green, blue));
         }
         else
-            super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
     }
 }

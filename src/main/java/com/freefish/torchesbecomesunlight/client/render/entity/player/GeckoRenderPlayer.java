@@ -155,7 +155,7 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
         }
         if (rendertype != null) {
             VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
-            defaultRender(matrixStackIn, animatable, bufferIn, rendertype, ivertexbuilder, 0, partialTicks, packedLightIn);
+            defaultRender(matrixStackIn, animatable, bufferIn, rendertype, net.minecraft.util.FastColor.ARGB32.colorFromFloat(packedLightIn, ivertexbuilder, 0, partialTicks));
         }
 
         matrixStackIn.popPose();
@@ -169,7 +169,11 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
     }
 
     @Override
-    public void actuallyRender(PoseStack poseStack, GeckoPlayer animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void actuallyRender(PoseStack poseStack, GeckoPlayer animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         AbstractClientPlayer entity = (AbstractClientPlayer) animatable.getPlayer();
         this.model.attackTime = this.getAttackAnim(entity, partialTick);
 
@@ -289,7 +293,7 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
 //        this.modelRenderTranslations = new Matrix4f(poseStack.last().pose());
 
         if (!entity.isInvisibleTo(Minecraft.getInstance().player))
-            GeoRenderer.super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            GeoRenderer.super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
 
         ModelPlayerAnimated.copyFromGeckoModel(this.model, geoModel);
 
@@ -412,7 +416,11 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
     }
 
     @Override
-    public void renderRecursively(PoseStack poseStack, GeckoPlayer animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderRecursively(PoseStack poseStack, GeckoPlayer animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         poseStack.pushPose();
         RenderUtil.translateMatrixToBone(poseStack, bone);
         RenderUtil.translateToPivotPoint(poseStack, bone);
@@ -452,16 +460,16 @@ public class GeckoRenderPlayer extends PlayerRenderer implements GeoRenderer<Gec
             }
         }
         RenderUtil.translateAwayFromPivotPoint(poseStack, bone);
-        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
 
         if (!isReRender)
             applyRenderLayersForBone(poseStack, animatable, bone, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
 
-        renderChildBones(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+        renderChildBones(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         poseStack.popPose();
 
         //for(RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> layerrenderer : this.layers) {
-        //    if (layerrenderer instanceof IGeckoRenderLayer) ((IGeckoRenderLayer)layerrenderer).renderRecursively(bone, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        //    if (layerrenderer instanceof IGeckoRenderLayer) ((IGeckoRenderLayer)layerrenderer).renderRecursively(bone, poseStack, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         //}
     }
 
