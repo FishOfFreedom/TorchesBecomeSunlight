@@ -374,7 +374,7 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return writeItems(new CompoundTag(), registries);
     }
 

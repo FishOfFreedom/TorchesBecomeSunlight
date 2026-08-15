@@ -98,10 +98,10 @@ public class DemonParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        portalStatic.addVertex((float) avector3f[0].x(), (float) avector3f[0].y(), (double) avector3f[0].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((float) avector3f[1].x(), (float) avector3f[1].y(), (double) avector3f[1].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((float) avector3f[2].x(), (float) avector3f[2].y(), (double) avector3f[2].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-        portalStatic.addVertex((float) avector3f[3].x(), (float) avector3f[3].y(), (double) avector3f[3].z()).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[0].x(), (float) avector3f[0].y(), (float) ((double) avector3f[0].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[1].x(), (float) avector3f[1].y(), (float) ((double) avector3f[1].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[2].x(), (float) avector3f[2].y(), (float) ((double) avector3f[2].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[3].x(), (float) avector3f[3].y(), (float) ((double) avector3f[3].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
 
         multibuffersource$buffersource.endBatch();
     }

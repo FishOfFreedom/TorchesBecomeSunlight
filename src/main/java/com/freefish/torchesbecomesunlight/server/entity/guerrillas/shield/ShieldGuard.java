@@ -354,8 +354,8 @@ public class ShieldGuard extends GuerrillasEntity implements ITeamMemberStorage<
         event.add(shield);
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         return 1.2f;
     }
 

@@ -54,10 +54,7 @@ public class SacredHalberd extends SwordItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -109,7 +106,7 @@ public class SacredHalberd extends SwordItem implements GeoItem {
         super.releaseUsing(pStack, pLevel, pLivingEntity, pTimeCharged);
     }
 
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 

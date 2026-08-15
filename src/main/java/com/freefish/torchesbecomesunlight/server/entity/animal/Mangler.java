@@ -271,11 +271,11 @@ public class Mangler extends AnimatedEntity {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData, @Nullable CompoundTag compound) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData) {
         if(reason == MobSpawnType.NATURAL){
             spawnHerd();
         }
-        return super.finalizeSpawn(world, difficulty, reason, livingData, compound);
+        return super.finalizeSpawn(world, difficulty, reason, livingData);
     }
 
     public void spawnHerd(){
@@ -318,13 +318,13 @@ public class Mangler extends AnimatedEntity {
         builder.define(ANGRY_LEVEL,0);
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         boolean run1 = getRun();
         if(run1){
             return 1.2f;
         }
-        return super.getStepHeight();
+        return this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) > 0 ? (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) : 0.6F;
     }
 
     @Override

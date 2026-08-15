@@ -1086,8 +1086,8 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         return false;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         return 1.5f;
     }
 

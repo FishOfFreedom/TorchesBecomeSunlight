@@ -226,12 +226,12 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
         return cache;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         if(getRun()){
             return 1.6f;
         }
-        return super.getStepHeight();
+        return this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) > 0 ? (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) : 0.6F;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -279,8 +279,8 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData, @Nullable CompoundTag compound) {
-        return super.finalizeSpawn(world, difficulty, reason, livingData, compound);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData) {
+        return super.finalizeSpawn(world, difficulty, reason, livingData);
     }
 
     @Override

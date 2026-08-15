@@ -88,10 +88,10 @@ public class TBSDrawerHelper {
         RenderSystem.disableDepthTest();//VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         BufferBuilder vertexbuffer;
         vertexbuffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        vertexbuffer.addVertex(posX1, (float) posY1 + height1, 0.0D).setColor(f, f1, f2, f3);
-        vertexbuffer.addVertex((float) posX2 + width2, (float) posY2 + height2, 0.0D).setColor(f, f1, f2, f3);
-        vertexbuffer.addVertex((float) posX1 + width1, posY2, 0.0D).setColor(f, f1, f2, f3);
-        vertexbuffer.addVertex(posX2, posY1, 0.0D).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) (posX1), (float) posY1 + height1, 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX2 + width2, (float) posY2 + height2, 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX1 + width1, (float) (posY2), 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) (posX2), (float) (posY1), 0.0F).setColor(f, f1, f2, f3);
 
         BufferUploader.drawWithShader(vertexbuffer.buildOrThrow());
         RenderSystem.disableBlend();
@@ -111,10 +111,10 @@ public class TBSDrawerHelper {
         BufferBuilder builder;
 
         builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        builder.addVertex(-1.0, 1.0,  0.0);
-        builder.addVertex(-1.0, -1.0, 0.0);
-        builder.addVertex(1.0, -1.0,  0.0);
-        builder.addVertex(1.0, 1.0,   0.0);
+        builder.addVertex(-1.0F, 1.0F, 0.0F);
+        builder.addVertex(-1.0F, -1.0F, 0.0F);
+        builder.addVertex(1.0F, -1.0F, 0.0F);
+        builder.addVertex(1.0F, 1.0F, 0.0F);
         BufferUploader.draw(builder.end());
     }
 
@@ -128,10 +128,10 @@ public class TBSDrawerHelper {
         float up = Mth.lerp((float) square.up / window.getGuiScaledHeight(), -1, 1);
         float down = Mth.lerp((float) (square.up+square.down) / window.getGuiScaledHeight(), -1, 1);
 
-        builder.addVertex(left, down, 0.0);
-        builder.addVertex(left, up, 0.0);
-        builder.addVertex(right, up, 0.0);
-        builder.addVertex(right, down, 0.0);
+        builder.addVertex((float) (left), (float) (down), 0.0F);
+        builder.addVertex((float) (left), (float) (up), 0.0F);
+        builder.addVertex((float) (right), (float) (up), 0.0F);
+        builder.addVertex((float) (right), (float) (down), 0.0F);
         BufferUploader.draw(builder.end());
     }
 }

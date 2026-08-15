@@ -133,10 +133,10 @@ public class SakataLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
         // 10. 构建两个三角形（组成矩形）
         // 三角形1 (左下 -> 左上 -> 右上)
-        vertexBuilder.addVertex(pose, vertices[0].x(), vertices[0].y(), vertices[0].z()).setColor(r, g, b, alpha).setUv(uMin, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
-        vertexBuilder.addVertex(pose, vertices[1].x(), vertices[1].y(), vertices[1].z()).setColor(r, g, b, alpha).setUv(uMin, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
-        vertexBuilder.addVertex(pose, vertices[2].x(), vertices[2].y(), vertices[2].z()).setColor(r, g, b, alpha).setUv(uMax, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
-        vertexBuilder.addVertex(pose, vertices[3].x(), vertices[3].y(), vertices[3].z()).setColor(r, g, b, alpha).setUv(uMax, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[0].x()), (float) (vertices[0].y()), (float) (vertices[0].z())).setColor(r, g, b, alpha).setUv(uMin, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[1].x()), (float) (vertices[1].y()), (float) (vertices[1].z())).setColor(r, g, b, alpha).setUv(uMin, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[2].x()), (float) (vertices[2].y()), (float) (vertices[2].z())).setColor(r, g, b, alpha).setUv(uMax, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[3].x()), (float) (vertices[3].y()), (float) (vertices[3].z())).setColor(r, g, b, alpha).setUv(uMax, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
 
         poseStack.popPose();
     }

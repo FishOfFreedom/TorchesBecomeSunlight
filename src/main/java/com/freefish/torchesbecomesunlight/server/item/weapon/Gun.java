@@ -95,7 +95,7 @@ public class Gun extends Item implements GeoItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 

@@ -87,7 +87,7 @@ public class CrazelyseonRenderer extends GeoEntityRenderer<Crazelyseon> {
     }
 
     @Override
-    public int getPackedOverlay(Crazelyseon animatable, float u) {
+    public int getPackedOverlay(Crazelyseon animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }

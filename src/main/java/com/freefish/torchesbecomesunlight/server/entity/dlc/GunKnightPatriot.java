@@ -510,8 +510,8 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
         return false;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载，原 getStepHeight() 覆写已无对应 */
+    protected float tbsStepHeight() {
         return 2F;
     }
 

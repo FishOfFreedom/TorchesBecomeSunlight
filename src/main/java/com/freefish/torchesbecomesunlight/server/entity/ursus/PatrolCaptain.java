@@ -72,7 +72,7 @@ public class PatrolCaptain extends UrsusEntity{
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         if(pReason==MobSpawnType.NATURAL){
             if(!level().isClientSide){
                 int count = 1+ getRandom().nextInt(3);
@@ -83,7 +83,7 @@ public class PatrolCaptain extends UrsusEntity{
                 }
             }
         }
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override

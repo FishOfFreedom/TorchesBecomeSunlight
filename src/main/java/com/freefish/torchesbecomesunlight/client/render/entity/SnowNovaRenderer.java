@@ -22,7 +22,7 @@ public class SnowNovaRenderer extends GeoEntityRenderer<FrostNova> {
     }
 
     @Override
-    public int getPackedOverlay(FrostNova animatable, float u) {
+    public int getPackedOverlay(FrostNova animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }

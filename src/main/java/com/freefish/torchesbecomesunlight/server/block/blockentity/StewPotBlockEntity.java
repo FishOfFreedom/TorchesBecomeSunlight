@@ -488,7 +488,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return writeItems(new CompoundTag(), registries);
     }
 

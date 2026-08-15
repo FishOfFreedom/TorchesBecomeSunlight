@@ -122,10 +122,10 @@ public class WindParticle extends TextureSheetParticle {
                 };
 
                 int light = getLightColor(partialTicks);
-                buffer.addVertex(quadVertices[0].x(), quadVertices[0].y(), quadVertices[0].z()).setUv(quadUVs[0][0], quadUVs[0][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
-                buffer.addVertex(quadVertices[1].x(), quadVertices[1].y(), quadVertices[1].z()).setUv(quadUVs[1][0], quadUVs[1][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
-                buffer.addVertex(quadVertices[2].x(), quadVertices[2].y(), quadVertices[2].z()).setUv(quadUVs[2][0], quadUVs[2][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
-                buffer.addVertex(quadVertices[3].x(), quadVertices[3].y(), quadVertices[3].z()).setUv(quadUVs[3][0], quadUVs[3][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex((float) (quadVertices[0].x()), (float) (quadVertices[0].y()), (float) (quadVertices[0].z())).setUv(quadUVs[0][0], quadUVs[0][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex((float) (quadVertices[1].x()), (float) (quadVertices[1].y()), (float) (quadVertices[1].z())).setUv(quadUVs[1][0], quadUVs[1][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex((float) (quadVertices[2].x()), (float) (quadVertices[2].y()), (float) (quadVertices[2].z())).setUv(quadUVs[2][0], quadUVs[2][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
+                buffer.addVertex((float) (quadVertices[3].x()), (float) (quadVertices[3].y()), (float) (quadVertices[3].z())).setUv(quadUVs[3][0], quadUVs[3][1]).setColor(1.f,1.f,1.f,alpha).setLight(light);
             }
         }
     }

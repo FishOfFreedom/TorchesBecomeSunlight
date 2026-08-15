@@ -70,10 +70,10 @@ public class DialogueEntityRenderer extends EntityRenderer<DialogueEntity> {
                     font.drawInBatch(message, startX, 0, 0XFFFFFF, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, packedLightIn);
                     RenderSystem.enableBlend();
                     VertexConsumer ivertexbuilder = bufferSource.getBuffer(RenderType.entityTranslucent(DIALOGUE, true));
-                    ivertexbuilder.addVertex(matrix4f, startX, -1, 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
-                    ivertexbuilder.addVertex(matrix4f, startX, height, 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
-                    ivertexbuilder.addVertex(matrix4f, startX + width, height, 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
-                    ivertexbuilder.addVertex(matrix4f, startX + width, -1, 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, (float) (startX), -1F, 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, (float) (startX), (float) (height), 0.01f).setColor(0, 0, 0, 0.3f).setUv(0, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, (float) (startX + width), (float) (height), 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 1).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
+                    ivertexbuilder.addVertex(matrix4f, (float) (startX + width), -1F, 0.01f).setColor(0, 0, 0, 0.3f).setUv(1, 0).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(poseStack.last().setNormal(), 1.0F, 1.0F, 1.0F);
                     RenderSystem.disableBlend();
                 }
             }

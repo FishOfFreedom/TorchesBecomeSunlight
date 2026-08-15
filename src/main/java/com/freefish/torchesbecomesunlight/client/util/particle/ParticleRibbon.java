@@ -171,10 +171,10 @@ public class ParticleRibbon extends AdvancedParticleBase {
             float f2 = this.getV0();
             float f3 = this.getV1();
 
-            buffer.addVertex(vertices2[0].x(), vertices2[0].y(), vertices2[0].z()).setUv(f1, f3).setColor(prevR, prevG, prevB, prevA).setLight(j);
-            buffer.addVertex(vertices2[1].x(), vertices2[1].y(), vertices2[1].z()).setUv(f1, f2).setColor(prevR, prevG, prevB, prevA).setLight(j);
-            buffer.addVertex(vertices2[2].x(), vertices2[2].y(), vertices2[2].z()).setUv(f, f2).setColor(r, g, b, a).setLight(j);
-            buffer.addVertex(vertices2[3].x(), vertices2[3].y(), vertices2[3].z()).setUv(f, f3).setColor(r, g, b, a).setLight(j);
+            buffer.addVertex((float) (vertices2[0].x()), (float) (vertices2[0].y()), (float) (vertices2[0].z())).setUv(f1, f3).setColor(prevR, prevG, prevB, prevA).setLight(j);
+            buffer.addVertex((float) (vertices2[1].x()), (float) (vertices2[1].y()), (float) (vertices2[1].z())).setUv(f1, f2).setColor(prevR, prevG, prevB, prevA).setLight(j);
+            buffer.addVertex((float) (vertices2[2].x()), (float) (vertices2[2].y()), (float) (vertices2[2].z())).setUv(f, f2).setColor(r, g, b, a).setLight(j);
+            buffer.addVertex((float) (vertices2[3].x()), (float) (vertices2[3].y()), (float) (vertices2[3].z())).setUv(f, f3).setColor(r, g, b, a).setLight(j);
 
             prevR = r;
             prevG = g;

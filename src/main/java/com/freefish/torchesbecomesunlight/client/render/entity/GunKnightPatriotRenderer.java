@@ -28,7 +28,7 @@ public class GunKnightPatriotRenderer extends GeoEntityRenderer<GunKnightPatriot
     }
 
     @Override
-    public int getPackedOverlay(GunKnightPatriot animatable, float u) {
+    public int getPackedOverlay(GunKnightPatriot animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }

@@ -336,8 +336,8 @@ public class YetiIcecleaver extends GuerrillasEntity implements ITeamMemberStora
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         return 1.2f;
     }
 

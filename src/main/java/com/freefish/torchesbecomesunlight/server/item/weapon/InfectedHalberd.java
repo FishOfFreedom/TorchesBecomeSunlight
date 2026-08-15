@@ -58,10 +58,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -111,7 +108,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
             int i2 = ConfigHandler.COMMON.TOOLs.HALBERD.skillAmount2.get();
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
             CompoundTag orCreateTag = TBSItemData.getTag(pStack);
             orCreateTag.putBoolean("tbsisActive", false);
             TBSItemData.setTag(pStack, orCreateTag);
@@ -130,7 +127,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         }
     }
 
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 
@@ -159,7 +156,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         } else if (EnchantmentHelper.getRiptide(itemstack) > 0 && !pPlayer.isInWaterOrRain()) {
             return InteractionResultHolder.fail(itemstack);
         }else  {
-            int i = this.getUseDuration(itemstack) - pPlayer.getUseItemRemainingTicks();
+            int i = this.getUseDuration(itemstack, pLivingEntity) - pPlayer.getUseItemRemainingTicks();
             CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
             orCreateTag.putBoolean("tbsisActive", true);
             TBSItemData.setTag(itemstack, orCreateTag);

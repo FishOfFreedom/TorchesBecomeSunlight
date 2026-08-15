@@ -27,7 +27,8 @@ public final class WinterScratchItem extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public WinterScratchItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties) {
-        super(armorMaterial, type, properties);
+        super(armorMaterial, type, properties.component(net.minecraft.core.component.DataComponents.UNBREAKABLE,
+                new net.minecraft.world.item.component.Unbreakable(true)));
     }
 
     @Override
@@ -40,10 +41,7 @@ public final class WinterScratchItem extends ArmorItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {

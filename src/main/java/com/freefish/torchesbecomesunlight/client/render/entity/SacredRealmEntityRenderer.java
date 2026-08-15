@@ -74,10 +74,10 @@ public class SacredRealmEntityRenderer extends EntityRenderer<SacredRealmEntity>
         while (len>0){
             float finalLen = Math.min(1f,len);
 
-            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(count), 0, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(count), 1, z1+ v1 *(count)).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(finalLen+count), 1, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
-            portalStatic.addVertex(posestack$pose.pose(), x1+ v *(finalLen+count), 0, z1+ v1 *(finalLen+count)).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 0F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(count)), 1F, (float) (z1+ v1 *(count))).setColor(1f, 0.8f, 0f, alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 1F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex(posestack$pose.pose(), (float) (x1+ v *(finalLen+count)), 0F, (float) (z1+ v1 *(finalLen+count))).setColor(1f, 0.8f, 0f, alpha).setUv(1-finalLen, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
 
             count+=1;
             len-=1;

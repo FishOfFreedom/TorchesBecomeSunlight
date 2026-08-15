@@ -54,7 +54,7 @@ public class PathfinderGun extends Item implements GeoItem {
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
             if(i>30&&!pLevel.isClientSide){
                 triggerAnim(player, GeoItem.getOrAssignId(player.getItemInHand(player.getUsedItemHand()),(ServerLevel) pLevel), "gun_controller", "gun");
                 shootArtilleryBullet(pLivingEntity, FFEntityUtils.getHeadRotVec(pLivingEntity,new Vec3(0,0,5)).add(0,1,0),pLivingEntity.position().add(0,1,0));
@@ -93,7 +93,7 @@ public class PathfinderGun extends Item implements GeoItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 

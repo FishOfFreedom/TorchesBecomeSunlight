@@ -19,7 +19,7 @@ public class SaintGuardRenderer extends GeoEntityRenderer<SaintGuard> {
     }
 
     @Override
-    public int getPackedOverlay(SaintGuard animatable, float u) {
+    public int getPackedOverlay(SaintGuard animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }

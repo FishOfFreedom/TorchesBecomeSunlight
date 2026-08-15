@@ -77,6 +77,6 @@ public class DialogueIconLayer<T extends AnimatedEntity> extends GeoRenderLayer<
     }
 
     public void drawVertex(Matrix4f matrix, PoseStack.Pose normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
-        vertexBuilder.addVertex(matrix, offsetX, offsetY, offsetZ).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
+        vertexBuilder.addVertex(matrix, (float) (offsetX), (float) (offsetY), (float) (offsetZ)).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 }

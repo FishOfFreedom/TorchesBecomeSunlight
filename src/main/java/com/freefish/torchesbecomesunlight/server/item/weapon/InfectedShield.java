@@ -45,10 +45,7 @@ public class InfectedShield extends ShieldItem implements GeoItem{
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -80,7 +77,7 @@ public class InfectedShield extends ShieldItem implements GeoItem{
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
             TBSItemData.putBoolean(pStack, "tbsisActive", false);
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
             if (player.getUsedItemHand() == InteractionHand.MAIN_HAND &&player.isShiftKeyDown() && i >= 30) {
                 PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
                 int i1 = ConfigHandler.COMMON.TOOLs.SHIELD.skillAmount1.get();

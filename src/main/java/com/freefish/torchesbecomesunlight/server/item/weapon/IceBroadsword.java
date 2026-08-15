@@ -57,10 +57,7 @@ public class IceBroadsword extends SwordItem implements GeoItem{
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {

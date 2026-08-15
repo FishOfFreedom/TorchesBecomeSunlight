@@ -91,10 +91,10 @@ public class BlackFlatParticle extends TextureSheetParticle {
         float f5 = this.getV1();
         int j = this.getLightColor(partialTicks);
 
-        buffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (double)avector3f[0].z()).setUv(f7, f5).setColor(0, 0, 0, this.alpha).setLight(j);
-        buffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (double)avector3f[1].z()).setUv(f7, f4).setColor(0, 0, 0, this.alpha).setLight(j);
-        buffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (double)avector3f[2].z()).setUv(f6, f4).setColor(0, 0, 0, this.alpha).setLight(j);
-        buffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (double)avector3f[3].z()).setUv(f6, f5).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (float) ((double)avector3f[0].z())).setUv(f7, f5).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (float) ((double)avector3f[1].z())).setUv(f7, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (float) ((double)avector3f[2].z())).setUv(f6, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (float) ((double)avector3f[3].z())).setUv(f6, f5).setColor(0, 0, 0, this.alpha).setLight(j);
     }
 
     @OnlyIn(Dist.CLIENT)

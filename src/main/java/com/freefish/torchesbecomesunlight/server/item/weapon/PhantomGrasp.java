@@ -57,10 +57,7 @@ public class PhantomGrasp extends PickaxeItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -79,7 +76,7 @@ public class PhantomGrasp extends PickaxeItem implements GeoItem {
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
             CompoundTag orCreateTag = TBSItemData.getTag(pStack);
             int i2 = ConfigHandler.COMMON.TOOLs.PHANTOM_GRASP.skillAmount1.get();
             if (i >= 20) {
@@ -144,7 +141,7 @@ public class PhantomGrasp extends PickaxeItem implements GeoItem {
         return geoCache;
     }
 
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 

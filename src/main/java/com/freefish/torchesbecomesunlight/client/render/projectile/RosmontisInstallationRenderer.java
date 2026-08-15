@@ -54,7 +54,7 @@ public class RosmontisInstallationRenderer extends GeoEntityRenderer<RosmontisIn
     }
 
     @Override
-    public int getPackedOverlay(RosmontisInstallation animatable, float u) {
+    public int getPackedOverlay(RosmontisInstallation animatable, float u, float partialTick) {
         return OverlayTexture.NO_OVERLAY;
     }
 

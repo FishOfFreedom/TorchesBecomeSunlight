@@ -18,7 +18,7 @@ public class TurretRenderer extends GeoEntityRenderer<Turret> {
     }
 
     @Override
-    public int getPackedOverlay(Turret animatable, float u) {
+    public int getPackedOverlay(Turret animatable, float u, float partialTick) {
         return OverlayTexture.NO_OVERLAY;
     }
 

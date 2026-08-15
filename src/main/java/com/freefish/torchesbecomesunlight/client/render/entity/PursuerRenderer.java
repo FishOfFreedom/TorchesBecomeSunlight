@@ -59,7 +59,7 @@ public class PursuerRenderer extends GeoEntityRenderer<Pursuer> {
     }
 
     @Override
-    public int getPackedOverlay(Pursuer animatable, float u) {
+    public int getPackedOverlay(Pursuer animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }

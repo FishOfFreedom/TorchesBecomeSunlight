@@ -660,7 +660,7 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putInt("update",0);
         return compoundTag;

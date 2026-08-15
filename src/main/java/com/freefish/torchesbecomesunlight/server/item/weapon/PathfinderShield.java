@@ -46,7 +46,7 @@ public class PathfinderShield extends ShieldItem implements GeoItem{
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
             TBSItemData.putBoolean(pStack, "tbsisActive", false);
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
         }
     }
 
