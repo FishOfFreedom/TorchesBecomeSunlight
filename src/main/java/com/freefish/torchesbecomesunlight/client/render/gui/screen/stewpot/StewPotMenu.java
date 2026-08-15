@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.render.gui.screen.stewpot;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
+import com.freefish.torchesbecomesunlight.server.init.recipe.StewPotRecipe;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.StewPotBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
@@ -19,7 +21,7 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import java.util.Objects;
 
-public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
+public class StewPotMenu extends RecipeBookMenu<RecipeWrapper, StewPotRecipe> {
     public final StewPotBlockEntity blockEntity;
     public final ItemStackHandler inventory;
     private final ContainerData cookingPotData;
@@ -159,8 +161,8 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper> {
     }
 
     @Override
-    public boolean recipeMatches(Recipe<? super RecipeWrapper> recipe) {
-        return recipe.matches(new RecipeWrapper(inventory), level);
+    public boolean recipeMatches(RecipeHolder<StewPotRecipe> recipe) {
+        return recipe.value().matches(new RecipeWrapper(inventory), level);
     }
 
     @Override
