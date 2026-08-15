@@ -13,7 +13,8 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class MobSpawnBiomeModifier implements BiomeModifier
 {
-    private static final DeferredHolder<Codec<?>, Codec<? extends BiomeModifier>> SERIALIZER = DeferredHolder.create(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "mowzie_mob_spawns"), NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, TorchesBecomeSunlight.MOD_ID);
+    private static final DeferredHolder<com.mojang.serialization.MapCodec<? extends BiomeModifier>, com.mojang.serialization.MapCodec<? extends BiomeModifier>> SERIALIZER =
+            DeferredHolder.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "mowzie_mob_spawns"));
 
     public MobSpawnBiomeModifier() {
 
@@ -27,11 +28,11 @@ public class MobSpawnBiomeModifier implements BiomeModifier
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public com.mojang.serialization.MapCodec<? extends BiomeModifier> codec() {
         return SERIALIZER.get();
     }
 
-    public static Codec<MobSpawnBiomeModifier> makeCodec() {
-        return Codec.unit(MobSpawnBiomeModifier::new);
+    public static com.mojang.serialization.MapCodec<MobSpawnBiomeModifier> makeCodec() {
+        return com.mojang.serialization.MapCodec.unit(MobSpawnBiomeModifier::new);
     }
 }

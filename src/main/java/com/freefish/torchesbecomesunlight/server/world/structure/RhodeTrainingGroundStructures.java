@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class RhodeTrainingGroundStructures extends FFStructures {
-    public static final Codec<RhodeTrainingGroundStructures> CODEC = simpleCodec(RhodeTrainingGroundStructures::new);
+    public static final com.mojang.serialization.MapCodec<RhodeTrainingGroundStructures> CODEC = simpleCodec(RhodeTrainingGroundStructures::new);
 
     public RhodeTrainingGroundStructures(StructureSettings settings) {
         super(settings, ConfigHandler.COMMON.GLOBALSETTING.rhodeTrainingGround, true, true, true);

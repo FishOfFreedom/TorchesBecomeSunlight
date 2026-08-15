@@ -72,7 +72,7 @@ public class TBSJigsawPlacement {
 
          Vec3i vec3i = blockpos.subtract(blockPos);
          BlockPos blockpos1 = blockPos.subtract(vec3i);
-         PoolElementStructurePiece poolelementstructurepiece = new PoolElementStructurePiece(structuretemplatemanager, structurepoolelement, blockpos1, structurepoolelement.getGroundLevelDelta(), rotation, structurepoolelement.getBoundingBox(structuretemplatemanager, blockpos1, rotation));
+         PoolElementStructurePiece poolelementstructurepiece = new PoolElementStructurePiece(structuretemplatemanager, structurepoolelement, blockpos1, structurepoolelement.getGroundLevelDelta(), rotation, structurepoolelement.getBoundingBox(structuretemplatemanager, blockpos1, rotation), net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING);
          BoundingBox boundingbox = poolelementstructurepiece.getBoundingBox();
          int i = (boundingbox.maxX() + boundingbox.minX()) / 2;
          int j = (boundingbox.maxZ() + boundingbox.minZ()) / 2;
@@ -283,7 +283,7 @@ public class TBSJigsawPlacement {
                                        k2 = structurepoolelement1.getGroundLevelDelta();
                                     }
 
-                                    PoolElementStructurePiece poolelementstructurepiece = new PoolElementStructurePiece(this.structureTemplateManager, structurepoolelement1, blockpos5, k2, rotation1, boundingbox3);
+                                    PoolElementStructurePiece poolelementstructurepiece = new PoolElementStructurePiece(this.structureTemplateManager, structurepoolelement1, blockpos5, k2, rotation1, boundingbox3, net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING);
                                     int l2;
                                     if (flag) {
                                        l2 = i + j;

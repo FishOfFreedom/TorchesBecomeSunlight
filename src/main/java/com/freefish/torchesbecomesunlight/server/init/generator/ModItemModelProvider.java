@@ -55,7 +55,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
     
     private void registerItemModels() {
-        for (DeferredHolder<Item, Item> item : ItemHandle.ITEMS.getEntries()) {
+        for (DeferredHolder<Item, ? extends Item> item : ItemHandle.ITEMS.getEntries()) {
             ItemType type = detectItemType(item.get());
             itemTypes.put(item.get(), type);
             registerModel(item.get(), type);

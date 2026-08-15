@@ -63,7 +63,7 @@ public class StargateControlerBlock extends BaseEntityBlock {
     
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+        if (!level.isClientSide()) {
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME , SoundSource.BLOCKS, 0.8f, 1.2f );
 
             player.displayClientMessage(Component.translatable(

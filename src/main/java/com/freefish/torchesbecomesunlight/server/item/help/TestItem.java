@@ -168,7 +168,7 @@ public class TestItem extends Item {
         }else if(mode==Mode.DIALOGUE){
 
             //Bullet abstractarrow = new Bullet(level,player,0);
-            Arrow abstractarrow = new Arrow(level,player);
+            Arrow abstractarrow = new Arrow(level, player, new ItemStack(net.minecraft.world.item.Items.ARROW), null);
             abstractarrow.setPos(player.position());
             Vec3 target = new Vec3(0,0,10).yRot((float) (-player.getYRot() / 180 * Math.PI)).add(player.position());
             double d0 = target.x - player.position().x;

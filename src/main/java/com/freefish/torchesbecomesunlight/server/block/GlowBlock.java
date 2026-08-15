@@ -38,7 +38,7 @@ public class GlowBlock extends Block {
     
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+        if (!level.isClientSide()) {
             boolean newState = !state.getValue(LIT);
             level.setBlock(pos, state.setValue(LIT, newState), 3);
 

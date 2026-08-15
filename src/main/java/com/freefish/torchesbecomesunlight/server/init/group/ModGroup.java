@@ -18,7 +18,7 @@ public class ModGroup {
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ItemHandle.TITLE.get()))
                     .title(Component.translatable("creativegroup.torchesbecomesunlight"))
                     .displayItems((parameters,output) ->{
-                        for (DeferredHolder<Item, Item> item : ItemHandle.ITEMS.getEntries()) {
+                        for (DeferredHolder<Item, ? extends Item> item : ItemHandle.ITEMS.getEntries()) {
                             if(item == ItemHandle.TITLE) continue;
                             output.accept(item.get());
                         }

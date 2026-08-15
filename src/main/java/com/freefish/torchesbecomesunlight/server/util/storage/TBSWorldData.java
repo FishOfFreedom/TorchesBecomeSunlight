@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.server.util.storage;
 import com.freefish.torchesbecomesunlight.server.entity.guerrillas.snowmonster.FrostNova;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,8 @@ public class TBSWorldData extends SavedData {
         if (world instanceof ServerLevel) {
             ServerLevel overworld = world.getServer().getLevel(Level.OVERWORLD);
             DimensionDataStorage storage = overworld.getDataStorage();
-            TBSWorldData data = storage.computeIfAbsent(TBSWorldData::load, TBSWorldData::new, IDENTIFIER);
+            TBSWorldData data = storage.computeIfAbsent(
+                    new SavedData.Factory<>(TBSWorldData::new, TBSWorldData::load), IDENTIFIER);
             if (data != null) {
                 data.setDirty();
             }
@@ -37,14 +39,14 @@ public class TBSWorldData extends SavedData {
         return null;
     }
 
-    public static TBSWorldData load(CompoundTag nbt) {
+    public static TBSWorldData load(CompoundTag nbt, HolderLookup.Provider registries) {
         TBSWorldData data = new TBSWorldData();
         data.trackedSnowNovaIds = Arrays.stream(nbt.getIntArray("TrackedSnowNovaIds")).boxed().collect(Collectors.toSet());
         return data;
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider registries) {
         compound.putIntArray("TrackedSnowNovaIds", trackedSnowNovaIds.stream().mapToInt(Integer::intValue).toArray());
         return compound;
     }

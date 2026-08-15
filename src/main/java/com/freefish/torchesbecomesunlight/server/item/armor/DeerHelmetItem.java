@@ -37,16 +37,17 @@ public final class DeerHelmetItem extends ArmorItem implements GeoItem {
     }
 
     @Override
-    public void onArmorTick(ItemStack stack, Level level, Player player) {
-        List<Mob> list = level.getEntitiesOfClass(Mob.class,player.getBoundingBox().inflate(12), entity ->
-                entity.distanceTo(player)<12&&entity.getTarget()==player);
+    public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slotId, boolean isSelected) {
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
+        if (!(entity instanceof Player player) || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD) != stack) return;
+        List<Mob> list = level.getEntitiesOfClass(Mob.class,player.getBoundingBox().inflate(12), target ->
+                target.distanceTo(player)<12&&target.getTarget()==player);
 
         for(Mob mob:list){
             if(isLookingAtMe(player,mob)){
                 mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,1));
             }
         }
-        super.onArmorTick(stack, level, player);
     }
 
     @Override

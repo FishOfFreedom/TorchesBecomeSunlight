@@ -108,7 +108,7 @@ public class SkyRenderer {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 
-            BufferBuilder bufferbuilder;
+            BufferBuilder bufferbuilder = null;
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 
 
@@ -163,7 +163,7 @@ public class SkyRenderer {
             int j = Mth.floor(pCamY);
             int k = Mth.floor(pCamZ);
             Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder bufferbuilder;
+            BufferBuilder bufferbuilder = null;
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
             RenderSystem.enableDepthTest();

@@ -57,7 +57,7 @@ public class UseHalberdAbility extends PlayerAbility {
                         throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     }
                     getLevel().addFreshEntity(throwntrident);
-                    getLevel().playSound((Player) null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    getLevel().playSound((Player) null, throwntrident, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     if (!player.getAbilities().instabuild) {
                         player.getInventory().removeItem(itemInHand);
                     }

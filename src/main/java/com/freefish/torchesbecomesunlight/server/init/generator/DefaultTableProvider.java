@@ -320,7 +320,7 @@ public class DefaultTableProvider extends LootTableProvider {
         }
 
         @Override
-        protected void add(EntityType<?> pEntityType, ResourceLocation pLootTableLocation, LootTable.Builder pBuilder) {
+        protected void add(EntityType<?> pEntityType, ResourceKey<LootTable> pLootTableLocation, LootTable.Builder pBuilder) {
             super.add(pEntityType, pLootTableLocation, pBuilder);
             this.map.computeIfAbsent(pEntityType, (p_249004_) -> {
                 return Maps.newHashMap();
@@ -330,12 +330,12 @@ public class DefaultTableProvider extends LootTableProvider {
         @Override
         public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_251751_) {
             this.generate();
-            Set<ResourceLocation> set = Sets.newHashSet();
+            Set<ResourceKey<LootTable>> set = Sets.newHashSet();
             this.getKnownEntityTypes().map(EntityType::builtInRegistryHolder).forEach((p_249003_) -> {
                 EntityType<?> entitytype = p_249003_.value();
                 if (canHaveLootTable(entitytype)) {
-                    Map<ResourceLocation, LootTable.Builder> map = this.map.remove(entitytype);
-                    ResourceLocation resourcelocation = entitytype.getDefaultLootTable();
+                    Map<ResourceKey<LootTable>, LootTable.Builder> map = this.map.remove(entitytype);
+                    ResourceKey<LootTable> resourcelocation = entitytype.getDefaultLootTable();
                     if (map != null) {
                         map.forEach((p_250376_, p_250972_) -> {
                             if (!set.add(p_250376_)) {
@@ -346,9 +346,9 @@ public class DefaultTableProvider extends LootTableProvider {
                         });
                     }
                 } else {
-                    Map<ResourceLocation, LootTable.Builder> map1 = this.map.remove(entitytype);
+                    Map<ResourceKey<LootTable>, LootTable.Builder> map1 = this.map.remove(entitytype);
                     if (map1 != null) {
-                        throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map1.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(",")), p_249003_.key().location()));
+                        throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map1.keySet().stream().map(java.lang.Object::toString).collect(Collectors.joining(",")), p_249003_.key().location()));
                     }
                 }
 

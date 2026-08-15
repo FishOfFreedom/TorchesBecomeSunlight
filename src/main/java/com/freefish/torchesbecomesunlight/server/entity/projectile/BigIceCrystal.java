@@ -135,6 +135,10 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
     }
 
     @Override
+    protected ItemStack getDefaultPickupItem() {
+        return ItemStack.EMPTY;
+    }
+
     protected ItemStack getPickupItem() {
         return null;
     }

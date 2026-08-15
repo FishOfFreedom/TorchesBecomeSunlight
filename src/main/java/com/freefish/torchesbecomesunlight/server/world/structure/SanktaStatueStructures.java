@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class SanktaStatueStructures extends FFStructures {
-    public static final Codec<SanktaStatueStructures> CODEC = simpleCodec(SanktaStatueStructures::new);
+    public static final com.mojang.serialization.MapCodec<SanktaStatueStructures> CODEC = simpleCodec(SanktaStatueStructures::new);
 
     public SanktaStatueStructures(StructureSettings settings) {
         super(settings, ConfigHandler.COMMON.GLOBALSETTING.sanktaStatue, true, true, true,66,2);

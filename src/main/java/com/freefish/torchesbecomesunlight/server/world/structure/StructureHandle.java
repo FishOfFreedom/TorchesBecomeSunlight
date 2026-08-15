@@ -20,7 +20,7 @@ public class StructureHandle {
     public static final ResourceKey<Structure> RHODE_ISLAND_OFFICE_K = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "rhode_island_office"));
     public static final ResourceKey<Structure> SANKTA_STATUE_K = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "sankta_statue"));
 
-    private static <T extends Structure> StructureType<T> explicitStructureTypeTyping(Codec<T> structureCodec) {
+    private static <T extends Structure> StructureType<T> explicitStructureTypeTyping(com.mojang.serialization.MapCodec<T> structureCodec) {
         return () -> structureCodec;
     }
 }

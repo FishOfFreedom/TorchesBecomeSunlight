@@ -100,7 +100,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void lerpTo(double pX, double pY, double pZ, float pYaw, float pPitch, int pPosRotationIncrements, boolean pTeleport) {
+    public void lerpTo(double pX, double pY, double pZ, float pYaw, float pPitch, int pPosRotationIncrements) {
         this.setPos(pX, pY, pZ);
         this.setRot(pYaw, pPitch);
     }

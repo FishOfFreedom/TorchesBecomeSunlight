@@ -80,7 +80,7 @@ public class PlayerSkillHelpEntity extends EffectEntity implements IEntityWithCo
                 float f1 = (float) Math.toRadians(getXRot());
                 float f2 = (float) Math.toRadians(getYRot() - 180);
 
-                RLBeamParticle rlBeamParticle = new RLBeamParticle(level());
+                RLBeamParticle rlBeamParticle = new RLBeamParticle((net.minecraft.client.multiplayer.ClientLevel) level());
                 rlBeamParticle.getConfig().setEnd(new Vector3f((float) (reVec3.x - getX()), (float) (reVec3.y - getY()), (float) (reVec3.z - getZ())));
                 rlBeamParticle.getConfig().setDuration(54);
                 rlBeamParticle.getConfig().setColor(new Gradient(new GradientColor(0XFF000000,0X00000000)));

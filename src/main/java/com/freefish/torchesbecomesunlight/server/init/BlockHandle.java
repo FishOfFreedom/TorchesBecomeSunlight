@@ -94,7 +94,7 @@ public class BlockHandle {
         registryVerticalSlab(name,t);
     }
     public static DeferredHolder<Block, StairBlock> registerStairs(final String name, final Block t){
-        return registryBlock(name, () -> new StairBlock(() -> t.defaultBlockState(), Block.Properties.ofFullCopy(t)),false);
+        return registryBlock(name, () -> new StairBlock(t.defaultBlockState(), Block.Properties.ofFullCopy(t)),false);
     }
     public static DeferredHolder<Block, SlabBlock> registerSlab(final String name, final Block t){
         return registryBlock(name, () -> new SlabBlock(Block.Properties.ofFullCopy(t)),false);

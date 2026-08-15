@@ -90,7 +90,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
                 default -> String.valueOf(amplifier + 1);
             };
         }
-        return Component.translatable(m.mobEffect.getDescriptionId()).append(" "+romanLevel).getString();
+        return Component.translatable(m.mobEffect.value().getDescriptionId()).append(" "+romanLevel).getString();
     }
 
     @Override

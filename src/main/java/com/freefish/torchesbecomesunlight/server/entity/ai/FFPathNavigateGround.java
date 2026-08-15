@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
@@ -143,12 +144,12 @@ public class FFPathNavigateGround extends GroundPathNavigation {
                 for (int z = z0; z != z1; z += stepz) {
                     for (int y = y0; y != y1; y += stepy) {
                         BlockState block = this.level.getBlockState(pos.set(x, y, z));
-                        if (!block.isPathfindable(this.level, pos, PathComputationType.LAND)) return false;
+                        if (!block.isPathfindable(PathComputationType.LAND)) return false;
                     }
-                    PathType below = this.nodeEvaluator.getBlockPathType(this.level, x, y0 - 1, z, this.mob);
+                    PathType below = this.nodeEvaluator.getPathTypeOfMob(new PathfindingContext(this.level, this.mob), x, y0 - 1, z, this.mob);
                     if (below == PathType.WATER || below == PathType.LAVA || below == PathType.OPEN)
                         return false;
-                    PathType in = this.nodeEvaluator.getBlockPathType(this.level, x, y0, z, this.mob);
+                    PathType in = this.nodeEvaluator.getPathTypeOfMob(new PathfindingContext(this.level, this.mob), x, y0, z, this.mob);
                     float priority = this.mob.getPathfindingMalus(in);
                     if (priority < 0.0F || priority >= 8.0F) return false;
                     if (in == PathType.DAMAGE_FIRE || in == PathType.DANGER_FIRE || in == PathType.DAMAGE_OTHER)
