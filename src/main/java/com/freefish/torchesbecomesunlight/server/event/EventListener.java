@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
@@ -49,7 +51,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
@@ -62,7 +63,7 @@ import java.util.Set;
 
 public final class EventListener {
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void spawnEntityLimit(MobSpawnEvent.FinalizeSpawn event){
+    public void spawnEntityLimit(FinalizeSpawnEvent event){
         Mob entity = event.getEntity();
         if(event.getSpawnType()== MobSpawnType.NATURAL) {
             ServerLevel level = (ServerLevel) event.getLevel();
@@ -191,7 +192,7 @@ public final class EventListener {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onPlayerHurt(LivingAttackEvent event) {
+    public void onPlayerHurt(LivingIncomingDamageEvent event) {
         if (!event.isCanceled()) {
             LivingEntity entity = event.getEntity();
 
@@ -387,7 +388,7 @@ public final class EventListener {
     }
 
     @SubscribeEvent
-    public void livingTick(LivingEvent.LivingTickEvent event){
+    public void livingTick(EntityTickEvent.Post event){
         LivingEntity livingEntity = event.getEntity();
         FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
         if(frozen!=null){

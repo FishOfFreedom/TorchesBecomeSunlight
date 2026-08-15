@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.AdvancementsHandle;
 import net.minecraft.core.HolderLookup;
@@ -13,7 +14,7 @@ import net.neoforged.fml.common.Mod;
 
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class DataGenerators {
     @SubscribeEvent
     public static void onGatherData(GatherDataEvent event) {

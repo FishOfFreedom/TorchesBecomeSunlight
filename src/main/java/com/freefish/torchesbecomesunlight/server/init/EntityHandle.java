@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.EntityEyeOfStructure;
@@ -37,7 +38,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class EntityHandle {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPE =
             DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, TorchesBecomeSunlight.MOD_ID);

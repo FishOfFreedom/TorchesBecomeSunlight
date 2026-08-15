@@ -979,14 +979,17 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     @Override
     public void actuallyHurt(DamageSource pDamageSource, float pDamageAmount) {
         if (!this.isInvulnerableTo(pDamageSource)) {
-            pDamageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, pDamageSource, pDamageAmount);
+            // 原先此处调用 ForgeHooks.onLivingHurt 触发 LivingHurtEvent。NeoForge 1.21.1 把该 hook
+            // 换成了基于 DamageContainer 的 CommonHooks.onLivingDamagePre/Post，签名与本方法的
+            // 覆写形式不兼容，故移除。
+            // 影响：其它 mod 监听伤害修改事件时，对本实体不再生效（伤害计算本身不变）。
             if (pDamageAmount <= 0) return;
             pDamageAmount = this.getDamageAfterArmorAbsorb(pDamageSource, pDamageAmount);
             pDamageAmount = this.getDamageAfterMagicAbsorb(pDamageSource, pDamageAmount);
             float f1 = java.lang.Math.max(pDamageAmount - this.getAbsorptionAmount(), 0.0F);
             this.setAbsorptionAmount(this.getAbsorptionAmount() - (pDamageAmount - f1));
 
-            f1 = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, pDamageSource, f1);
+            // 同上：原 ForgeHooks.onLivingDamage 在 NeoForge 已无等价的直调形式
             if (f1 != 0.0F) {
                 this.getCombatTracker().recordDamage(pDamageSource, f1);
                 this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);

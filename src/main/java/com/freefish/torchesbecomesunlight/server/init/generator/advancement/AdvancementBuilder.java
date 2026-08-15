@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.advancement;
 
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.google.common.collect.Maps;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 /**
  * Copied from Advancements.Builder with extentions to reduce copy pasta
  */
-public class AdvancementBuilder implements net.minecraftforge.common.extensions.IForgeAdvancementBuilder{
+public class AdvancementBuilder{
     @Nullable
     private ResourceLocation parentId;
     @Nullable
@@ -32,7 +33,7 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     private Map<String, Criterion> criteria = Maps.newLinkedHashMap();
     @Nullable
     private String[][] requirements;
-    private RequirementsStrategy requirementsStrategy = RequirementsStrategy.AND;
+    private AdvancementRequirements.Strategy requirementsStrategy = AdvancementRequirements.Strategy.AND;
     private String modid;
     private String fileKey;
 
@@ -121,7 +122,7 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         }
     }
 
-    public AdvancementBuilder requirements(RequirementsStrategy pStrategy) {
+    public AdvancementBuilder requirements(AdvancementRequirements.Strategy pStrategy) {
         this.requirementsStrategy = pStrategy;
         return this;
     }

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
@@ -25,7 +26,7 @@ public class DialogueCapability {
 
         void setDialogueNeedTime(int dialogueNeedTime);
 
-        void tick(LivingEvent.LivingTickEvent event);
+        void tick(EntityTickEvent.Post event);
     }
 
     public static class DialogueCapabilityImp implements IDialogueCapability {
@@ -51,7 +52,7 @@ public class DialogueCapability {
             this.dialogueNeedTime = dialogueNeedTime;
         }
 
-        public void tick(LivingEvent.LivingTickEvent event) {
+        public void tick(EntityTickEvent.Post event) {
             LivingEntity entity = event.getEntity();
             Level level = entity.level();
 

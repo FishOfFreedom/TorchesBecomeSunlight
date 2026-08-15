@@ -7,7 +7,6 @@ import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUp
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkDirection;
 
 import java.util.*;
 

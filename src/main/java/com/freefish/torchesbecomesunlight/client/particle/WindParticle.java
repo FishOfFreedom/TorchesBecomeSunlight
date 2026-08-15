@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import net.minecraft.network.codec.StreamCodec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;

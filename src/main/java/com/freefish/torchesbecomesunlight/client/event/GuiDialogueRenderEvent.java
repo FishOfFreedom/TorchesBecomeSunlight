@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.rosmontislib.gui.modular.ModularUIGuiContainer;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.keybindings.ModKeyBindings;
@@ -33,7 +34,7 @@ import org.joml.Matrix4f;
 import java.util.Arrays;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, value = Dist.CLIENT)
 public class GuiDialogueRenderEvent {
     private static final ResourceLocation DO = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/gui/dialogue_op.png");
 

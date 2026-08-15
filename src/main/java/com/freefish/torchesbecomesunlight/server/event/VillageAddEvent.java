@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.mixin.MixinStructureTemplatePool;
 import com.mojang.datafixers.util.Pair;
@@ -16,7 +17,7 @@ import net.neoforged.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class VillageAddEvent {
     @SubscribeEvent
     public static void onTagsUpdated(TagsUpdatedEvent ev)

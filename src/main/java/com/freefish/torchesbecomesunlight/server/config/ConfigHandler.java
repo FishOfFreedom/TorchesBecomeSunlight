@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.config;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.fml.common.Mod;
@@ -8,7 +9,7 @@ import java.util.function.Predicate;
 
 import static net.neoforged.neoforge.common.ModConfigSpec.*;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public final class ConfigHandler {
     private ConfigHandler() {}
 

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.advancement;
 
+import net.minecraft.advancements.AdvancementRequirements;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.ChainedAdvancementTrigger;
@@ -7,7 +8,6 @@ import com.freefish.torchesbecomesunlight.server.init.generator.advancement.crit
 import com.freefish.torchesbecomesunlight.server.world.structure.StructureHandle;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.advancements.critereon.PlayerTrigger;
@@ -132,7 +132,7 @@ public class TBSAdvancements implements AdvancementProvider.AdvancementGenerator
         Advancement gunPatriot_0_time = builder("gunPatriot_0_time").display(ItemHandle.LIGHT.get(), AdvancementType.TASK)
                 .addCriterion("has_time", InventoryChangeTrigger.TriggerInstance.hasItems(ItemHandle.TIME.get()))
                 .addCriterion("has_light", InventoryChangeTrigger.TriggerInstance.hasItems(ItemHandle.LIGHT.get()))
-                .requirements(RequirementsStrategy.OR)
+                .requirements(AdvancementRequirements.Strategy.OR)
                 .parent(gunPatriot).save(advCon);
 
         Advancement gunPatriot_structure = builder("gunPatriot_structure").display(ItemHandle.BIG_BEN.get(), AdvancementType.TASK)

@@ -6,7 +6,6 @@ import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUpdateBossBar;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
 
 import java.util.HashSet;
 import java.util.Iterator;

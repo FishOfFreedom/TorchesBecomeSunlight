@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class SoundHandle {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, TorchesBecomeSunlight.MOD_ID);
 

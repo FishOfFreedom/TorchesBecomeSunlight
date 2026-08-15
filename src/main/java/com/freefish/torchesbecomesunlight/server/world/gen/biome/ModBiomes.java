@@ -3,7 +3,7 @@ package com.freefish.torchesbecomesunlight.server.world.gen.biome;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BiomeDefaultFeatures;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.VegetationPlacements;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +16,7 @@ public class ModBiomes {
     public static final ResourceKey<Biome> DEMON_BIOME = ResourceKey.create(Registries.BIOME,
             ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "demon_biome"));
 
-    public static void boostrap(BootstapContext<Biome> context) {
+    public static void boostrap(BootstrapContext<Biome> context) {
         context.register(DEMON_BIOME, demonBiome(context));
     }
 
@@ -29,7 +29,7 @@ public class ModBiomes {
         BiomeDefaultFeatures.addSurfaceFreezing(builder);
     }
 
-    public static Biome demonBiome(BootstapContext<Biome> context) {
+    public static Biome demonBiome(BootstrapContext<Biome> context) {
         MobSpawnSettings.Builder spawnBuilder = new MobSpawnSettings.Builder();
 
         spawnBuilder.addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(EntityType.WOLF, 5, 4, 4));

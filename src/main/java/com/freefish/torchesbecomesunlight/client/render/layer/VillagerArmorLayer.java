@@ -118,7 +118,7 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
     }
 
     protected net.minecraft.client.model.Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, HumanoidModel model) {
-        return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
+        return net.neoforged.neoforge.client.ClientHooks.getArmorModel(entity, itemStack, slot, model);
     }
 
     public ResourceLocation getArmorResource(net.minecraft.world.entity.Entity entity, ItemStack stack, EquipmentSlot slot, @Nullable String type) {
@@ -131,8 +131,9 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
             texture = texture.substring(idx + 1);
         }
         String s1 = String.format(java.util.Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format(java.util.Locale.ROOT, "_%s", type));
-
-        s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
+        // 1.21 的 ClientHooks.getArmorTexture 改以 ArmorMaterial.Layer 为输入，与此处自行拼接
+        // 字符串路径的写法不兼容；这段本就是从 1.20.1 vanilla 复制来的，暂保留自拼路径。
+        // TODO(移植): 按 1.21 的 ArmorMaterial.Layer 重写本层的纹理解析
         ResourceLocation resourcelocation = ARMOR_LOCATION_CACHE.get(s1);
 
         if (resourcelocation == null) {
