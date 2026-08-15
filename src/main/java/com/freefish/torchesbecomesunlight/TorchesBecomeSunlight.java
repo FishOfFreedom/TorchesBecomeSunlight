@@ -171,7 +171,7 @@ public class TorchesBecomeSunlight
     }
 
     /**
-     * 目标整合包「最后的冬天」使用 Sodium，不含 Oculus/Iris，compat/oculus 已在移植时剥离。
+     * 移植目标环境使用 Sodium，不含 Oculus/Iris，compat/oculus 已在移植时剥离。
      * 若之后要接 Iris，在这里改判即可。
      */
     public static boolean isUsingShaderPack() {

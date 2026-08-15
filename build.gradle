@@ -67,7 +67,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     // RosmontisLib 没有公开 maven 坐标，直接用 libs/ 下的 jar
-    // （来源：整合包「最后的冬天」D:\MC\snow 的 mods 目录）
     flatDir {
         dirs 'libs'
     }
@@ -108,7 +107,7 @@ dependencies {
 
     // MixinExtras 已由 NeoForge 21.1 内置提供，不再需要单独引入或 jarJar。
 
-    // TODO(移植): 整合包「最后的冬天」使用 Sodium，且不含 Oculus/Iris 或 Xenon。
+    // TODO(移植): 移植目标环境使用 Sodium，且不含 Oculus/Iris 或 Xenon。
     //   原 1.20.1 的 compat 依赖需要重新决策：
     //     implementation fg.deobf("curse.maven:xenon-564239:5216360")
     //     implementation fg.deobf("curse.maven:oculus-581495:5299671")
