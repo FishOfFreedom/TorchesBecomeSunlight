@@ -3,6 +3,7 @@ package com.freefish.torchesbecomesunlight.server.init.generator.advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
+import com.freefish.torchesbecomesunlight.server.init.TBSTagKey;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.ChainedAdvancementTrigger;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.StringAdvancementTrigger;
 import com.freefish.torchesbecomesunlight.server.world.structure.StructureHandle;
@@ -113,7 +114,8 @@ public class TBSAdvancements implements AdvancementProvider.AdvancementGenerator
                 .addCriterion("pre",new ChainedAdvancementTrigger.Instance(
                         ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"rhodes_1"))).save(con);
         AdvancementHolder rhodes_1 = builder("rhodes_1").display(ItemHandle.RHODES_SHIELD.get(), AdvancementType.TASK)
-                .addCriterion("near_structure", PlayerTrigger.TriggerInstance.located(LocationPredicate.Builder.inStructure(registries.lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getOrThrow(StructureHandle.RHODE_ISLAND_OFFICE_K))))
+                .addCriterion("near_structure", PlayerTrigger.TriggerInstance.located(LocationPredicate.Builder.location().setStructures(
+                        registries.lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getOrThrow(TBSTagKey.EYE_OF_RHODES_ISLAND_BANSHICHU))))
                 .parent(rhodes).save(advCon);
         AdvancementHolder rhodes_2_c = builder("rhodes_2_c").display(ItemHandle.RHODES_SHIELD.get(), AdvancementType.TASK)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("rhodes_2_c"))
@@ -125,40 +127,41 @@ public class TBSAdvancements implements AdvancementProvider.AdvancementGenerator
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("rhodes_4_trust"))
                 .parent(rhodes_3_rosmontis).save(advCon);
 
-        AdvancementHolder gunPatriot = builder("gunPatriot").parent(root).display(ItemHandle.TIME.get(), AdvancementType.TASK)
+        AdvancementHolder gunPatriot = builder("gun_patriot").parent(root).display(ItemHandle.TIME.get(), AdvancementType.TASK)
                 .addCriterion("pre",new ChainedAdvancementTrigger.Instance(
-                        ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"gunPatriot_0_time"),
-                        ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"gunPatriot_structure"))).save(con);
+                        ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"gun_patriot_0_time"),
+                        ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"gun_patriot_structure"))).save(con);
 
-        AdvancementHolder gunPatriot_0_time = builder("gunPatriot_0_time").display(ItemHandle.LIGHT.get(), AdvancementType.TASK)
+        AdvancementHolder gunPatriot_0_time = builder("gun_patriot_0_time").display(ItemHandle.LIGHT.get(), AdvancementType.TASK)
                 .addCriterion("has_time", InventoryChangeTrigger.TriggerInstance.hasItems(ItemHandle.TIME.get()))
                 .addCriterion("has_light", InventoryChangeTrigger.TriggerInstance.hasItems(ItemHandle.LIGHT.get()))
                 .requirements(AdvancementRequirements.Strategy.OR)
                 .parent(gunPatriot).save(advCon);
 
-        AdvancementHolder gunPatriot_structure = builder("gunPatriot_structure").display(ItemHandle.BIG_BEN.get(), AdvancementType.TASK)
-                .addCriterion("near_structure", PlayerTrigger.TriggerInstance.located(LocationPredicate.Builder.inStructure(registries.lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getOrThrow(StructureHandle.SANKTA_STATUE_K))))
+        AdvancementHolder gunPatriot_structure = builder("gun_patriot_structure").display(ItemHandle.BIG_BEN.get(), AdvancementType.TASK)
+                .addCriterion("near_structure", PlayerTrigger.TriggerInstance.located(LocationPredicate.Builder.location().setStructures(
+                        registries.lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE).getOrThrow(TBSTagKey.EYE_OF_SANKTA_STATUE))))
                 .parent(gunPatriot).save(advCon);
 
-        AdvancementHolder gunPatriot_1_time = builder("gunPatriot_1_time").display(ItemHandle.INFECTED_GUN.get(), AdvancementType.TASK)
+        AdvancementHolder gunPatriot_1_time = builder("gun_patriot_1_time").display(ItemHandle.INFECTED_GUN.get(), AdvancementType.TASK)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_1_time"))
                 .parent(gunPatriot_structure).save(advCon);
 
-        AdvancementHolder gunPatriot_2_fight = builder("gunPatriot_2_fight").display(ItemHandle.GUN.get(), AdvancementType.TASK)
+        AdvancementHolder gunPatriot_2_fight = builder("gun_patriot_2_fight").display(ItemHandle.GUN.get(), AdvancementType.TASK)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_2_fight"))
                 .parent(gunPatriot_1_time).save(advCon);
 
-        AdvancementHolder gunPatriot_3_fight = builder("gunPatriot_3_fight").display(ItemHandle.SACRED_HALBERD.get(), AdvancementType.TASK)
+        AdvancementHolder gunPatriot_3_fight = builder("gun_patriot_3_fight").display(ItemHandle.SACRED_HALBERD.get(), AdvancementType.TASK)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_3_fight"))
                 .parent(gunPatriot_2_fight).save(advCon);
 
-        AdvancementHolder gunPatriot_4_sakta = builder("gunPatriot_4_sakta").display(ItemHandle.SANKTA_RING.get(), AdvancementType.CHALLENGE)
+        AdvancementHolder gunPatriot_4_sakta = builder("gun_patriot_4_sakta").display(ItemHandle.SANKTA_RING.get(), AdvancementType.CHALLENGE)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_4_sakta"))
                 .parent(gunPatriot_3_fight).save(advCon);
-        AdvancementHolder gunPatriot_5_control = builder("gunPatriot_5_control").display(ItemHandle.SANKTA_RING.get(), AdvancementType.GOAL)
+        AdvancementHolder gunPatriot_5_control = builder("gun_patriot_5_control").display(ItemHandle.SANKTA_RING.get(), AdvancementType.GOAL)
                 .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_5_control"))
                 .parent(gunPatriot_4_sakta).save(advCon);
-        //Advancement gunPatriot_hide = builder("gunPatriot_hide").display(ItemHandle.SANKTA_RING.get(), AdvancementType.CHALLENGE,true)
+        //Advancement gunPatriot_hide = builder("gun_patriot_hide").display(ItemHandle.SANKTA_RING.get(), AdvancementType.CHALLENGE,true)
         //        .addCriterion("ad_id", new StringAdvancementTrigger.Instance("gunPatriot_hide"))
         //        .parent(gunPatriot).save(advCon);
     }

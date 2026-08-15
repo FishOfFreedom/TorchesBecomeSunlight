@@ -37,7 +37,7 @@ public class FrostedTalisman extends SummonItem<FrostNova> {
     @Override
     public void whenSummonSuccess(Player player,FrostNova patriot) {
         if(player instanceof ServerPlayer serverPlayer){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "partner_frostnova");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "partner_frostnova");
         }
     }
 

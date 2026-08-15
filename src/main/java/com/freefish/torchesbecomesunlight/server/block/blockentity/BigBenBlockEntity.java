@@ -112,12 +112,12 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
                 } else if(challengeType==ChallengeType.GUN_NIGHT){
                     playerStory.setWinPatriot(true);
                     if(challengePlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_2_fight");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_2_fight");
                     }
                 } else if(challengeType==ChallengeType.FINAL){
                     playerStory.setWinPatriotFinal(true);
                     if(challengePlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_3_fight");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_3_fight");
                     }
                 }
             }

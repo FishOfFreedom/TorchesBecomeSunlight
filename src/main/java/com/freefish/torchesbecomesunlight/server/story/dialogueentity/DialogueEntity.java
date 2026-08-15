@@ -95,7 +95,7 @@ public class DialogueEntity extends Entity implements IEntityWithComplexSpawn {
             if(living instanceof Player player){
                 this.player = player;
                 if(player instanceof ServerPlayer serverPlayer){
-                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "talk");
+                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "talk");
                 }
                 flad1 = false;
                 break;

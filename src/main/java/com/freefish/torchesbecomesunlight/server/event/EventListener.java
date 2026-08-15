@@ -70,8 +70,16 @@ public final class EventListener {
      * 原先写在 FullOfEnergyEffect 里的冻结状态复位改到这里，行为等价。
      */
     @SubscribeEvent
-    public void onEffectEnd(MobEffectEvent event) {
-        if (!(event instanceof MobEffectEvent.Expired) && !(event instanceof MobEffectEvent.Remove)) return;
+    public void onEffectExpired(MobEffectEvent.Expired event) {
+        resetFullOfEnergy(event);
+    }
+
+    @SubscribeEvent
+    public void onEffectRemoved(MobEffectEvent.Remove event) {
+        resetFullOfEnergy(event);
+    }
+
+    private void resetFullOfEnergy(MobEffectEvent event) {
         MobEffectInstance instance = event.getEffectInstance();
         if (instance == null || !instance.is(EffectHandle.FULL_OF_ENERGY)) return;
         if (EffectHandle.FULL_OF_ENERGY.get() instanceof FullOfEnergyEffect effect) {
@@ -441,7 +449,7 @@ public final class EventListener {
         Player player = event.getEntity();
         ResourceLocation advancementId = event.getAdvancement().id();
 
-        if (player instanceof ServerPlayer) TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.trigger((ServerPlayer)player,advancementId);
+        if (player instanceof ServerPlayer) TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.get().trigger((ServerPlayer)player,advancementId);
     }
 
     @SubscribeEvent

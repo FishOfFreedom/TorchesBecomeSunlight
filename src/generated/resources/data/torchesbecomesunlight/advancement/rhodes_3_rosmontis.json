@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:rhodes_2_c",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "rhodes_3_rosmontis"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.rhodes_3_rosmontis"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:rosmontis_embrace"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.rhodes_3_rosmontis"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

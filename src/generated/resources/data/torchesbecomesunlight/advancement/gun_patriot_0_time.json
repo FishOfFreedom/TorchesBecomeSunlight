@@ -1,0 +1,43 @@
+{
+  "parent": "torchesbecomesunlight:gun_patriot",
+  "criteria": {
+    "has_light": {
+      "conditions": {
+        "items": [
+          {
+            "items": "torchesbecomesunlight:light"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_time": {
+      "conditions": {
+        "items": [
+          {
+            "items": "torchesbecomesunlight:time"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gun_patriot_0_time"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:light"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gun_patriot_0_time"
+    }
+  },
+  "requirements": [
+    [
+      "has_time",
+      "has_light"
+    ]
+  ]
+}

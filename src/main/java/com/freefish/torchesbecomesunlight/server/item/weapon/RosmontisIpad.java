@@ -49,7 +49,7 @@ public class RosmontisIpad extends SummonItem<Rosmontis> implements GeoItem{
             patriot.isOnStoryGround = false;
         }
         if(player instanceof ServerPlayer serverPlayer){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "partner_rosmontis");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "partner_rosmontis");
         }
     }
 

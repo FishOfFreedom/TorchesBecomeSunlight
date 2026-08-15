@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:gun_patriot_2_fight",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "gunPatriot_3_fight"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gun_patriot_3_fight"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:sacred_halberd"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gun_patriot_3_fight"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

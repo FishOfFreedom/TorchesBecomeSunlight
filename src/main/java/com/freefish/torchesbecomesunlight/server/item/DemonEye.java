@@ -69,7 +69,7 @@ public class DemonEye extends Item {
                         pLevel.addFreshEntity(pee);
 
                         if(pPlayer instanceof ServerPlayer player){
-                            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "ursus_1");
+                            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "ursus_1");
                         }
                         break;
                     }

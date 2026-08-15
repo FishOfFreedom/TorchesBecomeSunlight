@@ -1564,7 +1564,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     public void playDeathAnimationPre(DamageSource source) {
         if(challengePlayer!=null){
             if(challengePlayer instanceof ServerPlayer serverPlayer){
-                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_1_frostnova");
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "main_8_1_frostnova");
             }
             setAggressive(false);
             setHealth(1);

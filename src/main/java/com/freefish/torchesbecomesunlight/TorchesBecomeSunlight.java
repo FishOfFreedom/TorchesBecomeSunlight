@@ -106,6 +106,7 @@ public class TorchesBecomeSunlight
         RecipesHandle.register(bus);
         MenuHandle.register(bus);
         TBSAttachments.ATTACHMENT_TYPES.register(bus);
+        TriggerHandler.register(bus);
 
         PROXY.init(bus, container);
         bus.addListener(this::commonSetup);
@@ -118,12 +119,10 @@ public class TorchesBecomeSunlight
             bus.addListener(TBSShaderHandle::registerShaders);
         }
 
-        NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new EventListener());
         // NeoForge 已移除 AttachCapabilitiesEvent，capability 改为在 RegisterCapabilitiesEvent 中按实体类型注册
     }
 
-    @SubscribeEvent
     public void onModConfigEvent(final ModConfigEvent event) {
         final ModConfig config = event.getConfig();
         if (config.getSpec() == ConfigHandler.COMMON_CONFIG) {

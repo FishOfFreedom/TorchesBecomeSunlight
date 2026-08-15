@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:partner",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "partner_rosmontis"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.partner_rosmontis"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:rosmontis_ipad"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.partner_rosmontis"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

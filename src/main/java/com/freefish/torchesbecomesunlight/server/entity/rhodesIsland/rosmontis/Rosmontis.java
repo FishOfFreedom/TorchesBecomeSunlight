@@ -2094,7 +2094,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 PlayerStoryStoneData playerStory = capability.getPlayerStory();
                 playerStory.setWinRosmontis(true);
                 if(challengePlayer instanceof ServerPlayer player){
-                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "rhodes_3_rosmontis");
+                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "rhodes_3_rosmontis");
                 }
                 playerStory.setCanSummonRosmontis(true);
             }
@@ -2142,7 +2142,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
                 dialogueEntry.setRunnable(()->{
                     if(player instanceof ServerPlayer serverPlayer){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "rhodes_4_trust");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "rhodes_4_trust");
                     }
                     Inventory inventory = player.getInventory();
                     inventory.add(new ItemStack(ItemHandle.ROSMONTIS_EMBRACE.get()));
@@ -2165,7 +2165,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 dialogueEntry.setRunnable(()->{
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this,STORY_MOVE);
                     if(player instanceof ServerPlayer serverPlayer){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "rhodes_2_c");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "rhodes_2_c");
                     }
                 });
             }

@@ -1174,7 +1174,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         if(challengePlayer!=null){
 
             if(challengePlayer instanceof ServerPlayer serverPlayer){
-                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_2_patriot");
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "main_8_2_patriot");
             }
             setAggressive(false);
             setHealth(1);

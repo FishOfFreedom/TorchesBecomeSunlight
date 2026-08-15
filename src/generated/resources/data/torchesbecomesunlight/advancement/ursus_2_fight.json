@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:ursus_1",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "ursus_2_fight"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.ursus_2_fight"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:ursus_machete"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.ursus_2_fight"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

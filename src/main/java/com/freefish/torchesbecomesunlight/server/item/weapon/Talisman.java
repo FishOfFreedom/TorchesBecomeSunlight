@@ -37,7 +37,7 @@ public class Talisman extends SummonItem<Patriot>{
     @Override
     public void whenSummonSuccess(Player player,Patriot patriot) {
         if(player instanceof ServerPlayer serverPlayer){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "partner_patriot");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "partner_patriot");
         }
     }
 

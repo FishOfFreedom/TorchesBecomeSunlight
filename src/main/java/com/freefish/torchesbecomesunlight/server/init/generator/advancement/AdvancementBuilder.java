@@ -109,11 +109,11 @@ public class AdvancementBuilder{
     }
 
     public AdvancementBuilder addCriterion(String pKey, ChainedAdvancementTrigger.Instance pCriterion) {
-        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER, pCriterion));
+        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.get(), pCriterion));
     }
 
     public AdvancementBuilder addCriterion(String pKey, StringAdvancementTrigger.Instance pCriterion) {
-        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.STRING_ADVANCEMENT_TRIGGER, pCriterion));
+        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get(), pCriterion));
     }
 
     public AdvancementBuilder addCriterion(String pKey, Criterion<?> pCriterion) {

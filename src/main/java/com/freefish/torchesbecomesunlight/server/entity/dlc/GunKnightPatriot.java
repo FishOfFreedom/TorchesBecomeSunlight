@@ -1161,7 +1161,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                         if(capability!=null){
                             capability.setIsSankta(true);
                             if(sanktaEntity instanceof ServerPlayer player){
-                                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_4_sakta");
+                                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_4_sakta");
                             }
                             ServerNetwork.toClientMessage(sanktaEntity, new SynCapabilityMessage(sanktaEntity, capability.writePlaySkillMessage()));
                         }

@@ -3,7 +3,8 @@
     {
       "enum": "net/minecraft/world/inventory/RecipeBookType",
       "name": "TORCHESBECOMESUNLIGHT_COOKING",
-      "constructor": "()V"
+      "constructor": "()V",
+      "parameters": []
     },
     {
       "enum": "net/minecraft/client/RecipeBookCategories",

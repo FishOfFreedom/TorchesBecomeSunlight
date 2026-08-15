@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:partner",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "partner_patriot"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.partner_patriot"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:talisman"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.partner_patriot"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

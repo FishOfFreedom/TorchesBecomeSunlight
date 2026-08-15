@@ -1,0 +1,30 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:ursus_1"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.ursus"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:machete"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.ursus"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ]
+}

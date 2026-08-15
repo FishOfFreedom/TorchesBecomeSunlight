@@ -945,7 +945,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     @Override
     public void playDeathAnimationPre(DamageSource source) {
         if(source .getEntity() instanceof ServerPlayer player){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "ursus_2_fight");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "ursus_2_fight");
         }
     }
 
@@ -1037,7 +1037,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         super.die(pDamageSource);
         Entity entity = pDamageSource.getEntity();
         if(entity instanceof ServerPlayer s){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(s,"ursus_2_fight");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(s,"ursus_2_fight");
         }
         if (!this.isRemoved()&&bossInfo instanceof IBossInfoUpdate update) {
             update.update();

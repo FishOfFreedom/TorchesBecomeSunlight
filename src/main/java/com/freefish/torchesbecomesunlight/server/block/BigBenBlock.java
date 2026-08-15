@@ -82,7 +82,7 @@ public class BigBenBlock extends BaseEntityBlock {
 
                 if(flad1&&flad2){
                     if(pPlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_1_time");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_1_time");
                     }
                     float posToPosRot = FFEntityUtils.getPosToPosRot(pPlayer.position(), pPos.getCenter());
                     entity.hitBen(posToPosRot, 640);
