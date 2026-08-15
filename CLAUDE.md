@@ -9,7 +9,7 @@
 包根目录：`com.freefish.torchesbecomesunlight`。代码注释与对话描述大量使用中文；语言文件同时提供 `en_us` 与 `zh_cn`。
 
 > ⚠️ **本分支正在从 Forge 1.20.1 移植到 NeoForge 1.21.1**（分支 `feature/1.21.1-neoforge`）。
-> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 755）。
+> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 739）。
 > 架构级重写（注册表、网络、Capability、粒子、进度触发器）均已完成，
 > **符号解析阶段已清零**，剩余错误全部来自其后的类型/访问检查阶段。
 > 详见文末「移植状态」。`master` 分支保持 1.20.1 Forge 不变。
@@ -169,7 +169,9 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 ### 进行中：Java 代码
 
-编译错误从 **3518 降到 755**（受影响文件 379 → 187）。**符号解析阶段已清零**，即全项目不再有"找不到类/方法"；当前错误全部来自其后的类型/访问检查阶段。注意 javac 分阶段，前一阶段没通过时后一阶段的错误根本不会显示——所以清零符号阶段时曾出现"剩 1 个"随即跳到 819 的情况，那不是回退。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
+编译错误从 **3518 降到 739**（受影响文件 379 → 186）。符号解析阶段已清零，当前错误全部来自其后的类型/访问检查阶段。
+
+> ⚠️ **看错误数时务必留意 javac 的分阶段行为**：parse → 符号解析 → 类型检查，**前一阶段没通过时，后一阶段的错误根本不会打印**。所以错误数骤降往往不是"接近完成"，而是"卡在了更早的阶段"。本次移植中已两次踩到：清零符号阶段时从"剩 1 个"跳到 819；一个批量脚本引入 40 个语法错误时，759 个类型错误被整体隐藏，看上去像是"755 → 40"的大跃进，修好语法后立刻回到 739。判断真实进度要看**阶段**，不能只看数字。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
 
 **方法论**：所有批量改写都基于**从 jar 里提取的真实类索引**自动生成映射，不靠记忆猜包名 —— 解压 `neoforge-21.1.242-universal.jar` / `geckolib-*.jar` 建立 `简单名 → 全限定名` 索引，再比对项目里的 import；MC 侧的成员名和方法签名一律用 1.21.1 官方 mappings（`piston-meta` 下载的 `client.txt`）核对。改名类**必须同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
 
@@ -188,6 +190,29 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 **网络已完成**：封包改为 `CustomPacketPayload` + `StreamCodec`，注册走 `RegisterPayloadHandlersEvent`。原 `serialize`/`deserialize` 签名被 `StreamCodec.of` 复用，故未改动序列化逻辑。**注意契约变化**：NeoForge 按 `Type` 里的 ResourceLocation 寻址，注册顺序不再是协议的一部分；但 `MessageUseAbility`/`AnimationActMessage` 传的仍是**数组下标**，`PLAYER_ABILITIES` 与 `getAnimations()` 的"只能追加"约束依然成立。
 
 **Capability 已完成**：见上文「Capability —— 已迁到 Data Attachments」。`TickEvent` 也已按 1.21.1 的 Pre/Post 拆分改造（原代码用 `phase == START` 提前 return，语义即"只在 END 跑"，故一律对应 `Post`）。
+
+### 移植期的权威参考：整合包里的 Mowzie's Mobs 1.21.1
+
+本 Mod 的渲染层、粒子系统与技能系统大量源自 **Mowzie's Mobs**（`MowzieGeoArmorRenderer`、`MowzieGeoBone`、`MowzieGeoModel`、`MowzieAnimationController`、`GeckoPlayer`/`GeckoRenderPlayer`、`AdvancedParticleBase`/`ParticleComponent`、`Ability`/`AbilitySection` —— 部分文件的注释里直接写明了出处）。
+
+整合包里就有 **`mowziesmobs-1.21.1-1.8.2.jar`**，即这些同源类**已经移植好的官方实现**。遇到签名对不上时，直接读它的签名比猜快得多：
+
+```bash
+J="D:/MC/snow/.minecraft/versions/最后的冬天/mods/mowziesmobs-1.21.1-1.8.2.jar"
+G=$(find ~/.gradle/caches/modules-2/files-2.1/software.bernie.geckolib -name "*4.9.2*.jar" | grep -v sources | head -1)
+mkdir -p /tmp/mm && unzip -o -q "$J" -d /tmp/mm
+javap -cp "/tmp/mm;$G" com.bobmowzie.mowziesmobs.client.render.entity.MowzieGeoArmorRenderer
+```
+
+已据此确认的 1.21.1 GeckoLib 渲染签名（本项目对应类应与之一致）：
+
+| 方法 | 1.21.1 签名 |
+| --- | --- |
+| `renderToBuffer` | `(PoseStack, VertexConsumer, int packedLight, int packedOverlay, int color)` |
+| `renderRecursively` | `(PoseStack, T, GeoBone, RenderType, MultiBufferSource, VertexConsumer, boolean, float, int, int, int)` |
+| `actuallyRender` | `(PoseStack, T, BakedGeoModel, RenderType, MultiBufferSource, VertexConsumer, boolean, float, int, int, int)` |
+
+即末尾的 4 个 float 颜色分量统一合并为 1 个 ARGB `int`。Mowzie's Mobs 本身是开源的（github.com/BobMowzie/MowziesMobs），需要看实现而不只是签名时可去对应分支查阅。
 
 ### 剩余工作
 
