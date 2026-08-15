@@ -4,7 +4,6 @@ import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -51,9 +50,9 @@ public abstract class MixinLevelRenderer{
     }
 
     @Inject(method = "renderSky",at = @At("HEAD"), cancellable = true)
-    public void renderDemonSky(PoseStack matrices, Matrix4f pProjectionMatrix, float pPartialTick, Camera pCamera, boolean pIsFoggy, Runnable pSkyFogSetup, CallbackInfo info){
+    public void renderDemonSky(Matrix4f pFrustumMatrix, Matrix4f pProjectionMatrix, float pPartialTick, Camera pCamera, boolean pIsFoggy, Runnable pSkyFogSetup, CallbackInfo info){
         if(ClientStorage.INSTANCE.demonRadio>=60&&ConfigHandler.CLIENT.demonRender.get()) {
-            SkyRenderer.renderDemonSky(level, pPartialTick, matrices.last().pose(), pCamera, pProjectionMatrix, pSkyFogSetup);
+            SkyRenderer.renderDemonSky(level, pPartialTick, pFrustumMatrix, pCamera, pProjectionMatrix, pSkyFogSetup);
             info.cancel();
         }
     }

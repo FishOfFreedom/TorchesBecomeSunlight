@@ -107,6 +107,7 @@ public class TorchesBecomeSunlight
         MenuHandle.register(bus);
         TBSAttachments.ATTACHMENT_TYPES.register(bus);
         TriggerHandler.register(bus);
+        ProcessorHandler.register(bus);
 
         PROXY.init(bus, container);
         bus.addListener(this::commonSetup);
@@ -148,7 +149,6 @@ public class TorchesBecomeSunlight
         event.enqueueWork(()->{
             PartnerHandler.init();
             // 封包注册已改为 ServerNetwork 上的 RegisterPayloadHandlersEvent，无需在此初始化
-            ProcessorHandler.registerStructureProcessors();
         });
     }
 

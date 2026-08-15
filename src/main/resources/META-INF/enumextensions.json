@@ -4,7 +4,10 @@
       "enum": "net/minecraft/world/inventory/RecipeBookType",
       "name": "TORCHESBECOMESUNLIGHT_COOKING",
       "constructor": "()V",
-      "parameters": []
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/TorchesBecomeSunlight",
+        "field": "RECIPE_TYPE_COOKING_PROXY"
+      }
     },
     {
       "enum": "net/minecraft/client/RecipeBookCategories",

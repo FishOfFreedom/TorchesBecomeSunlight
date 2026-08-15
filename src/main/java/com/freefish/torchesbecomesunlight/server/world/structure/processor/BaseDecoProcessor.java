@@ -16,7 +16,7 @@ public class BaseDecoProcessor extends StructureProcessor {
     public static final com.mojang.serialization.MapCodec<BaseDecoProcessor> CODEC = com.mojang.serialization.MapCodec.unit(() -> INSTANCE);
 
     protected StructureProcessorType<?> getType() {
-        return ProcessorHandler.BASE_DECO_PROCESSOR;
+        return ProcessorHandler.BASE_DECO_PROCESSOR.get();
     }
 
     @Override
