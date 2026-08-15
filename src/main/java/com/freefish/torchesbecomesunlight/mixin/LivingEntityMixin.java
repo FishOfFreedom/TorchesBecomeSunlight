@@ -21,7 +21,7 @@ public abstract class LivingEntityMixin {
 
         if(pFood.getItem() instanceof TBSFood tbsFood){
             pLevel.playSound((Player)null, living.getX(), living.getY(), living.getZ(), living.getEatingSound(pFood), SoundSource.NEUTRAL, 1.0F, 1.0F + (pLevel.random.nextFloat() - pLevel.random.nextFloat()) * 0.4F);
-            pFood.hurtAndBreak(1,living,(living1 -> {}));
+            pFood.hurtAndBreak(1, living, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
             living.gameEvent(GameEvent.EAT);
             cir.setReturnValue(pFood);
             cir.cancel();

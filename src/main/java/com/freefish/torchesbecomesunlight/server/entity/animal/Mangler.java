@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.animal;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
@@ -34,9 +36,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -154,7 +156,7 @@ public class Mangler extends AnimatedEntity {
     private Mangler leader;
     public boolean isAttacked;
     private List<Mangler> followers = new ArrayList<>();
-    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADDITION);
+    private AttributeModifier attributeModifier = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), 0.8, AttributeModifier.Operation.ADD_VALUE);
 
     public Mangler(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
@@ -269,11 +271,11 @@ public class Mangler extends AnimatedEntity {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData, @Nullable CompoundTag compound) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData) {
         if(reason == MobSpawnType.NATURAL){
             spawnHerd();
         }
-        return super.finalizeSpawn(world, difficulty, reason, livingData, compound);
+        return super.finalizeSpawn(world, difficulty, reason, livingData);
     }
 
     public void spawnHerd(){
@@ -283,14 +285,14 @@ public class Mangler extends AnimatedEntity {
             AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier("Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 this.setHealth(this.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * 0.5f;
-                attackDamageAttr.addTransientModifier(new AttributeModifier("Attack config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
 
@@ -308,21 +310,21 @@ public class Mangler extends AnimatedEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(IS_LEADER,false);
-        this.entityData.define(LEADER,Optional.empty());
-        this.entityData.define(RUN,false);
-        this.entityData.define(ANGRY_LEVEL,0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(IS_LEADER,false);
+        builder.define(LEADER,Optional.empty());
+        builder.define(RUN,false);
+        builder.define(ANGRY_LEVEL,0);
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         boolean run1 = getRun();
         if(run1){
             return 1.2f;
         }
-        return super.getStepHeight();
+        return this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) > 0 ? (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) : 0.6F;
     }
 
     @Override
@@ -334,14 +336,14 @@ public class Mangler extends AnimatedEntity {
             AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
             if (maxHealthAttr != null) {
                 double difference = maxHealthAttr.getBaseValue();
-                maxHealthAttr.addTransientModifier(new AttributeModifier("Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                maxHealthAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                 this.setHealth(this.getMaxHealth());
             }
 
             AttributeInstance attackDamageAttr = getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamageAttr != null) {
                 double difference = attackDamageAttr.getBaseValue() * 0.5f;
-                attackDamageAttr.addTransientModifier(new AttributeModifier("Attack config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                attackDamageAttr.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "attack_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
             }
         }
 

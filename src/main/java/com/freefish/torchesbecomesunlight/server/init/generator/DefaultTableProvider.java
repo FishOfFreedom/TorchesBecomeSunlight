@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.resources.ResourceKey;
+import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -25,15 +29,15 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
+import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithLootingCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -42,8 +46,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DefaultTableProvider extends LootTableProvider {
-    public DefaultTableProvider(PackOutput pOutput) {
-        super(pOutput, new HashSet<>(), List.of(new LootTableProvider.SubProviderEntry(ModBlockLootSubProvider::new, LootContextParamSets.BLOCK), new LootTableProvider.SubProviderEntry(ModEntityLootSubProvider::new, LootContextParamSets.ENTITY)));
+    public DefaultTableProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> registries) {
+        super(pOutput, new HashSet<>(), List.of(new LootTableProvider.SubProviderEntry(ModBlockLootSubProvider::new, LootContextParamSets.BLOCK), new LootTableProvider.SubProviderEntry(ModEntityLootSubProvider::new, LootContextParamSets.ENTITY)), registries);
     }
 
     private static final float[] DEFAULT_SAPLING_DROP_RATES = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
@@ -51,8 +55,8 @@ public class DefaultTableProvider extends LootTableProvider {
     public static class ModBlockLootSubProvider extends BlockLootSubProvider {
         public List<Block> list = new ArrayList<>();
 
-        protected ModBlockLootSubProvider() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), new HashMap<>());
+        protected ModBlockLootSubProvider(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), new HashMap<>(), registries);
         }
 
         @Override
@@ -84,13 +88,13 @@ public class DefaultTableProvider extends LootTableProvider {
 
         // Override and ignore the missing loot table error
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_249322_) {
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_249322_) {
             this.generate();
-            Set<ResourceLocation> set = new HashSet<>();
+            Set<ResourceKey<LootTable>> set = new HashSet<>();
 
             for (Block block : list) {
                 if (block.isEnabled(this.enabledFeatures)) {
-                    ResourceLocation resourcelocation = block.getLootTable();
+                    ResourceKey<LootTable> resourcelocation = block.getLootTable();
                     if (resourcelocation != BuiltInLootTables.EMPTY && set.add(resourcelocation)) {
                         LootTable.Builder loottable$builder = this.map.remove(resourcelocation);
                         if (loottable$builder == null) {
@@ -124,7 +128,7 @@ public class DefaultTableProvider extends LootTableProvider {
             dropSelf(block);
         }
 
-        public void registerDropSelf(RegistryObject<Block> block) {
+        public void registerDropSelf(DeferredHolder<Block, Block> block) {
             list.add(block.get());
             dropSelf(block.get());
         }
@@ -136,15 +140,15 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> ForgeRegistries.BLOCKS.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
+            return BuiltInRegistries.BLOCK.stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).collect(Collectors.toList());
         }
     }
 
     public static class ModEntityLootSubProvider extends EntityLootSubProvider {
-        private final Map<EntityType<?>, Map<ResourceLocation, LootTable.Builder>> map = Maps.newHashMap();
+        private final Map<EntityType<?>, Map<ResourceKey<LootTable>, LootTable.Builder>> map = Maps.newHashMap();
 
-        protected ModEntityLootSubProvider() {
-            super(FeatureFlags.REGISTRY.allFlags());
+        protected ModEntityLootSubProvider(HolderLookup.Provider registries) {
+            super(FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override
@@ -153,13 +157,13 @@ public class DefaultTableProvider extends LootTableProvider {
                     .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.THIGH_MEAT.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
             );
             add(EntityHandle.BURDENBEAST.get(), LootTable.lootTable()
                     .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.BURDENBEAST_MEAT.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F)))))
+                                    .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
             );
             add(EntityHandle.FROST_NOVA.get(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
@@ -178,7 +182,7 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.ICE_BROADSWORD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             add(EntityHandle.PATRIOT.get(), LootTable.lootTable()
@@ -198,7 +202,7 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.GUARD_SHIELD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             //rhodes
@@ -219,13 +223,13 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.RHODES_SHIELD.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             ))
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.RHODES_KNIFE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     ));
             //ursus
@@ -241,35 +245,35 @@ public class DefaultTableProvider extends LootTableProvider {
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.MACHETE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_BOOTS.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_CHESTPLATE.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_HELMET.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(ItemHandle.PATROL_CAPTAIN_LEGGINGS.get())
                                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
-                                    .when(LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.01F, 0.01F))
+                                    .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.01F, 0.01F))
                             )
                     )
 
@@ -316,7 +320,7 @@ public class DefaultTableProvider extends LootTableProvider {
         }
 
         @Override
-        protected void add(EntityType<?> pEntityType, ResourceLocation pLootTableLocation, LootTable.Builder pBuilder) {
+        protected void add(EntityType<?> pEntityType, ResourceKey<LootTable> pLootTableLocation, LootTable.Builder pBuilder) {
             super.add(pEntityType, pLootTableLocation, pBuilder);
             this.map.computeIfAbsent(pEntityType, (p_249004_) -> {
                 return Maps.newHashMap();
@@ -324,14 +328,14 @@ public class DefaultTableProvider extends LootTableProvider {
         }
 
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_251751_) {
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_251751_) {
             this.generate();
-            Set<ResourceLocation> set = Sets.newHashSet();
+            Set<ResourceKey<LootTable>> set = Sets.newHashSet();
             this.getKnownEntityTypes().map(EntityType::builtInRegistryHolder).forEach((p_249003_) -> {
                 EntityType<?> entitytype = p_249003_.value();
                 if (canHaveLootTable(entitytype)) {
-                    Map<ResourceLocation, LootTable.Builder> map = this.map.remove(entitytype);
-                    ResourceLocation resourcelocation = entitytype.getDefaultLootTable();
+                    Map<ResourceKey<LootTable>, LootTable.Builder> map = this.map.remove(entitytype);
+                    ResourceKey<LootTable> resourcelocation = entitytype.getDefaultLootTable();
                     if (map != null) {
                         map.forEach((p_250376_, p_250972_) -> {
                             if (!set.add(p_250376_)) {
@@ -342,9 +346,9 @@ public class DefaultTableProvider extends LootTableProvider {
                         });
                     }
                 } else {
-                    Map<ResourceLocation, LootTable.Builder> map1 = this.map.remove(entitytype);
+                    Map<ResourceKey<LootTable>, LootTable.Builder> map1 = this.map.remove(entitytype);
                     if (map1 != null) {
-                        throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map1.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(",")), p_249003_.key().location()));
+                        throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map1.keySet().stream().map(java.lang.Object::toString).collect(Collectors.joining(",")), p_249003_.key().location()));
                     }
                 }
 
@@ -353,7 +357,7 @@ public class DefaultTableProvider extends LootTableProvider {
 
         @Override
         protected Stream<EntityType<?>> getKnownEntityTypes() {
-            return ForgeRegistries.ENTITY_TYPES.getValues().stream().filter(block -> ForgeRegistries.ENTITY_TYPES.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
+            return BuiltInRegistries.ENTITY_TYPE.stream().filter(block -> BuiltInRegistries.ENTITY_TYPE.getKey(block).getNamespace().equals(TorchesBecomeSunlight.MOD_ID)).toList().stream();
         }
     }
 }

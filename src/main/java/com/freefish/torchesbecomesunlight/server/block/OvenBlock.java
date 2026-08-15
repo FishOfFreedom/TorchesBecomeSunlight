@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.OvenBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import net.minecraft.core.BlockPos;
@@ -23,7 +24,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class OvenBlock extends BaseEntityBlock{
@@ -34,6 +34,13 @@ public class OvenBlock extends BaseEntityBlock{
     public OvenBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(EIGHT_DIRECTION, Direction.NORTH));
+    }
+
+    public static final MapCodec<OvenBlock> CODEC = simpleCodec(OvenBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -73,11 +80,11 @@ public class OvenBlock extends BaseEntityBlock{
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if(entity instanceof OvenBlockEntity) {
-                NetworkHooks.openScreen(((ServerPlayer)pPlayer), (OvenBlockEntity)entity, pPos);
+                ((ServerPlayer)pPlayer).openMenu((OvenBlockEntity)entity, pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }

@@ -15,7 +15,7 @@ import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoArmorRenderer<T> {
     public boolean usingCustomPlayerAnimations = false;
@@ -25,14 +25,22 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
+        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         usingCustomPlayerAnimations = false;
     }
 
     @Override
     public void renderRecursively(PoseStack poseStack, T animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferIn, VertexConsumer buffer, boolean isReRender, float partialTick,
-                                  int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+                                  int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         poseStack.pushPose();
         if (usingCustomPlayerAnimations && bone instanceof MowzieGeoBone && ((MowzieGeoBone) bone).isForceMatrixTransform()) {
             PoseStack.Pose last = poseStack.last();
@@ -45,12 +53,12 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
             poseStack.translate(0, -1.5, 0);
         }
         else {
-            RenderUtils.prepMatrixForBone(poseStack, bone);
+            RenderUtil.prepMatrixForBone(poseStack, bone);
         }
-        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderChildBones(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+        renderCubesOfBone(poseStack, bone, buffer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
+        renderChildBones(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         poseStack.popPose();
-//        super.renderRecursively(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+//        super.renderRecursively(poseStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
     }
 
     public void copyFrom(ModelPart modelPart, GeoBone geoBone, float offsetX, float offsetY, float offsetZ) {
@@ -62,48 +70,48 @@ public class MowzieGeoArmorRenderer<T extends ArmorItem & GeoItem> extends GeoAr
             thisBone.setForceMatrixTransform(true);
         }
         else {
-            RenderUtils.matchModelPartRot(modelPart, geoBone);
+            RenderUtil.matchModelPartRot(modelPart, geoBone);
             geoBone.updatePosition(modelPart.x + offsetX, -modelPart.y + offsetY, modelPart.z + offsetZ);
         }
     }
 
     @Override
     protected void applyBaseTransformations(HumanoidModel<?> baseModel) {
-        if (getHeadBone() != null) {
+        if (getHeadBone(getGeoModel()) != null) {
             ModelPart headPart = baseModel.head;
-            copyFrom(headPart, getHeadBone(), 0, 0, 0);
+            copyFrom(headPart, getHeadBone(getGeoModel()), 0, 0, 0);
         }
 
-        if (getBodyBone() != null) {
+        if (getBodyBone(getGeoModel()) != null) {
             ModelPart bodyPart = baseModel.body;
-            copyFrom(bodyPart, getBodyBone(), 0, 0, 0);
+            copyFrom(bodyPart, getBodyBone(getGeoModel()), 0, 0, 0);
         }
 
-        if (getRightArmBone() != null) {
+        if (getRightArmBone(getGeoModel()) != null) {
             ModelPart rightArmPart = baseModel.rightArm;
-            copyFrom(rightArmPart, getRightArmBone(), 5, 2, 0);
+            copyFrom(rightArmPart, getRightArmBone(getGeoModel()), 5, 2, 0);
         }
 
-        if (getLeftArmBone() != null) {
+        if (getLeftArmBone(getGeoModel()) != null) {
             ModelPart leftArmPart = baseModel.leftArm;
-            copyFrom(leftArmPart, getLeftArmBone(),  -5, 2, 0);
+            copyFrom(leftArmPart, getLeftArmBone(getGeoModel()),  -5, 2, 0);
         }
 
-        if (getRightLegBone() != null) {
+        if (getRightLegBone(getGeoModel()) != null) {
             ModelPart rightLegPart = baseModel.rightLeg;
-            copyFrom(rightLegPart, getRightLegBone(), 2, 12, 0);
+            copyFrom(rightLegPart, getRightLegBone(getGeoModel()), 2, 12, 0);
 
-            if (getRightBootBone() != null) {
-                copyFrom(rightLegPart, getRightBootBone(), 2, 12, 0);
+            if (getRightBootBone(getGeoModel()) != null) {
+                copyFrom(rightLegPart, getRightBootBone(getGeoModel()), 2, 12, 0);
             }
         }
 
-        if (getLeftLegBone() != null) {
+        if (getLeftLegBone(getGeoModel()) != null) {
             ModelPart leftLegPart = baseModel.leftLeg;
-            copyFrom(leftLegPart, getLeftLegBone(), -2, 12, 0);
+            copyFrom(leftLegPart, getLeftLegBone(getGeoModel()), -2, 12, 0);
 
-            if (getLeftBootBone() != null) {
-                copyFrom(leftLegPart, getLeftBootBone(), -2, 12, 0);
+            if (getLeftBootBone(getGeoModel()) != null) {
+                copyFrom(leftLegPart, getLeftBootBone(getGeoModel()), -2, 12, 0);
             }
         }
     }

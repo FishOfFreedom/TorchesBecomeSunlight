@@ -29,7 +29,7 @@ public class DemonEye extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.demon_eye"));
     }
@@ -38,7 +38,7 @@ public class DemonEye extends Item {
     public Component getName(ItemStack stack) {
         return Component.literal(GLITCH_TEXT)
                 .setStyle(Style.EMPTY
-                        .withColor(TextColor.parseColor("#FF5555")) // 红色
+                        .withColor(TextColor.parseColor("#FF5555").getOrThrow()) // 红色
                         .withObfuscated(true)  // §k 动态乱码效果
                 );
     }
@@ -69,7 +69,7 @@ public class DemonEye extends Item {
                         pLevel.addFreshEntity(pee);
 
                         if(pPlayer instanceof ServerPlayer player){
-                            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "ursus_1");
+                            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "ursus_1");
                         }
                         break;
                     }

@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
@@ -23,8 +26,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -32,7 +35,7 @@ import org.joml.Vector3f;
 import java.util.Locale;
 
 public class BlackSpearParticle extends Particle {
-    private static ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/darkspear.png");
+    private static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/darkspear.png");
     private boolean isIn;
     private float rotX;
     private float rotY;
@@ -63,7 +66,7 @@ public class BlackSpearParticle extends Particle {
         VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(FFRenderTypes.getGlowingEffect(TEXTURE));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
-        Matrix3f matrix3f = posestack$pose.normal();
+        
 
         Quaternionf quatX = MathUtils.quatFromRotationXYZ(0, rotX, 0, false);
         Quaternionf quatY = MathUtils.quatFromRotationXYZ(rotY, 0, 0, false);
@@ -89,16 +92,16 @@ public class BlackSpearParticle extends Particle {
         float f6 = 1;
         int j = 240;
         if(isIn) {
-            portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+            portalStatic.addVertex((float) avector3f[0].x(), (float) avector3f[0].y(), (float) ((double) avector3f[0].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[1].x(), (float) avector3f[1].y(), (float) ((double) avector3f[1].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[2].x(), (float) avector3f[2].y(), (float) ((double) avector3f[2].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[3].x(), (float) avector3f[3].y(), (float) ((double) avector3f[3].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
         }
         else {
-            portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(1-f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-            portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(1-f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+            portalStatic.addVertex((float) avector3f[0].x(), (float) avector3f[0].y(), (float) ((double) avector3f[0].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[1].x(), (float) avector3f[1].y(), (float) ((double) avector3f[1].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[2].x(), (float) avector3f[2].y(), (float) ((double) avector3f[2].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(1-f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+            portalStatic.addVertex((float) avector3f[3].x(), (float) avector3f[3].y(), (float) ((double) avector3f[3].z())).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setUv(1-f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
         }
 
         multibuffersource$buffersource.endBatch();
@@ -120,23 +123,14 @@ public class BlackSpearParticle extends Particle {
 
 
     public static class BlackSpearData implements ParticleOptions {
-        public static final Deserializer<BlackSpearData> DESERIALIZER = new Deserializer<BlackSpearData>() {
-            public BlackSpearData fromCommand(ParticleType<BlackSpearData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                boolean swirls = reader.readBoolean();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                return new BlackSpearData(duration, swirls,rotX,rotY);
-            }
-
-            public BlackSpearData fromNetwork(ParticleType<BlackSpearData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static BlackSpearData readFromNetwork(ParticleType<BlackSpearData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new BlackSpearData(buffer.readInt(), buffer.readBoolean(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final boolean swirls;
@@ -150,8 +144,7 @@ public class BlackSpearParticle extends Particle {
             this.rotY = rotY;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeBoolean(this.swirls);
             buffer.writeFloat(this.rotX);
@@ -159,8 +152,7 @@ public class BlackSpearParticle extends Particle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %b %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration, this.swirls,this.rotX,this.rotY);
         }
@@ -190,14 +182,19 @@ public class BlackSpearParticle extends Particle {
             return this.rotY;
         }
 
-        public static Codec<BlackSpearData> CODEC(ParticleType<BlackSpearData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<BlackSpearData> CODEC(ParticleType<BlackSpearData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(BlackSpearData::getDuration),
                             Codec.BOOL.fieldOf("swirls").forGetter(BlackSpearData::getSwirls),
                     Codec.FLOAT.fieldOf("rotX").forGetter(BlackSpearData::getRotX),
                     Codec.FLOAT.fieldOf("rotY").forGetter(BlackSpearData::getRotY)
                     ).apply(codecBuilder, BlackSpearData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, BlackSpearData> STREAM_CODEC(ParticleType<BlackSpearData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

@@ -1,0 +1,49 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/world/inventory/RecipeBookType",
+      "name": "TORCHESBECOMESUNLIGHT_COOKING",
+      "constructor": "()V",
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/TorchesBecomeSunlight",
+        "field": "RECIPE_TYPE_COOKING_PROXY"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/RecipeBookCategories",
+      "name": "TORCHESBECOMESUNLIGHT_COOKING_SEARCH",
+      "constructor": "(Ljava/util/function/Supplier;)V",
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/client/render/gui/recipebook/RecipeCategories",
+        "field": "COOKING_SEARCH_PROXY"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/RecipeBookCategories",
+      "name": "TORCHESBECOMESUNLIGHT_COOKING_MEALS",
+      "constructor": "(Ljava/util/function/Supplier;)V",
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/client/render/gui/recipebook/RecipeCategories",
+        "field": "COOKING_MEALS_PROXY"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/RecipeBookCategories",
+      "name": "TORCHESBECOMESUNLIGHT_COOKING_DRINKS",
+      "constructor": "(Ljava/util/function/Supplier;)V",
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/client/render/gui/recipebook/RecipeCategories",
+        "field": "COOKING_DRINKS_PROXY"
+      }
+    },
+    {
+      "enum": "net/minecraft/client/RecipeBookCategories",
+      "name": "TORCHESBECOMESUNLIGHT_COOKING_MISC",
+      "constructor": "(Ljava/util/function/Supplier;)V",
+      "parameters": {
+        "class": "com/freefish/torchesbecomesunlight/client/render/gui/recipebook/RecipeCategories",
+        "field": "COOKING_MISC_PROXY"
+      }
+    }
+  ]
+}

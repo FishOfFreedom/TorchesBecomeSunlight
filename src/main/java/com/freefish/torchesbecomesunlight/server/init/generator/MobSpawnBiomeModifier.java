@@ -6,14 +6,15 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ModifiableBiomeInfo;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class MobSpawnBiomeModifier implements BiomeModifier
 {
-    private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER = RegistryObject.create(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "mowzie_mob_spawns"), ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, TorchesBecomeSunlight.MOD_ID);
+    private static final DeferredHolder<com.mojang.serialization.MapCodec<? extends BiomeModifier>, com.mojang.serialization.MapCodec<? extends BiomeModifier>> SERIALIZER =
+            DeferredHolder.create(NeoForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "mowzie_mob_spawns"));
 
     public MobSpawnBiomeModifier() {
 
@@ -27,11 +28,11 @@ public class MobSpawnBiomeModifier implements BiomeModifier
     }
 
     @Override
-    public Codec<? extends BiomeModifier> codec() {
+    public com.mojang.serialization.MapCodec<? extends BiomeModifier> codec() {
         return SERIALIZER.get();
     }
 
-    public static Codec<MobSpawnBiomeModifier> makeCodec() {
-        return Codec.unit(MobSpawnBiomeModifier::new);
+    public static com.mojang.serialization.MapCodec<MobSpawnBiomeModifier> makeCodec() {
+        return com.mojang.serialization.MapCodec.unit(MobSpawnBiomeModifier::new);
     }
 }

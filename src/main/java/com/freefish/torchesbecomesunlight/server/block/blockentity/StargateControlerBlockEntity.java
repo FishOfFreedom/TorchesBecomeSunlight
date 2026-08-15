@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -149,13 +150,13 @@ public class StargateControlerBlockEntity extends AutoSynTagBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.loadAdditional(pTag, registries);
     }
 
 
@@ -178,19 +179,19 @@ public class StargateControlerBlockEntity extends AutoSynTagBlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putInt("update",0);
         return compoundTag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        super.onDataPacket(net, pkt, registries);
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
         this.blockEntityData.define(TEST,new CompoundTag());
         this.blockEntityData.define(IS_GLOWING,false);
     }

@@ -86,11 +86,11 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -979,14 +979,17 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     @Override
     public void actuallyHurt(DamageSource pDamageSource, float pDamageAmount) {
         if (!this.isInvulnerableTo(pDamageSource)) {
-            pDamageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, pDamageSource, pDamageAmount);
+            // 原先此处调用 ForgeHooks.onLivingHurt 触发 LivingHurtEvent。NeoForge 1.21.1 把该 hook
+            // 换成了基于 DamageContainer 的 CommonHooks.onLivingDamagePre/Post，签名与本方法的
+            // 覆写形式不兼容，故移除。
+            // 影响：其它 mod 监听伤害修改事件时，对本实体不再生效（伤害计算本身不变）。
             if (pDamageAmount <= 0) return;
             pDamageAmount = this.getDamageAfterArmorAbsorb(pDamageSource, pDamageAmount);
             pDamageAmount = this.getDamageAfterMagicAbsorb(pDamageSource, pDamageAmount);
             float f1 = java.lang.Math.max(pDamageAmount - this.getAbsorptionAmount(), 0.0F);
             this.setAbsorptionAmount(this.getAbsorptionAmount() - (pDamageAmount - f1));
 
-            f1 = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, pDamageSource, f1);
+            // 同上：原 ForgeHooks.onLivingDamage 在 NeoForge 已无等价的直调形式
             if (f1 != 0.0F) {
                 this.getCombatTracker().recordDamage(pDamageSource, f1);
                 this.setAbsorptionAmount(this.getAbsorptionAmount() - f1);
@@ -1001,8 +1004,8 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         }
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         return 1.5f;
     }
 
@@ -1047,7 +1050,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         pCompound.putFloat("targetz",pos.z);
         pCompound.putFloat("second",getSecondHealth());
         pCompound.putInt("state",getState());
-        pCompound.put("menber",teamMemberStorage.serializeNBT());
+        pCompound.put("menber",teamMemberStorage.serializeNBT(registryAccess()));
     }
 
     @Override
@@ -1056,17 +1059,17 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
         setTargetPos(new Vector3f(pCompound.getFloat("targetx"),pCompound.getFloat("targetx"),pCompound.getFloat("targetx")));
         setSecondHealth(pCompound.getFloat("second"));
         this.entityData.set(STATE,pCompound.getInt("state"));
-        teamMemberStorage.deserializeNBT(pCompound.getCompound("menber"));
+        teamMemberStorage.deserializeNBT(registryAccess(), pCompound.getCompound("menber"));
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_X,0f);
-        this.entityData.define(TARGET_Y,0f);
-        this.entityData.define(TARGET_Z,0f);
-        this.entityData.define(SECOND_HEALTH,0f);
-        this.entityData.define(STATE,0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TARGET_X,0f);
+        builder.define(TARGET_Y,0f);
+        builder.define(TARGET_Z,0f);
+        builder.define(SECOND_HEALTH,0f);
+        builder.define(STATE,0);
     }
 
     @Override
@@ -1561,7 +1564,7 @@ public class FrostNova extends GuerrillasEntity implements IDialogueEntity {
     public void playDeathAnimationPre(DamageSource source) {
         if(challengePlayer!=null){
             if(challengePlayer instanceof ServerPlayer serverPlayer){
-                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_1_frostnova");
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "main_8_1_frostnova");
             }
             setAggressive(false);
             setHealth(1);

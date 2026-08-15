@@ -1,16 +1,17 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
     
     private void registerItemModels() {
-        for (RegistryObject<Item> item : ItemHandle.ITEMS.getEntries()) {
+        for (DeferredHolder<Item, ? extends Item> item : ItemHandle.ITEMS.getEntries()) {
             ItemType type = detectItemType(item.get());
             itemTypes.put(item.get(), type);
             registerModel(item.get(), type);
@@ -63,7 +64,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
     
     private void registerModel(Item item, ItemType type) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         if (id == null) return;
         
         String path = id.getPath();
@@ -147,7 +148,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     public void layeredItem(Item item, String... layers) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         ItemModelBuilder builder = withExistingParent(id.getPath(), "item/generated");
         
         for (int i = 0; i < layers.length; i++) {
@@ -156,31 +157,31 @@ public class ModItemModelProvider extends ItemModelProvider {
     }
 
     public void bowModel(Item bow) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(bow);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(bow);
         
         withExistingParent(id.getPath(), "item/bow")
             .texture("layer0", modLoc("item/" + id.getPath()))
-            .override().predicate(new ResourceLocation("pulling"), 1)
+            .override().predicate(ResourceLocation.parse("pulling"), 1)
                 .model(getExistingFile(modLoc("item/" + id.getPath() + "_pulling_0")))
             .end()
-            .override().predicate(new ResourceLocation("pulling"), 1)
-                .predicate(new ResourceLocation("pull"), 0.65f)
+            .override().predicate(ResourceLocation.parse("pulling"), 1)
+                .predicate(ResourceLocation.parse("pull"), 0.65f)
                 .model(getExistingFile(modLoc("item/" + id.getPath() + "_pulling_1")))
             .end()
-            .override().predicate(new ResourceLocation("pulling"), 1)
-                .predicate(new ResourceLocation("pull"), 0.9f)
+            .override().predicate(ResourceLocation.parse("pulling"), 1)
+                .predicate(ResourceLocation.parse("pull"), 0.9f)
                 .model(getExistingFile(modLoc("item/" + id.getPath() + "_pulling_2")))
             .end();
     }
 
     public void customParentItem(Item item, String parent) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
         withExistingParent(id.getPath(), parent)
             .texture("layer0", modLoc("item/" + id.getPath()));
     }
 
     public void shieldModel(Item shield, boolean hasBanner) {
-        ResourceLocation id = ForgeRegistries.ITEMS.getKey(shield);
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(shield);
         
         ModelFile baseModel = withExistingParent(id.getPath(), "item/shield")
             .texture("particle", modLoc("item/" + id.getPath() + "_particle"));
@@ -188,7 +189,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         if (hasBanner) {
             withExistingParent(id.getPath() + "_banner", "item/shield")
                 .texture("particle", modLoc("item/" + id.getPath() + "_particle"))
-                .override().predicate(new ResourceLocation("blocking"), 1)
+                .override().predicate(ResourceLocation.parse("blocking"), 1)
                     .model(getExistingFile(modLoc("item/" + id.getPath() + "_blocking")))
                 .end();
         }

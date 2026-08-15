@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.lootmodifier;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,9 +11,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
+import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class NetherFortressLootModifier extends LootModifier {
@@ -30,7 +32,7 @@ public class NetherFortressLootModifier extends LootModifier {
         ResourceLocation lootTableId = context.getQueriedLootTableId();
 
         // 普通末地城箱子
-        if (lootTableId.equals(new ResourceLocation("minecraft", "chests/nether_bridge"))) {
+        if (lootTableId.equals(ResourceLocation.fromNamespaceAndPath("minecraft", "chests/nether_bridge"))) {
             if (context.getRandom().nextFloat() < probability) {
                 generatedLoot.add(new ItemStack(ItemHandle.DEMON_EYE.get(), 1));
             }
@@ -39,15 +41,15 @@ public class NetherFortressLootModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static final Codec<NetherFortressLootModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<NetherFortressLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions),
-            ForgeRegistries.ITEMS.getCodec().fieldOf("item").forGetter(modifier -> modifier.item),
+            BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(modifier -> modifier.item),
             Codec.FLOAT.fieldOf("probability").forGetter(modifier -> modifier.probability)
     ).apply(instance, NetherFortressLootModifier::new));
 
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC;
     }
 }

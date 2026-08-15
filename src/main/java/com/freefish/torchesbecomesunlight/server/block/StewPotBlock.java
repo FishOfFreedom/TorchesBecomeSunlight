@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.StewPotBlockEntity;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.StewPotEnum;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class StewPotBlock extends BaseEntityBlock {
@@ -35,6 +35,13 @@ public class StewPotBlock extends BaseEntityBlock {
     public StewPotBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(STEW_POT_ENUM_PROPERTY, StewPotEnum.Firewood_1));
+    }
+
+    public static final MapCodec<StewPotBlock> CODEC = simpleCodec(StewPotBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override
@@ -65,7 +72,7 @@ public class StewPotBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if (!pLevel.isClientSide()) {
             StewPotEnum value = pState.getValue(STEW_POT_ENUM_PROPERTY);
             ItemStack mainHandItem = pPlayer.getMainHandItem();
@@ -91,7 +98,7 @@ public class StewPotBlock extends BaseEntityBlock {
             else {
                 BlockEntity entity = pLevel.getBlockEntity(pPos);
                 if (entity instanceof StewPotBlockEntity) {
-                    NetworkHooks.openScreen(((ServerPlayer) pPlayer), (StewPotBlockEntity) entity, pPos);
+                    ((ServerPlayer) pPlayer).openMenu((StewPotBlockEntity) entity, pPos);
                 } else {
                     throw new IllegalStateException("Our Container provider is missing!");
                 }

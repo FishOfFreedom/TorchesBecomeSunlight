@@ -38,7 +38,7 @@ public class UseSanktaRingAbility extends PlayerAbility {
         Player player = getUser();
         Level level = getLevel();
         if(player instanceof ServerPlayer serverPlayer){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "gunPatriot_5_control");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "gunPatriot_5_control");
         }
         ItemStack mainHandItem = player.getMainHandItem();
         heldItemMainHandVisualOverride = mainHandItem;

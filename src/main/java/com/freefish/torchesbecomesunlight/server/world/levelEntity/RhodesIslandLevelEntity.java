@@ -188,7 +188,7 @@ public class RhodesIslandLevelEntity extends LevelEntity {
 
         @Override
         public void deserializeNBT(CompoundTag compoundTag) {
-            center = NbtUtils.readBlockPos(compoundTag.getCompound("center"));
+            center = NbtUtils.readBlockPos(compoundTag, "center").orElse(net.minecraft.core.BlockPos.ZERO);
             triggerDistance = compoundTag.getInt("triggerDistance");
             spawnChance     = compoundTag.getFloat("spawnChance");
             hasPlayer       = compoundTag.getBoolean("hasPlayer");

@@ -14,7 +14,7 @@ public class RosmontisIpadRenderer extends GeoItemRenderer<RosmontisIpad> {
 
 
     public static class RosmontisIpadModel extends GeoModel<RosmontisIpad> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/rosmontisipad.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/rosmontisipad.geo.json");
 
         @Override
         public ResourceLocation getModelResource(RosmontisIpad animatable) {

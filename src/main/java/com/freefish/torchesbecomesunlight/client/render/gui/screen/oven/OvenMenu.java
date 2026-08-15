@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.render.gui.screen.oven;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
+import com.freefish.torchesbecomesunlight.server.init.recipe.OvenRecipe;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.OvenBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
@@ -13,13 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import java.util.Objects;
 
-public class OvenMenu extends RecipeBookMenu<RecipeWrapper> {
+public class OvenMenu extends RecipeBookMenu<RecipeWrapper, OvenRecipe> {
     public final OvenBlockEntity blockEntity;
     public final ItemStackHandler inventory;
     private final ContainerData cookingPotData;
@@ -159,8 +161,8 @@ public class OvenMenu extends RecipeBookMenu<RecipeWrapper> {
     }
 
     @Override
-    public boolean recipeMatches(Recipe<? super RecipeWrapper> recipe) {
-        return recipe.matches(new RecipeWrapper(inventory), level);
+    public boolean recipeMatches(RecipeHolder<OvenRecipe> recipe) {
+        return recipe.value().matches(new RecipeWrapper(inventory), level);
     }
 
     @Override
@@ -185,7 +187,7 @@ public class OvenMenu extends RecipeBookMenu<RecipeWrapper> {
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        return TorchesBecomeSunlight.RECIPE_TYPE_COOKING;
+        return TorchesBecomeSunlight.recipeTypeCooking();
     }
 
     @Override

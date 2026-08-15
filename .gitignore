@@ -23,3 +23,9 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# Claude Code 本地设置（含本机绝对路径，不入库）
+.claude/settings.local.json
+
+# ModDevGradle 自动生成的 IDE 运行配置
+.vscode/

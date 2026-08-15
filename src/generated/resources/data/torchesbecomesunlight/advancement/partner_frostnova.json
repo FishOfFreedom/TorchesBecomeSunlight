@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:partner",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "partner_frostnova"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.partner_frostnova"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:frosted_talisman"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.partner_frostnova"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

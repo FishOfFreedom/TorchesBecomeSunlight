@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.InitClientEntityMessage;
@@ -27,15 +29,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
+public class TwoStateSpawnEggItem extends DeferredSpawnEggItem {
     ITwoStateEntity.State state = ITwoStateEntity.State.NATURE;
 
     public TwoStateSpawnEggItem(Supplier<? extends EntityType<? extends Mob>> type, int backgroundColor, int highlightColor, Properties props) {
@@ -58,7 +60,7 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                     BlockEntity blockentity = level.getBlockEntity(blockpos);
                     if (blockentity instanceof SpawnerBlockEntity) {
                         SpawnerBlockEntity spawnerblockentity = (SpawnerBlockEntity) blockentity;
-                        EntityType<?> entitytype1 = this.getType(itemstack.getTag());
+                        EntityType<?> entitytype1 = this.getType(itemstack);
                         spawnerblockentity.setEntityId(entitytype1, level.getRandom());
                         blockentity.setChanged();
                         level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
@@ -75,13 +77,13 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                     blockpos1 = blockpos.relative(direction);
                 }
 
-                EntityType<?> entitytype = this.getType(itemstack.getTag());
+                EntityType<?> entitytype = this.getType(itemstack);
                 Entity spawn = entitytype.spawn((ServerLevel) level, itemstack, pContext.getPlayer(), blockpos1, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
                 if (spawn != null) {
                     if(spawn instanceof ITwoStateEntity twoStateEntity) {
                         twoStateEntity.setSpawnState(state);
                         twoStateEntity.transSpawnState(state);
-                        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> spawn),new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
+                        PacketDistributor.sendToPlayersTrackingEntityAndSelf(spawn, new InitClientEntityMessage(spawn,InitClientEntityMessage.InitDataType.ISTWOSTATE));
                     }
                     itemstack.shrink(1);
                     level.gameEvent(pContext.getPlayer(), GameEvent.ENTITY_PLACE, blockpos);
@@ -100,8 +102,8 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
     }
 
     @Override
-    public EntityType<?> getType(@Nullable CompoundTag tag) {
-        return super.getType(tag);
+    public EntityType<?> getType(ItemStack stack) {
+        return super.getType(stack);
     }
 
     //air
@@ -120,7 +122,7 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
                     return InteractionResultHolder.pass(itemstack);
                 } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
 
-                    EntityType<?> entitytype = this.getType(itemstack.getTag());
+                    EntityType<?> entitytype = this.getType(itemstack);
                     Entity entity = entitytype.spawn((ServerLevel) pLevel, itemstack, pPlayer, blockpos, MobSpawnType.SPAWN_EGG, false, false);
                     if (entity == null) {
                         return InteractionResultHolder.pass(itemstack);
@@ -150,7 +152,7 @@ public class TwoStateSpawnEggItem extends ForgeSpawnEggItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.literal("("+state+")"));
     }

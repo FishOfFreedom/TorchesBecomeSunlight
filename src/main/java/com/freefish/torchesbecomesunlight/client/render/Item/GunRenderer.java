@@ -22,8 +22,8 @@ public class GunRenderer extends GeoItemRenderer<Gun> {
     }
 
     public static class GunModel extends GeoModel<Gun> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/gun.geo.json");
-        private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/gun.animation.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/gun.geo.json");
+        private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/gun.animation.json");
 
         @Override
         public ResourceLocation getModelResource(Gun animatable) {

@@ -29,7 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
@@ -61,10 +61,10 @@ public class Bullet extends NoGravityProjectileEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(TYPE,0);
-        this.entityData.define(IS_HIT,false);
-        this.entityData.define(IS_HOLY,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(TYPE,0);
+        builder.define(IS_HIT,false);
+        builder.define(IS_HOLY,false);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class Bullet extends NoGravityProjectileEntity {
 
         boolean b = hitEntity(entity);
         if(!level().isClientSide&&b){
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new ProjectileHitEntityMessage(this, entity.getId()));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new ProjectileHitEntityMessage(this, entity.getId()));
         }
 
         if(isHitEntityDiscard(entity)) {

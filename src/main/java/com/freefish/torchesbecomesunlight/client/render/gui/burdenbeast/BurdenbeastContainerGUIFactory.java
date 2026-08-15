@@ -13,7 +13,7 @@ public class BurdenbeastContainerGUIFactory extends UIFactory<BurdenbeastContain
     public static final BurdenbeastContainerGUIFactory INSTANCE = new BurdenbeastContainerGUIFactory();
 
     private BurdenbeastContainerGUIFactory(){
-        super(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"beast_container"));
+        super(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"beast_container"));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.ParticleComponent;
@@ -33,18 +35,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEntityAdditionalSpawnData {
+public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private ItemStack tridentItem = new ItemStack(Items.TRIDENT);
     private boolean dealtDamage;
@@ -58,13 +59,13 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     }
 
     public HalberdOTIEntity(Level pLevel, LivingEntity pShooter, ItemStack pStack,boolean isLocate) {
-        super(EntityHandle.HALBERD_OTI_ENTITY.get(), pShooter, pLevel);
+        super(EntityHandle.HALBERD_OTI_ENTITY.get(), pShooter, pLevel, pStack.copy(), null);
         this.tridentItem = pStack.copy();
         this.isLocate = isLocate;
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
     }
 
     public void tick() {
@@ -112,7 +113,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
                     new ParticleComponent.PropertyControl(ParticleComponent.PropertyControl.EnumParticleProperty.ALPHA, ParticleComponent.KeyTrack.startAndEnd(1f, 0.5f), false)
             });
 
-            playSound(SoundEvents.GENERIC_EXPLODE, 3, 1F + random.nextFloat() * 0.1F);
+            playSound(SoundEvents.GENERIC_EXPLODE.value(), 3, 1F + random.nextFloat() * 0.1F);
             for(int j = 0;j<6;j++) {
                 for (int i = 0; i < 6; i++) {
                     if(random.nextBoolean()) {
@@ -221,7 +222,16 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     }
 
     public boolean isChanneling() {
-        return EnchantmentHelper.hasChanneling(this.tridentItem);
+        // 1.21 起「引雷」不再有专用查询，改按附魔等级判断
+        return this.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .getHolder(net.minecraft.world.item.enchantment.Enchantments.CHANNELING)
+                .map(h -> EnchantmentHelper.getItemEnchantmentLevel(h, this.tridentItem) > 0)
+                .orElse(false);
+    }
+
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return this.tridentItem.copy();
     }
 
     protected boolean tryPickup(Player pPlayer) {
@@ -242,7 +252,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Trident", 10)) {
-            this.tridentItem = ItemStack.of(pCompound.getCompound("Trident"));
+            this.tridentItem = ItemStack.parseOptional(this.registryAccess(), pCompound.getCompound("Trident"));
         }
         this.dealtDamage = pCompound.getBoolean("DealtDamage");
         this.isLocate = pCompound.getBoolean("islocate");
@@ -251,7 +261,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("Trident", this.tridentItem.save(new CompoundTag()));
+        pCompound.put("Trident", this.tridentItem.save(this.registryAccess(), new CompoundTag()));
         pCompound.putBoolean("DealtDamage", this.dealtDamage);
         pCompound.putBoolean("islocate", this.isLocate);
         pCompound.putInt("halberdUseTime", this.halberdUseTime);
@@ -265,10 +275,6 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
         return true;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar event) {}
@@ -289,12 +295,12 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(halberdUseTime);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         halberdUseTime = additionalData.readVarInt();
     }
 }

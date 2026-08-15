@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.rhodesIsland.rosmontis;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.RLClientUseUtils;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
@@ -90,20 +91,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.Animation;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.Animation;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IEntityAdditionalSpawnData {
+public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IEntityWithComplexSpawn {
     public static final AnimationAct<Rosmontis> IDLE_TO_ACT = new AnimationAct<Rosmontis>("idletoact",46){
         @Override
         public void tickUpdate(Rosmontis entity) {
@@ -1098,13 +1098,9 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     }
 
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
         BlockPos spawnPos = getSpawnPos();
         if(spawnPos!=null){
@@ -1114,22 +1110,22 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
-            init(NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));
+            init(NbtUtils.readBlockPos(compoundTag, "spawn").orElse(net.minecraft.core.BlockPos.ZERO));
         }
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(RUN,false);
-        this.entityData.define(STATE,false);
-        this.entityData.define(START_BLACK,false);
-        //this.entityData.define(IS_FLAYING,false);
-        this.entityData.define(GRAVITATION,new CompoundTag());
-        this.entityData.define(ARMOR_REGION,new CompoundTag());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(RUN,false);
+        builder.define(STATE,false);
+        builder.define(START_BLACK,false);
+        //builder.define(IS_FLAYING,false);
+        builder.define(GRAVITATION,new CompoundTag());
+        builder.define(ARMOR_REGION,new CompoundTag());
     }
 
     @Override
@@ -2098,7 +2094,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 PlayerStoryStoneData playerStory = capability.getPlayerStory();
                 playerStory.setWinRosmontis(true);
                 if(challengePlayer instanceof ServerPlayer player){
-                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "rhodes_3_rosmontis");
+                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "rhodes_3_rosmontis");
                 }
                 playerStory.setCanSummonRosmontis(true);
             }
@@ -2146,7 +2142,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 DialogueEntry dialogueEntry = dialogueEntity1.getAllDialogue().getDialogueEntry("main2");
                 dialogueEntry.setRunnable(()->{
                     if(player instanceof ServerPlayer serverPlayer){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "rhodes_4_trust");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "rhodes_4_trust");
                     }
                     Inventory inventory = player.getInventory();
                     inventory.add(new ItemStack(ItemHandle.ROSMONTIS_EMBRACE.get()));
@@ -2169,7 +2165,7 @@ public class Rosmontis extends RhodesIslandEntity implements IDialogueEntity, IE
                 dialogueEntry.setRunnable(()->{
                     AnimationActHandler.INSTANCE.sendAnimationMessage(this,STORY_MOVE);
                     if(player instanceof ServerPlayer serverPlayer){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "rhodes_2_c");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "rhodes_2_c");
                     }
                 });
             }

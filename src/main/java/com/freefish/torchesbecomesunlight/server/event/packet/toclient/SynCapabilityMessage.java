@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import com.freefish.torchesbecomesunlight.server.capability.PlayerCapability;
 import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
@@ -18,12 +22,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+public class SynCapabilityMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<SynCapabilityMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "syn_capability_message"));
 
-public class SynCapabilityMessage {
+    public static final StreamCodec<FriendlyByteBuf, SynCapabilityMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), SynCapabilityMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int dialogueEntityID;
     private CompoundTag tag;
 
@@ -49,10 +60,8 @@ public class SynCapabilityMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<SynCapabilityMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(SynCapabilityMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final SynCapabilityMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 ClientLevel level = Minecraft.getInstance().level;
                 Entity entity = level.getEntity(message.dialogueEntityID);
@@ -71,7 +80,7 @@ public class SynCapabilityMessage {
                     boolean removeforceeffct = partData.contains("removeforceeffct");
                     if(removeforceeffct){
                         String[] type = partData.getString("removeforceeffct").split(":");
-                        ForceEffectType<?> value = ForceEffectHandle.getValue(new ResourceLocation(type[0], type[1]));
+                        ForceEffectType<?> value = ForceEffectHandle.getValue(ResourceLocation.fromNamespaceAndPath(type[0], type[1]));
                         ForceEffectInstance instance = ForceEffectHandle.getForceEffect(livingEntity, value);
                         if(instance!=null) instance.discard(livingEntity);
                     }
@@ -97,7 +106,7 @@ public class SynCapabilityMessage {
                             if(partnerEntity instanceof Mob mob){
                                 System.out.println(1);
                                 String[] partnertype = compound.getString("partnertype").split(":");
-                                PartnerUtil.startPartner(player,mob,PartnerUtil.getValue(new ResourceLocation(partnertype[0],partnertype[1])));
+                                PartnerUtil.startPartner(player,mob,PartnerUtil.getValue(ResourceLocation.fromNamespaceAndPath(partnertype[0],partnertype[1])));
                             }
                         }
                     }
@@ -115,7 +124,5 @@ public class SynCapabilityMessage {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

@@ -3,7 +3,7 @@ package com.freefish.torchesbecomesunlight.server.util.animation;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.AnimationActMessage;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.ArrayUtils;
 
 public enum AnimationActHandler {
@@ -14,6 +14,6 @@ public enum AnimationActHandler {
             return;
         }
         entity.setAnimation(animation);
-        TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new AnimationActMessage(entity.getId(), ArrayUtils.indexOf(entity.getAnimations(), animation)));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new AnimationActMessage(entity.getId(), ArrayUtils.indexOf(entity.getAnimations(), animation)));
     }
 }

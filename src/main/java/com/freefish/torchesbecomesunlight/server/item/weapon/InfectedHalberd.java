@@ -1,5 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.Item.InfectedHalberdRenderer;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
@@ -22,11 +29,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -35,10 +42,10 @@ import java.util.function.Consumer;
 
 public class InfectedHalberd extends SwordItem implements GeoItem {
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    private Multimap<Attribute, AttributeModifier> defaultModifiers;
+    private ItemAttributeModifiers defaultModifiers;
     private static final UUID ENTITY_REACH_UUID = UUID.fromString("5393EB63-DAD9-4B73-A551-C3EFA1F10347");
     public InfectedHalberd(Properties pProperties) {
-        super(Tiers.NETHERITE, (int)(-5 + ConfigHandler.COMMON.TOOLs.HALBERD.attackDamageValue), 4, pProperties);
+        super(Tiers.NETHERITE, pProperties.attributes(SwordItem.createAttributes(Tiers.NETHERITE, (int)(-5 + ConfigHandler.COMMON.TOOLs.HALBERD.attackDamageValue), 4.0F)));
     }
 
     @Override
@@ -51,10 +58,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -83,7 +87,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.halberd"));
         tooltip.add(Component.translatable("text.torchesbecomesunlight.halberd_tool"));
@@ -104,11 +108,13 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
             int i2 = ConfigHandler.COMMON.TOOLs.HALBERD.skillAmount2.get();
-            int i = this.getUseDuration(pStack) - pTimeCharged;
-            CompoundTag orCreateTag = pStack.getOrCreateTag();
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
+            CompoundTag orCreateTag = TBSItemData.getTag(pStack);
             orCreateTag.putBoolean("tbsisActive", false);
+            TBSItemData.setTag(pStack, orCreateTag);
             if (i >= 20) {
                 orCreateTag.putBoolean("tbsisActive", true);
+                TBSItemData.setTag(pStack, orCreateTag);
                 if (!pLevel.isClientSide) {
                     PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
                     if (playerCapability != null&&playerCapability.getSkillAmount()>i2) {
@@ -121,7 +127,7 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         }
     }
 
-    public int getUseDuration(ItemStack pStack) {
+    public int getUseDuration(ItemStack pStack, LivingEntity livingEntity) {
         return 72000;
     }
 
@@ -147,27 +153,28 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
                 }
             }
             return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, itemstack);
-        } else if (EnchantmentHelper.getRiptide(itemstack) > 0 && !pPlayer.isInWaterOrRain()) {
+        } else if (EnchantmentHelper.getTridentSpinAttackStrength(itemstack, pPlayer) > 0 && !pPlayer.isInWaterOrRain()) {
             return InteractionResultHolder.fail(itemstack);
         }else  {
-            int i = this.getUseDuration(itemstack) - pPlayer.getUseItemRemainingTicks();
-            CompoundTag orCreateTag = itemstack.getOrCreateTag();
+            int i = this.getUseDuration(itemstack, pPlayer) - pPlayer.getUseItemRemainingTicks();
+            CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
             orCreateTag.putBoolean("tbsisActive", true);
+            TBSItemData.setTag(itemstack, orCreateTag);
             pPlayer.startUsingItem(pHand);
             return InteractionResultHolder.consume(itemstack);
         }
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getDefaultAttributeModifiers(equipmentSlot);
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
+        return this.defaultModifiers;
     }
 
-    public Multimap<Attribute, AttributeModifier> creatAttributesFromConfig() {
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", ConfigHandler.COMMON.TOOLs.HALBERD.attackDamageValue - 1, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -3.3, AttributeModifier.Operation.ADDITION));
-        builder.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(ENTITY_REACH_UUID, "Weapon modifier", 2.5D, AttributeModifier.Operation.ADDITION));
+    public ItemAttributeModifiers creatAttributesFromConfig() {
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
+        builder.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), ConfigHandler.COMMON.TOOLs.HALBERD.attackDamageValue - 1, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+        builder.add(Attributes.ATTACK_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), -3.3, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+        builder.add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), 2.5D, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
         return builder.build();
     }
 

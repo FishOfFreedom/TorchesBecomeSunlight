@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.util.particle;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.client.util.render.MMRenderType;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,8 +19,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -123,10 +126,10 @@ public class ParticleCloud extends TextureSheetParticle {
         float f4 = this.getV0();
         float f5 = this.getV1();
         int j = this.getLightColor(partialTicks);
-        buffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).uv(f6, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
+        buffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (float) ((double)avector3f[0].z())).setUv(f7, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (float) ((double)avector3f[1].z())).setUv(f7, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (float) ((double)avector3f[2].z())).setUv(f6, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (float) ((double)avector3f[3].z())).setUv(f6, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -146,27 +149,14 @@ public class ParticleCloud extends TextureSheetParticle {
     }
 
     public static class CloudData implements ParticleOptions {
-        public static final Deserializer<CloudData> DESERIALIZER = new Deserializer<CloudData>() {
-            public CloudData fromCommand(ParticleType<CloudData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                float r = (float) reader.readDouble();
-                reader.expect(' ');
-                float g = (float) reader.readDouble();
-                reader.expect(' ');
-                float b = (float) reader.readDouble();
-                reader.expect(' ');
-                float scale = (float) reader.readDouble();
-                reader.expect(' ');
-                int duration = reader.readInt();
-                reader.expect(' ');
-                float airDrag = (float) reader.readDouble();
-                return new CloudData(particleTypeIn, r, g, b, scale, duration, EnumCloudBehavior.CONSTANT, airDrag);
-            }
-
-            public CloudData fromNetwork(ParticleType<CloudData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static CloudData readFromNetwork(ParticleType<CloudData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new CloudData(particleTypeIn, buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), EnumCloudBehavior.CONSTANT, buffer.readFloat());
             }
-        };
+
 
         private final ParticleType<CloudData> type;
 
@@ -189,8 +179,7 @@ public class ParticleCloud extends TextureSheetParticle {
             this.duration = duration;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeFloat(this.r);
             buffer.writeFloat(this.g);
             buffer.writeFloat(this.b);
@@ -200,8 +189,7 @@ public class ParticleCloud extends TextureSheetParticle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %d %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.r, this.g, this.b, this.scale, this.duration, this.airDrag);
         }
@@ -246,8 +234,8 @@ public class ParticleCloud extends TextureSheetParticle {
             return this.airDrag;
         }
 
-        public static Codec<CloudData> CODEC(ParticleType<CloudData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<CloudData> CODEC(ParticleType<CloudData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.FLOAT.fieldOf("r").forGetter(CloudData::getR),
                             Codec.FLOAT.fieldOf("g").forGetter(CloudData::getG),
                             Codec.FLOAT.fieldOf("b").forGetter(CloudData::getB),
@@ -258,6 +246,11 @@ public class ParticleCloud extends TextureSheetParticle {
                     ).apply(codecBuilder, (r, g, b, scale, behavior, duration, airdrag) ->
                             new CloudData(particleType, r, g, b, scale, duration, EnumCloudBehavior.valueOf(behavior), airdrag))
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, CloudData> STREAM_CODEC(ParticleType<CloudData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

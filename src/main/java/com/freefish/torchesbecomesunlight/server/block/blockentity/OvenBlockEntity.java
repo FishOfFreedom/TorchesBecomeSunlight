@@ -1,7 +1,8 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.client.render.gui.screen.oven.OvenMenu;
-import com.freefish.torchesbecomesunlight.mixin.accessor.RecipeManagerAccessor;
 import com.freefish.torchesbecomesunlight.server.block.inventory.StewPotItemHandler;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.recipe.*;
@@ -31,12 +32,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,9 +50,9 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     public static final int INVENTORY_SIZE = OUTPUT_SLOT + DECORATE_SHOT + 1;
 
     private final ItemStackHandler inventory;
-    private final LazyOptional<IItemHandler> inputHandler;
-    private final LazyOptional<IItemHandler> decorateHandler;
-    private final LazyOptional<IItemHandler> outputHandler;
+    private final IItemHandler inputHandler;
+    private final IItemHandler decorateHandler;
+    private final IItemHandler outputHandler;
 
     private int cookTime;
     private int cookTimeTotal;
@@ -69,9 +68,9 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     public OvenBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityHandle.OVEN.get(), pos, state);
         this.inventory = createHandler();
-        this.inputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.UP));
-        this.decorateHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.WEST));
-        this.outputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.DOWN));
+        this.inputHandler = new StewPotItemHandler(inventory, Direction.UP);
+        this.decorateHandler = new StewPotItemHandler(inventory, Direction.WEST);
+        this.outputHandler = new StewPotItemHandler(inventory, Direction.DOWN);
         this.mealContainerStack = ItemStack.EMPTY;
         this.cookingPotData = createIntArray();
         this.usedRecipeTracker = new Object2IntOpenHashMap<>();
@@ -79,40 +78,40 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        inventory.deserializeNBT(compound.getCompound("Inventory"));
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
+        inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
         cookTime = compound.getInt("CookTime");
         cookTimeTotal = compound.getInt("CookTimeTotal");
-        mealContainerStack = ItemStack.of(compound.getCompound("Container"));
+        mealContainerStack = ItemStack.parseOptional(registries, compound.getCompound("Container"));
         if (compound.contains("CustomName", 8)) {
-            customName = Component.Serializer.fromJson(compound.getString("CustomName"));
+            customName = Component.Serializer.fromJson(compound.getString("CustomName"), registries);
         }
         CompoundTag compoundRecipes = compound.getCompound("RecipesUsed");
         for (String key : compoundRecipes.getAllKeys()) {
-            usedRecipeTracker.put(new ResourceLocation(key), compoundRecipes.getInt(key));
+            usedRecipeTracker.put(ResourceLocation.parse(key), compoundRecipes.getInt(key));
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
         compound.putInt("CookTime", cookTime);
         compound.putInt("CookTimeTotal", cookTimeTotal);
-        compound.put("Container", mealContainerStack.serializeNBT());
+        compound.put("Container", mealContainerStack.save(registries));
         if (customName != null) {
-            compound.putString("CustomName", Component.Serializer.toJson(customName));
+            compound.putString("CustomName", Component.Serializer.toJson(customName, registries));
         }
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Inventory", inventory.serializeNBT(registries));
         CompoundTag compoundRecipes = new CompoundTag();
         usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.toString(), craftedAmount));
         compound.put("RecipesUsed", compoundRecipes);
     }
 
-    private CompoundTag writeItems(CompoundTag compound) {
-        super.saveAdditional(compound);
-        compound.put("Container", mealContainerStack.serializeNBT());
-        compound.put("Inventory", inventory.serializeNBT());
+    private CompoundTag writeItems(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
+        compound.put("Container", mealContainerStack.save(registries));
+        compound.put("Inventory", inventory.serializeNBT(registries));
         return compound;
     }
 
@@ -143,12 +142,15 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            Recipe<RecipeWrapper> recipe = ((RecipeManagerAccessor) level.getRecipeManager())
-                    .getRecipeMap(RecipesHandle.OVEN_RECIPE_TYPE.get())
-                    .get(lastRecipeID);
-            if (recipe instanceof OvenRecipe) {
+            @SuppressWarnings("unchecked")
+            RecipeHolder<OvenRecipe> holder = (RecipeHolder<OvenRecipe>) level.getRecipeManager()
+                    .byKey(lastRecipeID)
+                    .filter(h -> h.value() instanceof OvenRecipe)
+                    .orElse(null);
+            if (holder != null) {
+                OvenRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {
-                    return Optional.of((OvenRecipe) recipe);
+                    return Optional.of(recipe);
                 }
                 if (ItemStack.isSameItem(recipe.getResultItem(this.level.registryAccess()), getMeal())) {
                     return Optional.empty();
@@ -157,14 +159,14 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         if (checkNewRecipe) {
-            Optional<OvenRecipe> recipe = level.getRecipeManager().getRecipeFor(RecipesHandle.OVEN_RECIPE_TYPE.get(), inventoryWrapper, level);
+            Optional<RecipeHolder<OvenRecipe>> recipe = level.getRecipeManager().getRecipeFor(RecipesHandle.OVEN_RECIPE_TYPE.get(), inventoryWrapper, level);
             if (recipe.isPresent()) {
-                ResourceLocation newRecipeID = recipe.get().getId();
+                ResourceLocation newRecipeID = recipe.get().id();
                 if (lastRecipeID != null && !lastRecipeID.equals(newRecipeID)) {
                     cookTime = 0;
                 }
                 lastRecipeID = newRecipeID;
-                return recipe;
+                return Optional.of(recipe.get().value());
             }
         }
 
@@ -225,7 +227,8 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         }else {
             return false;
         }
-        cookingPot.setRecipeUsed(recipe);
+        cookingPot.setRecipeUsed(cookingPot.lastRecipeID == null ? null
+                : level.getRecipeManager().byKey(cookingPot.lastRecipeID).orElse(null));
 
         decorateFinalFood();
 
@@ -298,26 +301,26 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         //        direction.getStepX() * 0.08F, 0.25F, direction.getStepZ() * 0.08F);
     }
 
-    public void setRecipeUsed(@Nullable Recipe<?> recipe) {
+    public void setRecipeUsed(@Nullable RecipeHolder<?> recipe) {
         if (recipe != null) {
-            ResourceLocation recipeID = recipe.getId();
+            ResourceLocation recipeID = recipe.id();
             usedRecipeTracker.addTo(recipeID, 1);
         }
     }
 
     public void awardUsedRecipes(Player player, List<ItemStack> items) {
-        List<Recipe<?>> usedRecipes = getUsedRecipesAndPopExperience(player.level(), player.position());
+        List<RecipeHolder<?>> usedRecipes = getUsedRecipesAndPopExperience(player.level(), player.position());
         player.awardRecipes(usedRecipes);
         usedRecipeTracker.clear();
     }
 
-    public List<Recipe<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
-        List<Recipe<?>> list = Lists.newArrayList();
+    public List<RecipeHolder<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
+        List<RecipeHolder<?>> list = Lists.newArrayList();
 
         for (Object2IntMap.Entry<ResourceLocation> entry : usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) -> {
                 list.add(recipe);
-                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((OvenRecipe) recipe).getExperience());
+                splitAndSpawnExperience((ServerLevel) level, pos, entry.getIntValue(), ((OvenRecipe) recipe.value()).getExperience());
             });
         }
 
@@ -366,32 +369,25 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         return new OvenMenu(id, player, this, cookingPotData);
     }
 
-    @Override
-    @Nonnull
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap.equals(ForgeCapabilities.ITEM_HANDLER)) {
-            if (side == null || side.equals(Direction.UP)) {
-                return inputHandler.cast();
-            } else if(side.equals(Direction.DOWN)) {
-                return outputHandler.cast();
-            } else {
-                return decorateHandler.cast();
-            }
+        /** 由 TBSCapabilities 在 RegisterCapabilitiesEvent 中按面注册 */
+    public IItemHandler getItemHandler(@Nullable Direction side) {
+        if (side == null || side == Direction.UP) {
+            return inputHandler;
+        } else if (side == Direction.DOWN) {
+            return outputHandler;
+        } else {
+            return decorateHandler;
         }
-        return super.getCapability(cap, side);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        inputHandler.invalidate();
-        outputHandler.invalidate();
-        decorateHandler.invalidate();
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return writeItems(new CompoundTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return writeItems(new CompoundTag(), registries);
     }
 
     private ItemStackHandler createHandler() {

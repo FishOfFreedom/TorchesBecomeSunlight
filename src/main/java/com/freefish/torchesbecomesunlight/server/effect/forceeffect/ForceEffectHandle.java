@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public abstract class ForceEffectHandle {
     public static final BiMap<ResourceLocation,ForceEffectType<?>> RESOURCE_LOCATION_FORCE_EFFECT = HashBiMap.create();
@@ -31,9 +31,9 @@ public abstract class ForceEffectHandle {
     public static ForceEffectType<LightingForceEffect> LIGHTING_FORCE_EFFECT;
 
     public static void init(){
-        FROZEN_FORCE_EFFECT = register(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"frozen"),new ForceEffectType<>(FrozenForceEffect::new));
-        SLOW_MOVE_FORCE_EFFECT = register(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"slow_move"),new ForceEffectType<>(SlowMoveForceEffect::new));
-        LIGHTING_FORCE_EFFECT = register(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"lighting"),new ForceEffectType<>(LightingForceEffect::new));
+        FROZEN_FORCE_EFFECT = register(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"frozen"),new ForceEffectType<>(FrozenForceEffect::new));
+        SLOW_MOVE_FORCE_EFFECT = register(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"slow_move"),new ForceEffectType<>(SlowMoveForceEffect::new));
+        LIGHTING_FORCE_EFFECT = register(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"lighting"),new ForceEffectType<>(LightingForceEffect::new));
     }
 
     public static void addForceEffect(LivingEntity living,ForceEffectInstance ... forceEffectInstances){
@@ -63,7 +63,7 @@ public abstract class ForceEffectHandle {
                 }
                 all.put("forceeffct",listTag);
 
-                TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), new SynCapabilityMessage(living,all));
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(living, new SynCapabilityMessage(living,all));
             }
         }
     }

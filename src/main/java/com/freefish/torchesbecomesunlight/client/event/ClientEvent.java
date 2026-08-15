@@ -1,6 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
 
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.particle.*;
 import com.freefish.torchesbecomesunlight.client.render.blockentity.*;
@@ -25,16 +27,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.client.event.RegisterRecipeBookCategoriesEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, value = Dist.CLIENT)
 public class ClientEvent {
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event){
@@ -87,9 +89,14 @@ public class ClientEvent {
         event.registerBlockEntityRenderer(BlockEntityHandle.BIG_BEN.get(), context -> new BigBenRenderer());
         event.registerBlockEntityRenderer(BlockEntityHandle.ELEVATOR_DOOR.get(), context -> new ElebatorDoorRenderer());
 
-        MenuScreens.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
-        MenuScreens.register(MenuHandle.CUTTING_BORAD_MENU.get(), CuttingBoardScreen::new);
-        MenuScreens.register(MenuHandle.OVEN_MENU.get(), OvenScreen::new);
+    }
+
+    /** 1.21 把 MenuScreens.register 收为私有，屏幕注册改由该事件承担 */
+    @SubscribeEvent
+    public static void registerMenuScreens(final RegisterMenuScreensEvent event) {
+        event.register(MenuHandle.STEW_POT_MENU.get(), StewPotScreen::new);
+        event.register(MenuHandle.CUTTING_BORAD_MENU.get(), CuttingBoardScreen::new);
+        event.register(MenuHandle.OVEN_MENU.get(), OvenScreen::new);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -134,11 +141,11 @@ public class ClientEvent {
 
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
-        addLayerToPlayerRenderer(event, "default");
-        addLayerToPlayerRenderer(event, "slim");
+        addLayerToPlayerRenderer(event, net.minecraft.client.resources.PlayerSkin.Model.WIDE);
+        addLayerToPlayerRenderer(event, net.minecraft.client.resources.PlayerSkin.Model.SLIM);
     }
 
-    private static void addLayerToPlayerRenderer(EntityRenderersEvent.AddLayers event, String skinType) {
+    private static void addLayerToPlayerRenderer(EntityRenderersEvent.AddLayers event, net.minecraft.client.resources.PlayerSkin.Model skinType) {
         PlayerRenderer renderer = event.getSkin(skinType);
         if (renderer != null) {
             renderer.addLayer(new SakataLayer(

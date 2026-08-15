@@ -4,7 +4,6 @@ import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.enviroment.SkyRenderer;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -26,7 +25,7 @@ import java.util.Random;
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer{
     @Shadow
-    private static final ResourceLocation SNOW_LOCATION = new ResourceLocation("textures/environment/snow.png");
+    private static final ResourceLocation SNOW_LOCATION = ResourceLocation.parse("textures/environment/snow.png");
 
     @Shadow
     private ClientLevel level;
@@ -45,15 +44,15 @@ public abstract class MixinLevelRenderer{
     @ModifyArg(method = "renderSnowAndRain",at = @At(value = "INVOKE",target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderTexture(ILnet/minecraft/resources/ResourceLocation;)V"),index = 1)
     public ResourceLocation renderSnowAndRain(ResourceLocation resourceLocation){
         if(ClientStorage.INSTANCE.isBossActive()&&resourceLocation == SNOW_LOCATION)
-            return new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/environment/blizzard.png");
+            return ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/environment/blizzard.png");
         else
             return resourceLocation;
     }
 
     @Inject(method = "renderSky",at = @At("HEAD"), cancellable = true)
-    public void renderDemonSky(PoseStack matrices, Matrix4f pProjectionMatrix, float pPartialTick, Camera pCamera, boolean pIsFoggy, Runnable pSkyFogSetup, CallbackInfo info){
+    public void renderDemonSky(Matrix4f pFrustumMatrix, Matrix4f pProjectionMatrix, float pPartialTick, Camera pCamera, boolean pIsFoggy, Runnable pSkyFogSetup, CallbackInfo info){
         if(ClientStorage.INSTANCE.demonRadio>=60&&ConfigHandler.CLIENT.demonRender.get()) {
-            SkyRenderer.renderDemonSky(level, pPartialTick, matrices.last().pose(), pCamera, pProjectionMatrix, pSkyFogSetup);
+            SkyRenderer.renderDemonSky(level, pPartialTick, pFrustumMatrix, pCamera, pProjectionMatrix, pSkyFogSetup);
             info.cancel();
         }
     }

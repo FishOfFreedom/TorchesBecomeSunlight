@@ -65,13 +65,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -642,7 +642,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
             else {
                 Vec3 move = entity.getSVec();
                 if(move!=null) {
-                    entity.setDeltaMovement(move.x,-entity.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get()) * 5.0F,move.z);
+                    entity.setDeltaMovement(move.x,-entity.getAttributeValue(Attributes.GRAVITY) * 5.0F,move.z);
                 }
                 if(tick%2==0){
                     entity.setSVec(move.yRot(move.y>0?-0.35f:0.35f));
@@ -945,7 +945,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     @Override
     public void playDeathAnimationPre(DamageSource source) {
         if(source .getEntity() instanceof ServerPlayer player){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "ursus_2_fight");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "ursus_2_fight");
         }
     }
 
@@ -1037,7 +1037,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         super.die(pDamageSource);
         Entity entity = pDamageSource.getEntity();
         if(entity instanceof ServerPlayer s){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(s,"ursus_2_fight");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(s,"ursus_2_fight");
         }
         if (!this.isRemoved()&&bossInfo instanceof IBossInfoUpdate update) {
             update.update();
@@ -1086,19 +1086,19 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
         return false;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         return 1.5f;
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(PREDICATE,0);
-        this.entityData.define(SX,0f);
-        this.entityData.define(SY,0f);
-        this.entityData.define(SZ,0f);
-        this.entityData.define(LOCATE_MOB_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(PREDICATE,0);
+        builder.define(SX,0f);
+        builder.define(SY,0f);
+        builder.define(SZ,0f);
+        builder.define(LOCATE_MOB_ID, -1);
     }
 
     @Override
@@ -1132,18 +1132,18 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
 
     @Override
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.addEffect(effectInstance, entity);
     }
 
     @Override
     public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
+        if (FFEntityUtils.isBeneficial(effectInstance.getEffect().value()))
             super.forceAddEffect(effectInstance, entity);
     }
 
     @Override
     public boolean canBeAffected(MobEffectInstance effectInstance) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.canBeAffected(effectInstance);
     }
 
     @Override
@@ -1720,7 +1720,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
     }
 
     public void addCollapsalEffect(LivingEntity livingEntity,int time,int amplifier){
-        MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+        MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL);
         int addTime = 0;
         int addAmplifier = 0;
 
@@ -1728,7 +1728,7 @@ public class Pursuer extends UrsusEntity implements IDialogueEntity {
             addAmplifier = effect.getAmplifier()+1;
             addTime = effect.getDuration();
         }
-        livingEntity.addEffect(new MobEffectInstance(EffectHandle.COLLAPSAL.get(),addTime+time,Math.min(4,amplifier+addAmplifier)));
+        livingEntity.addEffect(new MobEffectInstance(EffectHandle.COLLAPSAL,addTime+time,Math.min(4,amplifier+addAmplifier)));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.block.furniture.EightDirectionBlock;
 import com.freefish.torchesbecomesunlight.server.block.furniture.VerticalSlabBlock;
@@ -10,11 +11,11 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.StairsShape;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -29,7 +30,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(BlockHandle.ROUND_STOOL.get(),
                 new ModelFile.UncheckedModelFile(modLoc("block/round_stool")));
         //horizontalBlock(BlockHandle.CUTTING_BOARD.get(),
-        //        new ModelFile.UncheckedModelFile(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"block/cutting_board")));
+        //        new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"block/cutting_board")));
         //horizontalBlock(BlockHandle.PATH_SIGN.get(),
         //        new ModelFile.UncheckedModelFile(mcLoc("block/path_sign")));
         //horizontalBlock(BlockHandle.PATH_SIGN_2.get(),
@@ -50,20 +51,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
         //        new ModelFile.UncheckedModelFile(modLoc("block/cargo_rack")));
 
 
-        verticalSlabBlockWithItem(BlockHandle.GRAY_CONCRETE_VERTICAL_SLAB.get(),new ResourceLocation("block/gray_concrete"));
-        verticalSlabBlockWithItem(BlockHandle.WHITE_CONCRETE_VERTICAL_SLAB.get(),new ResourceLocation("block/white_concrete"));
-        verticalSlabBlockWithItem(BlockHandle.YELLOW_CONCRETE_VERTICAL_SLAB.get(),new ResourceLocation("block/yellow_concrete"));
-        verticalSlabBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_VERTICAL_SLAB.get(),new ResourceLocation("block/light_gray_concrete"));
+        verticalSlabBlockWithItem(BlockHandle.GRAY_CONCRETE_VERTICAL_SLAB.get(),ResourceLocation.parse("block/gray_concrete"));
+        verticalSlabBlockWithItem(BlockHandle.WHITE_CONCRETE_VERTICAL_SLAB.get(),ResourceLocation.parse("block/white_concrete"));
+        verticalSlabBlockWithItem(BlockHandle.YELLOW_CONCRETE_VERTICAL_SLAB.get(),ResourceLocation.parse("block/yellow_concrete"));
+        verticalSlabBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_VERTICAL_SLAB.get(),ResourceLocation.parse("block/light_gray_concrete"));
 
-        slabBlockWithItem(BlockHandle.GRAY_CONCRETE_SLAB.get(),new ResourceLocation("block/gray_concrete"));
-        slabBlockWithItem(BlockHandle.WHITE_CONCRETE_SLAB.get(),new ResourceLocation("block/white_concrete"));
-        slabBlockWithItem(BlockHandle.YELLOW_CONCRETE_SLAB.get(),new ResourceLocation("block/yellow_concrete"));
-        slabBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_SLAB.get(),new ResourceLocation("block/light_gray_concrete"));
+        slabBlockWithItem(BlockHandle.GRAY_CONCRETE_SLAB.get(),ResourceLocation.parse("block/gray_concrete"));
+        slabBlockWithItem(BlockHandle.WHITE_CONCRETE_SLAB.get(),ResourceLocation.parse("block/white_concrete"));
+        slabBlockWithItem(BlockHandle.YELLOW_CONCRETE_SLAB.get(),ResourceLocation.parse("block/yellow_concrete"));
+        slabBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_SLAB.get(),ResourceLocation.parse("block/light_gray_concrete"));
 
-        stairsBlockWithItem(BlockHandle.GRAY_CONCRETE_STAIRS.get(),new ResourceLocation("block/gray_concrete"));
-        stairsBlockWithItem(BlockHandle.WHITE_CONCRETE_STAIRS.get(),new ResourceLocation("block/white_concrete"));
-        stairsBlockWithItem(BlockHandle.YELLOW_CONCRETE_STAIRS.get(),new ResourceLocation("block/yellow_concrete"));
-        stairsBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_STAIRS.get(),new ResourceLocation("block/light_gray_concrete"));
+        stairsBlockWithItem(BlockHandle.GRAY_CONCRETE_STAIRS.get(),ResourceLocation.parse("block/gray_concrete"));
+        stairsBlockWithItem(BlockHandle.WHITE_CONCRETE_STAIRS.get(),ResourceLocation.parse("block/white_concrete"));
+        stairsBlockWithItem(BlockHandle.YELLOW_CONCRETE_STAIRS.get(),ResourceLocation.parse("block/yellow_concrete"));
+        stairsBlockWithItem(BlockHandle.LIGHT_GRAY_CONCRETE_STAIRS.get(),ResourceLocation.parse("block/light_gray_concrete"));
     }
 
     public void simpleBlockWithItem(Block block) {
@@ -96,7 +97,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void verticalSlabBlockWithItem(VerticalSlabBlock block, ResourceLocation texture) {
         verticalSlabBlock(block, texture);
         String baseName = key(block).toString();
-        simpleBlockItem(block, models().withExistingParent(baseName,new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"block/vertical_slab")));
+        simpleBlockItem(block, models().withExistingParent(baseName,ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"block/vertical_slab")));
     }
 
     private void eightDirectionWithItem(EightDirectionBlock block,String model) {
@@ -122,9 +123,9 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private void verticalSlabBlockInternal(VerticalSlabBlock block, String baseName, ResourceLocation side, ResourceLocation bottom, ResourceLocation top) {
-        ModelFile stairs = models().withExistingParent(baseName,new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
-        ModelFile stairsInner = models().withExistingParent(baseName+"_inner",new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"inner_vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
-        ModelFile stairsOuter = models().withExistingParent(baseName+"_outer",new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"outer_vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
+        ModelFile stairs = models().withExistingParent(baseName,ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
+        ModelFile stairsInner = models().withExistingParent(baseName+"_inner",ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"inner_vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
+        ModelFile stairsOuter = models().withExistingParent(baseName+"_outer",ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"outer_vertical_slab")).texture("side",side).texture("bottom",bottom).texture("top",top);
         verticalSlabBlock(block, stairs, stairsInner, stairsOuter);
     }
 
@@ -238,7 +239,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private ResourceLocation extend(ResourceLocation rl, String suffix) {
-        return new ResourceLocation(rl.getNamespace(), rl.getPath() + suffix);
+        return ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), rl.getPath() + suffix);
     }
 
     private String name(Block block) {
@@ -246,6 +247,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private ResourceLocation key(Block block) {
-        return ForgeRegistries.BLOCKS.getKey(block);
+        return BuiltInRegistries.BLOCK.getKey(block);
     }
 }

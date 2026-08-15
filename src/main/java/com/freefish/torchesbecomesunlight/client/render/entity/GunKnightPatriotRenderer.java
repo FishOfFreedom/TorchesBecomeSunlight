@@ -28,17 +28,21 @@ public class GunKnightPatriotRenderer extends GeoEntityRenderer<GunKnightPatriot
     }
 
     @Override
-    public int getPackedOverlay(GunKnightPatriot animatable, float u) {
+    public int getPackedOverlay(GunKnightPatriot animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }
 
     //@Override
-    //public void renderRecursively(PoseStack poseStack, GunKnightPatriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    //public void renderRecursively(PoseStack poseStack, GunKnightPatriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+
+
+
+
     //    if(bone.getName().matches("Wing.*")){
-    //        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, 0.6f+ 0.4f*bone.getPosZ());
+    //        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(0.6f+ 0.4f*bone.getPosZ(), red, green, blue));
     //    }
     //    else
-    //        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    //        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
     //}
 }

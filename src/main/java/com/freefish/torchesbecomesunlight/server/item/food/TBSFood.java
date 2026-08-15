@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.food;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.rosmontislib.item.ItemAdditionData;
 import com.freefish.torchesbecomesunlight.server.init.recipe.FoodCategory;
 import com.freefish.torchesbecomesunlight.server.init.recipe.FoodValues;
@@ -11,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -20,12 +21,7 @@ import java.util.stream.Collectors;
 
 public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
     public TBSFood(int nutrition,float saturation,int during) {
-        super(new Item.Properties().food((new FoodProperties.Builder()).nutrition(nutrition).saturationMod(saturation).alwaysEat().build()).durability(during));
-    }
-
-    @Override
-    public boolean isEdible() {
-        return super.isEdible();
+        super(new Item.Properties().food((new FoodProperties.Builder()).nutrition(nutrition).saturationModifier(saturation).alwaysEdible().build()).durability(during));
     }
 
     @Override
@@ -43,7 +39,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+    public void appendHoverText(ItemStack pStack, Item.TooltipContext pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
         if(pStack.getItem() instanceof TBSFood tbsFood){
             DishAttribute itemAdditionData = getItemAdditionData(pStack, DishAttribute::new);
             FoodValues foodValues = itemAdditionData.getFoodValues();
@@ -73,7 +69,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
                         .map(this::toS)
                         .collect(Collectors.joining(", "));
                 //String collect = effects.stream()
-                //        .map(in -> ForgeRegistries.MOB_EFFECTS.getKey(in.mobEffect).toString())
+                //        .map(in -> BuiltInRegistries.MOB_EFFECT.getKey(in.mobEffect).toString())
                 //        .collect(Collectors.joining(","));
                 pTooltipComponents.add(Component.translatable("text.torchesbecomesunlight.foodbuff").append(Component.literal(collect)));
             }
@@ -94,7 +90,7 @@ public class TBSFood extends Item implements ItemAdditionData<DishAttribute> {
                 default -> String.valueOf(amplifier + 1);
             };
         }
-        return Component.translatable(m.mobEffect.getDescriptionId()).append(" "+romanLevel).getString();
+        return Component.translatable(m.mobEffect.value().getDescriptionId()).append(" "+romanLevel).getString();
     }
 
     @Override

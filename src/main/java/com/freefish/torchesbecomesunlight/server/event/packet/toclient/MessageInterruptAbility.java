@@ -1,5 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.ability.Ability;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityType;
 import com.freefish.torchesbecomesunlight.server.capability.AbilityCapability;
@@ -7,12 +12,19 @@ import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.NetworkEvent;
+public class MessageInterruptAbility implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<MessageInterruptAbility> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "message_interrupt_ability"));
 
-public class MessageInterruptAbility {
+    public static final StreamCodec<FriendlyByteBuf, MessageInterruptAbility> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), MessageInterruptAbility::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private int index;
 
@@ -37,10 +49,8 @@ public class MessageInterruptAbility {
         return message;
     }
 
-    public static class Handler implements BiConsumer<MessageInterruptAbility, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final MessageInterruptAbility message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final MessageInterruptAbility message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 LivingEntity entity = (LivingEntity) Minecraft.getInstance().level.getEntity(message.entityID);
                 if (entity != null) {
@@ -52,7 +62,5 @@ public class MessageInterruptAbility {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

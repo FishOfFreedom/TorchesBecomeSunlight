@@ -13,7 +13,7 @@ public class MacheteRenderer extends GeoItemRenderer<Machete> {
     }
 
     public static class MacheteModel extends GeoModel<Machete> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/machete.geo.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/machete.geo.json");
 
         @Override
         public ResourceLocation getModelResource(Machete animatable) {

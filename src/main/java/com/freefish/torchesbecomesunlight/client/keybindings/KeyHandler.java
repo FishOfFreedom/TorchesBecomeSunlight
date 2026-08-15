@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.keybindings;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.rosmontislib.gui.modular.ModularUIGuiContainer;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.gui.partnercommand.PartnerCommandMenuFactory;
@@ -14,14 +15,14 @@ import com.freefish.torchesbecomesunlight.server.util.storage.ClientStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = TorchesBecomeSunlight.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = TorchesBecomeSunlight.MOD_ID)
 public class KeyHandler {
     private static final Minecraft MINECRAFT = Minecraft.getInstance();
 

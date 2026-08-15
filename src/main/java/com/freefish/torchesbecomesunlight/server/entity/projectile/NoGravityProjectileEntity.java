@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.ProjectileHitEntityMessage;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -32,17 +33,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 
-public abstract class NoGravityProjectileEntity extends Projectile implements GeoEntity, IEntityAdditionalSpawnData {
+public abstract class NoGravityProjectileEntity extends Projectile implements GeoEntity, IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Byte> ID_FLAGS = SynchedEntityData.defineId(NoGravityProjectileEntity.class, EntityDataSerializers.BYTE);
 
@@ -90,8 +90,8 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         return false;
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(ID_FLAGS, (byte)0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ID_FLAGS, (byte)0);
     }
 
     public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
@@ -100,7 +100,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void lerpTo(double pX, double pY, double pZ, float pYaw, float pPitch, int pPosRotationIncrements, boolean pTeleport) {
+    public void lerpTo(double pX, double pY, double pZ, float pYaw, float pPitch, int pPosRotationIncrements) {
         this.setPos(pX, pY, pZ);
         this.setRot(pYaw, pPitch);
     }
@@ -266,7 +266,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         Vec3 deltaMovement = getDeltaMovement();
         buffer.writeDouble(deltaMovement.x);
         buffer.writeDouble(deltaMovement.y);
@@ -276,17 +276,13 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         Vec3 deltaMovement = new Vec3(additionalData.readDouble(),additionalData.readDouble(),additionalData.readDouble());
         setDeltaMovement(deltaMovement);
         setXRot(additionalData.readFloat());
         setYRot(additionalData.readFloat());
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
@@ -324,7 +320,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         int k = entity.getRemainingFireTicks();
         if (this.isOnFire()) {
-            entity.setSecondsOnFire(5);
+            entity.igniteForSeconds(5);
         }
 
         if (entity.hurt(damagesource, (float)i)) {
@@ -340,8 +336,13 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
                 }
 
                 if (!this.level().isClientSide && entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity);
+                    // 1.21 把命中/受击两套附魔效果合并成了 doPostAttackEffects
+
+                    if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+
+                        EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity, this.damageSources().thrown(this, this.getOwner()));
+
+                    }
                 }
 
                 this.doPostHurtEffects(livingentity);
@@ -354,7 +355,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
 
         boolean b = hitEntity(entity);
         if(!level().isClientSide&&b){
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new ProjectileHitEntityMessage(this, entity.getId()));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new ProjectileHitEntityMessage(this, entity.getId()));
         }
 
         if(isHitEntityDiscard(entity)) {
@@ -431,7 +432,7 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
         this.inGround = pCompound.getBoolean("inGround");
 
         if (pCompound.contains("SoundEvent", 8)) {
-            this.soundEvent = BuiltInRegistries.SOUND_EVENT.getOptional(new ResourceLocation(pCompound.getString("SoundEvent"))).orElse(this.getDefaultHitGroundSoundEvent());
+            this.soundEvent = BuiltInRegistries.SOUND_EVENT.getOptional(ResourceLocation.parse(pCompound.getString("SoundEvent"))).orElse(this.getDefaultHitGroundSoundEvent());
         }
     }
 

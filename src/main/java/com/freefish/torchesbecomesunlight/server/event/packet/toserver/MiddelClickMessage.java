@@ -1,6 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toserver;
 
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
 import com.freefish.torchesbecomesunlight.server.story.data.Option;
 import com.freefish.torchesbecomesunlight.server.story.dialogueentity.DialogueEntity;
@@ -10,13 +15,20 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+public class MiddelClickMessage implements CustomPacketPayload {
 
-public class MiddelClickMessage {
+    public static final CustomPacketPayload.Type<MiddelClickMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "middel_click_message"));
+
+    public static final StreamCodec<FriendlyByteBuf, MiddelClickMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), MiddelClickMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     public MiddelClickMessage(){
     }
@@ -34,11 +46,9 @@ public class MiddelClickMessage {
         message.entityID = buf.readVarInt();
         return message;
     }
-    public static class Handler implements BiConsumer<MiddelClickMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(MiddelClickMessage SpawnDialogueEntity, Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
-            final ServerPlayer player2 = context.getSender();
+        public static void handle(final MiddelClickMessage SpawnDialogueEntity, final IPayloadContext context) {
+            
+            final ServerPlayer player2 = ((ServerPlayer) context.player());
             context.enqueueWork(() -> {
                 if(player2!=null){
                     Entity entity1 = player2.level().getEntity(SpawnDialogueEntity.entityID);
@@ -69,7 +79,5 @@ public class MiddelClickMessage {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

@@ -22,8 +22,8 @@ public class PathfinderGunRenderer extends GeoItemRenderer<PathfinderGun> {
     }
 
     public static class PathfinderGunModel extends GeoModel<PathfinderGun> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/pathfindergun.geo.json");
-        private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pathfindergun.animation.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/pathfindergun.geo.json");
+        private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/pathfindergun.animation.json");
 
         @Override
         public ResourceLocation getModelResource(PathfinderGun animatable) {

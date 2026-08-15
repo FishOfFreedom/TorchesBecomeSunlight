@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriot;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -21,12 +22,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import java.util.List;
 
-public class FXEntity extends Entity implements IEntityAdditionalSpawnData {
+public class FXEntity extends Entity implements IEntityWithComplexSpawn {
     //private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Integer> PREDICATE = SynchedEntityData.defineId(FXEntity.class, EntityDataSerializers.INT);
     private int predicateCa = -1;
@@ -96,8 +96,8 @@ public class FXEntity extends Entity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(PREDICATE,-1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(PREDICATE,-1);
     }
 
     @Override
@@ -155,18 +155,14 @@ public class FXEntity extends Entity implements IEntityAdditionalSpawnData {
         level.addFreshEntity(fxEntity);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(len111);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         len111 = additionalData.readVarInt();
     }
 }

@@ -2,13 +2,13 @@ package com.freefish.torchesbecomesunlight.client.render.Item;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.example.item.WolfArmorItem;
+import com.freefish.torchesbecomesunlight.server.item.armor.WinterScratchItem;
 import software.bernie.geckolib.GeckoLib;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
-public final class WinterScratchRenderer extends GeoArmorRenderer<WolfArmorItem> {
+public final class WinterScratchRenderer extends GeoArmorRenderer<WinterScratchItem> {
     public WinterScratchRenderer() {
-        super(new DefaultedItemGeoModel<>(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "armor/winter_scratch")));
+        super(new DefaultedItemGeoModel<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "armor/winter_scratch")));
     }
 }

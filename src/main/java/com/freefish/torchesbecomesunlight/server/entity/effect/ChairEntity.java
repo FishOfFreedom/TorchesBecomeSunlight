@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,7 @@ public class ChairEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {}
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
     @Override
     public void tick() {

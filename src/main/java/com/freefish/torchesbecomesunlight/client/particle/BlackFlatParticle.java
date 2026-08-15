@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,8 +19,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Math;
 import org.joml.Vector3f;
 
@@ -88,10 +91,10 @@ public class BlackFlatParticle extends TextureSheetParticle {
         float f5 = this.getV1();
         int j = this.getLightColor(partialTicks);
 
-        buffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(0, 0, 0, this.alpha).uv2(j).endVertex();
-        buffer.vertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).uv(f6, f5).color(0, 0, 0, this.alpha).uv2(j).endVertex();
+        buffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (float) ((double)avector3f[0].z())).setUv(f7, f5).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (float) ((double)avector3f[1].z())).setUv(f7, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (float) ((double)avector3f[2].z())).setUv(f6, f4).setColor(0, 0, 0, this.alpha).setLight(j);
+        buffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (float) ((double)avector3f[3].z())).setUv(f6, f5).setColor(0, 0, 0, this.alpha).setLight(j);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -109,19 +112,14 @@ public class BlackFlatParticle extends TextureSheetParticle {
     }
 
     public static class BlackFlatData implements ParticleOptions {
-        public static final Deserializer<BlackFlatData> DESERIALIZER = new Deserializer<BlackFlatData>() {
-            public BlackFlatData fromCommand(ParticleType<BlackFlatData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                float scale = reader.readFloat();
-                return new BlackFlatData(duration,scale);
-            }
-
-            public BlackFlatData fromNetwork(ParticleType<BlackFlatData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static BlackFlatData readFromNetwork(ParticleType<BlackFlatData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new BlackFlatData(buffer.readInt(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final float scale;
@@ -131,15 +129,13 @@ public class BlackFlatParticle extends TextureSheetParticle {
             this.scale = scale;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeFloat(this.scale);
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration,this.scale);
         }
@@ -158,12 +154,17 @@ public class BlackFlatParticle extends TextureSheetParticle {
         public float getScale() {
             return this.scale;
         }
-        public static Codec<BlackFlatData> CODEC(ParticleType<BlackFlatData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<BlackFlatData> CODEC(ParticleType<BlackFlatData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(BlackFlatData::getDuration),
                             Codec.FLOAT.fieldOf("scale").forGetter(BlackFlatData::getScale)
                     ).apply(codecBuilder, BlackFlatData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, BlackFlatData> STREAM_CODEC(ParticleType<BlackFlatData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

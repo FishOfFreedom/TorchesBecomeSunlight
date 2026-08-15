@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.material.MaterialHandle;
@@ -49,13 +50,13 @@ public class LightingBoom extends NoGravityProjectileEntity{
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         buffer.writeFloat(rotSpeed);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         rotSpeed = additionalData.readFloat();
         if(level().isClientSide){

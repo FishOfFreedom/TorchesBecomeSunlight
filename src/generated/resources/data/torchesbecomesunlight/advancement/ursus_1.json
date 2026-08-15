@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:ursus",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "ursus_1"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.ursus_1"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:demon_eye"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.ursus_1"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

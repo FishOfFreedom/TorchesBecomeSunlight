@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.mixin.MixinStructureTemplatePool;
 import com.mojang.datafixers.util.Pair;
@@ -9,14 +10,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class VillageAddEvent {
     @SubscribeEvent
     public static void onTagsUpdated(TagsUpdatedEvent ev)
@@ -27,8 +28,8 @@ public class VillageAddEvent {
         for(String biome : new String[]{"snowy"})
             for(String type : new String[]{"villager"}) {
                 addToPool(
-                        new ResourceLocation("village/" + biome + "/houses"),
-                        new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "village/" + biome + "_" + type),
+                        ResourceLocation.parse("village/" + biome + "/houses"),
+                        ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "village/" + biome + "_" + type),
                         ev.getRegistryAccess()
                 );
             }

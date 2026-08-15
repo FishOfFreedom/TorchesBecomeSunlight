@@ -15,6 +15,6 @@ public class CustomResourceKey {
     public static final ResourceKey<DamageType> FROST_ATTACK = registerResourceKey(Registries.DAMAGE_TYPE, "frostnova_frost");
 
     private static <T> ResourceKey<T> registerResourceKey(ResourceKey<Registry<T>> registry, String key) {
-        return ResourceKey.create(registry, new ResourceLocation(TorchesBecomeSunlight.MOD_ID, key));
+        return ResourceKey.create(registry, ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, key));
     }
 }

@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -104,17 +106,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -312,7 +314,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
         boolean b = super.doHurtEntity(livingEntity, source, damage);
 
-        if(defendCounterMap.containsKey(livingEntity)){
+        if(getSpawnState()==State.TWO&&defendCounterMap.containsKey(livingEntity)){
             DefendCounter defendCounter = defendCounterMap.get(livingEntity);
             if(b||!(livingEntity instanceof Player)){
                 defendCounter.effectiveAttackCounter -= 1;
@@ -391,15 +393,15 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_POSX, 0f);
-        this.entityData.define(PARTICLE, new CompoundTag());
-        this.entityData.define(TARGET_POSY, 0f);
-        this.entityData.define(TARGET_POSZ, 0f);
-        this.entityData.define(IS_GLOWING, false);
-        this.entityData.define(GUN_MODE,0);
-        this.entityData.define(IS_RUN,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TARGET_POSX, 0f);
+        builder.define(PARTICLE, new CompoundTag());
+        builder.define(TARGET_POSY, 0f);
+        builder.define(TARGET_POSZ, 0f);
+        builder.define(IS_GLOWING, false);
+        builder.define(GUN_MODE,0);
+        builder.define(IS_RUN,false);
     }
 
     @Override
@@ -429,13 +431,13 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         super.writeSpawnData(buffer);
         buffer.writeUtf(getSpawnState().toString());
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         setSpawnState(State.valueOf(additionalData.readUtf()));
     }
@@ -448,15 +450,16 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                     AttributeInstance maxHealthAttr = getAttribute(Attributes.MAX_HEALTH);
                     if (maxHealthAttr != null) {
                         double difference = maxHealthAttr.getBaseValue() * 1.33333f - maxHealthAttr.getBaseValue();
-                        maxHealthAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                        maxHealthAttr.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                         setHealth(getMaxHealth());
                     }
                     AttributeInstance maxActAttr = getAttribute(Attributes.ATTACK_DAMAGE);
                     if (maxActAttr != null) {
                         double difference = maxActAttr.getBaseValue() * 0.33333f;
-                        maxActAttr.addPermanentModifier(new AttributeModifier(UUID.fromString("f2ccfb2b-4a7d-cb0b-9c64-9fa53f7687a2"), "Health config multiplier", difference, AttributeModifier.Operation.ADDITION));
+                        maxActAttr.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                     }
                 }
+                setIsGlowing(false);
             }
         }
     }
@@ -509,8 +512,8 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
         return false;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载，原 getStepHeight() 覆写已无对应 */
+    protected float tbsStepHeight() {
         return 2F;
     }
 
@@ -569,18 +572,18 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
 
     @Override
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.addEffect(effectInstance, entity);
     }
 
     @Override
     public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
+        if (FFEntityUtils.isBeneficial(effectInstance.getEffect().value()))
             super.forceAddEffect(effectInstance, entity);
     }
 
     @Override
     public boolean canBeAffected(MobEffectInstance effectInstance) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.canBeAffected(effectInstance);
     }
 
     @Override
@@ -599,7 +602,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     @Override
-    public boolean canBeLeashed(Player pPlayer) {
+    public boolean canBeLeashed() {
         return false;
     }
 
@@ -1159,7 +1162,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                         if(capability!=null){
                             capability.setIsSankta(true);
                             if(sanktaEntity instanceof ServerPlayer player){
-                                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_4_sakta");
+                                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_4_sakta");
                             }
                             ServerNetwork.toClientMessage(sanktaEntity, new SynCapabilityMessage(sanktaEntity, capability.writePlaySkillMessage()));
                         }
@@ -1193,7 +1196,9 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                     //level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX()+move.x, this.getY()+move.y, this.getZ()+move.z, finalMove.x, finalMove.y, finalMove.z);
                 }
                 if(tick==100){
-                    normalLightParticle();
+                    if(level().isClientSide){
+                        normalLightParticle();
+                    }
                 }
             }
             else {
@@ -3147,7 +3152,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     }
 
     public boolean hasPlayerKilledDragon(ServerPlayer player) {
-        Advancement advancement = player.server.getAdvancements().getAdvancement(new ResourceLocation("minecraft:end/kill_dragon"));
+        net.minecraft.advancements.AdvancementHolder advancement = player.server.getAdvancements().get(ResourceLocation.parse("minecraft:end/kill_dragon"));
         if (advancement != null) {
             AdvancementProgress progress = player.getAdvancements().getOrStartProgress(advancement);
             return progress.isDone();

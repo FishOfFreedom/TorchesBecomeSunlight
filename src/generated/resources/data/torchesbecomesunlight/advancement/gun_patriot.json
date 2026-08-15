@@ -1,0 +1,31 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:gun_patriot_0_time",
+          "torchesbecomesunlight:gun_patriot_structure"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gun_patriot"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:time"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gun_patriot"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ]
+}

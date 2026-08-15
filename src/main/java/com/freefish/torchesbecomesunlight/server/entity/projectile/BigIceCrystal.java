@@ -30,11 +30,11 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
     }
 
     public BigIceCrystal(Level pLevel, LivingEntity pShooter) {
-        super(EntityHandle.BIG_ICE_CRYSTAL.get(), pShooter, pLevel);;
+        super(EntityHandle.BIG_ICE_CRYSTAL.get(), pShooter, pLevel, ItemStack.EMPTY, null);
     }
 
     public void tick() {
@@ -116,8 +116,13 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
             if (entity instanceof LivingEntity) {
                 LivingEntity livingentity1 = (LivingEntity)entity;
                 if (entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity1, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity1);
+                    // 1.21 把命中/受击两套附魔效果合并成了 doPostAttackEffects
+
+                    if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+
+                        EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity1, this.damageSources().thrown(this, this.getOwner()));
+
+                    }
                 }
 
                 this.doPostHurtEffects(livingentity1);
@@ -130,6 +135,10 @@ public class BigIceCrystal extends AbstractArrow implements GeoEntity {
     }
 
     @Override
+    protected ItemStack getDefaultPickupItem() {
+        return ItemStack.EMPTY;
+    }
+
     protected ItemStack getPickupItem() {
         return null;
     }

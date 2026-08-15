@@ -1,14 +1,13 @@
 package com.freefish.torchesbecomesunlight.server.config;
 
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.fml.common.Mod;
 
 import java.util.function.Predicate;
 
-import static net.minecraftforge.common.ForgeConfigSpec.*;
+import static net.neoforged.neoforge.common.ModConfigSpec.*;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ConfigHandler {
     private ConfigHandler() {}
 
@@ -20,8 +19,8 @@ public final class ConfigHandler {
     private static final Builder COMMON_BUILDER = new Builder();
     private static final Builder CLIENT_BUILDER = new Builder();
 
-    public static ForgeConfigSpec COMMON_CONFIG;
-    public static ForgeConfigSpec CLIENT_CONFIG;
+    public static ModConfigSpec COMMON_CONFIG;
+    public static ModConfigSpec CLIENT_CONFIG;
 
     private static final Predicate<Object> STRING_PREDICATE = s -> s instanceof String;
 

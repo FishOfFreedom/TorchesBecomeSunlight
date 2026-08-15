@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.Item;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.model.PatriotModel;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
@@ -25,7 +26,7 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
         this.renderPerspective = transformType;
 
         if(transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND){
-            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            boolean isActive = TBSItemData.hasTag(stack) && TBSItemData.getTag(stack).contains("tbsisActive")&& TBSItemData.getTag(stack).getBoolean("tbsisActive");
             if (isActive) {
                 poseStack.pushPose();
                 poseStack.last().pose().translate(0,0,0.45f);
@@ -39,7 +40,7 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
                 super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
             }
         }else if(transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND){
-            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            boolean isActive = TBSItemData.hasTag(stack) && TBSItemData.getTag(stack).contains("tbsisActive")&& TBSItemData.getTag(stack).getBoolean("tbsisActive");
             if (isActive) {
                 poseStack.pushPose();
                 poseStack.last().pose().translate(0.5f,-0.5f,0.2f);
@@ -63,16 +64,16 @@ public class InfectedShieldRenderer extends GeoItemRenderer<InfectedShield> {
             //    poseStack.pushPose();
             //    poseStack.last().pose().translate(-0.65f,0.5f,0);
             //    GeoBone geoBone = leftArm.get();
-            //    renderRecursively(poseStack,animatable,geoBone,armorRenderType,bufferSource,bufferSource.getBuffer(armorRenderType),false,0
-            //            ,packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1,1);
+            //    renderRecursively(poseStack, animatable, geoBone, armorRenderType, bufferSource, bufferSource.getBuffer(armorRenderType), false, 0
+            //, packedLight, OverlayTexture.NO_OVERLAY, net.minecraft.util.FastColor.ARGB32.colorFromFloat(1, 1, 1, 1));
             //    poseStack.popPose();
             //}
 
     }
 
     public static class InfectedShieldModel extends GeoModel<InfectedShield> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/shield.geo.json");
-        private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/shield.animation.json");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/shield.geo.json");
+        private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/shield.animation.json");
 
         @Override
         public ResourceLocation getModelResource(InfectedShield animatable) {

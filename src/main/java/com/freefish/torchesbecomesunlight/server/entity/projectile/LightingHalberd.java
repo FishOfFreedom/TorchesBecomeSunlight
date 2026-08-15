@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.projectile;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -92,7 +93,7 @@ public class LightingHalberd extends NoGravityProjectileEntity{
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         super.readSpawnData(additionalData);
         if(level().isClientSide){
             RLParticle rlParticle1 = new RLParticle( level());

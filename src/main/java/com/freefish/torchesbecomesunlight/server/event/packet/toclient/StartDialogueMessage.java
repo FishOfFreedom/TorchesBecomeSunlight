@@ -1,5 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.story.data.DialogueEntry;
 import com.freefish.torchesbecomesunlight.server.story.data.Option;
 import com.freefish.torchesbecomesunlight.server.story.data.generatext.Generatext;
@@ -9,12 +14,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+public class StartDialogueMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<StartDialogueMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "start_dialogue_message"));
 
-public class StartDialogueMessage {
+    public static final StreamCodec<FriendlyByteBuf, StartDialogueMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), StartDialogueMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int id;
     private String dialogueid;
 
@@ -71,10 +83,8 @@ public class StartDialogueMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<StartDialogueMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final StartDialogueMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final StartDialogueMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 Entity entity =Minecraft.getInstance().level.getEntity(message.id);
                 if (entity instanceof DialogueEntity dialogue) {
@@ -99,7 +109,5 @@ public class StartDialogueMessage {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 }

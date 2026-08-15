@@ -1,19 +1,20 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.neoforged.fml.common.EventBusSubscriber;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.init.generator.advancement.AdvancementsHandle;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TorchesBecomeSunlight.MOD_ID)
 public class DataGenerators {
     @SubscribeEvent
     public static void onGatherData(GatherDataEvent event) {
@@ -27,12 +28,12 @@ public class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookup = registryProvider.getRegistryProvider();
         generator.addProvider(event.includeServer(), registryProvider);
         generator.addProvider(event.includeServer(), new TBSEntityTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new TBSRecipeProvider(packOutput));
+        generator.addProvider(event.includeServer(), new TBSRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new DamageTypeProvider(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeServer(), new AdvancementsHandle(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new EMStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new DefaultTableProvider(output));
+        generator.addProvider(event.includeServer(), new DefaultTableProvider(output, lookupProvider));
 
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
     }

@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class UrsusVillageStructures extends FFStructures {
-    public static final Codec<UrsusVillageStructures> CODEC = simpleCodec(UrsusVillageStructures::new);
+    public static final com.mojang.serialization.MapCodec<UrsusVillageStructures> CODEC = simpleCodec(UrsusVillageStructures::new);
 
     public UrsusVillageStructures(StructureSettings settings) {
         super(settings, ConfigHandler.COMMON.GLOBALSETTING.sanktaStatue, true, true, true);
@@ -46,7 +46,7 @@ public class UrsusVillageStructures extends FFStructures {
                 TBSJigsawPlacement.addPieces(
                         newContext,
                         Holder.direct(context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
-                                .get(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "ursus_village/center"))),
+                                .get(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "ursus_village/center"))),
                         Optional.empty(),
                         16,
                         blockpos,

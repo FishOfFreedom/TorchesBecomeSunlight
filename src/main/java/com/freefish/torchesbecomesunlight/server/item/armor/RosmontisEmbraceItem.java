@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.armor;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.core.Holder;
 import com.freefish.torchesbecomesunlight.client.render.Item.RosmontisEmbraceRenderer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
@@ -10,11 +12,11 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -24,8 +26,9 @@ import java.util.function.Consumer;
 public final class RosmontisEmbraceItem extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public RosmontisEmbraceItem(ArmorMaterial armorMaterial, Type type, Properties properties) {
-        super(armorMaterial, type, properties);
+    public RosmontisEmbraceItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties) {
+        super(armorMaterial, type, properties.component(net.minecraft.core.component.DataComponents.UNBREAKABLE,
+                new net.minecraft.world.item.component.Unbreakable(true)));
     }
 
     @Override
@@ -38,10 +41,7 @@ public final class RosmontisEmbraceItem extends ArmorItem implements GeoItem {
         return true;
     }
 
-    @Override
-    public boolean canBeDepleted() {
-        return false;
-    }
+    
 
     @Override
     public int getDamage(ItemStack stack) {
@@ -74,7 +74,7 @@ public final class RosmontisEmbraceItem extends ArmorItem implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.rosmontis_embrace"));
         tooltip.add(Component.translatable("text.torchesbecomesunlight.rosmontis_embrace_tool"));

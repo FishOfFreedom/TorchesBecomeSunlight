@@ -20,7 +20,7 @@ public class GunFadeRingShaderMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
     private final ResourceLocation texture;
     private final float len;
-    public ResourceLocation shader = new ResourceLocation("torchesbecomesunlight:gun_fade_ring");
+    public ResourceLocation shader = ResourceLocation.parse("torchesbecomesunlight:gun_fade_ring");
     private String compiledErrorMessage = "";
     private Runnable uniformCache = null;
 

@@ -9,22 +9,22 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 public class PursuerModel extends GeoModel<Pursuer> {
-    private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/pursuer.geo.json");
-    public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/pursuer.png");
-    private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.json");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/pursuer.geo.json");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/entity/pursuer.png");
+    private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/pursuer.json");
 
     @Override
     public void setCustomAnimations(Pursuer animatable, long instanceId, AnimationState<Pursuer> animationState) {
-        CoreGeoBone head = this.getAnimationProcessor().getBone("head");
-        CoreGeoBone m_guanzi = this.getAnimationProcessor().getBone("m_guanzi");
-        CoreGeoBone r_guanzi = this.getAnimationProcessor().getBone("r_guanzi");
-        CoreGeoBone l_guanzi = this.getAnimationProcessor().getBone("l_guanzi");
+        GeoBone head = this.getAnimationProcessor().getBone("head");
+        GeoBone m_guanzi = this.getAnimationProcessor().getBone("m_guanzi");
+        GeoBone r_guanzi = this.getAnimationProcessor().getBone("r_guanzi");
+        GeoBone l_guanzi = this.getAnimationProcessor().getBone("l_guanzi");
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
         if(animatable.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
             float rotX = Mth.clamp(extraData.headPitch(),-10,10) * 0.017453292F;
@@ -37,8 +37,8 @@ public class PursuerModel extends GeoModel<Pursuer> {
             l_guanzi.setRotY(-rotY);
         }
 
-        CoreGeoBone sword = this.getAnimationProcessor().getBone("sword");
-        CoreGeoBone sword2 = this.getAnimationProcessor().getBone("sword2");
+        GeoBone sword = this.getAnimationProcessor().getBone("sword");
+        GeoBone sword2 = this.getAnimationProcessor().getBone("sword2");
 
         if(animatable.getPredicate()!=0){
             sword2.setHidden(false);
@@ -50,8 +50,8 @@ public class PursuerModel extends GeoModel<Pursuer> {
         }
 
 
-        CoreGeoBone swordLocate1 = this.getAnimationProcessor().getBone("swordlocate_1");
-        CoreGeoBone swordLocate2 = this.getAnimationProcessor().getBone("swordlocate_2");
+        GeoBone swordLocate1 = this.getAnimationProcessor().getBone("swordlocate_1");
+        GeoBone swordLocate2 = this.getAnimationProcessor().getBone("swordlocate_2");
         Vec3 vec31 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone) swordLocate1);
         Vec3 vec32 = MathUtils.getWorldPosFromModel(animatable, animatable.yBodyRot, (GeoBone) swordLocate2);
         animatable.updateTrail(vec31, vec32);

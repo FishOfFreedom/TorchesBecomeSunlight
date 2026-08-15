@@ -8,7 +8,7 @@ import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 @Getter
 @Setter
@@ -37,7 +37,7 @@ public class ForceEffectInstance implements ITagSerializable<CompoundTag> {
         if(!living.level().isClientSide){
             CompoundTag all = new CompoundTag();
             all.putString("removeforceeffct",ForceEffectHandle.getKey(singleEffect.getType()).toString());
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), new SynCapabilityMessage(living,all));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(living, new SynCapabilityMessage(living,all));
         }
     }
 
@@ -53,7 +53,7 @@ public class ForceEffectInstance implements ITagSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(CompoundTag compoundTag) {
         String[] split = compoundTag.getString("type").split(":");
-        ResourceLocation type = new ResourceLocation(split[0],split[1]);
+        ResourceLocation type = ResourceLocation.fromNamespaceAndPath(split[0],split[1]);
         ForceEffectType<?> value = ForceEffectHandle.getValue(type);
         singleEffect = value.create();
         this.singleEffect.setForceEffectInstance(this);

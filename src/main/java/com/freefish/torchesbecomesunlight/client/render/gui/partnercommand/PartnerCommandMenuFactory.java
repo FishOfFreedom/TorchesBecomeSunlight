@@ -46,7 +46,7 @@ public class PartnerCommandMenuFactory extends UIFactory<PartnerCommandMenuFacto
 	}
 
 	private PartnerCommandMenuFactory(){
-		super(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"partner_command"));
+		super(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"partner_command"));
 	}
 
 	@Override

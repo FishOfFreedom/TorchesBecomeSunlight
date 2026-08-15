@@ -1,12 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.util.bossbar;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUpdateBossBar;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkDirection;
 
 import java.util.*;
 
@@ -31,12 +31,12 @@ public class CustomBossInfoServer extends ServerBossEvent implements IBossInfoUp
             ServerPlayer player = it.next();
             if (this.entity.getSensing().hasLineOfSight(player)&& this.entity.getTarget() instanceof Player&&unFight.get(player)) {
                 super.addPlayer(player);
-                TorchesBecomeSunlight.NETWORK.sendTo(new MessageUpdateBossBar(this.getId(), renderType), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                PacketDistributor.sendToPlayer(player, new MessageUpdateBossBar(this.getId(), renderType));
                 unFight.replace(player,false);
             }
             else if(!(this.entity.getTarget()instanceof Player)&&!unFight.get(player)){
                 super.removePlayer(player);
-                TorchesBecomeSunlight.NETWORK.sendTo(new MessageUpdateBossBar(this.getId(), -1), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                PacketDistributor.sendToPlayer(player, new MessageUpdateBossBar(this.getId(), -1));
                 unFight.replace(player,true);
             }
         }
@@ -53,7 +53,7 @@ public class CustomBossInfoServer extends ServerBossEvent implements IBossInfoUp
 
     @Override
     public void removePlayer(ServerPlayer player) {
-        TorchesBecomeSunlight.NETWORK.sendTo(new MessageUpdateBossBar(this.getId(), -1), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        PacketDistributor.sendToPlayer(player, new MessageUpdateBossBar(this.getId(), -1));
         super.removePlayer(player);
         this.unFight.remove(player);
     }

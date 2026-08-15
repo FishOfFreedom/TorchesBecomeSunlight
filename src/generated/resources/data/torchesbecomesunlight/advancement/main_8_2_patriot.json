@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:main",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "main_8_2_patriot"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.main_8_2_patriot"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:thorn_ring"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.main_8_2_patriot"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

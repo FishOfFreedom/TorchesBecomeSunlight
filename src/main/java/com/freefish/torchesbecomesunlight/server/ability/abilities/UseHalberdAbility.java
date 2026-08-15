@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.ability.abilities;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.server.ability.AbilitySection;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityType;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
@@ -13,7 +14,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.animation.RawAnimation;
 
 public class UseHalberdAbility extends PlayerAbility {
 
@@ -46,7 +47,7 @@ public class UseHalberdAbility extends PlayerAbility {
             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
             PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
             if(itemInHand.is(ItemHandle.INFECTED_HALBERD.get())&&capability!=null){
-                itemInHand.getOrCreateTag().putBoolean("tbsisActive", false);
+                TBSItemData.putBoolean(itemInHand, "tbsisActive", false);
                 if(!getLevel().isClientSide){
                     int halberdUseTime = capability.getHalberdUseTime();
                     HalberdOTIEntity throwntrident = new HalberdOTIEntity(player.level(), player, itemInHand,halberdUseTime>=120);
@@ -56,7 +57,7 @@ public class UseHalberdAbility extends PlayerAbility {
                         throwntrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     }
                     getLevel().addFreshEntity(throwntrident);
-                    getLevel().playSound((Player) null, throwntrident, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    getLevel().playSound((Player) null, throwntrident, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     if (!player.getAbilities().instabuild) {
                         player.getInventory().removeItem(itemInHand);
                     }

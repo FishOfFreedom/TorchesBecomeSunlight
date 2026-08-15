@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -28,7 +27,7 @@ public class SakataLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
     private final ItemInHandRenderer itemInHandRenderer;
     private static final ItemStack HEAD_ITEM = new ItemStack(Items.DIAMOND);
     private static final ItemStack HEAD_ITEM_1 = new ItemStack(ItemHandle.SANKTA_RING.get());
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("torchesbecomesunlight:textures/item/sankta_wind.png");
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.parse("torchesbecomesunlight:textures/item/sankta_wind.png");
 
     public SakataLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer,
                        ItemInHandRenderer itemInHandRenderer) {
@@ -106,7 +105,7 @@ public class SakataLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
         // 5. 获取顶点构建器
         VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE_LOCATION));
         Matrix4f pose = poseStack.last().pose();
-        Matrix3f normal = poseStack.last().normal();
+        PoseStack.Pose normal = poseStack.last();
 
         // 6. 计算四个顶点位置
         Vector3f[] vertices = {
@@ -133,10 +132,10 @@ public class SakataLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
         // 10. 构建两个三角形（组成矩形）
         // 三角形1 (左下 -> 左上 -> 右上)
-        vertexBuilder.vertex(pose, vertices[0].x(), vertices[0].y(), vertices[0].z()).color(r, g, b, alpha).uv(uMin, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normal, 0, 0, 1).endVertex();
-        vertexBuilder.vertex(pose, vertices[1].x(), vertices[1].y(), vertices[1].z()).color(r, g, b, alpha).uv(uMin, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normal, 0, 0, 1).endVertex();
-        vertexBuilder.vertex(pose, vertices[2].x(), vertices[2].y(), vertices[2].z()).color(r, g, b, alpha).uv(uMax, vMin).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normal, 0, 0, 1).endVertex();
-        vertexBuilder.vertex(pose, vertices[3].x(), vertices[3].y(), vertices[3].z()).color(r, g, b, alpha).uv(uMax, vMax).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(normal, 0, 0, 1).endVertex();
+        vertexBuilder.addVertex(pose, (float) (vertices[0].x()), (float) (vertices[0].y()), (float) (vertices[0].z())).setColor(r, g, b, alpha).setUv(uMin, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[1].x()), (float) (vertices[1].y()), (float) (vertices[1].z())).setColor(r, g, b, alpha).setUv(uMin, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[2].x()), (float) (vertices[2].y()), (float) (vertices[2].z())).setColor(r, g, b, alpha).setUv(uMax, vMin).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
+        vertexBuilder.addVertex(pose, (float) (vertices[3].x()), (float) (vertices[3].y()), (float) (vertices[3].z())).setColor(r, g, b, alpha).setUv(uMax, vMax).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(normal, 0, 0, 1);
 
         poseStack.popPose();
     }

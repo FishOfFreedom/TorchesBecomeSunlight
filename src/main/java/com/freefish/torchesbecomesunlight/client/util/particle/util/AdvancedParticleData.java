@@ -1,5 +1,9 @@
 package com.freefish.torchesbecomesunlight.client.util.particle.util;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
@@ -8,9 +12,9 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.Locale;
 
@@ -18,44 +22,11 @@ import java.util.Locale;
  * @author bobmowzie
  */
 public class AdvancedParticleData implements ParticleOptions {
-    public static final Deserializer<AdvancedParticleData> DESERIALIZER = new Deserializer<AdvancedParticleData>() {
-        public AdvancedParticleData fromCommand(ParticleType<AdvancedParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            double airDrag = reader.readDouble();
-            reader.expect(' ');
-            double red = reader.readDouble();
-            reader.expect(' ');
-            double green = reader.readDouble();
-            reader.expect(' ');
-            double blue = reader.readDouble();
-            reader.expect(' ');
-            double alpha = reader.readDouble();
-            reader.expect(' ');
-            String rotationMode = reader.readString();
-            reader.expect(' ');
-            double scale = reader.readDouble();
-            reader.expect(' ');
-            double yaw = reader.readDouble();
-            reader.expect(' ');
-            double pitch = reader.readDouble();
-            reader.expect(' ');
-            double roll = reader.readDouble();
-            reader.expect(' ');
-            boolean emissive = reader.readBoolean();
-            reader.expect(' ');
-            double duration = reader.readDouble();
-            reader.expect(' ');
-            double faceCameraAngle = reader.readDouble();
-            reader.expect(' ');
-            boolean canCollide = reader.readBoolean();
-            ParticleRotation rotation;
-            if (rotationMode.equals("face_camera")) rotation = new ParticleRotation.FaceCamera((float) faceCameraAngle);
-            else if (rotationMode.equals("euler")) rotation = new ParticleRotation.EulerAngles((float)yaw, (float)pitch, (float)roll);
-            else rotation = new ParticleRotation.OrientVector(new Vec3(yaw, pitch, roll));
-            return new AdvancedParticleData(particleTypeIn, rotation, scale, red, green, blue, alpha, airDrag, duration, emissive, canCollide);
-        }
-
-        public AdvancedParticleData fromNetwork(ParticleType<AdvancedParticleData> particleTypeIn, FriendlyByteBuf buffer) {
+    /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static AdvancedParticleData readFromNetwork(ParticleType<AdvancedParticleData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
             double airDrag = buffer.readFloat();
             double red = buffer.readFloat();
             double green = buffer.readFloat();
@@ -76,7 +47,7 @@ public class AdvancedParticleData implements ParticleOptions {
             else rotation = new ParticleRotation.OrientVector(new Vec3(yaw, pitch, roll));
             return new AdvancedParticleData(particleTypeIn, rotation, scale, red, green, blue, alpha, airDrag, duration, emissive, canCollide);
         }
-    };
+
 
     private final ParticleType<? extends AdvancedParticleData> type;
 
@@ -116,8 +87,7 @@ public class AdvancedParticleData implements ParticleOptions {
         this.components = components;
     }
 
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
+        public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
         String rotationMode;
         float faceCameraAngle = 0;
         float yaw = 0;
@@ -158,8 +128,7 @@ public class AdvancedParticleData implements ParticleOptions {
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    public String writeToString() {
+        public String writeToString() {
         String rotationMode;
         float faceCameraAngle = 0;
         float yaw = 0;
@@ -183,7 +152,7 @@ public class AdvancedParticleData implements ParticleOptions {
             roll = (float) vec.z;
         }
 
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %s %.2f %.2f %.2f %.2f %b %.2f %.2f %b", ForgeRegistries.PARTICLE_TYPES.getKey(this.getType()),
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %s %.2f %.2f %.2f %.2f %b %.2f %.2f %b", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                 this.airDrag, this.red, this.green, this.blue, this.alpha, rotationMode, this.scale, yaw, pitch, roll, this.emissive, this.duration, faceCameraAngle, canCollide);
     }
 
@@ -247,8 +216,8 @@ public class AdvancedParticleData implements ParticleOptions {
         return components;
     }
 
-    public static Codec<AdvancedParticleData> CODEC(ParticleType<AdvancedParticleData> particleType) {
-        return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+    public static MapCodec<AdvancedParticleData> CODEC(ParticleType<AdvancedParticleData> particleType) {
+        return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                 Codec.DOUBLE.fieldOf("scale").forGetter(AdvancedParticleData::getScale),
                 Codec.DOUBLE.fieldOf("r").forGetter(AdvancedParticleData::getRed),
                 Codec.DOUBLE.fieldOf("g").forGetter(AdvancedParticleData::getGreen),
@@ -261,5 +230,10 @@ public class AdvancedParticleData implements ParticleOptions {
                 ).apply(codecBuilder, (scale, r, g, b, a, drag, duration, emissive, canCollide) ->
                         new AdvancedParticleData(particleType, new ParticleRotation.FaceCamera(0), scale, r, g, b, a, drag, duration, emissive, canCollide, new ParticleComponent[]{}))
         );
+    }
+
+    /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+    public static StreamCodec<RegistryFriendlyByteBuf, AdvancedParticleData> STREAM_CODEC(ParticleType<AdvancedParticleData> particleType) {
+        return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
     }
 }

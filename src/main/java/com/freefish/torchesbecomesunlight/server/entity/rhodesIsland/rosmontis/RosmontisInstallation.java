@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.rhodesIsland.rosmontis;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.rosmontislib.client.RLClientUseUtils;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
@@ -47,22 +48,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.UUID;
 
-public class RosmontisInstallation extends Entity implements GeoEntity , IEntityAdditionalSpawnData {
+public class RosmontisInstallation extends Entity implements GeoEntity , IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final EntityDataAccessor<Integer> INSTALL_INDEX = SynchedEntityData.defineId(RosmontisInstallation.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<CompoundTag> ANIMATION = SynchedEntityData.defineId(RosmontisInstallation.class, EntityDataSerializers.COMPOUND_TAG);
@@ -684,10 +684,10 @@ public class RosmontisInstallation extends Entity implements GeoEntity , IEntity
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(INSTALL_INDEX,0);
-        this.entityData.define(ANIMATION,new CompoundTag());
-        this.entityData.define(MOTION,new Vector3f());
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(INSTALL_INDEX,0);
+        builder.define(ANIMATION,new CompoundTag());
+        builder.define(MOTION,new Vector3f());
     }
 
     @Override
@@ -965,21 +965,17 @@ public class RosmontisInstallation extends Entity implements GeoEntity , IEntity
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(animationType);
         buffer.writeVarInt(animationTime);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         animationType = additionalData.readVarInt();
         animationTime = additionalData.readVarInt();
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     public void ros_state_1to2_boom(Vec3 pos){
         Gradient toAlpha = new Gradient(new GradientColor(0XFFFFFFFF, 0XFFFFFFFF, 0X00FFFFFF));

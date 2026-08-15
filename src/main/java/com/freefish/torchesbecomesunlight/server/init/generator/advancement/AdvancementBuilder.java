@@ -1,5 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.advancement;
 
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.ChainedAdvancementTrigger;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.StringAdvancementTrigger;
+import com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion.TriggerHandler;
+import net.minecraft.advancements.AdvancementRequirements;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.google.common.collect.Maps;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -8,7 +14,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -19,22 +25,22 @@ import java.util.function.Function;
 /**
  * Copied from Advancements.Builder with extentions to reduce copy pasta
  */
-public class AdvancementBuilder implements net.minecraftforge.common.extensions.IForgeAdvancementBuilder{
+public class AdvancementBuilder{
     @Nullable
     private ResourceLocation parentId;
     @Nullable
-    private Advancement parent;
+    private AdvancementHolder parent;
     @Nullable
     private DisplayInfo display;
     private AdvancementRewards rewards = AdvancementRewards.EMPTY;
-    private Map<String, Criterion> criteria = Maps.newLinkedHashMap();
+    private Map<String, Criterion<?>> criteria = Maps.newLinkedHashMap();
     @Nullable
-    private String[][] requirements;
-    private RequirementsStrategy requirementsStrategy = RequirementsStrategy.AND;
+    private AdvancementRequirements requirements;
+    private AdvancementRequirements.Strategy requirementsStrategy = AdvancementRequirements.Strategy.AND;
     private String modid;
     private String fileKey;
 
-    private AdvancementBuilder(@Nullable ResourceLocation pParentId, @Nullable DisplayInfo pDisplay, AdvancementRewards pRewards, Map<String, Criterion> pCriteria, String[][] pRequirements) {
+    private AdvancementBuilder(@Nullable ResourceLocation pParentId, @Nullable DisplayInfo pDisplay, AdvancementRewards pRewards, Map<String, Criterion<?>> pCriteria, AdvancementRequirements pRequirements) {
         this.parentId = pParentId;
         this.display = pDisplay;
         this.rewards = pRewards;
@@ -51,7 +57,7 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         return new AdvancementBuilder(modid, fileKey);
     }
 
-    public AdvancementBuilder parent(Advancement pParent) {
+    public AdvancementBuilder parent(AdvancementHolder pParent) {
         this.parent = pParent;
         return this;
     }
@@ -61,12 +67,12 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         return this;
     }
 
-    public AdvancementBuilder display(ItemStack pStack, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, FrameType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
-        return this.display(new DisplayInfo(pStack, pTitle, pDescription, pBackground, pFrame, pShowToast, pAnnounceToChat, pHidden));
+    public AdvancementBuilder display(ItemStack pStack, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, AdvancementType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
+        return this.display(new DisplayInfo(pStack, pTitle, pDescription, java.util.Optional.ofNullable(pBackground), pFrame, pShowToast, pAnnounceToChat, pHidden));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, FrameType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
-        return this.display(new DisplayInfo(new ItemStack(pItem.asItem()), pTitle, pDescription, pBackground, pFrame, pShowToast, pAnnounceToChat, pHidden));
+    public AdvancementBuilder display(ItemLike pItem, Component pTitle, Component pDescription, @Nullable ResourceLocation pBackground, AdvancementType pFrame, boolean pShowToast, boolean pAnnounceToChat, boolean pHidden) {
+        return this.display(new DisplayInfo(new ItemStack(pItem.asItem()), pTitle, pDescription, java.util.Optional.ofNullable(pBackground), pFrame, pShowToast, pAnnounceToChat, pHidden));
     }
 
     public AdvancementBuilder display(DisplayInfo pDisplay) {
@@ -75,20 +81,20 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     }
 
     // The following displays cannot be used for roots.
-    public AdvancementBuilder display(ItemStack pItem, FrameType pFrame) {
-        return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), null, pFrame, true, true, false));
+    public AdvancementBuilder display(ItemStack pItem, AdvancementType pFrame) {
+        return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), java.util.Optional.empty(), pFrame, true, true, false));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, FrameType pFrame) {
+    public AdvancementBuilder display(ItemLike pItem, AdvancementType pFrame) {
         return this.display(new ItemStack(pItem), pFrame);
     }
 
     // The following displays cannot be used for roots.
-    public AdvancementBuilder display(ItemStack pItem, FrameType pFrame, boolean hidden) {
-        return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), null, pFrame, true, true, hidden));
+    public AdvancementBuilder display(ItemStack pItem, AdvancementType pFrame, boolean hidden) {
+        return this.display(new DisplayInfo(pItem, this.getComponent("title"), this.getComponent("desc"), java.util.Optional.empty(), pFrame, true, true, hidden));
     }
 
-    public AdvancementBuilder display(ItemLike pItem, FrameType pFrame, boolean hidden) {
+    public AdvancementBuilder display(ItemLike pItem, AdvancementType pFrame, boolean hidden) {
         return this.display(new ItemStack(pItem), pFrame, hidden);
     }
 
@@ -102,15 +108,15 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         return this;
     }
 
-    public AdvancementBuilder addCriterion(String pKey, CriterionTriggerInstance pCriterion) {
-        return this.addCriterion(pKey, new Criterion(pCriterion));
+    public AdvancementBuilder addCriterion(String pKey, ChainedAdvancementTrigger.Instance pCriterion) {
+        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.get(), pCriterion));
     }
 
-    public AdvancementBuilder addCriterion(CriterionTriggerInstance pCriterion) {
-        return this.addCriterion(fileKey, new Criterion(pCriterion));
+    public AdvancementBuilder addCriterion(String pKey, StringAdvancementTrigger.Instance pCriterion) {
+        return this.addCriterion(pKey, new Criterion<>(TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get(), pCriterion));
     }
 
-    public AdvancementBuilder addCriterion(String pKey, Criterion pCriterion) {
+    public AdvancementBuilder addCriterion(String pKey, Criterion<?> pCriterion) {
         if (this.criteria.containsKey(pKey)) {
             throw new IllegalArgumentException("Duplicate criterion " + pKey);
         } else {
@@ -119,22 +125,22 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         }
     }
 
-    public AdvancementBuilder requirements(RequirementsStrategy pStrategy) {
+    public AdvancementBuilder requirements(AdvancementRequirements.Strategy pStrategy) {
         this.requirementsStrategy = pStrategy;
         return this;
     }
 
-    public AdvancementBuilder requirements(String[][] pRequirements) {
+    public AdvancementBuilder requirements(AdvancementRequirements pRequirements) {
         this.requirements = pRequirements;
         return this;
     }
 
     public AdvancementBuilder normalItemRequirement(ItemLike item){
-        return this.display(item, FrameType.TASK).requireItem(item);
+        return this.display(item, AdvancementType.TASK).requireItem(item);
     }
 
     public AdvancementBuilder requireItem(ItemLike item){
-        return this.addCriterion("has_" + ForgeRegistries.ITEMS.getKey(item.asItem()).getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(item));
+        return this.addCriterion("has_" + BuiltInRegistries.ITEM.getKey(item.asItem()).getPath(), InventoryChangeTrigger.TriggerInstance.hasItems(item));
     }
 
     public MutableComponent getComponent(String type){
@@ -144,7 +150,7 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
     /**
      * Tries to resolve the parent of this advancement, if possible. Returns true on success.
      */
-    public boolean canBuild(Function<ResourceLocation, Advancement> pParentLookup) {
+    public boolean canBuild(Function<ResourceLocation, AdvancementHolder> pParentLookup) {
         if (this.parentId == null) {
             return true;
         } else {
@@ -156,35 +162,38 @@ public class AdvancementBuilder implements net.minecraftforge.common.extensions.
         }
     }
 
-    public Advancement build(ResourceLocation pId) {
+    public AdvancementHolder build(ResourceLocation pId) {
         if (!this.canBuild((p_138407_) -> {
             return null;
         })) {
             throw new IllegalStateException("Tried to build incomplete advancement!");
         } else {
             if (this.requirements == null) {
-                this.requirements = this.requirementsStrategy.createRequirements(this.criteria.keySet());
+                this.requirements = this.requirementsStrategy.create(this.criteria.keySet());
             }
 
-            return new Advancement(pId, this.parent, this.display, this.rewards, this.criteria, this.requirements, false);
+            return new AdvancementHolder(pId, new Advancement(
+                    java.util.Optional.ofNullable(this.parent).map(AdvancementHolder::id),
+                    java.util.Optional.ofNullable(this.display),
+                    this.rewards, this.criteria, this.requirements, false));
         }
     }
 
-    public Advancement save(Consumer<Advancement> pConsumer, String pId) {
-        Advancement advancement = this.build(new ResourceLocation(pId));
+    public AdvancementHolder save(Consumer<AdvancementHolder> pConsumer, String pId) {
+        AdvancementHolder advancement = this.build(ResourceLocation.parse(pId));
         pConsumer.accept(advancement);
         return advancement;
     }
 
-    public Advancement save(Consumer<Advancement> pConsumer) {
-        return this.save(pConsumer, new ResourceLocation(modid, fileKey).toString());
+    public AdvancementHolder save(Consumer<AdvancementHolder> pConsumer) {
+        return this.save(pConsumer, ResourceLocation.fromNamespaceAndPath(modid, fileKey).toString());
     }
 
     public String toString() {
-        return "Task Advancement{parentId=" + this.parentId + ", display=" + this.display + ", rewards=" + this.rewards + ", criteria=" + this.criteria + ", requirements=" + Arrays.deepToString(this.requirements) + "}";
+        return "Task Advancement{parentId=" + this.parentId + ", display=" + this.display + ", rewards=" + this.rewards + ", criteria=" + this.criteria + ", requirements=" + this.requirements + "}";
     }
 
-    public Map<String, Criterion> getCriteria() {
+    public Map<String, Criterion<?>> getCriteria() {
         return this.criteria;
     }
 }

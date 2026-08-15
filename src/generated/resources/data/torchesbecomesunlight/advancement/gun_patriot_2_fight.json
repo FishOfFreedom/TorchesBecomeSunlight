@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:gun_patriot_1_time",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "gunPatriot_2_fight"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gun_patriot_2_fight"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:gun"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gun_patriot_2_fight"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

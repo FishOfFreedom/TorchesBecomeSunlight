@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -49,12 +50,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -111,12 +112,12 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
                 } else if(challengeType==ChallengeType.GUN_NIGHT){
                     playerStory.setWinPatriot(true);
                     if(challengePlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_2_fight");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_2_fight");
                     }
                 } else if(challengeType==ChallengeType.FINAL){
                     playerStory.setWinPatriotFinal(true);
                     if(challengePlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_3_fight");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_3_fight");
                     }
                 }
             }
@@ -304,14 +305,14 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
         pTag.putBoolean("isUsed",isUsed);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.loadAdditional(pTag, registries);
         isUsed = pTag.getBoolean("isUsed");
     }
 
@@ -658,19 +659,19 @@ public class BigBenBlockEntity extends AutoSynTagBlockEntity implements GeoBlock
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putInt("update",0);
         return compoundTag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        super.onDataPacket(net, pkt, registries);
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
         this.blockEntityData.define(TEST,new CompoundTag());
         this.blockEntityData.define(IS_GLOWING,false);
     }

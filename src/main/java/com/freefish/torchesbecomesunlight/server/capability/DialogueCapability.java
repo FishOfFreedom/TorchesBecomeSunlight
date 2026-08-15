@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
@@ -9,38 +11,35 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public class DialogueCapability {
-    public static ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue_cap");
+    public static ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "dialogue_cap");
 
     public interface IDialogueCapability extends INBTSerializable<CompoundTag> {
         int getDialogueNeedTime();
 
         void setDialogueNeedTime(int dialogueNeedTime);
 
-        void tick(LivingEvent.LivingTickEvent event);
+        void tick(EntityTickEvent.Post event);
     }
 
     public static class DialogueCapabilityImp implements IDialogueCapability {
         int dialogueNeedTime = 0;
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             CompoundTag compound = new CompoundTag();
             return compound;
         }
 
         @Override
-        public void deserializeNBT(CompoundTag compound) {
+        public void deserializeNBT(HolderLookup.Provider registries, CompoundTag compound) {
         }
 
         @Override
@@ -53,8 +52,8 @@ public class DialogueCapability {
             this.dialogueNeedTime = dialogueNeedTime;
         }
 
-        public void tick(LivingEvent.LivingTickEvent event) {
-            LivingEntity entity = event.getEntity();
+        public void tick(EntityTickEvent.Post event) {
+            if (!(event.getEntity() instanceof LivingEntity entity)) return;
             Level level = entity.level();
 
             if(entity instanceof IDialogueEntity dialogue){
@@ -81,24 +80,5 @@ public class DialogueCapability {
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
-    {
-        private final LazyOptional<IDialogueCapability> instance = LazyOptional.of(DialogueCapabilityImp::new);
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.orElseThrow(NullPointerException::new).serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return CapabilityHandle.DIALOGUE_CAPABILITY.orEmpty(cap, instance.cast());
-        }
-    }
+    
 }

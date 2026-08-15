@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
+import com.freefish.torchesbecomesunlight.server.init.BlockHandle;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.StargateControlerBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import net.minecraft.core.BlockPos;
@@ -45,6 +47,14 @@ public class StargateControlerBlock extends BaseEntityBlock {
         
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, true));
     }
+
+    public static final MapCodec<StargateControlerBlock> CODEC =
+            MapCodec.unit(() -> (StargateControlerBlock) BlockHandle.STARGATE_CONTROLER.get());
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -52,8 +62,8 @@ public class StargateControlerBlock extends BaseEntityBlock {
     }
     
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide()) {
             level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME , SoundSource.BLOCKS, 0.8f, 1.2f );
 
             player.displayClientMessage(Component.translatable(

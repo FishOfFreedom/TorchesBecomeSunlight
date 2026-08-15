@@ -29,8 +29,22 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
         return true;
     }
 
+    /**
+     * NeoForge 1.21.1 把 getRenderBoundingBox 从 BlockEntity 挪到了 BlockEntityRenderer，
+     * 原先写在 ElevatorBlockEntity 上的实现移到这里。
+     */
     @Override
-    public void actuallyRender(PoseStack poseStack, ElevatorBlockEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public net.minecraft.world.phys.AABB getRenderBoundingBox(ElevatorBlockEntity blockEntity) {
+        return new net.minecraft.world.phys.AABB(blockEntity.getBlockPos())
+                .move(0, blockEntity.getUpCurrentHeight(1.0F), 0);
+    }
+
+    @Override
+    public void actuallyRender(PoseStack poseStack, ElevatorBlockEntity animatable, BakedGeoModel model, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         LocalPlayer player = Minecraft.getInstance().player;
 
         poseStack.pushPose();
@@ -42,7 +56,7 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
         //        living.setPos(living.getX(),animatable.getBlockPos().getY()+upCurrentHeight+0.01f,living.getZ());
         //    }
         //}
-        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         poseStack.popPose();
 
         PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
@@ -61,10 +75,10 @@ public class ElebatorRenderer extends GeoBlockRenderer<ElevatorBlockEntity> {
                     Vec3 subtract1 = normalize.subtract(headRotVec);
                     //VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.lines());
 
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x + headRotVec.x), (float) (eye.y + headRotVec.y), (float) (eye.z + headRotVec.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x + normalize.x), (float) (eye.y + normalize.y), (float) (eye.z + normalize.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (eye.x), (float) (eye.y), (float) (eye.z)).color(0, 0, 255, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
-                    //vertexconsumer.vertex(poseStack.last().pose(), (float) (0.5), (float) (0.5), (float) (0.5)).color(255, 0, 0, 255).normal(poseStack.last().normal(), 0, 0, 0).endVertex();
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x + headRotVec.x), (float) (eye.y + headRotVec.y), (float) (eye.z + headRotVec.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x + normalize.x), (float) (eye.y + normalize.y), (float) (eye.z + normalize.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (eye.x), (float) (eye.y), (float) (eye.z)).setColor(0, 0, 255, 255).setNormal(poseStack.last(), 0, 0, 0);
+                    //vertexconsumer.addVertex(poseStack.last().pose(), (float) (0.5), (float) (0.5), (float) (0.5)).setColor(255, 0, 0, 255).setNormal(poseStack.last(), 0, 0, 0);
 
                     if (subtract1.length() < 0.1) {
                         message = "选中";

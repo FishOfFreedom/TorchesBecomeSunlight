@@ -24,8 +24,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -33,11 +33,11 @@ import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 import java.util.HashMap;
 
@@ -76,16 +76,16 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
             long instanceId = getInstanceId(geckoPlayer);
 
             AnimatableManager<GeckoPlayer> animatableManager = geckoPlayer.getAnimatableInstanceCache().getManagerForId(instanceId);
-            animationState.setData(DataTickets.TICK, geckoPlayer.getTick(geckoPlayer) + animatableManager.getFirstTickTime() +  + Minecraft.getInstance().getFrameTime());
+            animationState.setData(DataTickets.TICK, geckoPlayer.getTick(geckoPlayer) + animatableManager.getFirstTickTime() +  + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
             AbstractClientPlayer entity = (AbstractClientPlayer) geckoPlayer.getPlayer();
             animationState.setData(DataTickets.ENTITY, entity);
             this.geoModel.addAdditionalStateData(geckoPlayer, instanceId, animationState::setData);
-            this.geoModel.handleAnimations(geckoPlayer, instanceId, animationState);
+            this.geoModel.handleAnimations(geckoPlayer, instanceId, animationState, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
 
             RenderType rendertype = RenderType.itemEntityTranslucentCull(getTextureLocation(geckoPlayer));
             VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
             matrixStackIn.translate(0, -2, -1);
-            actuallyRender(matrixStackIn, geckoPlayer, getGeoModel().getBakedModel(getGeoModel().getModelResource(geckoPlayer)), rendertype, bufferIn, ivertexbuilder, false, partialTicks, combinedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            actuallyRender(matrixStackIn, geckoPlayer, getGeoModel().getBakedModel(getGeoModel().getModelResource(geckoPlayer)), rendertype, bufferIn, ivertexbuilder, false, partialTicks, combinedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
         }
 
         PlayerAbility.HandDisplay handDisplay = PlayerAbility.HandDisplay.DEFAULT;
@@ -166,7 +166,7 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
 
     @Override
     public ResourceLocation getTextureLocation(GeckoPlayer geckoPlayer) {
-        return ((AbstractClientPlayer)geckoPlayer.getPlayer()).getSkinTextureLocation();
+        return ((AbstractClientPlayer)geckoPlayer.getPlayer()).getSkin().texture();
     }
 
     @Override
@@ -190,19 +190,23 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
     }
 
     @Override
-    public void renderRecursively(PoseStack matrixStack, GeckoPlayer animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferIn, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderRecursively(PoseStack matrixStack, GeckoPlayer animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferIn, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLightIn, int packedOverlayIn, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         matrixStack.pushPose();
         if (mirror) {
             MowzieRenderUtils.translateMirror(matrixStack, bone);
             MowzieRenderUtils.moveToPivotMirror(matrixStack, bone);
             MowzieRenderUtils.rotateMirror(matrixStack, bone);
-            RenderUtils.scaleMatrixForBone(matrixStack, bone);
+            RenderUtil.scaleMatrixForBone(matrixStack, bone);
         }
         else {
-            RenderUtils.translateMatrixToBone(matrixStack, bone);
-            RenderUtils.translateToPivotPoint(matrixStack, bone);
-            RenderUtils.rotateMatrixAroundBone(matrixStack, bone);
-            RenderUtils.scaleMatrixForBone(matrixStack, bone);
+            RenderUtil.translateMatrixToBone(matrixStack, bone);
+            RenderUtil.translateToPivotPoint(matrixStack, bone);
+            RenderUtil.rotateMatrixAroundBone(matrixStack, bone);
+            RenderUtil.scaleMatrixForBone(matrixStack, bone);
         }
         // Record xform matrices for relevant bones
         if (bone instanceof MowzieGeoBone) {
@@ -219,14 +223,14 @@ public class GeckoFirstPersonRenderer extends ItemInHandRenderer implements GeoR
             MowzieRenderUtils.translateAwayFromPivotPointMirror(matrixStack, bone);
         }
         else {
-            RenderUtils.translateAwayFromPivotPoint(matrixStack, bone);
+            RenderUtil.translateAwayFromPivotPoint(matrixStack, bone);
         }
-        renderCubesOfBone(matrixStack, bone, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        renderCubesOfBone(matrixStack, bone, buffer, packedLightIn, packedOverlayIn, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
 
         if (!isReRender)
             applyRenderLayersForBone(matrixStack, animatable, bone, renderType, bufferIn, buffer, partialTick, packedLightIn, packedOverlayIn);
 
-        renderChildBones(matrixStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        renderChildBones(matrixStack, animatable, bone, renderType, bufferIn, buffer, isReRender, partialTick, packedLightIn, packedOverlayIn, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         matrixStack.popPose();
     }
 }

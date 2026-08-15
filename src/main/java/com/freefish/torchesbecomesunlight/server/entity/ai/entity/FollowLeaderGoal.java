@@ -4,7 +4,7 @@ import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 
 import java.util.EnumSet;
 
@@ -49,15 +49,15 @@ public class FollowLeaderGoal extends Goal {
 
     public void start() {
         this.timeToRecalcPath = 0;
-        this.oldWaterCost = this.tamable.getPathfindingMalus(BlockPathTypes.WATER);
-        this.tamable.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.oldWaterCost = this.tamable.getPathfindingMalus(PathType.WATER);
+        this.tamable.setPathfindingMalus(PathType.WATER, 0.0F);
     }
 
 
     public void stop() {
         this.owner = null;
         this.navigation.stop();
-        this.tamable.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+        this.tamable.setPathfindingMalus(PathType.WATER, this.oldWaterCost);
     }
 
     public void tick() {

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.server.block.ElevatorBlock;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import com.freefish.torchesbecomesunlight.server.capability.CapabilityHandle;
@@ -23,12 +24,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
@@ -206,13 +207,13 @@ public class ElevatorBlockEntity extends AutoSynTagBlockEntity implements GeoBlo
     }
 
     @Override
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.loadAdditional(pTag, registries);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
     }
 
     @Override
@@ -226,19 +227,19 @@ public class ElevatorBlockEntity extends AutoSynTagBlockEntity implements GeoBlo
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putInt("update",0);
         return compoundTag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        super.onDataPacket(net, pkt, registries);
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
         this.blockEntityData.define(TEST,0);
     }
 
@@ -275,9 +276,5 @@ public class ElevatorBlockEntity extends AutoSynTagBlockEntity implements GeoBlo
         return cache;
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return super.getRenderBoundingBox().move(new Vec3(0,upCurrentHeight,0));
-    }
 
 }

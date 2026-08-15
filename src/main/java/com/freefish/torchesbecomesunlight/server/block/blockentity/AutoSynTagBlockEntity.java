@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.SetBlockEntityDataMessage;
@@ -18,7 +19,7 @@ public class AutoSynTagBlockEntity extends BlockEntity{
     public AutoSynTagBlockEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
         this.blockEntityData = new SynchedBlockEntityData(this);
-        defineSynchedData();
+        defineSynchedData(this.blockEntityData);
     }
 
     public <T> void onSyncedDataUpdated(EntityDataAccessor<T> pKey) {
@@ -27,7 +28,7 @@ public class AutoSynTagBlockEntity extends BlockEntity{
     public <T> void onSyncedDataUpdated(List<SynchedBlockEntityData.DataValue<?>> pEntries) {
     }
 
-    protected void defineSynchedData(){
+    protected void defineSynchedData(SynchedBlockEntityData data){
 
     }
 

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.client.render.Item.RosmontisIpadRenderer;
 import com.freefish.torchesbecomesunlight.server.entity.rhodesIsland.rosmontis.Rosmontis;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
@@ -16,10 +17,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class RosmontisIpad extends SummonItem<Rosmontis> implements GeoItem{
             patriot.isOnStoryGround = false;
         }
         if(player instanceof ServerPlayer serverPlayer){
-            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "partner_rosmontis");
+            TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "partner_rosmontis");
         }
     }
 
@@ -79,7 +80,7 @@ public class RosmontisIpad extends SummonItem<Rosmontis> implements GeoItem{
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.rosmontis_ipad"));
     }

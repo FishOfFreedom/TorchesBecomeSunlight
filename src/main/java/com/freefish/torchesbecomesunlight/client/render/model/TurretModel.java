@@ -13,17 +13,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.molang.MolangParser;
-import software.bernie.geckolib.core.molang.MolangQueries;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.loading.math.MolangQueries;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class TurretModel extends GeoModel<Turret> {
-    private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/turret.geo.json");
-    private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/turret.animation.json");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/turret.geo.json");
+    private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/turret.animation.json");
 
     @Override
     public ResourceLocation getModelResource(Turret object) {
@@ -45,8 +44,8 @@ public class TurretModel extends GeoModel<Turret> {
         super.setCustomAnimations(animatable, instanceId, animationState);
         EntityModelData extraData = (EntityModelData) animationState.getExtraData().get(DataTickets.ENTITY_MODEL_DATA);
 
-        CoreGeoBone sword = this.getAnimationProcessor().getBone("gun");
-        CoreGeoBone gun_1 = this.getAnimationProcessor().getBone("shoot");
+        GeoBone sword = this.getAnimationProcessor().getBone("gun");
+        GeoBone gun_1 = this.getAnimationProcessor().getBone("shoot");
 
         //if(animatable.getPredicate()!=0){
         //    sword2.setHidden(false);

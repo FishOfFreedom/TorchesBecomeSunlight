@@ -53,10 +53,10 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
-    public void onAddedToWorld() {
+    public void onAddedToLevel() {
         if (getDeltaMovement().x() > 0 || getDeltaMovement().z() > 0) setYRot((float) ((180f/Math.PI) * Math.atan2(getDeltaMovement().x(), getDeltaMovement().z())));
         setXRot(getXRot() + random.nextFloat() * 360);
-        super.onAddedToWorld();
+        super.onAddedToLevel();
     }
 
     @Override
@@ -86,12 +86,12 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        getEntityData().define(BLOCK_STATE, Blocks.DIRT.defaultBlockState());
-        getEntityData().define(DURATION, 70);
-        getEntityData().define(TICKS_EXISTED, 0);
-        getEntityData().define(MODE, EnumFallingBlockMode.MOBILE.toString());
-        getEntityData().define(ANIM_V_Y, 1f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(BLOCK_STATE, Blocks.DIRT.defaultBlockState());
+        builder.define(DURATION, 70);
+        builder.define(TICKS_EXISTED, 0);
+        builder.define(MODE, EnumFallingBlockMode.MOBILE.toString());
+        builder.define(ANIM_V_Y, 1f);
     }
 
     @Override

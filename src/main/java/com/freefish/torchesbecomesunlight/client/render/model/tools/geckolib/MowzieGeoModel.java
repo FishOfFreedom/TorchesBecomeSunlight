@@ -1,10 +1,10 @@
 package com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib;
 
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.state.BoneSnapshot;
+import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.state.BoneSnapshot;
 import software.bernie.geckolib.model.GeoModel;
 
 import java.util.Optional;
@@ -22,7 +22,7 @@ public abstract class MowzieGeoModel<T extends GeoAnimatable> extends GeoModel<T
         return !this.getAnimationProcessor().getRegisteredBones().isEmpty();
     }
 
-    public void resetBoneToSnapshot(CoreGeoBone bone) {
+    public void resetBoneToSnapshot(GeoBone bone) {
         BoneSnapshot initialSnapshot = bone.getInitialSnapshot();
 
         bone.setRotX(initialSnapshot.getRotX());
@@ -39,9 +39,9 @@ public abstract class MowzieGeoModel<T extends GeoAnimatable> extends GeoModel<T
     }
 
     @Override
-    public void applyMolangQueries(T animatable, double animTime) {
+    public void applyMolangQueries(AnimationState<T> animationState, double animTime) {
         getAnimationProcessor().getRegisteredBones().forEach(this::resetBoneToSnapshot);
-        super.applyMolangQueries(animatable, animTime);
+        super.applyMolangQueries(animationState, animTime);
     }
 
     public void codeAnimations(T entity, Integer uniqueID, AnimationState<?> customPredicate) {

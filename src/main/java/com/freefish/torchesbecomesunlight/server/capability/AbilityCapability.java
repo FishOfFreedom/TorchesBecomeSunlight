@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoPlayer;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.geckolib.MowzieGeoModel;
@@ -13,20 +14,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 public class AbilityCapability {
-    public static ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "ability_cap");
+    public static ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "ability_cap");
 
     public interface IAbilityCapability extends INBTSerializable<CompoundTag> {
 
@@ -129,7 +127,7 @@ public class AbilityCapability {
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             CompoundTag compound = new CompoundTag();
             for (Map.Entry<AbilityType<?, ?>, Ability> abilityEntry : getAbilityMap().entrySet()) {
                 CompoundTag nbt = abilityEntry.getValue().writeNBT();
@@ -141,7 +139,7 @@ public class AbilityCapability {
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
+        public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
             CompoundTag compound = (CompoundTag) nbt;
             Set<String> keys = compound.getAllKeys();
             for (String abilityName : keys) {
@@ -150,25 +148,6 @@ public class AbilityCapability {
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
-    {
-        private final LazyOptional<IAbilityCapability> instance = LazyOptional.of(AbilityCapabilityImp::new);
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.orElseThrow(NullPointerException::new).serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return CapabilityHandle.ABILITY_CAPABILITY.orEmpty(cap, instance.cast());
-        }
-    }
+    
 }
 

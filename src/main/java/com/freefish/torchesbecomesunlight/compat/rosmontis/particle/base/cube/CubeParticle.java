@@ -22,8 +22,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -695,10 +695,10 @@ u     */
             var u1 = uvs.z();
             var v1 = uvs.w();
 
-            //buffer.vertex(rawVertexes[0].x(), rawVertexes[0].y(), rawVertexes[0].z()).uv(u1, v1).color(r, g, b, a).uv2(light).endVertex();
-            //buffer.vertex(rawVertexes[1].x(), rawVertexes[1].y(), rawVertexes[1].z()).uv(u1, v0).color(r, g, b, a).uv2(light).endVertex();
-            //buffer.vertex(rawVertexes[2].x(), rawVertexes[2].y(), rawVertexes[2].z()).uv(u0, v0).color(r, g, b, a).uv2(light).endVertex();
-            //buffer.vertex(rawVertexes[3].x(), rawVertexes[3].y(), rawVertexes[3].z()).uv(u0, v1).color(r, g, b, a).uv2(light).endVertex();
+            //buffer.addVertex((float) (rawVertexes[0].x()), (float) (rawVertexes[0].y()), (float) (rawVertexes[0].z())).setUv(u1, v1).setColor(r, g, b, a).setLight(light);
+            //buffer.addVertex((float) (rawVertexes[1].x()), (float) (rawVertexes[1].y()), (float) (rawVertexes[1].z())).setUv(u1, v0).setColor(r, g, b, a).setLight(light);
+            //buffer.addVertex((float) (rawVertexes[2].x()), (float) (rawVertexes[2].y()), (float) (rawVertexes[2].z())).setUv(u0, v0).setColor(r, g, b, a).setLight(light);
+            //buffer.addVertex((float) (rawVertexes[3].x()), (float) (rawVertexes[3].y()), (float) (rawVertexes[3].z())).setUv(u0, v1).setColor(r, g, b, a).setLight(light);
             for (int faceIndex = 0; faceIndex < 6; faceIndex++) {
                 Vector3f[] faceVertexes = new Vector3f[4];
 
@@ -713,9 +713,9 @@ u     */
     }
 
     private void renderFace(VertexConsumer buffer,Vector3f[] rawVertexes ,float u0,float v0,float u1,float v1,float r,float g,float b,float a,int light){
-        buffer.vertex(rawVertexes[0].x(), rawVertexes[0].y(), rawVertexes[0].z()).uv(u1, v1).color(r, g, b, a).uv2(light).endVertex();
-        buffer.vertex(rawVertexes[1].x(), rawVertexes[1].y(), rawVertexes[1].z()).uv(u1, v0).color(r, g, b, a).uv2(light).endVertex();
-        buffer.vertex(rawVertexes[2].x(), rawVertexes[2].y(), rawVertexes[2].z()).uv(u0, v0).color(r, g, b, a).uv2(light).endVertex();
-        buffer.vertex(rawVertexes[3].x(), rawVertexes[3].y(), rawVertexes[3].z()).uv(u0, v1).color(r, g, b, a).uv2(light).endVertex();
+        buffer.addVertex((float) (rawVertexes[0].x()), (float) (rawVertexes[0].y()), (float) (rawVertexes[0].z())).setUv(u1, v1).setColor(r, g, b, a).setLight(light);
+        buffer.addVertex((float) (rawVertexes[1].x()), (float) (rawVertexes[1].y()), (float) (rawVertexes[1].z())).setUv(u1, v0).setColor(r, g, b, a).setLight(light);
+        buffer.addVertex((float) (rawVertexes[2].x()), (float) (rawVertexes[2].y()), (float) (rawVertexes[2].z())).setUv(u0, v0).setColor(r, g, b, a).setLight(light);
+        buffer.addVertex((float) (rawVertexes[3].x()), (float) (rawVertexes[3].y()), (float) (rawVertexes[3].z())).setUv(u0, v1).setColor(r, g, b, a).setLight(light);
     }
 }

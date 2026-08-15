@@ -21,8 +21,8 @@ public class LightGunRenderer extends GeoItemRenderer<LightGun> {
     }
 
     public static class LightGunModel extends GeoModel<LightGun> {
-        private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/lightgun.geo.json");
-        private static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/item/timeandlight.png");
+        private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/lightgun.geo.json");
+        private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/item/timeandlight.png");
 
         @Override
         public ResourceLocation getModelResource(LightGun animatable) {

@@ -119,7 +119,7 @@ public class VerticalSlabBlock extends Block implements SimpleWaterloggedBlock {
     public void onPlace(BlockState p_56961_, Level p_56962_, BlockPos p_56963_, BlockState p_56964_, boolean p_56965_) {
         if (!p_56961_.is(p_56961_.getBlock())) {
             p_56962_.neighborChanged(this.baseState, p_56963_, Blocks.AIR, p_56963_, false);
-            this.base.onPlace(this.baseState, p_56962_, p_56963_, p_56964_, false);
+            ((com.freefish.torchesbecomesunlight.mixin.accessor.BlockBehaviourAccessor) this.base).callOnPlace(this.baseState, p_56962_, p_56963_, p_56964_, false);
         }
     }
 
@@ -134,19 +134,19 @@ public class VerticalSlabBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     public boolean isRandomlyTicking(BlockState p_56947_) {
-        return this.base.isRandomlyTicking(p_56947_);
+        return ((com.freefish.torchesbecomesunlight.mixin.accessor.BlockBehaviourAccessor) this.base).callIsRandomlyTicking(p_56947_);
     }
 
     public void randomTick(BlockState p_222523_, ServerLevel p_222524_, BlockPos p_222525_, RandomSource p_222526_) {
-        this.base.randomTick(p_222523_, p_222524_, p_222525_, p_222526_);
+        ((com.freefish.torchesbecomesunlight.mixin.accessor.BlockBehaviourAccessor) this.base).callRandomTick(p_222523_, p_222524_, p_222525_, p_222526_);
     }
 
     public void tick(BlockState p_222513_, ServerLevel p_222514_, BlockPos p_222515_, RandomSource p_222516_) {
-        this.base.tick(p_222513_, p_222514_, p_222515_, p_222516_);
+        ((com.freefish.torchesbecomesunlight.mixin.accessor.BlockBehaviourAccessor) this.base).callTick(p_222513_, p_222514_, p_222515_, p_222516_);
     }
 
-    public InteractionResult use(BlockState p_56901_, Level p_56902_, BlockPos p_56903_, Player p_56904_, InteractionHand p_56905_, BlockHitResult p_56906_) {
-        return this.baseState.use(p_56902_, p_56904_, p_56905_, p_56906_);
+    protected InteractionResult useWithoutItem(BlockState p_56901_, Level p_56902_, BlockPos p_56903_, Player p_56904_, BlockHitResult p_56906_) {
+        return this.baseState.useWithoutItem(p_56902_, p_56904_, p_56906_);
     }
 
     public void wasExploded(Level p_56878_, BlockPos p_56879_, Explosion p_56880_) {

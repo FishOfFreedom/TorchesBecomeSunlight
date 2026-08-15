@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.block.blockentity;
 
+import com.freefish.torchesbecomesunlight.server.block.blockentity.sync.SynchedBlockEntityData;
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.server.block.ElevatorDoorBlock;
 import com.freefish.torchesbecomesunlight.server.block.furniture.furniturenum.Door;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
@@ -12,12 +14,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements GeoBlockEntity {
@@ -89,8 +91,8 @@ public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements Ge
         }
     }
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
     }
 
     @Override
@@ -104,19 +106,19 @@ public class ElevatorDoorBlockEntity extends AutoSynTagBlockEntity implements Ge
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putInt("update",0);
         return compoundTag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        super.onDataPacket(net, pkt, registries);
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedBlockEntityData data) {
     }
 
     private final AnimationController<ElevatorDoorBlockEntity> animationController = new AnimationController<ElevatorDoorBlockEntity>(this, "Controller", 5, this::predicate);

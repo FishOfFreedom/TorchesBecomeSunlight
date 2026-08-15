@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.keybindings.ModKeyBindings;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoFirstPersonRenderer;
@@ -35,14 +37,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.LogicalSide;
 import org.lwjgl.glfw.GLFW;
 import software.bernie.geckolib.event.GeoRenderEvent;
 
@@ -68,7 +69,7 @@ public enum ForgeClientEventL {
                     GeckoFirstPersonRenderer firstPersonRenderer = (GeckoFirstPersonRenderer) geckoPlayer.getPlayerRenderer();
 
                     if (geckoFirstPersonModel != null && firstPersonRenderer != null) {
-                        if (!geckoFirstPersonModel.isUsingSmallArms() && ((AbstractClientPlayer) player).getModelName().equals("slim")) {
+                        if (!geckoFirstPersonModel.isUsingSmallArms() && ((AbstractClientPlayer) player).getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM) {
                             firstPersonRenderer.setSmallArms();
                         }
                         event.setCanceled(true);
@@ -114,13 +115,13 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START || event.player == null) {
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() == null) {
             return;
         }
-        Player player = event.player;
+        Player player = event.getEntity();
         PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
-        if (playerCapability != null && event.side == LogicalSide.CLIENT) {
+        if (playerCapability != null && event.getEntity().level().isClientSide()) {
             GeckoPlayer geckoPlayer = playerCapability.getGeckoPlayer();
             if (geckoPlayer != null) geckoPlayer.tick();
             if (player == Minecraft.getInstance().player) GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON.tick();
@@ -135,7 +136,7 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void levelTick(TickEvent.ClientTickEvent event){
+    public void levelTick(ClientTickEvent.Post event){
         //BossMusicSound bossMusic = BossMusicPlayer.bossMusic;
         //if(bossMusic!=null&&bossMusic.getBoss()!=null&& bossMusic.isCanLoop()){
         //    if(bossMusic.time>bossMusic.getBoss().timeToLoop()){
@@ -238,7 +239,7 @@ public enum ForgeClientEventL {
     public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         if (event.isCanceled()) return;
 
-        double scrollAmount = event.getScrollDelta();
+        double scrollAmount = event.getScrollDeltaY();
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
 
@@ -268,7 +269,7 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void onMiddleClick(InputEvent.MouseButton event) {
+    public void onMiddleClick(InputEvent.MouseButton.Pre event) {
         if (event.isCanceled()) return;
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
@@ -290,7 +291,7 @@ public enum ForgeClientEventL {
     @SubscribeEvent
     public void onSetupCamera(ViewportEvent.ComputeCameraAngles event) {
         Player player = Minecraft.getInstance().player;
-        float delta = Minecraft.getInstance().getFrameTime();
+        float delta = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         float ticksExistedDelta = player.tickCount + delta;
         if (player != null) {
             float shakeAmplitude = 0;

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.ElevatorBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import net.minecraft.core.BlockPos;
@@ -25,6 +26,13 @@ public class ElevatorBlock extends BaseEntityBlock {
     public ElevatorBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.defaultBlockState().setValue(ELEVATOR_ENUM_PROPERTY, Elevator.TOP));
+    }
+
+    public static final MapCodec<ElevatorBlock> CODEC = simpleCodec(ElevatorBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override

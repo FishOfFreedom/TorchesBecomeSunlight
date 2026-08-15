@@ -62,16 +62,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -425,7 +425,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
             if(tick == 11){
                 List<GuerrillasEntity> entitiesNearby = entity.level().getEntitiesOfClass(GuerrillasEntity.class, entity.getBoundingBox().inflate(12));
                 for(GuerrillasEntity guerrilla:entitiesNearby){
-                    guerrilla.addEffect(new MobEffectInstance(EffectHandle.SONG_OF_GUERRILLA.get(),400,1));
+                    guerrilla.addEffect(new MobEffectInstance(EffectHandle.SONG_OF_GUERRILLA,400,1));
                 }
             }
         }
@@ -459,7 +459,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
                 StompEntity stompEntity = new StompEntity(entity.level(),8,entity,3);
                 stompEntity.setPos(entity.position().add(new Vec3(0, 0, 5.5).yRot((float) (-entity.yBodyRot / 180 * Math.PI))));
                 entity.level().addFreshEntity(stompEntity);
-                entity.addEffect(new MobEffectInstance(EffectHandle.WINDIGO.get()));
+                entity.addEffect(new MobEffectInstance(EffectHandle.WINDIGO));
             }
             if(tick == 6) entity.isCanBeAttacking = true;
             else if(tick == 50) entity.isCanBeAttacking = false;
@@ -677,12 +677,12 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
 
     @Override
     public boolean addEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.addEffect(effectInstance, entity);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.addEffect(effectInstance, entity);
     }
 
     @Override
     public void forceAddEffect(MobEffectInstance effectInstance, @Nullable Entity entity) {
-        if (FFEntityUtils.isBeneficial(effectInstance.getEffect()))
+        if (FFEntityUtils.isBeneficial(effectInstance.getEffect().value()))
             super.forceAddEffect(effectInstance, entity);
     }
 
@@ -694,7 +694,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
 
     @Override
     public boolean canBeAffected(MobEffectInstance effectInstance) {
-        return FFEntityUtils.isBeneficial(effectInstance.getEffect()) && super.canBeAffected(effectInstance);
+        return FFEntityUtils.isBeneficial(effectInstance.getEffect().value()) && super.canBeAffected(effectInstance);
     }
 
     @Override
@@ -780,8 +780,8 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         return false;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载，原 getStepHeight() 覆写已无对应 */
+    protected float tbsStepHeight() {
         return 1.5F;
     }
 
@@ -910,12 +910,12 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(TARGET_POSX, 0f);
-        this.entityData.define(TARGET_POSY, 0f);
-        this.entityData.define(TARGET_POSZ, 0f);
-        this.entityData.define(LOCATE_MOB_ID, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TARGET_POSX, 0f);
+        builder.define(TARGET_POSY, 0f);
+        builder.define(TARGET_POSZ, 0f);
+        builder.define(LOCATE_MOB_ID, -1);
     }
 
     @Override
@@ -925,7 +925,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         compound.putFloat("targetPosX",vector3f.x);
         compound.putFloat("targetPosY",vector3f.y);
         compound.putFloat("targetPosZ",vector3f.z);
-        compound.put("menber",teamMemberStorage.serializeNBT());
+        compound.put("menber",teamMemberStorage.serializeNBT(registryAccess()));
     }
 
     @Override
@@ -935,7 +935,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         float y = compound.getFloat("targetPosY");
         float z = compound.getFloat("targetPosZ");
         setTargetPos(new Vec3(x,y,z));
-        teamMemberStorage.deserializeNBT(compound.getCompound("menber"));
+        teamMemberStorage.deserializeNBT(registryAccess(), compound.getCompound("menber"));
     }
 
     @Override
@@ -1174,7 +1174,7 @@ public class Patriot extends GuerrillasEntity implements IDialogueEntity, IChall
         if(challengePlayer!=null){
 
             if(challengePlayer instanceof ServerPlayer serverPlayer){
-                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "main_8_2_patriot");
+                TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "main_8_2_patriot");
             }
             setAggressive(false);
             setHealth(1);

@@ -1,16 +1,28 @@
 package com.freefish.torchesbecomesunlight.server.event.packet.toclient;
 
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
 import com.freefish.torchesbecomesunlight.server.util.animation.IAnimatedEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+public class InitClientEntityMessage implements CustomPacketPayload {
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+    public static final CustomPacketPayload.Type<InitClientEntityMessage> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "init_client_entity_message"));
 
-public class InitClientEntityMessage {
+    public static final StreamCodec<FriendlyByteBuf, InitClientEntityMessage> STREAM_CODEC =
+            StreamCodec.of((buf, msg) -> serialize(msg, buf), InitClientEntityMessage::deserialize);
+
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private int entityID;
     private InitDataType index;
     private Entity entity;
@@ -50,10 +62,8 @@ public class InitClientEntityMessage {
         return message;
     }
 
-    public static class Handler implements BiConsumer<InitClientEntityMessage, Supplier<NetworkEvent.Context>> {
-        @Override
-        public void accept(final InitClientEntityMessage message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            final NetworkEvent.Context context = contextSupplier.get();
+        public static void handle(final InitClientEntityMessage message, final IPayloadContext context) {
+            
             context.enqueueWork(() -> {
                 Entity entity =Minecraft.getInstance().level.getEntity(message.entityID);
                 if (entity != null) {
@@ -64,9 +74,7 @@ public class InitClientEntityMessage {
                     }
                 }
             });
-            context.setPacketHandled(true);
         }
-    }
 
     public enum InitDataType{
         ISTWOSTATE

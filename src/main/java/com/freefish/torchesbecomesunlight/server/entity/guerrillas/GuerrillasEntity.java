@@ -65,9 +65,9 @@ public abstract class GuerrillasEntity extends AnimatedEntity {
 
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ARMORDURABILITY, 0f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ARMORDURABILITY, 0f);
     }
 
     @Override

@@ -30,9 +30,9 @@ public class PartnerHandler {
     }
 
     public static void init(){
-        WOLF_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"wolf"),EntityType.WOLF,WolfPartner::new);
-        ROSMONTIS_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"rosmontis"), EntityHandle.ROSMONTIS.get(),RosmontisPartner::new);
-        PATRIOT_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"patriot"), EntityHandle.PATRIOT.get(),PatriotPartner::new);
-        FROSTNOVA_PARTNER = init(new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"frostnova"), EntityHandle.FROST_NOVA.get(),FrostNovaPartner::new);
+        WOLF_PARTNER = init(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"wolf"),EntityType.WOLF,WolfPartner::new);
+        ROSMONTIS_PARTNER = init(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"rosmontis"), EntityHandle.ROSMONTIS.get(),RosmontisPartner::new);
+        PATRIOT_PARTNER = init(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"patriot"), EntityHandle.PATRIOT.get(),PatriotPartner::new);
+        FROSTNOVA_PARTNER = init(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"frostnova"), EntityHandle.FROST_NOVA.get(),FrostNovaPartner::new);
     }
 }

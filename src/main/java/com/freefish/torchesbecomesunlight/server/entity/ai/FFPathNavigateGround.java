@@ -6,7 +6,8 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
@@ -80,13 +81,13 @@ public class FFPathNavigateGround extends GroundPathNavigation {
     }
 
     @Override
-    protected boolean hasValidPathType(BlockPathTypes types) {
-        if (types == BlockPathTypes.WATER) {
+    protected boolean hasValidPathType(PathType types) {
+        if (types == PathType.WATER) {
             return false;
-        } else if (types == BlockPathTypes.LAVA) {
+        } else if (types == PathType.LAVA) {
             return false;
         } else {
-            return types != BlockPathTypes.OPEN;
+            return types != PathType.OPEN;
         }
     }
 
@@ -116,6 +117,7 @@ public class FFPathNavigateGround extends GroundPathNavigation {
             tNext[i] = tDelta[i] < Float.POSITIVE_INFINITY ? tDelta[i] * dist : Float.POSITIVE_INFINITY;
         }
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        final PathfindingContext context = new PathfindingContext(this.level, this.mob);
         do {
             // stepForward
             int axis = (tNext[0] < tNext[1]) ?
@@ -143,15 +145,15 @@ public class FFPathNavigateGround extends GroundPathNavigation {
                 for (int z = z0; z != z1; z += stepz) {
                     for (int y = y0; y != y1; y += stepy) {
                         BlockState block = this.level.getBlockState(pos.set(x, y, z));
-                        if (!block.isPathfindable(this.level, pos, PathComputationType.LAND)) return false;
+                        if (!block.isPathfindable(PathComputationType.LAND)) return false;
                     }
-                    BlockPathTypes below = this.nodeEvaluator.getBlockPathType(this.level, x, y0 - 1, z, this.mob);
-                    if (below == BlockPathTypes.WATER || below == BlockPathTypes.LAVA || below == BlockPathTypes.OPEN)
+                    PathType below = WalkNodeEvaluator.getPathTypeStatic(context, pos.set(x, y0 - 1, z));
+                    if (below == PathType.WATER || below == PathType.LAVA || below == PathType.OPEN)
                         return false;
-                    BlockPathTypes in = this.nodeEvaluator.getBlockPathType(this.level, x, y0, z, this.mob);
+                    PathType in = WalkNodeEvaluator.getPathTypeStatic(context, pos.set(x, y0, z));
                     float priority = this.mob.getPathfindingMalus(in);
                     if (priority < 0.0F || priority >= 8.0F) return false;
-                    if (in == BlockPathTypes.DAMAGE_FIRE || in == BlockPathTypes.DANGER_FIRE || in == BlockPathTypes.DAMAGE_OTHER)
+                    if (in == PathType.DAMAGE_FIRE || in == PathType.DANGER_FIRE || in == PathType.DAMAGE_OTHER)
                         return false;
                 }
             }

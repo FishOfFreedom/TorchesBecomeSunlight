@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.block;
 
+import com.mojang.serialization.MapCodec;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.BigBenBlockEntity;
 import com.freefish.torchesbecomesunlight.server.init.BlockEntityHandle;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
@@ -35,6 +36,13 @@ public class BigBenBlock extends BaseEntityBlock {
         super(pProperties);
     }
 
+    public static final MapCodec<BigBenBlock> CODEC = simpleCodec(BigBenBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return super.getShape(pState, pLevel, pPos, pContext);
@@ -56,7 +64,7 @@ public class BigBenBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
         if(!pLevel.isClientSide()){
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if(blockEntity instanceof BigBenBlockEntity entity){
@@ -74,7 +82,7 @@ public class BigBenBlock extends BaseEntityBlock {
 
                 if(flad1&&flad2){
                     if(pPlayer instanceof ServerPlayer player){
-                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(player, "gunPatriot_1_time");
+                        TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(player, "gunPatriot_1_time");
                     }
                     float posToPosRot = FFEntityUtils.getPosToPosRot(pPlayer.position(), pPos.getCenter());
                     entity.hitBen(posToPosRot, 640);
@@ -83,7 +91,7 @@ public class BigBenBlock extends BaseEntityBlock {
                 }
             }
         }
-        return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit);
+        return super.useWithoutItem(pState, pLevel, pPos, pPlayer, pHit);
     }
 
     @Nullable

@@ -1,0 +1,32 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "pre": {
+      "conditions": {
+        "advancements": [
+          "torchesbecomesunlight:cook_cutting",
+          "torchesbecomesunlight:cook_stew",
+          "torchesbecomesunlight:cook_oven"
+        ]
+      },
+      "trigger": "torchesbecomesunlight:chained_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.cook"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:stew_pot"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.cook"
+    }
+  },
+  "requirements": [
+    [
+      "pre"
+    ]
+  ]
+}

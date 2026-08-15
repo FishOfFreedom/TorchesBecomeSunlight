@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.story.dialogueentity;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.event.ServerNetwork;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.StartDialogueMessage;
@@ -28,15 +29,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData {
+public class DialogueEntity extends Entity implements IEntityWithComplexSpawn {
     private final Map<String, LivingEntity> stringLivingEntityMap = new HashMap<>();;
 
     private int oldOptionNumber;
@@ -95,7 +95,7 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
             if(living instanceof Player player){
                 this.player = player;
                 if(player instanceof ServerPlayer serverPlayer){
-                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.trigger(serverPlayer, "talk");
+                    TriggerHandler.STRING_ADVANCEMENT_TRIGGER.get().trigger(serverPlayer, "talk");
                 }
                 flad1 = false;
                 break;
@@ -224,9 +224,9 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(IS_FLOAT,false);
-        this.entityData.define(FLOAT_SCALE,0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(IS_FLOAT,false);
+        builder.define(FLOAT_SCALE,0);
     }
 
     @Override
@@ -252,7 +252,7 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
 
         if(!level().isClientSide&&dialogue != null){
             currentOptions = dialogue.getUsefulOptions(this);
-            TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this),new StartDialogueMessage(this));
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new StartDialogueMessage(this));
         }
     }
 
@@ -311,14 +311,10 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
         return Mth.lerp(p,floatOldNumber,floatNumber)/10f;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void writeSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeNbt(allDialogue.serializeNBT());
 
         CompoundTag entities = new CompoundTag();
@@ -345,7 +341,7 @@ public class DialogueEntity extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void readSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag compoundTag = friendlyByteBuf.readNbt();
         Dialogue dialogue1 = new Dialogue();
         dialogue1.deserializeNBT(compoundTag);

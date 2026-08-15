@@ -1,72 +1,45 @@
 package com.freefish.torchesbecomesunlight.server.init.generator.advancement.criterion;
 
-import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.SerializationContext;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
 
-public class StringAdvancementTrigger extends TBSTrigger<StringAdvancementTrigger.Instance, StringAdvancementTrigger.Listener> {
-    public static final ResourceLocation ID = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "string_advancement");
+import java.util.Optional;
 
-    public StringAdvancementTrigger() {
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
-
-    @Override
-    public StringAdvancementTrigger.Instance createInstance(JsonObject object, DeserializationContext conditions) {
-        JsonElement advancementsElement = object.get("id");
-
-        return new StringAdvancementTrigger.Instance(advancementsElement.getAsString());
-    }
+/**
+ * 1.21 重写了进度触发器：CriterionTrigger 改为基于 Codec，监听器管理下沉到
+ * {@link SimpleCriterionTrigger}，触发实例只需实现 SimpleInstance（提供 player()）。
+ * 原先自建的 TBSTrigger 基类与 JSON 手写序列化（DeserializationContext /
+ * SerializationContext / AbstractCriterionTriggerInstance）在 1.21 均已不存在。
+ */
+public class StringAdvancementTrigger extends SimpleCriterionTrigger<StringAdvancementTrigger.Instance> {
 
     @Override
-    public StringAdvancementTrigger.Listener createListener(PlayerAdvancements playerAdvancements) {
-        return new StringAdvancementTrigger.Listener(playerAdvancements);
+    public Codec<Instance> codec() {
+        return Instance.CODEC;
     }
 
-    public void trigger(ServerPlayer player,String id) {
-        StringAdvancementTrigger.Listener listeners = this.listeners.get(player.getAdvancements());
-        if (listeners != null) {
-            listeners.trigger(id);
-        }
+    public void trigger(ServerPlayer player, String id) {
+        this.trigger(player, instance -> instance.matches(id));
     }
 
-    static class Listener extends TBSTrigger.Listener<Instance> {
-        public Listener(PlayerAdvancements playerAdvancementsIn) {
-            super(playerAdvancementsIn);
+    public record Instance(Optional<ContextAwarePredicate> player, String targetAdvancements)
+            implements SimpleCriterionTrigger.SimpleInstance {
+
+        public static final Codec<Instance> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(Instance::player),
+                Codec.STRING.fieldOf("id").forGetter(Instance::targetAdvancements)
+        ).apply(inst, Instance::new));
+
+        public Instance(String targetAdvancements) {
+            this(Optional.empty(), targetAdvancements);
         }
 
-        public void trigger(String id) {
-            this.listeners.stream().filter(instanceListener -> instanceListener.getTriggerInstance().targetAdvancements.contains(id)).findFirst().ifPresent(listener -> {
-                listener.run(this.playerAdvancements);
-            });
-        }
-    }
-
-    public static class Instance extends AbstractCriterionTriggerInstance {
-        private final String targetAdvancements;
-
-        public Instance(String resourceLocation) {
-            super(StringAdvancementTrigger.ID, ContextAwarePredicate.ANY);
-            this.targetAdvancements = resourceLocation;
-        }
-
-        @Override
-        public JsonObject serializeToJson(SerializationContext context) {
-            JsonObject json = super.serializeToJson(context);
-
-            json.addProperty("id",targetAdvancements);
-            return json;
+        public boolean matches(String id) {
+            return this.targetAdvancements.contains(id);
         }
     }
 }

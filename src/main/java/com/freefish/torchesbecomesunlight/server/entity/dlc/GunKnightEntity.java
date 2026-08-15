@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.block.blockentity.BigBenBlockEntity;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.dlc.ai.GunKnightRandomStrollGoal;
@@ -17,11 +18,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class GunKnightEntity extends AnimatedEntity implements IEntityAdditionalSpawnData {
+public abstract class GunKnightEntity extends AnimatedEntity implements IEntityWithComplexSpawn {
     @Getter
     private BlockPos controlBen;
 
@@ -50,7 +50,7 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityA
         }
     }
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag tag = new CompoundTag();
         BlockPos spawnPos = getSpawnPos();
         BlockPos controlBen1 = getControlBen();
@@ -62,17 +62,13 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityA
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("spawn")){
-            init(NbtUtils.readBlockPos(compoundTag.getCompound("controlBen1")),NbtUtils.readBlockPos(compoundTag.getCompound("spawn")));
+            init(NbtUtils.readBlockPos(compoundTag, "controlBen1").orElse(net.minecraft.core.BlockPos.ZERO),NbtUtils.readBlockPos(compoundTag, "spawn").orElse(net.minecraft.core.BlockPos.ZERO));
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     public BigBenBlockEntity getTile(){
         if(tile==null&&controlBen!=null){
@@ -126,10 +122,10 @@ public abstract class GunKnightEntity extends AnimatedEntity implements IEntityA
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if(pCompound.contains("controlBen")){
-            controlBen = NbtUtils.readBlockPos(pCompound.getCompound("controlBen"));
+            controlBen = NbtUtils.readBlockPos(pCompound, "controlBen").orElse(net.minecraft.core.BlockPos.ZERO);
         }
         if(pCompound.contains("spawnPos")){
-            spawnPos = NbtUtils.readBlockPos(pCompound.getCompound("spawnPos"));
+            spawnPos = NbtUtils.readBlockPos(pCompound, "spawnPos").orElse(net.minecraft.core.BlockPos.ZERO);
         }
     }
 }

@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -16,8 +19,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -88,10 +91,10 @@ public class BladeParticle extends TextureSheetParticle {
         float f4 = this.getV0();
         float f5 = this.getV1();
         int j = this.getLightColor(pPartialTicks);
-        pBuffer.vertex((double)avector3f[0].x(), (double)avector3f[0].y(), (double)avector3f[0].z()).uv(f7, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[1].x(), (double)avector3f[1].y(), (double)avector3f[1].z()).uv(f7, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[2].x(), (double)avector3f[2].y(), (double)avector3f[2].z()).uv(f6, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
-        pBuffer.vertex((double)avector3f[3].x(), (double)avector3f[3].y(), (double)avector3f[3].z()).uv(f6, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
+        pBuffer.addVertex((float)avector3f[0].x(), (float)avector3f[0].y(), (float) ((double)avector3f[0].z())).setUv(f7, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[1].x(), (float)avector3f[1].y(), (float) ((double)avector3f[1].z())).setUv(f7, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[2].x(), (float)avector3f[2].y(), (float) ((double)avector3f[2].z())).setUv(f6, f4).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
+        pBuffer.addVertex((float)avector3f[3].x(), (float)avector3f[3].y(), (float) ((double)avector3f[3].z())).setUv(f6, f5).setColor(this.rCol, this.gCol, this.bCol, this.alpha).setLight(j);
     }
 
     @Override
@@ -116,25 +119,14 @@ public class BladeParticle extends TextureSheetParticle {
 
 
     public static class BladeData implements ParticleOptions {
-        public static final Deserializer<BladeData> DESERIALIZER = new Deserializer<BladeData>() {
-            public BladeData fromCommand(ParticleType<BladeData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                float scale = reader.readFloat();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                reader.expect(' ');
-                float hw = reader.readFloat();
-                return new BladeData(duration,scale,rotX,rotY,hw);
-            }
-
-            public BladeData fromNetwork(ParticleType<BladeData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static BladeData readFromNetwork(ParticleType<BladeData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new BladeData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final float scale;
@@ -150,8 +142,7 @@ public class BladeParticle extends TextureSheetParticle {
             this.hw = hw;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeFloat(this.scale);
             buffer.writeFloat(this.rotX);
@@ -160,8 +151,7 @@ public class BladeParticle extends TextureSheetParticle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration,this.scale,this.rotX,this.rotY,this.hw);
         }
@@ -193,8 +183,8 @@ public class BladeParticle extends TextureSheetParticle {
         public float getHw() {
             return this.hw;
         }
-        public static Codec<BladeData> CODEC(ParticleType<BladeData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<BladeData> CODEC(ParticleType<BladeData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(BladeData::getDuration),
                             Codec.FLOAT.fieldOf("scale").forGetter(BladeData::getScale),
                             Codec.FLOAT.fieldOf("rotX").forGetter(BladeData::getRotX),
@@ -202,6 +192,11 @@ public class BladeParticle extends TextureSheetParticle {
                             Codec.FLOAT.fieldOf("hw").forGetter(BladeData::getHw)
                     ).apply(codecBuilder, BladeData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, BladeData> STREAM_CODEC(ParticleType<BladeData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
 import com.freefish.torchesbecomesunlight.server.init.EntityHandle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -17,12 +19,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import java.util.List;
 
-public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
+public class StompEntity extends Entity implements IEntityWithComplexSpawn {
     int continueTime,frame;
     LivingEntity owner;
     double maxDist;
@@ -41,7 +42,7 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
@@ -69,7 +70,7 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
         if (tick <= continueTime){
             int hitY = Mth.floor(this.getBoundingBox().minY - 0.5);
             if (tick == 1) {
-                this.playSound(SoundEvents.GENERIC_EXPLODE, 2, 1F + this.random.nextFloat() * 0.1F);
+                this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2, 1F + this.random.nextFloat() * 0.1F);
                 EntityCameraShake.cameraShake(world, this.position(), 25, 0.1f, 0, 20);
             }
             if (tick % 2 == 0) {
@@ -132,7 +133,7 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag compoundTag = new CompoundTag();
         if(owner!=null){
             compoundTag.putInt("id",owner.getId());
@@ -141,15 +142,11 @@ public class StompEntity extends Entity implements IEntityAdditionalSpawnData {
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         CompoundTag compoundTag = additionalData.readNbt();
         if(compoundTag.contains("id")){
             owner = (LivingEntity) level().getEntity(compoundTag.getInt("id"));
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 }

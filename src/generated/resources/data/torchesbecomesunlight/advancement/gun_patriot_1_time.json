@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:gun_patriot_structure",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "gunPatriot_1_time"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.gun_patriot_1_time"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:pathfinder_gun"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.gun_patriot_1_time"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

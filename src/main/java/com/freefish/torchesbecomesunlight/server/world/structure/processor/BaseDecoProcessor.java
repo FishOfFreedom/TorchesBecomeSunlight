@@ -13,10 +13,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 public class BaseDecoProcessor extends StructureProcessor {
     public static final BaseDecoProcessor INSTANCE = new BaseDecoProcessor();
-    public static final Codec<BaseDecoProcessor> CODEC = Codec.unit(() -> INSTANCE);
+    public static final com.mojang.serialization.MapCodec<BaseDecoProcessor> CODEC = com.mojang.serialization.MapCodec.unit(() -> INSTANCE);
 
     protected StructureProcessorType<?> getType() {
-        return ProcessorHandler.BASE_DECO_PROCESSOR;
+        return ProcessorHandler.BASE_DECO_PROCESSOR.get();
     }
 
     @Override

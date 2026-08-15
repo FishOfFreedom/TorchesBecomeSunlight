@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
+import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.client.render.Item.PathfinderShieldRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -12,10 +14,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -43,8 +45,8 @@ public class PathfinderShield extends ShieldItem implements GeoItem{
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
-            pStack.getOrCreateTag().putBoolean("tbsisActive", false);
-            int i = this.getUseDuration(pStack) - pTimeCharged;
+            TBSItemData.putBoolean(pStack, "tbsisActive", false);
+            int i = this.getUseDuration(pStack, pLivingEntity) - pTimeCharged;
         }
     }
 
@@ -56,14 +58,15 @@ public class PathfinderShield extends ShieldItem implements GeoItem{
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        CompoundTag orCreateTag = itemstack.getOrCreateTag();
+        CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
         orCreateTag.putBoolean("tbsisActive", true);
+        TBSItemData.setTag(itemstack, orCreateTag);
         pPlayer.startUsingItem(pHand);
         return InteractionResultHolder.consume(itemstack);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.pathfinder_shield"));
     }

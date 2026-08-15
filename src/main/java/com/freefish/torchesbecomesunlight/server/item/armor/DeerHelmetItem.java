@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.armor;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.core.Holder;
 import com.freefish.torchesbecomesunlight.client.render.Item.DeerHalmetRenderer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
@@ -14,11 +16,11 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -30,21 +32,22 @@ import static com.freefish.torchesbecomesunlight.server.util.FFEntityUtils.isLoo
 public final class DeerHelmetItem extends ArmorItem implements GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public DeerHelmetItem(ArmorMaterial armorMaterial, Type type, Properties properties) {
+    public DeerHelmetItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties) {
         super(armorMaterial, type, properties);
     }
 
     @Override
-    public void onArmorTick(ItemStack stack, Level level, Player player) {
-        List<Mob> list = level.getEntitiesOfClass(Mob.class,player.getBoundingBox().inflate(12), entity ->
-                entity.distanceTo(player)<12&&entity.getTarget()==player);
+    public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slotId, boolean isSelected) {
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
+        if (!(entity instanceof Player player) || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD) != stack) return;
+        List<Mob> list = level.getEntitiesOfClass(Mob.class,player.getBoundingBox().inflate(12), target ->
+                target.distanceTo(player)<12&&target.getTarget()==player);
 
         for(Mob mob:list){
             if(isLookingAtMe(player,mob)){
                 mob.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,1));
             }
         }
-        super.onArmorTick(stack, level, player);
     }
 
     @Override
@@ -63,7 +66,7 @@ public final class DeerHelmetItem extends ArmorItem implements GeoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, level, tooltip, flagIn);
         tooltip.add(Component.translatable("text.torchesbecomesunlight.deer_helmet"));
     }

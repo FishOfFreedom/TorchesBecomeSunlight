@@ -17,7 +17,7 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class SectorShaderMaterial extends ShaderInstanceMaterial {
     private static final Map<ResourceLocation, ShaderInstance> COMPILED_SHADERS = new HashMap();
-    public ResourceLocation shader = new ResourceLocation("torchesbecomesunlight:sector");
+    public ResourceLocation shader = ResourceLocation.parse("torchesbecomesunlight:sector");
 
     private String compiledErrorMessage = "";
     private float radiu = 3.14f / 2;

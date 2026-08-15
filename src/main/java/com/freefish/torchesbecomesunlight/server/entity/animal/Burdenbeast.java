@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.animal;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFBodyRotationControl;
 import com.freefish.torchesbecomesunlight.server.entity.ai.FFPathNavigateGround;
@@ -36,12 +38,12 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -53,7 +55,7 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
     private static final EntityDataAccessor<CompoundTag> ANIMATION = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<Boolean> RUN = SynchedEntityData.defineId(Burdenbeast.class, EntityDataSerializers.BOOLEAN);
 
-    private AttributeModifier attributeModifier = new AttributeModifier(UUID.fromString("f2ccfb2b-cb0b-4a7d-9c64-9fa53f7687a2"), "Health config multiplier", 0.8, AttributeModifier.Operation.ADDITION);
+    private AttributeModifier attributeModifier = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), 0.8, AttributeModifier.Operation.ADD_VALUE);
     public int animationType;
     private int animationTime;
 
@@ -224,12 +226,12 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
         return cache;
     }
 
-    @Override
-    public float getStepHeight() {
+    /** 1.21：步高由 Attributes.STEP_HEIGHT 承载 */
+    protected float tbsStepHeight() {
         if(getRun()){
             return 1.6f;
         }
-        return super.getStepHeight();
+        return this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) > 0 ? (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT) : 0.6F;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -277,15 +279,15 @@ public class Burdenbeast extends AbstractChestedHorse implements GeoEntity{
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData, @Nullable CompoundTag compound) {
-        return super.finalizeSpawn(world, difficulty, reason, livingData, compound);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData livingData) {
+        return super.finalizeSpawn(world, difficulty, reason, livingData);
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ANIMATION,new CompoundTag());
-        this.entityData.define(RUN,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(ANIMATION,new CompoundTag());
+        builder.define(RUN,false);
     }
 
     public void setRun(boolean run){

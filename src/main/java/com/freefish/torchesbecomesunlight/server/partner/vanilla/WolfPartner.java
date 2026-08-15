@@ -31,7 +31,7 @@ public class WolfPartner extends Partner<Wolf> {
         this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(partnerMob));
         this.goalSelector.addGoal(4, new LeapAtTargetGoal(partnerMob, 0.4F));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(partnerMob, 1.0D, true));
-        this.goalSelector.addGoal(6, new FollowOwnerGoal(partnerMob, 1.0D, 10.0F, 2.0F, false));
+        this.goalSelector.addGoal(6, new FollowOwnerGoal(partnerMob, 1.0D, 10.0F, 2.0F));
         this.goalSelector.addGoal(7, new BreedGoal(partnerMob, 1.0D));
         //this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(partnerMob, 1.0D));
         this.goalSelector.addGoal(9, new BegGoal(partnerMob, 8.0F));

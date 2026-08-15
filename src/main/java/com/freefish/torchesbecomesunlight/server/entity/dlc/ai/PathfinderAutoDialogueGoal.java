@@ -43,7 +43,7 @@ public class PathfinderAutoDialogueGoal extends Goal {
                     if (capability != null) {
                         PlayerStoryStoneData playerStory = capability.getPlayerStory();
                         if (!playerStory.isSeenGunPatriot()) {
-                            Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue/gun_patriot/pathfinder_firstmeet.json"), level);
+                            Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "dialogue/gun_patriot/pathfinder_firstmeet.json"), level);
                             DialogueEntry dialogueEntry = dialogue.getDialogueEntry("main2");
                             dialogueEntry.setRunnable(() -> {
                                 playerStory.setSeenGunPatriot(true);

@@ -1,6 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.entity.dlc;
 
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.client.util.particle.ParticleCloud;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.util.particle.util.AdvancedParticleBase;
@@ -31,15 +32,14 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Turret extends Mob implements GeoEntity, IEntityAdditionalSpawnData {
+public class Turret extends Mob implements GeoEntity, IEntityWithComplexSpawn {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     @Nullable
@@ -227,7 +227,7 @@ public class Turret extends Mob implements GeoEntity, IEntityAdditionalSpawnData
                 if(arrow instanceof Bullet bullet&&bullet.isHoly()) continue;
                 if(arrow.getDeltaMovement().dot(position().add(0,1.7,0).subtract(arrow.position()))<=0) continue;
                 if(arrow.getOwner()!=null&&arrow.getOwner().distanceTo(this)<4.5) continue;
-                //TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new sendAdvancedParticlePacket(getId(),arrow.position()));
+                //PacketDistributor.sendToPlayersTrackingEntityAndSelf(this, new sendAdvancedParticlePacket(getId(),arrow.position()));
                 arrow.discard();
             }
         }
@@ -285,19 +285,15 @@ public class Turret extends Mob implements GeoEntity, IEntityAdditionalSpawnData
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(tickCount);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
         tickCount = additionalData.readVarInt();
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     public void setOwner(Entity owner) {
         this.owner = owner;
@@ -317,11 +313,11 @@ public class Turret extends Mob implements GeoEntity, IEntityAdditionalSpawnData
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(PREDICATE,0);
-        this.entityData.define(IS_FIRE,false);
-        this.entityData.define(IS_DIE,false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(PREDICATE,0);
+        builder.define(IS_FIRE,false);
+        builder.define(IS_DIE,false);
     }
 
     public int getPredicate(){

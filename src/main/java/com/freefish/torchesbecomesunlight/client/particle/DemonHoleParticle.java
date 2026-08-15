@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import net.minecraft.network.codec.StreamCodec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
@@ -26,8 +29,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -40,7 +43,7 @@ public class DemonHoleParticle extends Particle {
     private float rotY;
     private final int fadeTime = 20;
 
-    private static ResourceLocation HOLE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID,"textures/particle/demonhole.png");
+    private static ResourceLocation HOLE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID,"textures/particle/demonhole.png");
 
     public DemonHoleParticle(ClientLevel world, double x, double y, double z, int time, float scale, float pitch, float yaw) {
         super(world, x, y, z);
@@ -81,7 +84,7 @@ public class DemonHoleParticle extends Particle {
         VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(FFRenderTypes.getGlowingEffect(HOLE));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
-        Matrix3f matrix3f = posestack$pose.normal();
+        
 
         Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1, -1.0F, 0), new Vector3f(-1, 1.0F, 0), new Vector3f(1, 1.0F, 0), new Vector3f(1, -1.0F, 0)};
         float f4 = 0.5F;
@@ -100,10 +103,10 @@ public class DemonHoleParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, fadecolor).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, fadecolor).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, fadecolor).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, fadecolor).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        portalStatic.addVertex((float) avector3f[0].x(), (float) avector3f[0].y(), (float) ((double) avector3f[0].z())).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[1].x(), (float) avector3f[1].y(), (float) ((double) avector3f[1].z())).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f8, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[2].x(), (float) avector3f[2].y(), (float) ((double) avector3f[2].z())).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f5).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
+        portalStatic.addVertex((float) avector3f[3].x(), (float) avector3f[3].y(), (float) ((double) avector3f[3].z())).setColor(this.rCol, this.gCol, this.bCol, fadecolor).setUv(f7, f6).setOverlay(OverlayTexture.NO_OVERLAY).setLight(j).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
 
         multibuffersource$buffersource.endBatch();
     }
@@ -124,23 +127,14 @@ public class DemonHoleParticle extends Particle {
 
 
     public static class DemonHoleData implements ParticleOptions {
-        public static final Deserializer<DemonHoleData> DESERIALIZER = new Deserializer<DemonHoleData>() {
-            public DemonHoleData fromCommand(ParticleType<DemonHoleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                float scale = reader.readFloat();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                return new DemonHoleData(duration,scale,rotX,rotY);
-            }
-
-            public DemonHoleData fromNetwork(ParticleType<DemonHoleData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static DemonHoleData readFromNetwork(ParticleType<DemonHoleData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new DemonHoleData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final float scale;
@@ -154,8 +148,7 @@ public class DemonHoleParticle extends Particle {
             this.rotY = rotY;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeFloat(this.scale);
             buffer.writeFloat(this.rotX);
@@ -163,8 +156,7 @@ public class DemonHoleParticle extends Particle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration,this.scale,this.rotX,this.rotY);
         }
@@ -192,14 +184,19 @@ public class DemonHoleParticle extends Particle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<DemonHoleData> CODEC(ParticleType<DemonHoleData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<DemonHoleData> CODEC(ParticleType<DemonHoleData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(DemonHoleData::getDuration),
                             Codec.FLOAT.fieldOf("scale").forGetter(DemonHoleData::getScale),
                             Codec.FLOAT.fieldOf("rotX").forGetter(DemonHoleData::getRotX),
                             Codec.FLOAT.fieldOf("rotY").forGetter(DemonHoleData::getRotY)
                     ).apply(codecBuilder, DemonHoleData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, DemonHoleData> STREAM_CODEC(ParticleType<DemonHoleData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

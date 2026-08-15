@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.gui;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.freefish.rosmontislib.client.shader.ShaderHandle;
 import com.freefish.rosmontislib.client.shader.management.ShaderProgram;
 import com.freefish.rosmontislib.client.shader.uniform.UniformCache;
@@ -85,14 +86,14 @@ public class TBSDrawerHelper {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableDepthTest();//VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        BufferBuilder vertexbuffer = Tesselator.getInstance().getBuilder();
-        vertexbuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        vertexbuffer.vertex(posX1, (double) posY1 + height1, 0.0D).color(f, f1, f2, f3).endVertex();
-        vertexbuffer.vertex((double) posX2 + width2, (double) posY2 + height2, 0.0D).color(f, f1, f2, f3).endVertex();
-        vertexbuffer.vertex((double) posX1 + width1, posY2, 0.0D).color(f, f1, f2, f3).endVertex();
-        vertexbuffer.vertex(posX2, posY1, 0.0D).color(f, f1, f2, f3).endVertex();
+        BufferBuilder vertexbuffer;
+        vertexbuffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        vertexbuffer.addVertex((float) (posX1), (float) posY1 + height1, 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX2 + width2, (float) posY2 + height2, 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) posX1 + width1, (float) (posY2), 0.0F).setColor(f, f1, f2, f3);
+        vertexbuffer.addVertex((float) (posX2), (float) (posY1), 0.0F).setColor(f, f1, f2, f3);
 
-        BufferUploader.drawWithShader(vertexbuffer.end());
+        BufferUploader.drawWithShader(vertexbuffer.buildOrThrow());
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
     }
@@ -107,30 +108,30 @@ public class TBSDrawerHelper {
     }
 
     private static void uploadScreenPosVertex() {
-        var builder = Tesselator.getInstance().getBuilder();
+        BufferBuilder builder;
 
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        builder.vertex(-1.0, 1.0,  0.0).endVertex();
-        builder.vertex(-1.0, -1.0, 0.0).endVertex();
-        builder.vertex(1.0, -1.0,  0.0).endVertex();
-        builder.vertex(1.0, 1.0,   0.0).endVertex();
-        BufferUploader.draw(builder.end());
+        builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        builder.addVertex(-1.0F, 1.0F, 0.0F);
+        builder.addVertex(-1.0F, -1.0F, 0.0F);
+        builder.addVertex(1.0F, -1.0F, 0.0F);
+        builder.addVertex(1.0F, 1.0F, 0.0F);
+        BufferUploader.draw(builder.buildOrThrow());
     }
 
     private static void uploadScreenPosVertex1(Rect square) {
-        var builder = Tesselator.getInstance().getBuilder();
+        BufferBuilder builder;
         var window = Minecraft.getInstance().getWindow();
 
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         float left = Mth.lerp((float) square.left / window.getGuiScaledWidth(), -1, 1);
         float right = Mth.lerp((float) (square.left+square.right) / window.getGuiScaledWidth(), -1, 1);
         float up = Mth.lerp((float) square.up / window.getGuiScaledHeight(), -1, 1);
         float down = Mth.lerp((float) (square.up+square.down) / window.getGuiScaledHeight(), -1, 1);
 
-        builder.vertex(left, down, 0.0).endVertex();
-        builder.vertex(left, up, 0.0).endVertex();
-        builder.vertex(right, up, 0.0).endVertex();
-        builder.vertex(right, down, 0.0).endVertex();
-        BufferUploader.draw(builder.end());
+        builder.addVertex((float) (left), (float) (down), 0.0F);
+        builder.addVertex((float) (left), (float) (up), 0.0F);
+        builder.addVertex((float) (right), (float) (up), 0.0F);
+        builder.addVertex((float) (right), (float) (down), 0.0F);
+        BufferUploader.draw(builder.buildOrThrow());
     }
 }

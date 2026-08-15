@@ -307,7 +307,7 @@ public class RosmontisBlock extends EntityMultiBlock {
 
 
     @Override
-    public void onRemovedFromWorld() {
+    public void onRemovedFromLevel() {
         if(level().isClientSide){
             BlockState[] blockStates = getBlockStates();
             if(blockStates.length>0){
@@ -327,7 +327,7 @@ public class RosmontisBlock extends EntityMultiBlock {
                 playSound(SoundHandle.ROS_BREAK_STONE.get(),1.5f,1.0F / (random.nextFloat() * 0.4F + 0.8F));
             }
         }
-        super.onRemovedFromWorld();
+        super.onRemovedFromLevel();
     }
 
     @Nullable

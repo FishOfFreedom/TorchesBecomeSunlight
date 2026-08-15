@@ -1,5 +1,11 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.minecraft.core.Holder;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.ability.Ability;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
@@ -36,6 +42,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import com.freefish.torchesbecomesunlight.server.effect.FullOfEnergyEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -46,21 +53,42 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.AdvancementEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.Set;
 
 public final class EventListener {
+    /**
+     * 1.21 的 MobEffect#removeAttributeModifiers(AttributeMap) 已不带 LivingEntity，
+     * 原先写在 FullOfEnergyEffect 里的冻结状态复位改到这里，行为等价。
+     */
+    @SubscribeEvent
+    public void onEffectExpired(MobEffectEvent.Expired event) {
+        resetFullOfEnergy(event);
+    }
+
+    @SubscribeEvent
+    public void onEffectRemoved(MobEffectEvent.Remove event) {
+        resetFullOfEnergy(event);
+    }
+
+    private void resetFullOfEnergy(MobEffectEvent event) {
+        MobEffectInstance instance = event.getEffectInstance();
+        if (instance == null || !instance.is(EffectHandle.FULL_OF_ENERGY)) return;
+        if (EffectHandle.FULL_OF_ENERGY.get() instanceof FullOfEnergyEffect effect) {
+            effect.resetFrozenState(event.getEntity());
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void spawnEntityLimit(MobSpawnEvent.FinalizeSpawn event){
+    public void spawnEntityLimit(FinalizeSpawnEvent event){
         Mob entity = event.getEntity();
         if(event.getSpawnType()== MobSpawnType.NATURAL) {
             ServerLevel level = (ServerLevel) event.getLevel();
@@ -104,7 +132,7 @@ public final class EventListener {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onEntityHurt(LivingHurtEvent event) {
+    public void onEntityHurt(LivingIncomingDamageEvent event) {
         if (!event.isCanceled()) {
             LivingEntity entity = event.getEntity();
 
@@ -180,7 +208,7 @@ public final class EventListener {
         if(entity instanceof Mob mob){
             Partner<?> partner = PartnerUtil.getPartner(mob);
             if(partner!=null){
-                if(partner.getPlayer() == event.getNewTarget()){
+                if(partner.getPlayer() == event.getNewAboutToBeSetTarget()){
                     event.setCanceled(true);
                     return;
                 }
@@ -189,7 +217,7 @@ public final class EventListener {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public void onPlayerHurt(LivingAttackEvent event) {
+    public void onPlayerHurt(LivingIncomingDamageEvent event) {
         if (!event.isCanceled()) {
             LivingEntity entity = event.getEntity();
 
@@ -299,7 +327,7 @@ public final class EventListener {
         CompoundTag interact = new CompoundTag();
         interact.putBoolean("isMainHand",event.getHand()== InteractionHand.MAIN_HAND);
         all.put("interact",interact);
-        TorchesBecomeSunlight.NETWORK.sendToServer(new PlayerInteractMessage(player.getId(),all));
+        PacketDistributor.sendToServer(new PlayerInteractMessage(player.getId(),all));
     }
 
     @SubscribeEvent
@@ -309,13 +337,13 @@ public final class EventListener {
         CompoundTag interact = new CompoundTag();
         interact.putBoolean("isMainHand",event.getHand()== InteractionHand.MAIN_HAND);
         all.put("interactoff",interact);
-        TorchesBecomeSunlight.NETWORK.sendToServer(new PlayerInteractMessage(player.getId(),all));
+        PacketDistributor.sendToServer(new PlayerInteractMessage(player.getId(),all));
     }
 
     @SubscribeEvent
     public void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity entity = event.getEntity();
-        MobEffect effect = event.getEffectInstance().getEffect();
+        Holder<MobEffect> effect = event.getEffectInstance().getEffect();
         if(effect instanceof Collapsal && entity instanceof Player player){
             Iterable<ItemStack> allSlots = player.getAllSlots();
             for(ItemStack itemStack:allSlots){
@@ -338,20 +366,20 @@ public final class EventListener {
         PlayerCapability.IPlayerCapability old = CapabilityHandle.getCapability(original, CapabilityHandle.PLAYER_CAPABILITY);
         PlayerCapability.IPlayerCapability storystate = CapabilityHandle.getCapability(event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
         if(old!=null&&storystate!=null){
-            storystate.deserializeNBT(old.serializeNBT());
+            storystate.deserializeNBT(event.getEntity().registryAccess(), old.serializeNBT(event.getEntity().registryAccess()));
         }
     }
 
     @SubscribeEvent
-    public void levelTick(TickEvent.LevelTickEvent event){
+    public void levelTick(LevelTickEvent.Post event){
     }
 
     @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event){
-        if (event.phase == TickEvent.Phase.START || event.player == null) {
+    public void playerTick(PlayerTickEvent.Post event){
+        if (event.getEntity() == null) {
             return;
         }
-        Player player = event.player;
+        Player player = event.getEntity();
         Level level = player.level();
 
         if(level.isClientSide()){
@@ -385,8 +413,8 @@ public final class EventListener {
     }
 
     @SubscribeEvent
-    public void livingTick(LivingEvent.LivingTickEvent event){
-        LivingEntity livingEntity = event.getEntity();
+    public void livingTick(EntityTickEvent.Post event){
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
         FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
         if(frozen!=null){
             frozen.tick(livingEntity);
@@ -404,7 +432,7 @@ public final class EventListener {
                             AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
                         }
                         else {
-                            if(!player.getMainHandItem().equals(playerAbility.heldItemMainHandOverride(),false))
+                            if(!ItemStack.isSameItemSameComponents(player.getMainHandItem(), playerAbility.heldItemMainHandOverride()))
                                 AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
                         }
                     }
@@ -419,9 +447,9 @@ public final class EventListener {
     @SubscribeEvent
     public void onAdvancementEarned(AdvancementEvent.AdvancementEarnEvent event) {
         Player player = event.getEntity();
-        ResourceLocation advancementId = event.getAdvancement().getId();
+        ResourceLocation advancementId = event.getAdvancement().id();
 
-        if (player instanceof ServerPlayer) TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.trigger((ServerPlayer)player,advancementId);
+        if (player instanceof ServerPlayer) TriggerHandler.CHAINED_ADVANCEMENT_TRIGGER.get().trigger((ServerPlayer)player,advancementId);
     }
 
     @SubscribeEvent
@@ -472,7 +500,7 @@ public final class EventListener {
         Player player = (Player) event.getEntity();
 
         ItemStack usedItem = event.getItem();
-        if (!usedItem.isEdible() && usedItem.getItem() != Items.CAKE)
+        if (!usedItem.has(net.minecraft.core.component.DataComponents.FOOD) && usedItem.getItem() != Items.CAKE)
             return;
 
         eat(usedItem,usedItem.getItem(),player);
@@ -490,7 +518,7 @@ public final class EventListener {
                     float speed = foodValues.get(FoodCategory.FISH)*itemAdditionData.getIntegratedNutrition();
                     float armor = foodValues.get(FoodCategory.EGG)*itemAdditionData.getIntegratedNutrition();
                     float health = foodValues.get(FoodCategory.VEGGIE)*itemAdditionData.getIntegratedNutrition();
-                    player.forceAddEffect(new MobEffectInstance(EffectHandle.FULL_OF_ENERGY.get(),1200,1),player);
+                    player.forceAddEffect(new MobEffectInstance(EffectHandle.FULL_OF_ENERGY,1200,1),player);
                     data.onEffectUpdated(player, attack, speed/15, armor, health);
                 }
                 Set<FoodValues.MobEffectInstance> effects = foodValues.getEffects();

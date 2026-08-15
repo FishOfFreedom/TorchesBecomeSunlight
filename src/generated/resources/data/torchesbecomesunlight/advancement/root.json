@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/stone.png",
+    "description": {
+      "translate": "torchesbecomesunlight.advancement.desc.root"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:title"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "torchesbecomesunlight.advancement.title.root"
+    }
+  },
+  "requirements": [
+    [
+      "tick"
+    ]
+  ]
+}

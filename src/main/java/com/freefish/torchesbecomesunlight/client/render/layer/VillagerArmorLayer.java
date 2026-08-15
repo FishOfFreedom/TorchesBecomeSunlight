@@ -28,10 +28,7 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
         super(entityRendererIn);
         this.innerModel = pInnerModel;
         this.outerModel = outerModel;
-    }
-
-    private static final Map<String, ResourceLocation> ARMOR_LOCATION_CACHE = Maps.newHashMap();
-    private final HumanoidModel innerModel;
+    }    private final HumanoidModel innerModel;
     private final HumanoidModel outerModel;
 
     @Override
@@ -95,7 +92,9 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
                             model.leftLeg.visible = true;
                             break;
                     }
-                    this.renderModel(poseStack, bufferSource, pPackedLight, model, 1.0F, 1.0F, 1.0F, this.getArmorResource(entity, itemstack, equipmentSlot, null));
+                    for (net.minecraft.world.item.ArmorMaterial.Layer layer : getArmorLayers(itemstack)) {
+                        this.renderModel(poseStack, bufferSource, pPackedLight, model, -1, layer.texture(usesInnerModel(equipmentSlot)));
+                    }
 
                     poseStack.popPose();
                 }
@@ -104,9 +103,9 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
         poseStack.popPose();
     }
 
-    private void renderModel(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, net.minecraft.client.model.Model pModel, float pRed, float pGreen, float pBlue, ResourceLocation armorResource) {
+    private void renderModel(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, net.minecraft.client.model.Model pModel, int color, ResourceLocation armorResource) {
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.armorCutoutNoCull(armorResource));
-        pModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, pRed, pGreen, pBlue, 1.0F);
+        pModel.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, OverlayTexture.NO_OVERLAY, color);
     }
 
     private HumanoidModel getArmorModel(EquipmentSlot pSlot) {
@@ -118,29 +117,18 @@ public class VillagerArmorLayer<T extends UrsusVillager> extends GeoRenderLayer<
     }
 
     protected net.minecraft.client.model.Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, HumanoidModel model) {
-        return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
+        return net.neoforged.neoforge.client.ClientHooks.getArmorModel(entity, itemStack, slot, model);
     }
 
-    public ResourceLocation getArmorResource(net.minecraft.world.entity.Entity entity, ItemStack stack, EquipmentSlot slot, @Nullable String type) {
-        ArmorItem item = (ArmorItem)stack.getItem();
-        String texture = item.getMaterial().getName();
-        String domain = "minecraft";
-        int idx = texture.indexOf(':');
-        if (idx != -1) {
-            domain = texture.substring(0, idx);
-            texture = texture.substring(idx + 1);
+    /**
+     * 1.21 起护甲纹理由 ArmorMaterial.Layer 提供，不再靠材质名拼路径。
+     * 一件护甲可能有多层，这里按内/外层取出全部纹理。
+     */
+    private java.util.List<net.minecraft.world.item.ArmorMaterial.Layer> getArmorLayers(ItemStack stack) {
+        if (stack.getItem() instanceof ArmorItem item) {
+            return item.getMaterial().value().layers();
         }
-        String s1 = String.format(java.util.Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (usesInnerModel(slot) ? 2 : 1), type == null ? "" : String.format(java.util.Locale.ROOT, "_%s", type));
-
-        s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
-        ResourceLocation resourcelocation = ARMOR_LOCATION_CACHE.get(s1);
-
-        if (resourcelocation == null) {
-            resourcelocation = new ResourceLocation(s1);
-            ARMOR_LOCATION_CACHE.put(s1, resourcelocation);
-        }
-
-        return resourcelocation;
+        return java.util.List.of();
     }
 
     private EquipmentSlot armorToEquipment(ArmorType armorType){

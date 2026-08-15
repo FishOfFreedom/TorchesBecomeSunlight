@@ -1,0 +1,28 @@
+{
+  "parent": "torchesbecomesunlight:root",
+  "criteria": {
+    "ad_id": {
+      "conditions": {
+        "id": "talk"
+      },
+      "trigger": "torchesbecomesunlight:string_advancement"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "torchesbecomesunlight.adv.desc.talk"
+    },
+    "icon": {
+      "count": 1,
+      "id": "torchesbecomesunlight:title"
+    },
+    "title": {
+      "translate": "torchesbecomesunlight.adv.title.talk"
+    }
+  },
+  "requirements": [
+    [
+      "ad_id"
+    ]
+  ]
+}

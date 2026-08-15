@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 import static com.freefish.torchesbecomesunlight.server.entity.dlc.GunKnightPatriotAnimations.*;
@@ -19,10 +19,10 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
     @Override
     public void setCustomAnimations(GunKnightPatriot animatable, long instanceId, AnimationState<GunKnightPatriot> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
-        CoreGeoBone right_arm_rot = this.getAnimationProcessor().getBone("right_arm_rot");
+        GeoBone right_arm_rot = this.getAnimationProcessor().getBone("right_arm_rot");
 
-        CoreGeoBone lote_front = this.getAnimationProcessor().getBone("lote_front");
-        CoreGeoBone lote_back = this.getAnimationProcessor().getBone("lote_back");
+        GeoBone lote_front = this.getAnimationProcessor().getBone("lote_front");
+        GeoBone lote_back = this.getAnimationProcessor().getBone("lote_back");
         if(lote_back!=null&&lote_front!=null){
             animatable.setClientVectors(0, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_front));
             animatable.setClientVectors(1, MathUtils.getWorldPosFromModel(animatable,animatable.getYRot(),(GeoBone) lote_back));
@@ -30,7 +30,7 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
         if(lote_front!=null&&animatable.halberd==null){
             animatable.halberd = (GeoBone) lote_back;
         }
-        CoreGeoBone lote_back1 = this.getAnimationProcessor().getBone("pos");
+        GeoBone lote_back1 = this.getAnimationProcessor().getBone("pos");
         if(lote_back1!=null&&animatable.halberd1==null){
             animatable.halberd1 = (GeoBone) lote_back1;
         }
@@ -47,21 +47,21 @@ public class GunKnightPatriotModel extends RotMainGeoModel<GunKnightPatriot> {
 
         ITwoStateEntity.State spawnState = patriot.getSpawnState();
 
-        CoreGeoBone halber = this.getAnimationProcessor().getBone("halber");
-        CoreGeoBone halber2 = this.getAnimationProcessor().getBone("halber2");
+        GeoBone halber = this.getAnimationProcessor().getBone("halber");
+        GeoBone halber2 = this.getAnimationProcessor().getBone("halber2");
         halber2.setHidden(animation !=STATE_2);
         halber.setHidden(animation !=STATE_2&&spawnState != ITwoStateEntity.State.TWO);
 
-        CoreGeoBone shield2 = this.getAnimationProcessor().getBone("shield2");
+        GeoBone shield2 = this.getAnimationProcessor().getBone("shield2");
         shield2.setHidden(true);
-        CoreGeoBone gun = this.getAnimationProcessor().getBone("gun");
+        GeoBone gun = this.getAnimationProcessor().getBone("gun");
         gun.setHidden(spawnState== ITwoStateEntity.State.TWO);
     }
 
-    private static final ResourceLocation MODEL = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "geo/gun_knight_patriot.geo.json");
-    public static final ResourceLocation TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/gun_knight_patriot.png");
-    public static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/entity/gun_knight_patriot_glow.png");
-    private static final ResourceLocation ANIMATION = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "animations/patriot_gun_knight.animation.json");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "geo/gun_knight_patriot.geo.json");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/entity/gun_knight_patriot.png");
+    public static final ResourceLocation TEXTURE_GLOW = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/entity/gun_knight_patriot_glow.png");
+    private static final ResourceLocation ANIMATION = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "animations/patriot_gun_knight.animation.json");
 
     @Override
     public ResourceLocation getModelResource(GunKnightPatriot animatable) {

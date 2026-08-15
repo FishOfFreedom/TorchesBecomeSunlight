@@ -47,7 +47,7 @@ public class RhodesIslandEntity extends AnimatedEntity {
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if(pCompound.contains("spawnPos")){
-            spawnPos = NbtUtils.readBlockPos(pCompound.getCompound("spawnPos"));
+            spawnPos = NbtUtils.readBlockPos(pCompound, "spawnPos").orElse(net.minecraft.core.BlockPos.ZERO);
         }
     }
 
@@ -81,8 +81,8 @@ public class RhodesIslandEntity extends AnimatedEntity {
     }
 
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override

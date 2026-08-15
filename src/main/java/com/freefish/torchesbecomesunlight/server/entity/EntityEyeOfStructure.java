@@ -87,11 +87,11 @@ public class EntityEyeOfStructure extends Entity implements ItemSupplier {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.getEntityData().define(DATA_ITEM_STACK, ItemStack.EMPTY);
-        this.getEntityData().define(R, 0F);
-        this.getEntityData().define(G, 0F);
-        this.getEntityData().define(B, 0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_ITEM_STACK, ItemStack.EMPTY);
+        builder.define(R, 0F);
+        builder.define(G, 0F);
+        builder.define(B, 0F);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class EntityEyeOfStructure extends Entity implements ItemSupplier {
     public void addAdditionalSaveData(CompoundTag compoundTag) {
         ItemStack itemstack = this.getItemRaw();
         if (!itemstack.isEmpty()) {
-            compoundTag.put("Item", itemstack.save(new CompoundTag()));
+            compoundTag.put("Item", itemstack.save(this.registryAccess(), new CompoundTag()));
         }
         compoundTag.putFloat("R", getR());
         compoundTag.putFloat("G", getG());
@@ -213,7 +213,7 @@ public class EntityEyeOfStructure extends Entity implements ItemSupplier {
 
     @Override
     public void readAdditionalSaveData(CompoundTag compoundTag) {
-        ItemStack itemstack = ItemStack.of(compoundTag.getCompound("Item"));
+        ItemStack itemstack = ItemStack.parseOptional(this.registryAccess(), compoundTag.getCompound("Item"));
         this.setItem(itemstack);
         setR(compoundTag.getFloat("R"));
         setG(compoundTag.getFloat("G"));

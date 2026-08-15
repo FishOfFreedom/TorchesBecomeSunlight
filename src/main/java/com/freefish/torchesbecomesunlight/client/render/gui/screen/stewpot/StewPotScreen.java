@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implements RecipeUpdateListener {
-    private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation("textures/gui/recipe_button.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
+    private static final net.minecraft.client.gui.components.WidgetSprites RECIPE_BUTTON_SPRITES =
+            new net.minecraft.client.gui.components.WidgetSprites(
+                    ResourceLocation.withDefaultNamespace("recipe_book/button"),
+                    ResourceLocation.withDefaultNamespace("recipe_book/button_highlighted"));
+    private static final ResourceLocation BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/gui/cooking_pot.png");
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 33, 0, 17);
 
@@ -42,7 +45,7 @@ public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implemen
         this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.menu);
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
         if (true) {
-            this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 87, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) ->
+            this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 87, 20, 18, RECIPE_BUTTON_SPRITES, (button) ->
             {
             	this.recipeBookComponent.toggleVisibility();
             	this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
@@ -64,7 +67,7 @@ public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implemen
 
     @Override
     public void render(GuiGraphics gui, final int mouseX, final int mouseY, float partialTicks) {
-        this.renderBackground(gui);
+        this.renderBackground(gui, mouseX, mouseY, partialTicks);
 
         if (this.recipeBookComponent.isVisible() && this.widthTooNarrow) {
             this.renderBg(gui, partialTicks, mouseX, mouseY);
@@ -93,7 +96,7 @@ public class StewPotScreen extends AbstractContainerScreen<StewPotMenu> implemen
                 List<Component> tooltip = new ArrayList<>();
 
                 ItemStack mealStack = this.hoveredSlot.getItem();
-                tooltip.add(((MutableComponent) mealStack.getItem().getDescription()).withStyle(mealStack.getRarity().color));
+                tooltip.add(((MutableComponent) mealStack.getItem().getDescription()).withStyle(mealStack.getRarity().color()));
 
                 ItemStack containerStack = this.menu.blockEntity.getContainer();
                 String container = !containerStack.isEmpty() ? containerStack.getItem().getDescription().getString() : "";

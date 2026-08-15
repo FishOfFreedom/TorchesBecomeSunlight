@@ -1,8 +1,10 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.core.HolderLookup;
+import java.util.concurrent.CompletableFuture;
 import com.freefish.torchesbecomesunlight.server.init.ItemHandle;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -12,12 +14,12 @@ import net.minecraft.world.item.Items;
 import java.util.function.Consumer;
 
 public class TBSRecipeProvider extends RecipeProvider {
-    public TBSRecipeProvider(PackOutput pOutput) {
-        super(pOutput);
+    public TBSRecipeProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> registries) {
+        super(pOutput, registries);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ItemHandle.BLESSING_OF_SAMI.get())
                 .pattern("ABA")
                 .pattern("BIB")

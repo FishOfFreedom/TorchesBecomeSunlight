@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.ability.abilities;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.server.ability.AbilitySection;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityType;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
@@ -43,7 +44,7 @@ public class UseRosmontisGraspAbility extends PlayerAbility {
         else {
         }
 
-        int tbsisActive = mainHandItem.getOrCreateTag().getInt("tbsisActive");
+        int tbsisActive = TBSItemData.getInt(mainHandItem, "tbsisActive");
 
         BlockHitResult hitResult = (BlockHitResult) player.pick(20.0D, 0.0F, false);
         BlockPos targetPos = hitResult.getBlockPos();

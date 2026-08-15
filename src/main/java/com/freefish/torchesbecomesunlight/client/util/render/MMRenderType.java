@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**Be from https://github.com/BobMowzie/MowziesMobs/blob/master/src/main/java/com/bobmowzie/mowziesmobs/client/render/MMRenderType.java
  * @author bobmowzie
@@ -31,21 +31,21 @@ public abstract class MMRenderType extends RenderType {
     }
 
 
+    // 1.21 的 ParticleRenderType 改为 begin(Tesselator, TextureManager) 直接返回 BufferBuilder，
+    // 收尾（原 end(Tesselator)）由调用方统一 BufferUploader 处理，这里不再需要
     public static ParticleRenderType PARTICLE_SHEET_TRANSLUCENT_NO_DEPTH = new ParticleRenderType() {
-        public void begin(BufferBuilder p_217600_1_, TextureManager p_217600_2_) {
+        @Override
+        public BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
             RenderSystem.depthMask(false);
             RenderSystem.disableCull();
+            RenderSystem.setShader(net.minecraft.client.renderer.GameRenderer::getParticleShader);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-//            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            p_217600_1_.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+            return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
-        public void end(Tesselator p_217599_1_) {
-            p_217599_1_.end();
-        }
-
+        @Override
         public String toString() {
             return "PARTICLE_SHEET_TRANSLUCENT_NO_DEPTH";
         }

@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity.effect;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPos;
@@ -19,10 +20,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
-public abstract class EntityMultiBlock extends Entity implements IEntityAdditionalSpawnData {
+public abstract class EntityMultiBlock extends Entity implements IEntityWithComplexSpawn {
     private BlockState[] blockStates = new BlockState[]{};
     private BlockPos[] blockPoss = new BlockPos[]{};
     @Getter
@@ -51,8 +51,8 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
     }
 
     @Override
@@ -69,8 +69,8 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
     }
 
     @Override
-    protected void defineSynchedData() {
-        getEntityData().define(TICKS_EXISTED, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(TICKS_EXISTED, 0);
     }
 
     @Override
@@ -111,7 +111,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
     }
 
     @Override
-    public void writeSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void writeSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag blocksTag = new CompoundTag();
         ListTag blocks = new ListTag();
         for(int i = 0;i<blockStates.length;i++){
@@ -131,7 +131,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf friendlyByteBuf) {
+    public void readSpawnData(RegistryFriendlyByteBuf friendlyByteBuf) {
         CompoundTag blocksTag = friendlyByteBuf.readNbt();
         ListTag list = blocksTag.getList("blockstag", 10);
 
@@ -165,10 +165,6 @@ public abstract class EntityMultiBlock extends Entity implements IEntityAddition
         getEntityData().set(TICKS_EXISTED, ticksExisted);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
 
     @Override
     public EntityDimensions getDimensions(Pose pPose) {

@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -23,7 +22,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
-    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "textures/particle/trail.png");
+    private static final ResourceLocation TRAIL_TEXTURE = ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "textures/particle/trail.png");
 
     public PatriotRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new PatriotModel());
@@ -50,13 +49,13 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         //todo shader
         //poseStack.pushPose();
         //poseStack.translate(0, animatable.getBbHeight()+4, 0);
-        //PoseStack.Pose matrixstack$entry = poseStack.last();
-        //Matrix4f matrix4f2 = matrixstack$entry.pose();
+        //PoseStack.Pose matrix3f = poseStack.last();
+        //Matrix4f matrix4f2 = matrix3f.pose();
         //Vector4f vector4f = matrix4f2.transform(new Vector4f(0,0,0,1f));
         //PoseStack poseStack1 = new PoseStack();
         //poseStack1.translate(vector4f.x,vector4f.y,vector4f.z);
         //Matrix4f matrix4f = poseStack1.last().pose();
-        //Matrix3f matrix3f = matrixstack$entry.normal();
+        //
         //VertexConsumer ivertexbuilder = bufferSource.getBuffer(FFRenderTypes.HOLE);
         //float alpha = 0;
         //Player player = Minecraft.getInstance().player;
@@ -67,7 +66,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         //poseStack.popPose();
     }
 
-    private void drawSun(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float alpha) {
+    private void drawSun(Matrix4f matrix4f, PoseStack.Pose matrix3f, VertexConsumer builder, float alpha) {
         float sunRadius = 0.3f;
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, -sunRadius, 0, 0, 0,alpha);
         this.drawVertex(matrix4f, matrix3f, builder, -sunRadius, sunRadius,  0, 0, 1,alpha);
@@ -75,8 +74,8 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
         this.drawVertex(matrix4f, matrix3f, builder, sunRadius, -sunRadius,  0, 1, 0,alpha);
     }
 
-    public void drawVertex(Matrix4f matrix, Matrix3f normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
-        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(1f, 1f, 1f, alpha).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(normals, 1.0F, 1.0F, 1.0F).endVertex();
+    public void drawVertex(Matrix4f matrix, PoseStack.Pose normals, VertexConsumer vertexBuilder, float offsetX, float offsetY, float offsetZ, float textureX, float textureY,float alpha) {
+        vertexBuilder.addVertex(matrix, (float) (offsetX), (float) (offsetY), (float) (offsetZ)).setColor(1f, 1f, 1f, alpha).setUv(textureX, textureY).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(normals, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -85,7 +84,7 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
     }
 
     @Override
-    public int getPackedOverlay(Patriot animatable, float u) {
+    public int getPackedOverlay(Patriot animatable, float u, float partialTick) {
         return OverlayTexture.pack(OverlayTexture.u(u),
                 OverlayTexture.v(animatable.hurtTime > 0));
     }
@@ -105,22 +104,26 @@ public class PatriotRenderer extends GeoEntityRenderer<Patriot> {
 
             PoseStack.Pose posestack$pose = poseStack.last();
             Matrix4f matrix4f = posestack$pose.pose();
-            Matrix3f matrix3f = posestack$pose.normal();
-            vertexconsumer.vertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).color(1f, 1f, 1f, trailA).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).color(1f, 1f, 1f, trailA).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).color(1f, 1f, 1f, trailA).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).color(1f, 1f, 1f, trailA).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            PoseStack.Pose matrix3f = posestack$pose;
+            vertexconsumer.addVertex(matrix4f, (float) draw1[0].x, (float) draw1[0].y, (float) draw1[0].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[0].x, (float) draw2[0].y, (float) draw2[0].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 1F).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw2[1].x, (float) draw2[1].y, (float) draw2[1].z).setColor(1f, 1f, 1f, trailA).setUv(u2, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
+            vertexconsumer.addVertex(matrix4f, (float) draw1[1].x, (float) draw1[1].y, (float) draw1[1].z).setColor(1f, 1f, 1f, trailA).setUv(u1, 0).setOverlay(NO_OVERLAY).setLight(packedLightIn).setNormal(matrix3f, 0.0F, 1.0F, 0.0F);
             samples++;
             drawFrom = sample;
         }
     }
 
     @Override
-    public void renderRecursively(PoseStack poseStack, Patriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderRecursively(PoseStack poseStack, Patriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
+        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
+        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
+        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
+        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
         if(bone.getName().matches("shieldFX.*")){
-            super.renderRecursively(poseStack, animatable, bone, RenderType.entityTranslucent(PatriotModel.TEXTURE), bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, bone.getPosX());
+            super.renderRecursively(poseStack, animatable, bone, RenderType.entityTranslucent(PatriotModel.TEXTURE), bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(bone.getPosX(), red, green, blue));
         }
         else
-            super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+            super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
     }
 }

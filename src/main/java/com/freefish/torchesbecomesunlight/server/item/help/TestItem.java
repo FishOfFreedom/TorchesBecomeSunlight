@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import net.minecraft.resources.ResourceLocation;
+import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.AnimatedEntity;
 import com.freefish.torchesbecomesunlight.server.entity.animal.Mangler;
 import com.freefish.torchesbecomesunlight.server.entity.effect.AnimationBlock;
@@ -36,7 +38,7 @@ public class TestItem extends Item {
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof LivingEntity livingEntity) {
             if (!entity.level().isClientSide) {
-                MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL.get());
+                MobEffectInstance effect = livingEntity.getEffect(EffectHandle.COLLAPSAL);
                 if(effect!=null){
                     //System.out.println(effect.getAmplifier());
                 }
@@ -61,7 +63,7 @@ public class TestItem extends Item {
                     //RosmontisInstallation.SpawnInstallation(level,player,2);
                     //RosmontisInstallation.SpawnInstallation(level,player,3);
 
-                    //Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(new ResourceLocation(TorchesBecomeSunlight.MOD_ID, "dialogue/user.json"), level);
+                    //Dialogue dialogue = DialogueManager.INSTANCE.readDialogueFromData(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "dialogue/user.json"), level);
                     //DialogueEntity dialogueEntity = new DialogueEntity(player, level, dialogue, player, player);
                     //level.addFreshEntity(dialogueEntity);
 
@@ -94,7 +96,7 @@ public class TestItem extends Item {
                     List<DialogueEntity> entities = level.getEntitiesOfClass(DialogueEntity.class, player.getBoundingBox().inflate(6));
                     DialogueEntity livingEntity = MathUtils.getClosestEntity(player, entities);
                     //livingEntity.startSpeak(DialogueStore.snownova_meet_1,100);
-                    //TorchesBecomeSunlight.NETWORK.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> livingEntity), new StartDialogueMessage(livingEntity.getId(),livingEntity.getId(), DialogueStore.snownova_meet_1));
+                    //PacketDistributor.sendToPlayersTrackingEntityAndSelf(livingEntity, new StartDialogueMessage(livingEntity.getId(),livingEntity.getId(), DialogueStore.snownova_meet_1));
                 }
                 else if(mode==Mode.PLAY_ANIMATION){
                     List<AnimatedEntity> entities = level.getEntitiesOfClass(AnimatedEntity.class, player.getBoundingBox().inflate(6));
@@ -166,7 +168,7 @@ public class TestItem extends Item {
         }else if(mode==Mode.DIALOGUE){
 
             //Bullet abstractarrow = new Bullet(level,player,0);
-            Arrow abstractarrow = new Arrow(level,player);
+            Arrow abstractarrow = new Arrow(level, player, new ItemStack(net.minecraft.world.item.Items.ARROW), null);
             abstractarrow.setPos(player.position());
             Vec3 target = new Vec3(0,0,10).yRot((float) (-player.getYRot() / 180 * Math.PI)).add(player.position());
             double d0 = target.x - player.position().x;
