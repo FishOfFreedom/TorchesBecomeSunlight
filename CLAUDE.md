@@ -16,8 +16,6 @@
 
 ## 目标平台
 
-与整合包**「最后的冬天」**（`D:\MC\snow`）对齐，版本号取自该整合包内实际 jar：
-
 | 组件 | 版本 |
 | --- | --- |
 | Minecraft | 1.21.1 |
@@ -29,7 +27,7 @@
 | JEI | `jei-1.21.1-neoforge:19.39.0.369` |
 | RosmontisLib | `1.21.1-0.5.0-port.1`（本地 jar） |
 
-整合包使用 **Sodium**，**不含 Oculus / Iris / Xenon**。
+渲染侧按 **Sodium**（**不含 Oculus / Iris / Xenon**）的前提移植，故光影兼容层已剥离，详见「兼容层」。
 
 ## 常用命令
 
@@ -42,15 +40,9 @@
 ./gradlew --refresh-dependencies
 ```
 
-**必须用 JDK 21 运行 Gradle**（ModDevGradle 的 NeoForm 运行时要求）。本机 `JAVA_HOME` 默认指向 JRE 8，需覆盖：
+**必须用 JDK 21 运行 Gradle**（ModDevGradle 的 NeoForm 运行时要求）。若默认 `JAVA_HOME` 不是 21，需要覆盖它，或在 `gradle.properties` 中指定 `org.gradle.java.home`。
 
-```bash
-export JAVA_HOME="/c/Program Files/Eclipse Adoptium/jdk-21.0.11.10-hotspot"
-```
-
-或取消 `gradle.properties` 中 `org.gradle.java.home` 那行的注释。
-
-**RosmontisLib 走本地 jar**：`libs/rosmontislib-neoforge-1.21.1-0.5.0-port.1.jar`，由 `build.gradle` 的 `flatDir` 仓库提供。它没有公开 maven 坐标（jar 内无 pom 元数据），来源是整合包的 mods 目录。原 1.20.1 分支所用的私有 Nexus（`localhost:8081`，需 `MAVENNAME`/`PASSWORD`）已不再使用。
+**RosmontisLib 走本地 jar**：`libs/rosmontislib-neoforge-1.21.1-0.5.0-port.1.jar`，由 `build.gradle` 的 `flatDir` 仓库提供。它没有公开 maven 坐标（jar 内无 pom 元数据）。原 1.20.1 分支所用的私有 Nexus 已不再使用。
 
 **本仓库没有测试**：不存在 `src/test`，也没有任何 `@GameTest` 方法。因此"验证改动"意味着执行 `build` 再加 `runClient` 实测。
 
@@ -141,7 +133,7 @@ NeoForge 下的几点与 Forge 不同：
 
 `ModDetectionCache` 负责判定可选联动。JEI 采用 API `compileOnly` + 完整 mod `runtimeOnly`。`compat/rosmontis/` 将本 Mod 实体适配到 RosmontisLib 的粒子/材质效果。
 
-⚠️ **光影兼容已剥离**：`compat/oculus/ForgeOculusHandle` 直接引用 Oculus API，而目标整合包使用 Sodium 且**不含 Oculus/Iris**，故该文件已删除、`xenon` / `oculus` 两个 CurseForge 依赖已从 `build.gradle` 移除。`TorchesBecomeSunlight.isUsingShaderPack()` 现恒返回 `false`，要接 Iris 就改这里；原文件可从 git 历史恢复。
+⚠️ **光影兼容已剥离**：`compat/oculus/ForgeOculusHandle` 直接引用 Oculus API，而移植目标环境使用 Sodium、**不含 Oculus/Iris**，故该文件已删除、`xenon` / `oculus` 两个 CurseForge 依赖已从 `build.gradle` 移除。`TorchesBecomeSunlight.isUsingShaderPack()` 现恒返回 `false`，要接 Iris 就改这里；原文件可从 git 历史恢复。
 
 原开发期运行时依赖（`mob-battle-mod`、`eeeabs-mobs`、`neat`）的 1.20.1 文件 ID 已失效，需要时再补 1.21.1 版本。
 
@@ -217,17 +209,16 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 **Capability 已完成**：见上文「Capability —— 已迁到 Data Attachments」。`TickEvent` 也已按 1.21.1 的 Pre/Post 拆分改造（原代码用 `phase == START` 提前 return，语义即"只在 END 跑"，故一律对应 `Post`）。
 
-### 移植期的权威参考：整合包里的 Mowzie's Mobs 1.21.1
+### 移植期的权威参考：Mowzie's Mobs 1.21.1
 
 本 Mod 的渲染层、粒子系统与技能系统大量源自 **Mowzie's Mobs**（`MowzieGeoArmorRenderer`、`MowzieGeoBone`、`MowzieGeoModel`、`MowzieAnimationController`、`GeckoPlayer`/`GeckoRenderPlayer`、`AdvancedParticleBase`/`ParticleComponent`、`Ability`/`AbilitySection` —— 部分文件的注释里直接写明了出处）。
 
-整合包里就有 **`mowziesmobs-1.21.1-1.8.2.jar`**，即这些同源类**已经移植好的官方实现**。遇到签名对不上时，直接读它的签名比猜快得多：
+Mowzie's Mobs 自己已有 1.21.1 版本，即这些同源类**已经移植好的官方实现**。遇到签名对不上时，拿它的 jar 直接 `javap` 比猜快得多：
 
 ```bash
-J="D:/MC/snow/.minecraft/versions/最后的冬天/mods/mowziesmobs-1.21.1-1.8.2.jar"
+# MM 为 mowziesmobs-1.21.1-*.jar 的路径
 G=$(find ~/.gradle/caches/modules-2/files-2.1/software.bernie.geckolib -name "*4.9.2*.jar" | grep -v sources | head -1)
-mkdir -p /tmp/mm && unzip -o -q "$J" -d /tmp/mm
-javap -cp "/tmp/mm;$G" com.bobmowzie.mowziesmobs.client.render.entity.MowzieGeoArmorRenderer
+javap -cp "$MM;$G" com.bobmowzie.mowziesmobs.client.render.entity.MowzieGeoArmorRenderer
 ```
 
 已据此确认的 1.21.1 GeckoLib 渲染签名（本项目对应类应与之一致）：
@@ -252,6 +243,6 @@ javap -cp "/tmp/mm;$G" com.bobmowzie.mowziesmobs.client.render.entity.MowzieGeoA
 
 ### 已定的决策
 
-- **`compat/oculus` 已剥离**：整合包用 Sodium，不含 Oculus/Iris。`isUsingShaderPack()` 现返回 `false`，要接 Iris 就改这里。原文件可从 git 历史恢复。
+- **`compat/oculus` 已剥离**：移植目标环境用 Sodium，不含 Oculus/Iris。`isUsingShaderPack()` 现返回 `false`，要接 Iris 就改这里。原文件可从 git 历史恢复。
 - **`libs/*.jar` 入库**：RosmontisLib 无公开 maven，不入库则他人 clone 后无法构建。
 - **许可证统一为 GPLv3**：以 `LICENSE.txt` 实际内容为准（1.20.1 分支的 `mods.toml` 写 LESSER GPL、`gradle.properties` 写 All Rights Reserved，三者原本不一致）。
