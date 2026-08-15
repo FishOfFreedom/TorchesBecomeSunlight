@@ -136,8 +136,11 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            RecipeHolder<CuttingBoardRecipe> holder = level.getRecipeManager()
-                    .byKeyTyped(RecipesHandle.CUTTING_BOARD_RECIPE_TYPE.get(), lastRecipeID);
+            @SuppressWarnings("unchecked")
+            RecipeHolder<CuttingBoardRecipe> holder = (RecipeHolder<CuttingBoardRecipe>) level.getRecipeManager()
+                    .byKey(lastRecipeID)
+                    .filter(h -> h.value() instanceof CuttingBoardRecipe)
+                    .orElse(null);
             if (holder != null) {
                 CuttingBoardRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {

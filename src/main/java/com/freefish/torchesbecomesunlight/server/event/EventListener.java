@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.minecraft.core.Holder;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -319,7 +320,7 @@ public final class EventListener {
     @SubscribeEvent
     public void onEffectAdded(MobEffectEvent.Added event) {
         LivingEntity entity = event.getEntity();
-        MobEffect effect = event.getEffectInstance().getEffect();
+        Holder<MobEffect> effect = event.getEffectInstance().getEffect();
         if(effect instanceof Collapsal && entity instanceof Player player){
             Iterable<ItemStack> allSlots = player.getAllSlots();
             for(ItemStack itemStack:allSlots){
@@ -342,7 +343,7 @@ public final class EventListener {
         PlayerCapability.IPlayerCapability old = CapabilityHandle.getCapability(original, CapabilityHandle.PLAYER_CAPABILITY);
         PlayerCapability.IPlayerCapability storystate = CapabilityHandle.getCapability(event.getEntity(), CapabilityHandle.PLAYER_CAPABILITY);
         if(old!=null&&storystate!=null){
-            storystate.deserializeNBT(old.serializeNBT());
+            storystate.deserializeNBT(event.getEntity().registryAccess(), old.serializeNBT(event.getEntity().registryAccess()));
         }
     }
 
@@ -390,7 +391,7 @@ public final class EventListener {
 
     @SubscribeEvent
     public void livingTick(EntityTickEvent.Post event){
-        LivingEntity livingEntity = event.getEntity();
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
         FrozenCapability.IFrozenCapability frozen = CapabilityHandle.getCapability(livingEntity, CapabilityHandle.FROZEN_CAPABILITY);
         if(frozen!=null){
             frozen.tick(livingEntity);
@@ -408,7 +409,7 @@ public final class EventListener {
                             AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
                         }
                         else {
-                            if(!player.getMainHandItem().equals(playerAbility.heldItemMainHandOverride(),false))
+                            if(!ItemStack.isSameItemSameComponents(player.getMainHandItem(), playerAbility.heldItemMainHandOverride()))
                                 AbilityHandler.INSTANCE.sendInterruptAbilityMessage(player, activeAbility.getAbilityType());
                         }
                     }
@@ -494,7 +495,7 @@ public final class EventListener {
                     float speed = foodValues.get(FoodCategory.FISH)*itemAdditionData.getIntegratedNutrition();
                     float armor = foodValues.get(FoodCategory.EGG)*itemAdditionData.getIntegratedNutrition();
                     float health = foodValues.get(FoodCategory.VEGGIE)*itemAdditionData.getIntegratedNutrition();
-                    player.forceAddEffect(new MobEffectInstance(EffectHandle.FULL_OF_ENERGY.get(),1200,1),player);
+                    player.forceAddEffect(new MobEffectInstance(EffectHandle.FULL_OF_ENERGY,1200,1),player);
                     data.onEffectUpdated(player, attack, speed/15, armor, health);
                 }
                 Set<FoodValues.MobEffectInstance> effects = foodValues.getEffects();

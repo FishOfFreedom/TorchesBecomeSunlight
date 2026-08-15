@@ -142,8 +142,11 @@ public class OvenBlockEntity extends BlockEntity implements MenuProvider {
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            RecipeHolder<OvenRecipe> holder = level.getRecipeManager()
-                    .byKeyTyped(RecipesHandle.OVEN_RECIPE_TYPE.get(), lastRecipeID);
+            @SuppressWarnings("unchecked")
+            RecipeHolder<OvenRecipe> holder = (RecipeHolder<OvenRecipe>) level.getRecipeManager()
+                    .byKey(lastRecipeID)
+                    .filter(h -> h.value() instanceof OvenRecipe)
+                    .orElse(null);
             if (holder != null) {
                 OvenRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {

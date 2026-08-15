@@ -184,8 +184,11 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
         if (level == null) return Optional.empty();
 
         if (lastRecipeID != null) {
-            RecipeHolder<StewPotRecipe> holder = level.getRecipeManager()
-                    .byKeyTyped(RecipesHandle.STEW_POT_RECIPE_TYPE.get(), lastRecipeID);
+            @SuppressWarnings("unchecked")
+            RecipeHolder<StewPotRecipe> holder = (RecipeHolder<StewPotRecipe>) level.getRecipeManager()
+                    .byKey(lastRecipeID)
+                    .filter(h -> h.value() instanceof StewPotRecipe)
+                    .orElse(null);
             if (holder != null) {
                 StewPotRecipe recipe = holder.value();
                 if (recipe.matches(inventoryWrapper, level)) {

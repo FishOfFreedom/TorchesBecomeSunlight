@@ -33,7 +33,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeServer(), new AdvancementsHandle(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new EMStructureTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new DefaultTableProvider(output));
+        generator.addProvider(event.includeServer(), new DefaultTableProvider(output, lookupProvider));
 
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
     }

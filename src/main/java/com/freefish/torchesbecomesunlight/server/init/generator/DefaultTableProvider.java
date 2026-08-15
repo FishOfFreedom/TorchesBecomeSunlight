@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.init.generator;
 
+import net.minecraft.resources.ResourceKey;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
@@ -44,8 +46,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DefaultTableProvider extends LootTableProvider {
-    public DefaultTableProvider(PackOutput pOutput) {
-        super(pOutput, new HashSet<>(), List.of(new LootTableProvider.SubProviderEntry(ModBlockLootSubProvider::new, LootContextParamSets.BLOCK), new LootTableProvider.SubProviderEntry(ModEntityLootSubProvider::new, LootContextParamSets.ENTITY)));
+    public DefaultTableProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> registries) {
+        super(pOutput, new HashSet<>(), List.of(new LootTableProvider.SubProviderEntry(ModBlockLootSubProvider::new, LootContextParamSets.BLOCK), new LootTableProvider.SubProviderEntry(ModEntityLootSubProvider::new, LootContextParamSets.ENTITY)), registries);
     }
 
     private static final float[] DEFAULT_SAPLING_DROP_RATES = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
@@ -86,13 +88,13 @@ public class DefaultTableProvider extends LootTableProvider {
 
         // Override and ignore the missing loot table error
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_249322_) {
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_249322_) {
             this.generate();
-            Set<ResourceLocation> set = new HashSet<>();
+            Set<ResourceKey<LootTable>> set = new HashSet<>();
 
             for (Block block : list) {
                 if (block.isEnabled(this.enabledFeatures)) {
-                    ResourceLocation resourcelocation = block.getLootTable();
+                    ResourceKey<LootTable> resourcelocation = block.getLootTable();
                     if (resourcelocation != BuiltInLootTables.EMPTY && set.add(resourcelocation)) {
                         LootTable.Builder loottable$builder = this.map.remove(resourcelocation);
                         if (loottable$builder == null) {
@@ -143,7 +145,7 @@ public class DefaultTableProvider extends LootTableProvider {
     }
 
     public static class ModEntityLootSubProvider extends EntityLootSubProvider {
-        private final Map<EntityType<?>, Map<ResourceLocation, LootTable.Builder>> map = Maps.newHashMap();
+        private final Map<EntityType<?>, Map<ResourceKey<LootTable>, LootTable.Builder>> map = Maps.newHashMap();
 
         protected ModEntityLootSubProvider(HolderLookup.Provider registries) {
             super(FeatureFlags.REGISTRY.allFlags(), registries);
@@ -326,7 +328,7 @@ public class DefaultTableProvider extends LootTableProvider {
         }
 
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> p_251751_) {
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> p_251751_) {
             this.generate();
             Set<ResourceLocation> set = Sets.newHashSet();
             this.getKnownEntityTypes().map(EntityType::builtInRegistryHolder).forEach((p_249003_) -> {
