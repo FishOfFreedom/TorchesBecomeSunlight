@@ -9,8 +9,11 @@
 包根目录：`com.freefish.torchesbecomesunlight`。代码注释与对话描述大量使用中文；语言文件同时提供 `en_us` 与 `zh_cn`。
 
 > ⚠️ **本分支正在从 Forge 1.20.1 移植到 NeoForge 1.21.1**（分支 `feature/1.21.1-neoforge`）。
-> **构建环境已完成迁移，Java 代码尚未移植** —— `src/main/java` 仍是 1.20.1 Forge 代码，编译必然失败。
+> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 1323）。
+> 三个架构级重写（注册表、网络、Capability）已完成，剩余为分散的 API 细节。
 > 详见文末「移植状态」。`master` 分支保持 1.20.1 Forge 不变。
+>
+> 下文架构描述已同步到 NeoForge 现状；涉及尚未移植部分会另行标注。
 
 ## 目标平台
 
@@ -58,9 +61,9 @@ export JAVA_HOME="/c/Program Files/Eclipse Adoptium/jdk-21.0.11.10-hotspot"
 
 ### 包结构 —— `client/` 与 `server/` 是*逻辑端*划分，不是物理端
 
-`server/` 存放全部 common + 逻辑服务端代码（注册表、实体、物品、方块、能力、剧情、配置、封包）。只有 `client/` 是真正仅客户端的内容（渲染器、模型、粒子、着色器、GUI、按键绑定）。`compat/` 与 `mixin/` 与二者并列。`CommonProxy` / `ClientProxy`（通过 `DistExecutor`）主要用于注册 CLIENT 配置规格。
+`server/` 存放全部 common + 逻辑服务端代码（注册表、实体、物品、方块、能力、剧情、配置、封包）。只有 `client/` 是真正仅客户端的内容（渲染器、模型、粒子、着色器、GUI、按键绑定）。`mixin/` 与二者并列（`compat/oculus` 已在移植时剥离）。`CommonProxy` / `ClientProxy` 主要用于注册 CLIENT 配置规格，选型改用 `FMLEnvironment.dist`（`DistExecutor` 在 1.21.1 已被移除）。
 
-[TorchesBecomeSunlight.java](src/main/java/com/freefish/torchesbecomesunlight/TorchesBecomeSunlight.java) 是入口：所有 `DeferredRegister` 在构造函数中挂到 mod 总线，随后 `commonSetup` 通过 `enqueueWork` 调用 `PartnerHandler.init()`、`ServerNetwork.initNetwork()` 和结构处理器注册。它同时持有静态的 `NETWORK` 通道与 `LOGGER`。
+[TorchesBecomeSunlight.java](src/main/java/com/freefish/torchesbecomesunlight/TorchesBecomeSunlight.java) 是入口：**mod 总线由构造函数注入**（`TorchesBecomeSunlight(IEventBus bus, ModContainer container)`，不再有 `FMLJavaModLoadingContext`），所有 `DeferredRegister` 在此挂到总线；`commonSetup` 通过 `enqueueWork` 调用 `PartnerHandler.init()` 与结构处理器注册。静态成员只剩 `LOGGER`/`MOD_ID`/`random` 等，原来的 `NETWORK` 通道已随 `SimpleChannel` 一并移除。
 
 ### 注册表
 
@@ -86,7 +89,11 @@ export JAVA_HOME="/c/Program Files/Eclipse Adoptium/jdk-21.0.11.10-hotspot"
 
 ### 网络
 
-[ServerNetwork.java](src/main/java/com/freefish/torchesbecomesunlight/server/event/ServerNetwork.java) 用自增 id 注册每个封包，因此**注册顺序即通信协议**——只能追加，不可中间插入。封包是带静态 `serialize`/`deserialize` 与内部 `Handler` 的普通类，分置于 `event/packet/toclient` 与 `event/packet/toserver`。请使用 `ServerNetwork.toClientMessage` / `toServerMessage`，不要直接操作 `NETWORK`。
+封包实现 `CustomPacketPayload`，各自持有 `TYPE`（`CustomPacketPayload.Type`，内含 ResourceLocation）与 `STREAM_CODEC`；序列化仍复用原有的静态 `serialize`/`deserialize`，由 `StreamCodec.of` 包装。注册集中在 [ServerNetwork.java](src/main/java/com/freefish/torchesbecomesunlight/server/event/ServerNetwork.java) 的 `RegisterPayloadHandlersEvent` 中，按方向调用 `playToClient` / `playToServer`。封包分置于 `event/packet/toclient` 与 `event/packet/toserver`，处理逻辑是各自的静态 `handle(msg, IPayloadContext)`。
+
+> **契约变化**：NeoForge 按 `Type` 里的 ResourceLocation 寻址，**注册顺序不再是协议的一部分**（Forge 时代"只能追加"的限制在这里已解除）。但 `MessageUseAbility` / `AnimationActMessage` 传的仍是**数组下标**，所以 `AbilityHandler.PLAYER_ABILITIES` 与 `entity.getAnimations()` 那两个数组的"只能追加"约束**依然成立**。
+
+发送请用 `ServerNetwork.toClientMessage` / `toServerMessage` / `toPlayer` / `toLevel` / `toAll`，它们封装了 `PacketDistributor`。
 
 ### Capability —— 已迁到 Data Attachments
 
@@ -143,7 +150,7 @@ NeoForge 下的几点与 Forge 不同：
 
 - 可使用 Lombok（`@Getter`/`@Setter`），剧情数据类中已在用。
 - 单例统一写作 `enum X { INSTANCE }`（`AbilityHandler`、`DialogueManager`、`AnimationActHandler`）。
-- 全局静态成员（`MOD_ID`、`LOGGER`、`NETWORK`、`random`）都挂在 `TorchesBecomeSunlight` 上。
+- 全局静态成员（`MOD_ID`、`LOGGER`、`random`）都挂在 `TorchesBecomeSunlight` 上（`NETWORK` 已随 `SimpleChannel` 移除）。
 - 配置集中在单个 `ConfigHandler`，含 COMMON 与 CLIENT 两套 `ForgeConfigSpec`；战斗平衡数值由 `FreeFishEntity` 在生成时读取，因此改配置只影响之后新构造的怪物。
 - 所有面向玩家的字符串都必须是语言键，且 `en_us.json` 与 `zh_cn.json` 都要补齐。
 
