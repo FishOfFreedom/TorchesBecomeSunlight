@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
@@ -111,10 +112,12 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
         if (pLivingEntity instanceof Player player) {
             int i2 = ConfigHandler.COMMON.TOOLs.HALBERD.skillAmount2.get();
             int i = this.getUseDuration(pStack) - pTimeCharged;
-            CompoundTag orCreateTag = pStack.getOrCreateTag();
+            CompoundTag orCreateTag = TBSItemData.getTag(pStack);
             orCreateTag.putBoolean("tbsisActive", false);
+            TBSItemData.setTag(pStack, orCreateTag);
             if (i >= 20) {
                 orCreateTag.putBoolean("tbsisActive", true);
+                TBSItemData.setTag(pStack, orCreateTag);
                 if (!pLevel.isClientSide) {
                     PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
                     if (playerCapability != null&&playerCapability.getSkillAmount()>i2) {
@@ -157,8 +160,9 @@ public class InfectedHalberd extends SwordItem implements GeoItem {
             return InteractionResultHolder.fail(itemstack);
         }else  {
             int i = this.getUseDuration(itemstack) - pPlayer.getUseItemRemainingTicks();
-            CompoundTag orCreateTag = itemstack.getOrCreateTag();
+            CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
             orCreateTag.putBoolean("tbsisActive", true);
+            TBSItemData.setTag(itemstack, orCreateTag);
             pPlayer.startUsingItem(pHand);
             return InteractionResultHolder.consume(itemstack);
         }

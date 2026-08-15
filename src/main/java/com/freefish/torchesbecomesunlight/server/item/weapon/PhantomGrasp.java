@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
@@ -79,7 +80,7 @@ public class PhantomGrasp extends PickaxeItem implements GeoItem {
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
             int i = this.getUseDuration(pStack) - pTimeCharged;
-            CompoundTag orCreateTag = pStack.getOrCreateTag();
+            CompoundTag orCreateTag = TBSItemData.getTag(pStack);
             int i2 = ConfigHandler.COMMON.TOOLs.PHANTOM_GRASP.skillAmount1.get();
             if (i >= 20) {
                 int i1 = Math.min(3,i / 20);

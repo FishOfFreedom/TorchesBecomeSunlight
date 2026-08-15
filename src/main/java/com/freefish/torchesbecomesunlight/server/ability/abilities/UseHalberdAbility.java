@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.ability.abilities;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.server.ability.AbilitySection;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityType;
 import com.freefish.torchesbecomesunlight.server.ability.PlayerAbility;
@@ -46,7 +47,7 @@ public class UseHalberdAbility extends PlayerAbility {
             ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
             PlayerCapability.IPlayerCapability capability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
             if(itemInHand.is(ItemHandle.INFECTED_HALBERD.get())&&capability!=null){
-                itemInHand.getOrCreateTag().putBoolean("tbsisActive", false);
+                TBSItemData.putBoolean(itemInHand, "tbsisActive", false);
                 if(!getLevel().isClientSide){
                     int halberdUseTime = capability.getHalberdUseTime();
                     HalberdOTIEntity throwntrident = new HalberdOTIEntity(player.level(), player, itemInHand,halberdUseTime>=120);

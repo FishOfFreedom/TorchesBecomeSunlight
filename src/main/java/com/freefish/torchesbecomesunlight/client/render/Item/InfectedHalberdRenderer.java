@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.Item;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.model.PatriotModel;
 import com.freefish.torchesbecomesunlight.server.item.weapon.InfectedHalberd;
@@ -19,7 +20,7 @@ public class InfectedHalberdRenderer extends GeoItemRenderer<InfectedHalberd> {
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         if(transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND||transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND){
-            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            boolean isActive = TBSItemData.hasTag(stack) && TBSItemData.getTag(stack).contains("tbsisActive")&& TBSItemData.getTag(stack).getBoolean("tbsisActive");
             if (isActive) {
                 poseStack.pushPose();
                 poseStack.scale(1, -1, 1);

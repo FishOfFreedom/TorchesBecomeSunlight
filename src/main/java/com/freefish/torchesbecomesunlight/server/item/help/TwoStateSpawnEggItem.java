@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.help;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.ITwoStateEntity;
@@ -59,7 +60,7 @@ public class TwoStateSpawnEggItem extends DeferredSpawnEggItem {
                     BlockEntity blockentity = level.getBlockEntity(blockpos);
                     if (blockentity instanceof SpawnerBlockEntity) {
                         SpawnerBlockEntity spawnerblockentity = (SpawnerBlockEntity) blockentity;
-                        EntityType<?> entitytype1 = this.getType(itemstack.getTag());
+                        EntityType<?> entitytype1 = this.getType(TBSItemData.getTag(itemstack));
                         spawnerblockentity.setEntityId(entitytype1, level.getRandom());
                         blockentity.setChanged();
                         level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
@@ -76,7 +77,7 @@ public class TwoStateSpawnEggItem extends DeferredSpawnEggItem {
                     blockpos1 = blockpos.relative(direction);
                 }
 
-                EntityType<?> entitytype = this.getType(itemstack.getTag());
+                EntityType<?> entitytype = this.getType(TBSItemData.getTag(itemstack));
                 Entity spawn = entitytype.spawn((ServerLevel) level, itemstack, pContext.getPlayer(), blockpos1, MobSpawnType.SPAWN_EGG, true, !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
                 if (spawn != null) {
                     if(spawn instanceof ITwoStateEntity twoStateEntity) {
@@ -121,7 +122,7 @@ public class TwoStateSpawnEggItem extends DeferredSpawnEggItem {
                     return InteractionResultHolder.pass(itemstack);
                 } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(blockpos, blockhitresult.getDirection(), itemstack)) {
 
-                    EntityType<?> entitytype = this.getType(itemstack.getTag());
+                    EntityType<?> entitytype = this.getType(TBSItemData.getTag(itemstack));
                     Entity entity = entitytype.spawn((ServerLevel) pLevel, itemstack, pPlayer, blockpos, MobSpawnType.SPAWN_EGG, false, false);
                     if (entity == null) {
                         return InteractionResultHolder.pass(itemstack);

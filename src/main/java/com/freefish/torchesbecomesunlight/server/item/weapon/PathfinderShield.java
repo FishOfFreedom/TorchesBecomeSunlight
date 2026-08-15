@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.item.weapon;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import net.minecraft.world.item.Item;
 import com.freefish.torchesbecomesunlight.client.render.Item.PathfinderShieldRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -44,7 +45,7 @@ public class PathfinderShield extends ShieldItem implements GeoItem{
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity, int pTimeCharged) {
         if (pLivingEntity instanceof Player player) {
-            pStack.getOrCreateTag().putBoolean("tbsisActive", false);
+            TBSItemData.putBoolean(pStack, "tbsisActive", false);
             int i = this.getUseDuration(pStack) - pTimeCharged;
         }
     }
@@ -57,8 +58,9 @@ public class PathfinderShield extends ShieldItem implements GeoItem{
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        CompoundTag orCreateTag = itemstack.getOrCreateTag();
+        CompoundTag orCreateTag = TBSItemData.getTag(itemstack);
         orCreateTag.putBoolean("tbsisActive", true);
+        TBSItemData.setTag(itemstack, orCreateTag);
         pPlayer.startUsingItem(pHand);
         return InteractionResultHolder.consume(itemstack);
     }

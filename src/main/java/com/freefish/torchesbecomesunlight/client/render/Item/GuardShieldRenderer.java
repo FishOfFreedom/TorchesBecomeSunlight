@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.Item;
 
+import com.freefish.torchesbecomesunlight.server.util.TBSItemData;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.model.ShieldGuardModel;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
@@ -25,7 +26,7 @@ public class GuardShieldRenderer extends GeoItemRenderer<GuardShield> {
         this.renderPerspective = transformType;
 
         if(transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND){
-            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            boolean isActive = TBSItemData.hasTag(stack) && TBSItemData.getTag(stack).contains("tbsisActive")&& TBSItemData.getTag(stack).getBoolean("tbsisActive");
             if (isActive) {
                 poseStack.pushPose();
                 poseStack.last().pose().translate(0,0,0.3f);
@@ -41,7 +42,7 @@ public class GuardShieldRenderer extends GeoItemRenderer<GuardShield> {
                 super.renderByItem(stack, transformType, poseStack, bufferSource, packedLight, packedOverlay);
             }
         }else if(transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND){
-            boolean isActive = stack.hasTag() && stack.getTag().contains("tbsisActive")&& stack.getTag().getBoolean("tbsisActive");
+            boolean isActive = TBSItemData.hasTag(stack) && TBSItemData.getTag(stack).contains("tbsisActive")&& TBSItemData.getTag(stack).getBoolean("tbsisActive");
             if (isActive) {
                 poseStack.pushPose();
                 poseStack.last().pose().translate(0.5f,-0.5f,0.5f);
