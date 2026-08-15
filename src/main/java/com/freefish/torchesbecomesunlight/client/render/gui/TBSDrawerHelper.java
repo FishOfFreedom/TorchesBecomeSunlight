@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.client.render.gui;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.freefish.rosmontislib.client.shader.ShaderHandle;
 import com.freefish.rosmontislib.client.shader.management.ShaderProgram;
 import com.freefish.rosmontislib.client.shader.uniform.UniformCache;
@@ -85,14 +86,14 @@ public class TBSDrawerHelper {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableDepthTest();//VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        BufferBuilder vertexbuffer = Tesselator.getInstance().getBuilder();
-        vertexbuffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder vertexbuffer;
+        vertexbuffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         vertexbuffer.addVertex(posX1, (float) posY1 + height1, 0.0D).setColor(f, f1, f2, f3);
         vertexbuffer.addVertex((float) posX2 + width2, (float) posY2 + height2, 0.0D).setColor(f, f1, f2, f3);
         vertexbuffer.addVertex((float) posX1 + width1, posY2, 0.0D).setColor(f, f1, f2, f3);
         vertexbuffer.addVertex(posX2, posY1, 0.0D).setColor(f, f1, f2, f3);
 
-        BufferUploader.drawWithShader(vertexbuffer.end());
+        BufferUploader.drawWithShader(vertexbuffer.buildOrThrow());
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
     }
@@ -107,9 +108,9 @@ public class TBSDrawerHelper {
     }
 
     private static void uploadScreenPosVertex() {
-        var builder = Tesselator.getInstance().getBuilder();
+        BufferBuilder builder;
 
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         builder.addVertex(-1.0, 1.0,  0.0);
         builder.addVertex(-1.0, -1.0, 0.0);
         builder.addVertex(1.0, -1.0,  0.0);
@@ -118,10 +119,10 @@ public class TBSDrawerHelper {
     }
 
     private static void uploadScreenPosVertex1(Rect square) {
-        var builder = Tesselator.getInstance().getBuilder();
+        BufferBuilder builder;
         var window = Minecraft.getInstance().getWindow();
 
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
         float left = Mth.lerp((float) square.left / window.getGuiScaledWidth(), -1, 1);
         float right = Mth.lerp((float) (square.left+square.right) / window.getGuiScaledWidth(), -1, 1);
         float up = Mth.lerp((float) square.up / window.getGuiScaledHeight(), -1, 1);

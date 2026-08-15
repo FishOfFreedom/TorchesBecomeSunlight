@@ -70,7 +70,7 @@ public abstract class EntityMultiBlock extends Entity implements IEntityWithComp
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        getEntityData().define(TICKS_EXISTED, 0);
+        builder.define(TICKS_EXISTED, 0);
     }
 
     @Override

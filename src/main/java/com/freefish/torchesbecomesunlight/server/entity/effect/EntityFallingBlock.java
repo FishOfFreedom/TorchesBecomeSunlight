@@ -87,11 +87,11 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        getEntityData().define(BLOCK_STATE, Blocks.DIRT.defaultBlockState());
-        getEntityData().define(DURATION, 70);
-        getEntityData().define(TICKS_EXISTED, 0);
-        getEntityData().define(MODE, EnumFallingBlockMode.MOBILE.toString());
-        getEntityData().define(ANIM_V_Y, 1f);
+        builder.define(BLOCK_STATE, Blocks.DIRT.defaultBlockState());
+        builder.define(DURATION, 70);
+        builder.define(TICKS_EXISTED, 0);
+        builder.define(MODE, EnumFallingBlockMode.MOBILE.toString());
+        builder.define(ANIM_V_Y, 1f);
     }
 
     @Override

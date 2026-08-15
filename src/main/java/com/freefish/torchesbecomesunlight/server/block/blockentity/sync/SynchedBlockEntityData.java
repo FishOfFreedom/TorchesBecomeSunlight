@@ -77,13 +77,13 @@ public class SynchedBlockEntityData {
    }
 
    public <T> void define(EntityDataAccessor<T> pKey, T pValue) {
-      int i = pKey.getId();
+      int i = pKey.id();
       if (i > 254) {
          throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is 254)");
       } else if (this.itemsById.containsKey(i)) {
          throw new IllegalArgumentException("Duplicate id value for " + i + "!");
-      } else if (EntityDataSerializers.getSerializedId(pKey.getSerializer()) < 0) {
-         throw new IllegalArgumentException("Unregistered serializer " + pKey.getSerializer() + " for " + i + "!");
+      } else if (EntityDataSerializers.getSerializedId(pKey.serializer()) < 0) {
+         throw new IllegalArgumentException("Unregistered serializer " + pKey.serializer() + " for " + i + "!");
       } else {
          this.createDataItem(pKey, pValue);
       }
@@ -92,12 +92,12 @@ public class SynchedBlockEntityData {
    private <T> void createDataItem(EntityDataAccessor<T> pKey, T pValue) {
       DataItem<T> dataitem = new DataItem<>(pKey, pValue);
       this.lock.writeLock().lock();
-      this.itemsById.put(pKey.getId(), dataitem);
+      this.itemsById.put(pKey.id(), dataitem);
       this.lock.writeLock().unlock();
    }
 
    public <T> boolean hasItem(EntityDataAccessor<T> pKey) {
-      return this.itemsById.containsKey(pKey.getId());
+      return this.itemsById.containsKey(pKey.id());
    }
 
    private <T> DataItem<T> getItem(EntityDataAccessor<T> pKey) {
@@ -105,7 +105,7 @@ public class SynchedBlockEntityData {
 
       DataItem<T> dataitem;
       try {
-         dataitem = (DataItem<T>)this.itemsById.get(pKey.getId());
+         dataitem = (DataItem<T>)this.itemsById.get(pKey.id());
       } catch (Throwable throwable) {
          CrashReport crashreport = CrashReport.forThrowable(throwable, "Getting synched entity data");
          CrashReportCategory crashreportcategory = crashreport.addCategory("Synched entity data");
@@ -203,8 +203,8 @@ public class SynchedBlockEntityData {
    }
 
    private <T> void assignValue(DataItem<T> pTarget, DataValue<?> pEntry) {
-      if (!Objects.equals(pEntry.serializer(), pTarget.accessor.getSerializer())) {
-         throw new IllegalStateException(String.format(Locale.ROOT, "Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", pTarget.accessor.getId(), this.entity, pTarget.value, pTarget.value.getClass(), pEntry.value, pEntry.value.getClass()));
+      if (!Objects.equals(pEntry.serializer(), pTarget.accessor.serializer())) {
+         throw new IllegalStateException(String.format(Locale.ROOT, "Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", pTarget.accessor.id(), this.entity, pTarget.value, pTarget.value.getClass(), pEntry.value, pEntry.value.getClass()));
       } else {
          pTarget.setValue((T) pEntry.value);
       }
@@ -242,8 +242,8 @@ public class SynchedBlockEntityData {
 
    public static record DataValue<T>(int id, EntityDataSerializer<T> serializer, T value) {
       public static <T> DataValue<T> create(EntityDataAccessor<T> pDataAccessor, T pValue) {
-         EntityDataSerializer<T> entitydataserializer = pDataAccessor.getSerializer();
-         return new DataValue<>(pDataAccessor.getId(), entitydataserializer, entitydataserializer.copy(pValue));
+         EntityDataSerializer<T> entitydataserializer = pDataAccessor.serializer();
+         return new DataValue<>(pDataAccessor.id(), entitydataserializer, entitydataserializer.copy(pValue));
       }
 
       public void write(FriendlyByteBuf pBuffer) {

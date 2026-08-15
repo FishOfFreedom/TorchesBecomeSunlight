@@ -140,7 +140,7 @@ public class WinterPass extends SwordItem{
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
         builder.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), ConfigHandler.COMMON.TOOLs.WINTER_PASS.attackDamageValue - 1, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
         builder.add(Attributes.ATTACK_SPEED, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), -0.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
-        builder.add(NeoForgeMod.ENTITY_REACH.get(), new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), -1D, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+        builder.add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "weapon_modifier"), -1D, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
         return builder.build();
     }
 
