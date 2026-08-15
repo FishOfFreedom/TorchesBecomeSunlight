@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -94,15 +95,15 @@ public class FoodValuesDefinition implements Recipe<RecipeInput> {
 
     @Nonnull
     public static FoodValues getFoodValues(ItemStack stack, Level level) {
-        var allDefs = level.getRecipeManager().getRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get(), new SimpleContainer(stack), level);
+        var allDefs = level.getRecipeManager().getRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get(), new SingleRecipeInput(stack), level);
         if (allDefs.isEmpty()) {
             return FoodValues.create();
         }
-        return allDefs.stream().filter(FoodValuesDefinition::isItem).findFirst().map(FoodValuesDefinition::getFoodValues).orElseGet(() -> {
+        return allDefs.stream().filter(def -> def.value().isItem()).findFirst().map(h -> h.value().getFoodValues()).orElseGet(() -> {
             var foodValues = FoodValues.create();
             var maxCount = -1L;
             var tagDefs = new HashMap<ResourceLocation, FoodValues>();
-            allDefs.forEach(def -> def.getNames().forEach(name -> tagDefs.put(name, def.getFoodValues())));
+            allDefs.forEach(def -> def.value().getNames().forEach(name -> tagDefs.put(name, def.value().getFoodValues())));
             for (var tag : stack.getTags().map(TagKey::location).filter(tagDefs::containsKey).toList()) {
                 var count = tag.getPath().chars().filter(c -> c == '/').count();
                 if (count < maxCount) {
@@ -121,8 +122,8 @@ public class FoodValuesDefinition implements Recipe<RecipeInput> {
 
     @Nonnull
     public static FoodValuesDefinition getFoodDefinition(ItemStack stack, Level level) {
-        var allDefs = level.getRecipeManager().getRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get(), new SimpleContainer(stack), level);
-        return allDefs.stream().filter(FoodValuesDefinition::isItem).findFirst().get();
+        var allDefs = level.getRecipeManager().getRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get(), new SingleRecipeInput(stack), level);
+        return allDefs.stream().filter(def -> def.value().isItem()).findFirst().map(net.minecraft.world.item.crafting.RecipeHolder::value).orElse(null);
     }
 
     public static Set<ItemStack> getMatchedItems(FoodCategory category, Level level) {
@@ -134,14 +135,14 @@ public class FoodValuesDefinition implements Recipe<RecipeInput> {
                                         .thenComparing(Comparator.naturalOrder())
                         )
         );
-        var allDefs = level.getRecipeManager().getAllRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get()).stream().filter(def -> def.getFoodValues().has(category)).toList();
-        allDefs.stream().filter(FoodValuesDefinition::isItem).forEach(itemDef -> itemDef.getNames().forEach(name -> {
-            var item = BuiltInRegistries.ITEM.getValue(name);
+        var allDefs = level.getRecipeManager().getAllRecipesFor(RecipesHandle.FOOD_ATTRIBUTE_RECIPE_TYPE.get()).stream().filter(def -> def.value().getFoodValues().has(category)).toList();
+        allDefs.stream().filter(def -> def.value().isItem()).forEach(itemDef -> itemDef.value().getNames().forEach(name -> {
+            var item = BuiltInRegistries.ITEM.get(name);
             if (item != null && item != Items.AIR) {
                 builder.add(item.getDefaultInstance());
             }
         }));
-        allDefs.stream().filter(def -> !def.isItem()).forEach(tagDef -> tagDef.getNames().forEach(name -> {
+        allDefs.stream().filter(def -> !def.value().isItem()).forEach(tagDef -> tagDef.value().getNames().forEach(name -> {
             var tag = ItemTags.create(name);
             if (BuiltInRegistries.ITEM.tags().isKnownTagName(tag)) {
                 // get all items with the tag
