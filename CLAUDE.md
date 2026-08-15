@@ -8,13 +8,11 @@
 
 包根目录：`com.freefish.torchesbecomesunlight`。代码注释与对话描述大量使用中文；语言文件同时提供 `en_us` 与 `zh_cn`。
 
-> ⚠️ **本分支正在从 Forge 1.20.1 移植到 NeoForge 1.21.1**（分支 `feature/1.21.1-neoforge`）。
-> **构建环境已完成；Java 代码迁移进行中，目前尚不能编译通过**（错误 3518 → 226）。
-> 架构级重写（注册表、网络、Capability、粒子、进度触发器）均已完成，
-> **符号解析阶段已清零**，剩余错误全部来自其后的类型/访问检查阶段。
+> ✅ **本分支已从 Forge 1.20.1 移植到 NeoForge 1.21.1**。
+> `./gradlew build`、`runData`、`runClient` 均通过，可进入世界游玩。
 > 详见文末「移植状态」。`master` 分支保持 1.20.1 Forge 不变。
 >
-> 下文架构描述已同步到 NeoForge 现状；涉及尚未移植部分会另行标注。
+> 下文架构描述均为 NeoForge 现状。
 
 ## 目标平台
 
@@ -143,7 +141,7 @@ NeoForge 下的几点与 Forge 不同：
 
 `ModDetectionCache` 负责判定可选联动。JEI 采用 API `compileOnly` + 完整 mod `runtimeOnly`。`compat/rosmontis/` 将本 Mod 实体适配到 RosmontisLib 的粒子/材质效果。
 
-⚠️ **光影兼容需要重新决策**：`compat/oculus/ForgeOculusHandle` 与 `TorchesBecomeSunlight.isUsingShaderPack()` 直接引用 Oculus API，但目标整合包使用 Sodium 且**不含 Oculus/Iris**，原 `xenon` / `oculus` 两个 CurseForge 依赖已从 `build.gradle` 移除（保留了 TODO 注释）。在剥离这段代码或改接 Iris 之前，这两个文件无法编译。
+⚠️ **光影兼容已剥离**：`compat/oculus/ForgeOculusHandle` 直接引用 Oculus API，而目标整合包使用 Sodium 且**不含 Oculus/Iris**，故该文件已删除、`xenon` / `oculus` 两个 CurseForge 依赖已从 `build.gradle` 移除。`TorchesBecomeSunlight.isUsingShaderPack()` 现恒返回 `false`，要接 Iris 就改这里；原文件可从 git 历史恢复。
 
 原开发期运行时依赖（`mob-battle-mod`、`eeeabs-mobs`、`neat`）的 1.20.1 文件 ID 已失效，需要时再补 1.21.1 版本。
 
@@ -167,19 +165,39 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 **AT 的一个坑**：NeoForge 不会像 ForgeGradle 那样把 AT 自动传播到子类重写。放开 `LivingEntity.actuallyHurt` 后，必须同时放开 6 个 vanilla 重写者（`Player`/`LocalPlayer`/`Animal`/`Wolf`/`Armadillo`/`Camel`），否则重写"降低访问权限"会导致 MC 重编译失败。
 
-### 进行中：Java 代码
+### 已完成：Java 代码
 
-编译错误从 **3518 降到 226**（约 -94%）。架构级重写已全部完成，剩余为分散的 API 细节。符号解析阶段已清零，当前错误全部来自其后的类型/访问检查阶段。
+编译错误从 **3518 清零**，`./gradlew build` 成功产出 jar。
 
-> ⚠️ **看错误数时务必留意 javac 的分阶段行为**：parse → 符号解析 → 类型检查，**前一阶段没通过时，后一阶段的错误根本不会打印**。所以错误数骤降往往不是"接近完成"，而是"卡在了更早的阶段"。本次移植中已两次踩到：清零符号阶段时从"剩 1 个"跳到 819；一个批量脚本引入 40 个语法错误时，759 个类型错误被整体隐藏，看上去像是"755 → 40"的大跃进，修好语法后立刻回到 739。判断真实进度要看**阶段**，不能只看数字。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
+### 已完成：运行验证
+
+| 验证项 | 结果 |
+| --- | --- |
+| `./gradlew build` | ✅ 产出 `torchesbecomesunlight-1.21.1-0.4.2.jar` |
+| `./gradlew runData` | ✅ 全部 provider 跑通，产物已重新生成入库 |
+| `./gradlew runClient` | ✅ 进入主菜单、创建世界并正常游玩退出 |
+
+**编译通过之后才暴露出来的一批运行期问题**（编译器完全看不到，务必留意）：
+
+- `enumextensions.json` 的 `parameters` 字段**即使构造器无参也必须存在**，且要用 `class`/`field` 指向 `EnumProxy` 字段，否则 `proxy.getValue()` 抛 `Enum not initialized`。
+- `ModConfigEvent` 属于 **mod 总线**，挂 `@SubscribeEvent` 再被 `NeoForge.EVENT_BUS.register(this)` 扫到会直接报错。
+- `MobEffectEvent` 是抽象类，**监听必须落到 `Expired`/`Remove` 子类**。
+- NeoForge 对「`@EventBusSubscriber` 但类里没有任何 `@SubscribeEvent`」**直接抛异常**（Forge 是静默放过的）。
+- `TRIGGER_TYPE` / `STRUCTURE_PROCESSOR` 等注册表在 bootstrap 后即冻结，**不能再在 `commonSetup` 里 `Registry.register`**，一律改用 `DeferredRegister`。
+- `ResourceLocation` 路径校验收紧（只允许 `[a-z0-9/._-]`），原先带大写的 `gunPatriot*` 进度 id 会直接抛异常。
+- mixin 的 `@Inject` 描述符对不上时，**只在运行时的 APPLY 阶段炸**，编译期毫无提示（`renderSky` 首参 `PoseStack` → `Matrix4f`）。
+- `NodeEvaluator#getPathTypeOfMob` 依赖求值器内部的 `mob` 字段，**只有寻路过程中才有值**；在寻路之外调用必 NPE，应改用静态的 `WalkNodeEvaluator.getPathTypeStatic`。
 
 ### 这次移植踩过的坑（后续接手务必先看）
 
-1. **javac 分阶段**：parse → 符号解析 → 类型检查。前一阶段没通过，后一阶段的错误**根本不会打印**。所以错误数骤降往往意味着"卡在更早的阶段"，而不是接近完成。本次已三次踩到（"剩 1 个"跳回 819；40 个语法错误遮蔽 739 个类型错误）。**只有 `EXIT=0` 才是真的通过。**
-2. **文件是 CRLF 行尾**：正则写 `;\n` 匹配不到 `;\r\n`，会导致"脚本报告成功但实际没改"。一律用 `\r?\n`。
-3. **别在 `bash -c` 里内联复杂正则**：`$`、反斜杠会被 shell 吃掉，已多次导致替换静默失效或生成畸形代码（如 `getHeadBone(getGeoModel())()`）。写成 `.js` 文件再执行。
-4. **改名类要同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
-5. **组件（DataComponents）取出的是副本**：`getTag()` 改完不写回就静默失效，见 `TBSItemData`。
+1. **javac 分阶段**：parse → 符号解析 → 类型检查。前一阶段没通过，后一阶段的错误**根本不会打印**。所以错误数骤降往往意味着"卡在更早的阶段"，而不是接近完成。本次已三次踩到（"剩 1 个"跳回 819；40 个语法错误遮蔽 739 个类型错误；一个重复方法让计数从 66 假跳到 3）。**只有 `EXIT=0` 才是真的通过。**
+2. **重复方法/重复注解会让 Lombok 整个失效**：javac 在第一轮注解处理报错后就不再继续处理，所有 `@Getter` 生成的方法随之消失，瞬间多出几百个假的 `cannot find symbol`。本次两次踩到（错误数 66→272、10→271）。看到大量 Lombok getter 报错时，**先去日志开头找 `is already defined`**。
+3. **文件是 CRLF 行尾**：正则写 `;\n` 匹配不到 `;\r\n`，会导致"脚本报告成功但实际没改"。一律用 `\r?\n`。
+4. **别在 `bash -c` 里内联复杂正则**：`$`、反斜杠会被 shell 吃掉，已多次导致替换静默失效或生成畸形代码（如 `getHeadBone(getGeoModel())()`）。写成 `.js` 文件再执行。
+5. **改名类要同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
+6. **组件（DataComponents）取出的是副本**：`getTag()` 改完不写回就静默失效，见 `TBSItemData`。
+
+> `gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
 
 **方法论**：所有批量改写都基于**从 jar 里提取的真实类索引**自动生成映射，不靠记忆猜包名 —— 解压 `neoforge-21.1.242-universal.jar` / `geckolib-*.jar` 建立 `简单名 → 全限定名` 索引，再比对项目里的 import；MC 侧的成员名和方法签名一律用 1.21.1 官方 mappings（`piston-meta` 下载的 `client.txt`）核对。改名类**必须同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
 
@@ -224,10 +242,13 @@ javap -cp "/tmp/mm;$G" com.bobmowzie.mowziesmobs.client.render.entity.MowzieGeoA
 
 ### 剩余工作
 
-- 分散 API：`does not override` 约 287、`Matrix3f`→`Pose` 39、double→float 窄化 36、`AttributeModifier` 改 record 19、`Holder<MobEffect>`/`Holder<ArmorMaterial>` 24、`saveAdditional`/`readBlockPos` 加 `HolderLookup.Provider` 20、进度 `addCriterion` 22。
-- `INBTSerializable` 的实现已改为新签名（带 `HolderLookup.Provider`），但**调用点尚未全部补上该参数**（`ItemStackHandler` / `TeamMemberStorage` 等），通常可用 `level().registryAccess()` 取得。
-- ItemStack NBT → DataComponents（`getOrCreateTag`/`hasTag` 等）。
-- `RecipeBookType.create("STEW")` 已用原版值占位，NeoForge 1.21.1 需改用 `enumextender.json` 扩展枚举。
+移植本身已完成，以下是**未做完整实测**或**主动降级**的部分：
+
+- **专用服务端（`runServer`）尚未实测**。客户端已验证；服务端主要风险是 common 代码里漏掉的客户端类引用。
+- **配方书筛选按钮沿用原版 sprite**。1.21 的按钮贴图走 GUI sprite 图集，原先的 `textures/gui/recipe_book_buttons.png` 是四态拼图，需拆成 4 张 sprite 才能换回定制图标（功能不受影响，见 `CookingPotRecipeBookComponent` 的 TODO）。
+- **光影兼容未接**：`isUsingShaderPack()` 目前恒为 `false`，要支持 Iris 需在此处接入。
+- **两处 `defineId` 传错类**（`Pursuer` 传了 `Patriot`、`Mangler` 传了 `Burdenbeast`）。这是 1.20.1 就有的既存问题，运行时只是 WARN，未在本次移植中改动，以免变更数据同步 id。
+- 战斗/剧情/同伴等玩法内容**尚未逐项回归测试**。
 
 ### 已定的决策
 
