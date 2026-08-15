@@ -314,7 +314,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
     public boolean doHurtEntity(LivingEntity livingEntity, DamageSource source, float damage) {
         boolean b = super.doHurtEntity(livingEntity, source, damage);
 
-        if(defendCounterMap.containsKey(livingEntity)){
+        if(getSpawnState()==State.TWO&&defendCounterMap.containsKey(livingEntity)){
             DefendCounter defendCounter = defendCounterMap.get(livingEntity);
             if(b||!(livingEntity instanceof Player)){
                 defendCounter.effectiveAttackCounter -= 1;
@@ -459,6 +459,7 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                         maxActAttr.addPermanentModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(TorchesBecomeSunlight.MOD_ID, "health_config_multiplier"), difference, AttributeModifier.Operation.ADD_VALUE));
                     }
                 }
+                setIsGlowing(false);
             }
         }
     }
@@ -1195,7 +1196,9 @@ public class GunKnightPatriot extends GunKnightEntity implements RangedAttackMob
                     //level().addParticle(ParticleHandler.TESLA_BULB_LIGHTNING.get(), this.getX()+move.x, this.getY()+move.y, this.getZ()+move.z, finalMove.x, finalMove.y, finalMove.z);
                 }
                 if(tick==100){
-                    normalLightParticle();
+                    if(level().isClientSide){
+                        normalLightParticle();
+                    }
                 }
             }
             else {
