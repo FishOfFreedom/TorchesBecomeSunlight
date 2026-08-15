@@ -1,5 +1,14 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.core.HolderLookup;
+import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import com.freefish.torchesbecomesunlight.server.util.TBSJsonUtils;
 import com.google.common.collect.ImmutableSet;
@@ -14,7 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
@@ -34,14 +42,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FoodValuesDefinition implements Recipe<Container> {
+public class FoodValuesDefinition implements Recipe<RecipeInput> {
     private final Set<ResourceLocation> names;
     private final FoodValues foodValues;
-    private final ResourceLocation id;
     private final boolean item;
 
-    public FoodValuesDefinition(ResourceLocation id, Set<ResourceLocation> names, FoodValues foodValues, boolean item) {
-        this.id = id;
+    public FoodValuesDefinition(Set<ResourceLocation> names, FoodValues foodValues, boolean item) {
         this.names = ImmutableSet.copyOf(names);
         this.foodValues = foodValues;
         this.item = item;
@@ -60,14 +66,14 @@ public class FoodValuesDefinition implements Recipe<Container> {
     }
 
     @Override
-    public boolean matches(Container pContainer, Level pLevel) {
+    public boolean matches(RecipeInput pContainer, Level pLevel) {
         var stack = pContainer.getItem(0);
         return item ? names.stream().anyMatch(name -> name.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()))) :
                 names.stream().anyMatch(name -> stack.is(ItemTags.create(name)));
     }
 
     @Override
-    public ItemStack assemble(Container pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(RecipeInput pContainer, HolderLookup.Provider pRegistryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -82,13 +88,8 @@ public class FoodValuesDefinition implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider pRegistryAccess) {
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Nonnull
@@ -169,24 +170,36 @@ public class FoodValuesDefinition implements Recipe<Container> {
     }
 
     public static class Serializer implements RecipeSerializer<FoodValuesDefinition> {
+
+        /** 1.21 起配方序列化统一走 Codec；原 fromJson/fromNetwork 的手写路径已不存在 */
+        public static final MapCodec<FoodValuesDefinition> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                ResourceLocation.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(
+                        d -> d.isItem() ? List.copyOf(d.getNames()) : List.of()),
+                ResourceLocation.CODEC.listOf().optionalFieldOf("tags", List.of()).forGetter(
+                        d -> d.isItem() ? List.of() : List.copyOf(d.getNames())),
+                Codec.unboundedMap(Codec.STRING, Codec.FLOAT).fieldOf("values").forGetter(
+                        d -> d.getFoodValues().toValueMap()),
+                MobEffectInstance.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(
+                        d -> List.copyOf(d.getFoodValues().getEffects()))
+        ).apply(inst, (items, tags, values, effects) -> new FoodValuesDefinition(
+                items.isEmpty() ? Set.copyOf(tags) : Set.copyOf(items),
+                FoodValues.fromCodec(values, effects),
+                !items.isEmpty())));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, FoodValuesDefinition> STREAM_CODEC =
+                StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
+
         @Override
-        public FoodValuesDefinition fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            var foodValues = FoodValues.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "values"),GsonHelper.getAsJsonArray(serializedRecipe, "effects"));
-            if (serializedRecipe.has("items") && serializedRecipe.has("tags")) {
-                throw new JsonParseException("A food value definition entry needs either tags or items, not both");
-            } else if (serializedRecipe.has("items") || serializedRecipe.has("tags")) {
-                var names = new HashSet<ResourceLocation>();
-                var isItem = serializedRecipe.has("items");
-                GsonHelper.getAsJsonArray(serializedRecipe, isItem ? "items" : "tags").forEach(name -> names.add(ResourceLocation.parse(GsonHelper.convertToString(name, isItem ? "item" : "tag"))));
-                return new FoodValuesDefinition(recipeId, names, foodValues, isItem);
-            } else {
-                throw new JsonParseException("A food value definition entry needs either tags or items");
-            }
+        public MapCodec<FoodValuesDefinition> codec() {
+            return CODEC;
         }
 
-        @Nullable
         @Override
-        public FoodValuesDefinition fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public StreamCodec<RegistryFriendlyByteBuf, FoodValuesDefinition> streamCodec() {
+            return STREAM_CODEC;
+        }
+
+        private static FoodValuesDefinition fromNetwork(RegistryFriendlyByteBuf buffer) {
             var isItem = buffer.readBoolean();
             var names = new HashSet<ResourceLocation>();
             var length = buffer.readVarInt();
@@ -194,12 +207,10 @@ public class FoodValuesDefinition implements Recipe<Container> {
                 names.add(buffer.readResourceLocation());
             }
             var foodValues = FoodValues.fromNetwork(buffer);
-
-            return new FoodValuesDefinition(recipeId , names, foodValues, isItem);
+            return new FoodValuesDefinition(names, foodValues, isItem);
         }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, FoodValuesDefinition recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, FoodValuesDefinition recipe) {
             buffer.writeBoolean(recipe.isItem());
             buffer.writeVarInt(recipe.getNames().size());
             recipe.getNames().forEach(buffer::writeResourceLocation);

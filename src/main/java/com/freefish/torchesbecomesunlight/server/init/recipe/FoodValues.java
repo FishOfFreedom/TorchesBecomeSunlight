@@ -279,4 +279,25 @@ public class FoodValues {
             return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect).toString()+" "+time+" "+level;
         }
     }
+
+    /** 供 1.21 的配方 codec 使用：按分类名导出数值 */
+    public java.util.Map<String, Float> toValueMap() {
+        java.util.Map<String, Float> map = new java.util.LinkedHashMap<>();
+        for (FoodCategory category : CATEGORIES) {
+            float v = this.values[category.ordinal()];
+            if (v != 0.0F) {
+                map.put(category.name().toLowerCase(java.util.Locale.ROOT), v);
+            }
+        }
+        return map;
+    }
+
+    /** 供 1.21 的配方 codec 使用：从分类名与效果重建 */
+    public static FoodValues fromCodec(java.util.Map<String, Float> values,
+                                       java.util.List<net.minecraft.world.effect.MobEffectInstance> effects) {
+        FoodValues fv = create();
+        values.forEach((k, v) -> fv.put(FoodCategory.valueOf(k.toUpperCase(java.util.Locale.ROOT)), v));
+        fv.getEffects().addAll(effects);
+        return fv;
+    }
 }
