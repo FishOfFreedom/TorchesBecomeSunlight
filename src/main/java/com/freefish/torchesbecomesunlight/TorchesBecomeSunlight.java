@@ -98,13 +98,13 @@ public class TorchesBecomeSunlight
         SensorTypeHandle.SENSOR_TYPES.register(bus);
         RecipesHandle.register(bus);
         MenuHandle.register(bus);
+        TBSAttachments.ATTACHMENT_TYPES.register(bus);
 
         PROXY.init(bus);
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
         bus.addListener(this::onModConfigEvent);
         bus.addListener(this::complete);
-        bus.addListener(CapabilityHandle::registerCapabilities);
 
         if (FMLEnvironment.dist.isClient()) {
             bus.addListener(ClientLayerRegistry::onAddLayers);

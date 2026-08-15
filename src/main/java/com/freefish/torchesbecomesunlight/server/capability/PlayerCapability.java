@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraft.core.HolderLookup;
 import com.freefish.rosmontislib.client.particle.advance.base.particle.RLParticle;
 import com.freefish.rosmontislib.client.particle.advance.data.EmissionSetting;
 import com.freefish.rosmontislib.client.particle.advance.data.RendererSetting;
@@ -67,12 +69,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -93,7 +91,7 @@ public class PlayerCapability {
         int getSkillAmount();
         void setSkillAmount(int skillAmount,LivingEntity living);
 
-        void tick(TickEvent.PlayerTickEvent event);
+        void tick(PlayerTickEvent.Post event);
 
         void playerHurt(LivingIncomingDamageEvent event,Player player);
 
@@ -314,11 +312,11 @@ public class PlayerCapability {
             }
         }
 
-        public void tick(TickEvent.PlayerTickEvent event) {
+        public void tick(PlayerTickEvent.Post event) {
             if(triggerAttackIn>0) triggerAttackIn--;
             if(sacredHalberdActCoolDown>0) sacredHalberdActCoolDown--;
 
-            Player player = event.player;
+            Player player = event.getEntity();
             Level level = player.level();
 
             partnerPlayerManager.tick();
@@ -598,7 +596,7 @@ public class PlayerCapability {
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             CompoundTag compound = new CompoundTag();
             compound.putInt("skill",skillAmount);
             compound.put("partnermanager",partnerPlayerManager.serializeNBT());
@@ -609,7 +607,7 @@ public class PlayerCapability {
         }
 
         @Override
-        public void deserializeNBT(CompoundTag compound) {
+        public void deserializeNBT(HolderLookup.Provider registries, CompoundTag compound) {
             skillAmount = compound.getInt("skill");
             partnerPlayerManager.deserializeNBT(compound.getCompound("partnermanager"));
             isSankta = compound.getBoolean("isSankta");
@@ -643,24 +641,5 @@ public class PlayerCapability {
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
-    {
-        private final LazyOptional<IPlayerCapability> instance = LazyOptional.of(PlayerCapabilityImp::new);
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.orElseThrow(NullPointerException::new).serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return CapabilityHandle.PLAYER_CAPABILITY.orEmpty(cap, instance.cast());
-        }
-    }
+    
 }

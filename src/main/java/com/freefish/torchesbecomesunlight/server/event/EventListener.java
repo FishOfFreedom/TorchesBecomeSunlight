@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.server.event;
 
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.ability.Ability;
 import com.freefish.torchesbecomesunlight.server.ability.AbilityHandler;
@@ -343,15 +345,15 @@ public final class EventListener {
     }
 
     @SubscribeEvent
-    public void levelTick(TickEvent.LevelTickEvent event){
+    public void levelTick(LevelTickEvent.Post event){
     }
 
     @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event){
-        if (event.phase == TickEvent.Phase.START || event.player == null) {
+    public void playerTick(PlayerTickEvent.Post event){
+        if (event.getEntity() == null) {
             return;
         }
-        Player player = event.player;
+        Player player = event.getEntity();
         Level level = player.level();
 
         if(level.isClientSide()){

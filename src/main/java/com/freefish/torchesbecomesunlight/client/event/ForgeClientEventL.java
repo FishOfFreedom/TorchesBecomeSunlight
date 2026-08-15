@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.event;
 
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.keybindings.ModKeyBindings;
 import com.freefish.torchesbecomesunlight.client.render.entity.player.GeckoFirstPersonRenderer;
@@ -114,13 +116,13 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START || event.player == null) {
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() == null) {
             return;
         }
-        Player player = event.player;
+        Player player = event.getEntity();
         PlayerCapability.IPlayerCapability playerCapability = CapabilityHandle.getCapability(player, CapabilityHandle.PLAYER_CAPABILITY);
-        if (playerCapability != null && event.side == LogicalSide.CLIENT) {
+        if (playerCapability != null && event.getEntity().level().isClientSide()) {
             GeckoPlayer geckoPlayer = playerCapability.getGeckoPlayer();
             if (geckoPlayer != null) geckoPlayer.tick();
             if (player == Minecraft.getInstance().player) GeckoFirstPersonRenderer.GECKO_PLAYER_FIRST_PERSON.tick();
@@ -135,7 +137,7 @@ public enum ForgeClientEventL {
     }
 
     @SubscribeEvent
-    public void levelTick(TickEvent.ClientTickEvent event){
+    public void levelTick(ClientTickEvent.Post event){
         //BossMusicSound bossMusic = BossMusicPlayer.bossMusic;
         //if(bossMusic!=null&&bossMusic.getBoss()!=null&& bossMusic.isCanLoop()){
         //    if(bossMusic.time>bossMusic.getBoss().timeToLoop()){

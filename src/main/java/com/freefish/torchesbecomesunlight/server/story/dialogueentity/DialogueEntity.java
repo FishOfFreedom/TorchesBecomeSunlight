@@ -29,7 +29,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.minecraftforge.network.NetworkHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;

@@ -31,9 +31,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
@@ -51,9 +49,9 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     public static final int INVENTORY_SIZE = OUTPUT_SLOT + DECORATE_SHOT + 1;
 
     private final ItemStackHandler inventory;
-    private final LazyOptional<IItemHandler> inputHandler;
-    private final LazyOptional<IItemHandler> decorateHandler;
-    private final LazyOptional<IItemHandler> outputHandler;
+    private final IItemHandler inputHandler;
+    private final IItemHandler decorateHandler;
+    private final IItemHandler outputHandler;
 
     private ItemStack mealContainerStack;
     private Component customName;
@@ -65,9 +63,9 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     public CuttingBoradBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityHandle.CUTTING_BOARD.get(), pos, state);
         this.inventory = createHandler();
-        this.inputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.UP));
-        this.decorateHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.WEST));
-        this.outputHandler = LazyOptional.of(() -> new StewPotItemHandler(inventory, Direction.DOWN));
+        this.inputHandler = new StewPotItemHandler(inventory, Direction.UP);
+        this.decorateHandler = new StewPotItemHandler(inventory, Direction.WEST);
+        this.outputHandler = new StewPotItemHandler(inventory, Direction.DOWN);
         this.mealContainerStack = ItemStack.EMPTY;
         this.usedRecipeTracker = new Object2IntOpenHashMap<>();
         this.checkNewRecipe = true;
@@ -356,27 +354,20 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
         return new CuttingBoardMenu(id, player, this, new SimpleContainerData(2));
     }
 
-    @Override
-    @Nonnull
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap.equals(Capabilities.ITEM_HANDLER)) {
-            if (side == null || side.equals(Direction.UP)) {
-                return inputHandler.cast();
-            } else if(side.equals(Direction.DOWN)) {
-                return outputHandler.cast();
-            } else {
-                return decorateHandler.cast();
-            }
+        /** 由 TBSCapabilities 在 RegisterCapabilitiesEvent 中按面注册 */
+    public IItemHandler getItemHandler(@Nullable Direction side) {
+        if (side == null || side == Direction.UP) {
+            return inputHandler;
+        } else if (side == Direction.DOWN) {
+            return outputHandler;
+        } else {
+            return decorateHandler;
         }
-        return super.getCapability(cap, side);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        inputHandler.invalidate();
-        outputHandler.invalidate();
-        decorateHandler.invalidate();
     }
 
     @Override

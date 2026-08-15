@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectHandle;
 import com.freefish.torchesbecomesunlight.server.effect.forceeffect.ForceEffectInstance;
@@ -11,11 +12,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
-import net.minecraftforge.common.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 import javax.annotation.Nonnull;
@@ -158,7 +156,7 @@ public class FrozenCapability {
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             CompoundTag frozenData = new CompoundTag();
 
             frozenData.putFloat("act",   attributes[0]);
@@ -170,7 +168,7 @@ public class FrozenCapability {
         }
 
         @Override
-        public void deserializeNBT(CompoundTag tag) {
+        public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
 
             attributes[0] = tag.getFloat("act");
             attributes[1] = tag.getFloat("move");
@@ -180,24 +178,5 @@ public class FrozenCapability {
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
-    {
-        private final LazyOptional<IFrozenCapability> instance = LazyOptional.of(FrozenCapabilityImp::new);
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.orElseThrow(NullPointerException::new).serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return CapabilityHandle.FROZEN_CAPABILITY.orEmpty(cap, instance.cast());
-        }
-    }
+    
 }

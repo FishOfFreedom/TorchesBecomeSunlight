@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.entity;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -37,7 +38,7 @@ public class TeamMemberStorage <T extends Mob&ITeamMemberStorage> implements INB
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
         CompoundTag compoundTag = new CompoundTag();
         int i = 1;
         for(UUID uuid:teamMember.keySet()){
@@ -49,7 +50,7 @@ public class TeamMemberStorage <T extends Mob&ITeamMemberStorage> implements INB
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
         Set<String> allKeys = nbt.getAllKeys();
         for(String s:allKeys){
             teamMember.put(nbt.getUUID(s),null);

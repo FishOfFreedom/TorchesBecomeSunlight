@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.capability;
 
+import net.minecraft.core.HolderLookup;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.config.ConfigHandler;
 import com.freefish.torchesbecomesunlight.server.story.IDialogueEntity;
@@ -9,11 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 import javax.annotation.Nonnull;
@@ -34,13 +32,13 @@ public class DialogueCapability {
         int dialogueNeedTime = 0;
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
             CompoundTag compound = new CompoundTag();
             return compound;
         }
 
         @Override
-        public void deserializeNBT(CompoundTag compound) {
+        public void deserializeNBT(HolderLookup.Provider registries, CompoundTag compound) {
         }
 
         @Override
@@ -81,24 +79,5 @@ public class DialogueCapability {
         }
     }
 
-    public static class Provider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag>
-    {
-        private final LazyOptional<IDialogueCapability> instance = LazyOptional.of(DialogueCapabilityImp::new);
-
-        @Override
-        public CompoundTag serializeNBT() {
-            return instance.orElseThrow(NullPointerException::new).serializeNBT();
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            instance.orElseThrow(NullPointerException::new).deserializeNBT(nbt);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return CapabilityHandle.DIALOGUE_CAPABILITY.orEmpty(cap, instance.cast());
-        }
-    }
+    
 }

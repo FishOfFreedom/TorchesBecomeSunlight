@@ -1,5 +1,6 @@
 package com.freefish.torchesbecomesunlight.server.util.bossbar;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.server.entity.FreeFishEntity;
 import com.freefish.torchesbecomesunlight.server.event.packet.toclient.MessageUpdateBossBar;
@@ -44,7 +45,7 @@ public class FFBossInfoServer extends ServerBossEvent implements IBossInfoUpdate
 
     @Override
     public void addPlayer(ServerPlayer player) {
-        TorchesBecomeSunlight.NETWORK.sendTo(new MessageUpdateBossBar(this.getId(), renderType), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        PacketDistributor.sendToPlayer(player, new MessageUpdateBossBar(this.getId(), renderType));
         if (this.entity.getSensing().hasLineOfSight(player)) {
             super.addPlayer(player);
         } else {
@@ -54,7 +55,7 @@ public class FFBossInfoServer extends ServerBossEvent implements IBossInfoUpdate
 
     @Override
     public void removePlayer(ServerPlayer player) {
-        TorchesBecomeSunlight.NETWORK.sendTo(new MessageUpdateBossBar(this.getId(), -1), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        PacketDistributor.sendToPlayer(player, new MessageUpdateBossBar(this.getId(), -1));
         super.removePlayer(player);
         this.unseen.remove(player);
     }

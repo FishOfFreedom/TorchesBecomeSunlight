@@ -20,7 +20,6 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.minecraftforge.network.NetworkHooks;
 
 public abstract class EntityMultiBlock extends Entity implements IEntityWithComplexSpawn {
     private BlockState[] blockStates = new BlockState[]{};

@@ -88,9 +88,19 @@ export JAVA_HOME="/c/Program Files/Eclipse Adoptium/jdk-21.0.11.10-hotspot"
 
 [ServerNetwork.java](src/main/java/com/freefish/torchesbecomesunlight/server/event/ServerNetwork.java) 用自增 id 注册每个封包，因此**注册顺序即通信协议**——只能追加，不可中间插入。封包是带静态 `serialize`/`deserialize` 与内部 `Handler` 的普通类，分置于 `event/packet/toclient` 与 `event/packet/toserver`。请使用 `ServerNetwork.toClientMessage` / `toServerMessage`，不要直接操作 `NETWORK`。
 
-### Capability
+### Capability —— 已迁到 Data Attachments
 
-[CapabilityHandle](src/main/java/com/freefish/torchesbecomesunlight/server/capability/CapabilityHandle.java)：`ABILITY` + `PLAYER` 挂在玩家上，`FROZEN` 挂在所有 `LivingEntity` 上，`DIALOGUE` 挂在实现了 `IDialogueEntity` 的实体上。注意 `DIALOGUE_CAPABILITY` 虽然被 attach，但**没有**出现在 `registerCapabilities` 中——依赖它之前请先确认这一点。`PlayerCapability` 还承载同伴管理器与部分技能触发逻辑。
+NeoForge 移除了 Forge 的整套 Capability（`LazyOptional` / `ICapabilitySerializable` / `AttachCapabilitiesEvent`）。本 Mod 的四份数据是**挂在实体上的持久化状态**，因此迁到 **Data Attachments**（[TBSAttachments](src/main/java/com/freefish/torchesbecomesunlight/server/init/TBSAttachments.java)），而不是 NeoForge 新的 `EntityCapability`（后者面向物品栏/流体/能量这类能力查询）。
+
+[CapabilityHandle](src/main/java/com/freefish/torchesbecomesunlight/server/capability/CapabilityHandle.java) 刻意保留了 `getCapability(entity, XXX_CAPABILITY)` 的调用形式，使 60 余处调用点无需改动；类型由 `Capability<T>` 换成了 `Supplier<AttachmentType<T>>`。
+
+**一个语义要点**：attachment 的 `getData` 在数据不存在时会直接按默认值创建，所以 `CapabilityHandle` 里补了原 `attachEntityCapability` 的挂载条件（ABILITY/PLAYER 仅玩家、FROZEN 仅 `LivingEntity`、DIALOGUE 仅 `IDialogueEntity`），否则会给不该有该数据的实体凭空建出一份。顺带修好了 1.20.1 分支上 `DIALOGUE_CAPABILITY` 被 attach 却没在 `registerCapabilities` 注册的问题。
+
+玩家死亡后的数据延续仍由 `EventListener` 的 `PlayerEvent.Clone` 处理，**未**改用 `copyOnDeath()`，以免悄悄改变原有行为。
+
+方块物品栏走的是另一条路：那是真正的能力查询，仍用 Capability，在 [TBSCapabilities](src/main/java/com/freefish/torchesbecomesunlight/server/init/TBSCapabilities.java) 里通过 `RegisterCapabilitiesEvent` 按面注册（原先各 BlockEntity 覆写 `getCapability` 返回 `LazyOptional` 的写法已不存在）。
+
+`PlayerCapability` 仍承载同伴管理器与部分技能触发逻辑。
 
 ### 剧情 / 对话 —— 数据驱动
 
@@ -151,7 +161,7 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 ### 进行中：Java 代码
 
-编译错误从 **3518 降到 1595**（591 个文件里受影响的从 379 降到 264）。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
+编译错误从 **3518 降到 1440**（591 个文件里受影响的从 379 降到 260；`net.minecraftforge` 残留仅剩 8 个文件）。用 `./gradlew compileJava` 复现；`gradle.properties` 里已加 `-Duser.language=en` 让 javac 输出英文（否则 Windows 中文控制台是 GBK 乱码），`build.gradle` 里已放开 `-Xmaxerrs`。
 
 **方法论**：所有批量改写都基于**从 jar 里提取的真实类索引**自动生成映射，不靠记忆猜包名 —— 解压 `neoforge-21.1.242-universal.jar` / `geckolib-*.jar` 建立 `简单名 → 全限定名` 索引，再比对项目里的 import；MC 侧的成员名和方法签名一律用 1.21.1 官方 mappings（`piston-meta` 下载的 `client.txt`）核对。改名类**必须同时替换代码体里的简单名**，只改 import 会留下一大批 `cannot find symbol`。
 
@@ -169,10 +179,12 @@ Gradle 侧已整体切到 NeoForge/ModDevGradle 并验证通过：
 
 **网络已完成**：封包改为 `CustomPacketPayload` + `StreamCodec`，注册走 `RegisterPayloadHandlersEvent`。原 `serialize`/`deserialize` 签名被 `StreamCodec.of` 复用，故未改动序列化逻辑。**注意契约变化**：NeoForge 按 `Type` 里的 ResourceLocation 寻址，注册顺序不再是协议的一部分；但 `MessageUseAbility`/`AnimationActMessage` 传的仍是**数组下标**，`PLAYER_ABILITIES` 与 `getAnimations()` 的"只能追加"约束依然成立。
 
+**Capability 已完成**：见上文「Capability —— 已迁到 Data Attachments」。`TickEvent` 也已按 1.21.1 的 Pre/Post 拆分改造（原代码用 `phase == START` 提前 return，语义即"只在 END 跑"，故一律对应 `Post`）。
+
 ### 剩余工作
 
-- **Capability（最后一个架构块，61 文件）**：`LazyOptional`、`ICapabilitySerializable`、`AttachCapabilitiesEvent` 全部移除。本 mod 的 capability 是**持久化实体状态**（Ability/Player/Frozen/Dialogue），NeoForge 1.21.1 对应物是 **Data Attachments**（`AttachmentType`）而非新的 `EntityCapability`（后者面向物品栏/能量这类能力查询）。主类里 `AttachCapabilitiesEvent` 的注册已删除，`CapabilityHandle` 尚未重写。
-- 分散 API：`does not override` 287、`Matrix3f`→`Pose` 39、double→float 窄化 36、`AttributeModifier` 改 record 19、`Holder<MobEffect>`/`Holder<ArmorMaterial>` 24、`saveAdditional`/`readBlockPos` 加 `HolderLookup.Provider` 20、进度 `addCriterion` 22。
+- 分散 API：`does not override` 约 287、`Matrix3f`→`Pose` 39、double→float 窄化 36、`AttributeModifier` 改 record 19、`Holder<MobEffect>`/`Holder<ArmorMaterial>` 24、`saveAdditional`/`readBlockPos` 加 `HolderLookup.Provider` 20、进度 `addCriterion` 22。
+- `INBTSerializable` 的实现已改为新签名（带 `HolderLookup.Provider`），但**调用点尚未全部补上该参数**（`ItemStackHandler` / `TeamMemberStorage` 等），通常可用 `level().registryAccess()` 取得。
 - ItemStack NBT → DataComponents（`getOrCreateTag`/`hasTag` 等）。
 - `RecipeBookType.create("STEW")` 已用原版值占位，NeoForge 1.21.1 需改用 `enumextender.json` 扩展枚举。
 
