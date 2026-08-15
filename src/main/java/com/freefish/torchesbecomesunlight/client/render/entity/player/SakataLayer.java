@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -106,7 +105,7 @@ public class SakataLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
         // 5. 获取顶点构建器
         VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE_LOCATION));
         Matrix4f pose = poseStack.last().pose();
-        Matrix3f normal = poseStack.last().normal();
+        PoseStack.Pose normal = poseStack.last().normal();
 
         // 6. 计算四个顶点位置
         Vector3f[] vertices = {

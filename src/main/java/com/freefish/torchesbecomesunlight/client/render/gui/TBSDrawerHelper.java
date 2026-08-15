@@ -115,7 +115,7 @@ public class TBSDrawerHelper {
         builder.addVertex(-1.0F, -1.0F, 0.0F);
         builder.addVertex(1.0F, -1.0F, 0.0F);
         builder.addVertex(1.0F, 1.0F, 0.0F);
-        BufferUploader.draw(builder.end());
+        BufferUploader.draw(builder.buildOrThrow());
     }
 
     private static void uploadScreenPosVertex1(Rect square) {
@@ -132,6 +132,6 @@ public class TBSDrawerHelper {
         builder.addVertex((float) (left), (float) (up), 0.0F);
         builder.addVertex((float) (right), (float) (up), 0.0F);
         builder.addVertex((float) (right), (float) (down), 0.0F);
-        BufferUploader.draw(builder.end());
+        BufferUploader.draw(builder.buildOrThrow());
     }
 }

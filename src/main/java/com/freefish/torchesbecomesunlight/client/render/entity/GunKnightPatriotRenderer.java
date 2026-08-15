@@ -35,10 +35,10 @@ public class GunKnightPatriotRenderer extends GeoEntityRenderer<GunKnightPatriot
 
     //@Override
     //public void renderRecursively(PoseStack poseStack, GunKnightPatriot animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
-        float red = net.minecraft.util.FastColor.ARGB32.red(color) / 255.0F;
-        float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
-        float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
-        float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
+
+
+
+
     //    if(bone.getName().matches("Wing.*")){
     //        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(0.6f+ 0.4f*bone.getPosZ(), red, green, blue));
     //    }

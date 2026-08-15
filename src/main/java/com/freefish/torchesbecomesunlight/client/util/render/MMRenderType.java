@@ -43,7 +43,7 @@ public abstract class MMRenderType extends RenderType {
         }
 
         public void end(Tesselator p_217599_1_) {
-            p_217599_1_.end();
+            p_217599_1_.buildOrThrow();
         }
 
         public String toString() {
