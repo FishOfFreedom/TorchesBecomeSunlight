@@ -224,7 +224,7 @@ public class BulletRenderer extends EntityRenderer<Bullet> {
         float green = net.minecraft.util.FastColor.ARGB32.green(color) / 255.0F;
         float blue = net.minecraft.util.FastColor.ARGB32.blue(color) / 255.0F;
         float alpha = net.minecraft.util.FastColor.ARGB32.alpha(color) / 255.0F;
-            bb_main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+            bb_main.render(poseStack, vertexConsumer, packedLight, packedOverlay, net.minecraft.util.FastColor.ARGB32.colorFromFloat(alpha, red, green, blue));
         }
     }
 }

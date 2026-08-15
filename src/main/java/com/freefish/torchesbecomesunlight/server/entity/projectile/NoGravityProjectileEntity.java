@@ -336,8 +336,13 @@ public abstract class NoGravityProjectileEntity extends Projectile implements Ge
                 }
 
                 if (!this.level().isClientSide && entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(livingentity, entity1);
-                    EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity);
+                    // 1.21 把命中/受击两套附魔效果合并成了 doPostAttackEffects
+
+                    if (this.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+
+                        EnchantmentHelper.doPostAttackEffects(serverLevel, livingentity, this.damageSources().thrown(this, this.getOwner()));
+
+                    }
                 }
 
                 this.doPostHurtEffects(livingentity);

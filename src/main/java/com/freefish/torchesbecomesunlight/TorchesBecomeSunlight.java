@@ -69,7 +69,16 @@ public class TorchesBecomeSunlight
 
     public static final Random random = new Random();
 
-    public static final RecipeBookType RECIPE_TYPE_COOKING = RecipeBookType.CRAFTING /* TODO(移植): NeoForge 1.21.1 需用 enumextender.json 扩展 RecipeBookType，暂用原版值占位 */;
+    /**
+     * RecipeBookType 是 IExtensibleEnum，新常量在 META-INF/enumextensions.json 中声明。
+     * 走 EnumProxy 懒取，避免类初始化早于枚举扩展。
+     */
+    public static final net.neoforged.fml.common.asm.enumextension.EnumProxy<RecipeBookType> RECIPE_TYPE_COOKING_PROXY =
+            new net.neoforged.fml.common.asm.enumextension.EnumProxy<>(RecipeBookType.class);
+
+    public static RecipeBookType recipeTypeCooking() {
+        return RECIPE_TYPE_COOKING_PROXY.getValue();
+    }
 
     // NeoForge 1.21.1：mod 总线由构造函数注入，不再有 FMLJavaModLoadingContext
     public TorchesBecomeSunlight(IEventBus bus, ModContainer container)

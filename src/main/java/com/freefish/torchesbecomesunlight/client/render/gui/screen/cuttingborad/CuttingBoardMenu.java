@@ -205,7 +205,7 @@ public class CuttingBoardMenu extends RecipeBookMenu<RecipeWrapper, CuttingBoard
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        return TorchesBecomeSunlight.RECIPE_TYPE_COOKING;
+        return TorchesBecomeSunlight.recipeTypeCooking();
     }
 
     @Override

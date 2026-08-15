@@ -187,7 +187,7 @@ public class OvenMenu extends RecipeBookMenu<RecipeWrapper, OvenRecipe> {
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        return TorchesBecomeSunlight.RECIPE_TYPE_COOKING;
+        return TorchesBecomeSunlight.recipeTypeCooking();
     }
 
     @Override

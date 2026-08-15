@@ -187,7 +187,7 @@ public class StewPotMenu extends RecipeBookMenu<RecipeWrapper, StewPotRecipe> {
 
     @Override
     public RecipeBookType getRecipeBookType() {
-        return TorchesBecomeSunlight.RECIPE_TYPE_COOKING;
+        return TorchesBecomeSunlight.recipeTypeCooking();
     }
 
     @Override

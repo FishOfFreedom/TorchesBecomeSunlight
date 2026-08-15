@@ -59,7 +59,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     }
 
     public HalberdOTIEntity(Level pLevel, LivingEntity pShooter, ItemStack pStack,boolean isLocate) {
-        super(EntityHandle.HALBERD_OTI_ENTITY.get(), pShooter, pLevel);
+        super(EntityHandle.HALBERD_OTI_ENTITY.get(), pShooter, pLevel, pStack.copy(), null);
         this.tridentItem = pStack.copy();
         this.isLocate = isLocate;
     }
@@ -222,7 +222,16 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     }
 
     public boolean isChanneling() {
-        return EnchantmentHelper.hasChanneling(this.tridentItem);
+        // 1.21 起「引雷」不再有专用查询，改按附魔等级判断
+        return this.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .getHolder(net.minecraft.world.item.enchantment.Enchantments.CHANNELING)
+                .map(h -> EnchantmentHelper.getItemEnchantmentLevel(h, this.tridentItem) > 0)
+                .orElse(false);
+    }
+
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return this.tridentItem.copy();
     }
 
     protected boolean tryPickup(Player pPlayer) {
@@ -243,7 +252,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
     public void readAdditionalSaveData(CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         if (pCompound.contains("Trident", 10)) {
-            this.tridentItem = ItemStack.of(pCompound.getCompound("Trident"));
+            this.tridentItem = ItemStack.parseOptional(this.registryAccess(), pCompound.getCompound("Trident"));
         }
         this.dealtDamage = pCompound.getBoolean("DealtDamage");
         this.isLocate = pCompound.getBoolean("islocate");
@@ -252,7 +261,7 @@ public class HalberdOTIEntity extends AbstractArrow implements GeoEntity , IEnti
 
     public void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.put("Trident", this.tridentItem.save(new CompoundTag()));
+        pCompound.put("Trident", this.tridentItem.save(this.registryAccess(), new CompoundTag()));
         pCompound.putBoolean("DealtDamage", this.dealtDamage);
         pCompound.putBoolean("islocate", this.isLocate);
         pCompound.putInt("halberdUseTime", this.halberdUseTime);

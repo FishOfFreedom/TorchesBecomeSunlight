@@ -43,12 +43,12 @@ public class JeiPlugin implements IModPlugin {
         List<CuttingBoardRecipe> recipeList2 = new ArrayList<>();
 
         RecipeManager manager = Minecraft.getInstance().level.getRecipeManager();
-        for (Recipe<?> i : manager.getRecipes()) {
-            if (i instanceof OvenRecipe glyphRecipe) {
+        for (net.minecraft.world.item.crafting.RecipeHolder<?> i : manager.getRecipes()) {
+            if (i.value() instanceof OvenRecipe glyphRecipe) {
                 recipeList.add(glyphRecipe);
-            }else if(i instanceof StewPotRecipe glyphRecipe) {
+            }else if(i.value() instanceof StewPotRecipe glyphRecipe) {
                 recipeList1.add(glyphRecipe);
-            } else if(i instanceof CuttingBoardRecipe glyphRecipe) {
+            } else if(i.value() instanceof CuttingBoardRecipe glyphRecipe) {
                 recipeList2.add(glyphRecipe);
             }
         }

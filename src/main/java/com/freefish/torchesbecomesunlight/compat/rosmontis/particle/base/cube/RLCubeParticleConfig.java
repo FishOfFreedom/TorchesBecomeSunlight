@@ -10,11 +10,8 @@ import com.freefish.rosmontislib.client.particle.advance.RLParticleRenderType;
 import com.freefish.rosmontislib.client.particle.advance.data.*;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction;
 import com.freefish.rosmontislib.client.particle.advance.data.number.NumberFunction3;
-import com.freefish.rosmontislib.mixin.accessor.BlendModeAccessor;
-import com.freefish.rosmontislib.mixin.accessor.ShaderInstanceAccessor;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.particle.base.cube.setting.RendererSetting;
 import com.freefish.torchesbecomesunlight.compat.rosmontis.particle.base.cube.setting.VelocityOverLifetimeSetting;
-import com.mojang.blaze3d.shaders.BlendMode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -235,35 +232,33 @@ public class RLCubeParticleConfig {
     }
 
     private class RenderType extends RLParticleRenderType {
-        private BlendMode lastBlend = null;
-
+        // 1.21 的 ShaderInstance 已不再持有 BlendMode（混合状态交给 RenderSystem/RenderStateShard），
+        // 故原先围绕 shader.getBlend() 的保存/恢复没有对应物；
+        // RosmontisLib 1.21.1 自带的 RLParticleConfig.RenderType 同样去掉了这段。
         @Override
         public void prepareStatus() {
             if (renderer.isBloomEffect()) {
                 beginBloom();
             }
             material.pre();
-            material.getMaterial().begin(false,rlParticle);
-            if (RenderSystem.getShader() instanceof ShaderInstanceAccessor shader) {
-                lastBlend = BlendModeAccessor.getLastApplied();
-                BlendModeAccessor.setLastApplied(shader.getBlend());
-            }
+            material.getMaterial().begin(false, rlParticle);
             Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
         }
 
         @Override
-        public void begin(@Nonnull BufferBuilder bufferBuilder) {
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+        protected VertexFormat.Mode bufferMode() {
+            return VertexFormat.Mode.QUADS;
+        }
+
+        @Override
+        protected com.mojang.blaze3d.vertex.VertexFormat vertexFormat() {
+            return DefaultVertexFormat.PARTICLE;
         }
 
         @Override
         public void releaseStatus() {
             material.getMaterial().end(false);
             material.post();
-            if (lastBlend != null) {
-                lastBlend.apply();
-                lastBlend = null;
-            }
             if (renderer.isBloomEffect()) {
                 endBloom();
             }
