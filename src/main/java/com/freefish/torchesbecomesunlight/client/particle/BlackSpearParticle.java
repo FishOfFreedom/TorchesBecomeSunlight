@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.TorchesBecomeSunlight;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
@@ -120,23 +122,14 @@ public class BlackSpearParticle extends Particle {
 
 
     public static class BlackSpearData implements ParticleOptions {
-        public static final Deserializer<BlackSpearData> DESERIALIZER = new Deserializer<BlackSpearData>() {
-            public BlackSpearData fromCommand(ParticleType<BlackSpearData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                boolean swirls = reader.readBoolean();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                return new BlackSpearData(duration, swirls,rotX,rotY);
-            }
-
-            public BlackSpearData fromNetwork(ParticleType<BlackSpearData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static BlackSpearData readFromNetwork(ParticleType<BlackSpearData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new BlackSpearData(buffer.readInt(), buffer.readBoolean(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final boolean swirls;
@@ -150,8 +143,7 @@ public class BlackSpearParticle extends Particle {
             this.rotY = rotY;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeBoolean(this.swirls);
             buffer.writeFloat(this.rotX);
@@ -159,8 +151,7 @@ public class BlackSpearParticle extends Particle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %b %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration, this.swirls,this.rotX,this.rotY);
         }
@@ -190,14 +181,19 @@ public class BlackSpearParticle extends Particle {
             return this.rotY;
         }
 
-        public static Codec<BlackSpearData> CODEC(ParticleType<BlackSpearData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<BlackSpearData> CODEC(ParticleType<BlackSpearData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(BlackSpearData::getDuration),
                             Codec.BOOL.fieldOf("swirls").forGetter(BlackSpearData::getSwirls),
                     Codec.FLOAT.fieldOf("rotX").forGetter(BlackSpearData::getRotX),
                     Codec.FLOAT.fieldOf("rotY").forGetter(BlackSpearData::getRotY)
                     ).apply(codecBuilder, BlackSpearData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, BlackSpearData> STREAM_CODEC(ParticleType<BlackSpearData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

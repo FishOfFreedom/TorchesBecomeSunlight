@@ -1,5 +1,8 @@
 package com.freefish.torchesbecomesunlight.client.util.particle.util;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
@@ -14,44 +17,11 @@ import net.neoforged.api.distmarker.OnlyIn;
  * @author bobmowzie
  */
 public class RibbonParticleData extends AdvancedParticleData {
-    public static final Deserializer<RibbonParticleData> DESERIALIZER = new Deserializer<RibbonParticleData>() {
-        public RibbonParticleData fromCommand(ParticleType<RibbonParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            double airDrag = reader.readDouble();
-            reader.expect(' ');
-            double red = reader.readDouble();
-            reader.expect(' ');
-            double green = reader.readDouble();
-            reader.expect(' ');
-            double blue = reader.readDouble();
-            reader.expect(' ');
-            double alpha = reader.readDouble();
-            reader.expect(' ');
-            String rotationMode = reader.readString();
-            reader.expect(' ');
-            double scale = reader.readDouble();
-            reader.expect(' ');
-            double yaw = reader.readDouble();
-            reader.expect(' ');
-            double pitch = reader.readDouble();
-            reader.expect(' ');
-            double roll = reader.readDouble();
-            reader.expect(' ');
-            boolean emissive = reader.readBoolean();
-            reader.expect(' ');
-            double duration = reader.readDouble();
-            reader.expect(' ');
-            reader.readDouble();
-            reader.expect(' ');
-            int length = reader.readInt();
-            ParticleRotation rotation;
-            if (rotationMode.equals("face_camera")) rotation = new ParticleRotation.FaceCamera((float) 0);
-            else if (rotationMode.equals("euler")) rotation = new ParticleRotation.EulerAngles((float)yaw, (float)pitch, (float)roll);
-            else rotation = new ParticleRotation.OrientVector(new Vec3(yaw, pitch, roll));
-            return new RibbonParticleData(particleTypeIn, rotation, scale, red, green, blue, alpha, airDrag, duration, emissive, length);
-        }
-
-        public RibbonParticleData fromNetwork(ParticleType<RibbonParticleData> particleTypeIn, FriendlyByteBuf buffer) {
+    /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static RibbonParticleData readFromNetwork(ParticleType<RibbonParticleData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
             double airDrag = buffer.readFloat();
             double red = buffer.readFloat();
             double green = buffer.readFloat();
@@ -72,7 +42,7 @@ public class RibbonParticleData extends AdvancedParticleData {
             else rotation = new ParticleRotation.OrientVector(new Vec3(yaw, pitch, roll));
             return new RibbonParticleData(particleTypeIn, rotation, scale, red, green, blue, alpha, airDrag, duration, emissive, length);
         }
-    };
+
 
     private final int length;
 
@@ -85,15 +55,13 @@ public class RibbonParticleData extends AdvancedParticleData {
         this.length = length;
     }
 
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
+        public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
         super.writeToNetwork(buffer);
         buffer.writeInt(this.length);
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    public String writeToString() {
+        public String writeToString() {
         return super.writeToString() + " " + this.length;
     }
 
@@ -102,8 +70,8 @@ public class RibbonParticleData extends AdvancedParticleData {
         return this.length;
     }
 
-    public static Codec<RibbonParticleData> CODEC_RIBBON(ParticleType<RibbonParticleData> particleType) {
-        return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+    public static MapCodec<RibbonParticleData> CODEC_RIBBON(ParticleType<RibbonParticleData> particleType) {
+        return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                 Codec.DOUBLE.fieldOf("scale").forGetter(RibbonParticleData::getScale),
                 Codec.DOUBLE.fieldOf("r").forGetter(RibbonParticleData::getRed),
                 Codec.DOUBLE.fieldOf("g").forGetter(RibbonParticleData::getGreen),
@@ -116,5 +84,10 @@ public class RibbonParticleData extends AdvancedParticleData {
                 ).apply(codecBuilder, (scale, r, g, b, a, drag, duration, emissive, length) ->
                     new RibbonParticleData(particleType, new ParticleRotation.FaceCamera(0), scale, r, g, b, a, drag, duration, emissive, length, new ParticleComponent[]{}))
         );
+    }
+
+    /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+    public static StreamCodec<RegistryFriendlyByteBuf, RibbonParticleData> STREAM_CODEC_RIBBON(ParticleType<RibbonParticleData> particleType) {
+        return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
     }
 }

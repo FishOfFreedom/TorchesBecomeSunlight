@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.client.render.model.tools.MathUtils;
 import com.freefish.torchesbecomesunlight.client.util.render.MMRenderType;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
@@ -157,24 +159,14 @@ public class WindParticle extends TextureSheetParticle {
 
 
     public static class WindData implements ParticleOptions {
-        public static final Deserializer<WindData> DESERIALIZER = new Deserializer<WindData>() {
-            public WindData fromCommand(ParticleType<WindData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                float scale = reader.readFloat();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                reader.expect(' ');
-                return new WindData(duration,scale,rotX,rotY);
-            }
-
-            public WindData fromNetwork(ParticleType<WindData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static WindData readFromNetwork(ParticleType<WindData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new WindData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final float scale;
@@ -188,8 +180,7 @@ public class WindParticle extends TextureSheetParticle {
             this.rotY = rotY;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeFloat(this.scale);
             buffer.writeFloat(this.rotX);
@@ -197,8 +188,7 @@ public class WindParticle extends TextureSheetParticle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration,this.scale,this.rotX,this.rotY);
         }
@@ -226,14 +216,19 @@ public class WindParticle extends TextureSheetParticle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<WindData> CODEC(ParticleType<WindData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<WindData> CODEC(ParticleType<WindData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(WindData::getDuration),
                             Codec.FLOAT.fieldOf("scale").forGetter(WindData::getScale),
                             Codec.FLOAT.fieldOf("rotX").forGetter(WindData::getRotX),
                             Codec.FLOAT.fieldOf("rotY").forGetter(WindData::getRotY)
                     ).apply(codecBuilder, WindData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, WindData> STREAM_CODEC(ParticleType<WindData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }

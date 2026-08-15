@@ -1,5 +1,7 @@
 package com.freefish.torchesbecomesunlight.client.particle;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import com.freefish.torchesbecomesunlight.server.init.ParticleHandler;
 import com.freefish.torchesbecomesunlight.client.render.util.FFRenderTypes;
 import com.freefish.torchesbecomesunlight.server.util.MathUtils;
@@ -119,23 +121,14 @@ public class DemonParticle extends Particle {
 
 
     public static class DemonData implements ParticleOptions {
-        public static final Deserializer<DemonData> DESERIALIZER = new Deserializer<DemonData>() {
-            public DemonData fromCommand(ParticleType<DemonData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                reader.expect(' ');
-                int duration =  reader.readInt();
-                reader.expect(' ');
-                float scale = reader.readFloat();
-                reader.expect(' ');
-                float rotX = reader.readFloat();
-                reader.expect(' ');
-                float rotY = reader.readFloat();
-                return new DemonData(duration,scale,rotX,rotY);
-            }
-
-            public DemonData fromNetwork(ParticleType<DemonData> particleTypeIn, FriendlyByteBuf buffer) {
+        /**
+     * 1.21 移除了 ParticleOptions.Deserializer（命令解析改由 codec 承担）。
+     * 这里保留原 fromNetwork 的读取逻辑，供 STREAM_CODEC 复用。
+     */
+    private static DemonData readFromNetwork(ParticleType<DemonData> particleTypeIn, RegistryFriendlyByteBuf buffer) {
                 return new DemonData(buffer.readInt(),buffer.readFloat(),buffer.readFloat(),buffer.readFloat());
             }
-        };
+
 
         private final int duration;
         private final float scale;
@@ -149,8 +142,7 @@ public class DemonParticle extends Particle {
             this.rotY = rotY;
         }
 
-        @Override
-        public void writeToNetwork(FriendlyByteBuf buffer) {
+                public void writeToNetwork(RegistryFriendlyByteBuf buffer) {
             buffer.writeInt(this.duration);
             buffer.writeFloat(this.scale);
             buffer.writeFloat(this.rotX);
@@ -158,8 +150,7 @@ public class DemonParticle extends Particle {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
-        public String writeToString() {
+                public String writeToString() {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()),
                     this.duration,this.scale,this.rotX,this.rotY);
         }
@@ -187,14 +178,19 @@ public class DemonParticle extends Particle {
         public float getRotY() {
             return this.rotY;
         }
-        public static Codec<DemonData> CODEC(ParticleType<DemonData> particleType) {
-            return RecordCodecBuilder.create((codecBuilder) -> codecBuilder.group(
+        public static MapCodec<DemonData> CODEC(ParticleType<DemonData> particleType) {
+            return RecordCodecBuilder.mapCodec((codecBuilder) -> codecBuilder.group(
                             Codec.INT.fieldOf("duration").forGetter(DemonData::getDuration),
                             Codec.FLOAT.fieldOf("scale").forGetter(DemonData::getScale),
                             Codec.FLOAT.fieldOf("rotX").forGetter(DemonData::getRotX),
                             Codec.FLOAT.fieldOf("rotY").forGetter(DemonData::getRotY)
                     ).apply(codecBuilder, DemonData::new)
             );
+        }
+
+        /** 复用原 writeToNetwork / fromNetwork 的字节布局，未改动序列化格式 */
+        public static StreamCodec<RegistryFriendlyByteBuf, DemonData> STREAM_CODEC(ParticleType<DemonData> particleType) {
+            return StreamCodec.of((buf, data) -> data.writeToNetwork(buf), buf -> readFromNetwork(particleType, buf));
         }
     }
 }
