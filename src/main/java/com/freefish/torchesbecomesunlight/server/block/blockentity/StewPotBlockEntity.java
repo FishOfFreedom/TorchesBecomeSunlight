@@ -102,12 +102,12 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.loadAdditional(compound, registries);
-        inventory.deserializeNBT(compound.getCompound("Inventory"));
+        inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
         cookTime = compound.getInt("CookTime");
         cookTimeTotal = compound.getInt("CookTimeTotal");
-        mealContainerStack = ItemStack.of(compound.getCompound("Container"));
+        mealContainerStack = ItemStack.parseOptional(registries, compound.getCompound("Container"));
         if (compound.contains("CustomName", 8)) {
-            customName = Component.Serializer.fromJson(compound.getString("CustomName"));
+            customName = Component.Serializer.fromJson(compound.getString("CustomName", registries));
         }
         CompoundTag compoundRecipes = compound.getCompound("RecipesUsed");
         for (String key : compoundRecipes.getAllKeys()) {
@@ -120,20 +120,20 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
         super.saveAdditional(compound, registries);
         compound.putInt("CookTime", cookTime);
         compound.putInt("CookTimeTotal", cookTimeTotal);
-        compound.put("Container", mealContainerStack.serializeNBT());
+        compound.put("Container", mealContainerStack.save(registries));
         if (customName != null) {
-            compound.putString("CustomName", Component.Serializer.toJson(customName));
+            compound.putString("CustomName", Component.Serializer.toJson(customName, registries));
         }
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Inventory", inventory.serializeNBT(registries));
         CompoundTag compoundRecipes = new CompoundTag();
         usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.toString(), craftedAmount));
         compound.put("RecipesUsed", compoundRecipes);
     }
 
-    private CompoundTag writeItems(CompoundTag compound) {
+    private CompoundTag writeItems(CompoundTag compound, HolderLookup.Provider registries) {
         super.saveAdditional(compound, registries);
-        compound.put("Container", mealContainerStack.serializeNBT());
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Container", mealContainerStack.save(registries));
+        compound.put("Inventory", inventory.serializeNBT(registries));
         return compound;
     }
 
@@ -487,7 +487,7 @@ public class StewPotBlockEntity extends BlockEntity implements MenuProvider, Geo
 
     @Override
     public CompoundTag getUpdateTag() {
-        return writeItems(new CompoundTag());
+        return writeItems(new CompoundTag(), registries);
     }
 
     private ItemStackHandler createHandler() {

@@ -75,10 +75,10 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.loadAdditional(compound, registries);
-        inventory.deserializeNBT(compound.getCompound("Inventory"));
-        mealContainerStack = ItemStack.of(compound.getCompound("Container"));
+        inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+        mealContainerStack = ItemStack.parseOptional(registries, compound.getCompound("Container"));
         if (compound.contains("CustomName", 8)) {
-            customName = Component.Serializer.fromJson(compound.getString("CustomName"));
+            customName = Component.Serializer.fromJson(compound.getString("CustomName", registries));
         }
         CompoundTag compoundRecipes = compound.getCompound("RecipesUsed");
         for (String key : compoundRecipes.getAllKeys()) {
@@ -89,20 +89,20 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
     @Override
     public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.saveAdditional(compound, registries);
-        compound.put("Container", mealContainerStack.serializeNBT());
+        compound.put("Container", mealContainerStack.save(registries));
         if (customName != null) {
-            compound.putString("CustomName", Component.Serializer.toJson(customName));
+            compound.putString("CustomName", Component.Serializer.toJson(customName, registries));
         }
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Inventory", inventory.serializeNBT(registries));
         CompoundTag compoundRecipes = new CompoundTag();
         usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.toString(), craftedAmount));
         compound.put("RecipesUsed", compoundRecipes);
     }
 
-    private CompoundTag writeItems(CompoundTag compound) {
+    private CompoundTag writeItems(CompoundTag compound, HolderLookup.Provider registries) {
         super.saveAdditional(compound, registries);
-        compound.put("Container", mealContainerStack.serializeNBT());
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Container", mealContainerStack.save(registries));
+        compound.put("Inventory", inventory.serializeNBT(registries));
         return compound;
     }
 
@@ -373,7 +373,7 @@ public class CuttingBoradBlockEntity extends BlockEntity implements MenuProvider
 
     @Override
     public CompoundTag getUpdateTag() {
-        return writeItems(new CompoundTag());
+        return writeItems(new CompoundTag(), registries);
     }
 
     private ItemStackHandler createHandler() {

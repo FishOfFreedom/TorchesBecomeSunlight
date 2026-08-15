@@ -1,5 +1,12 @@
 package com.freefish.torchesbecomesunlight.server.init.recipe;
 
+import net.minecraft.core.HolderLookup;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import java.util.Optional;
 import com.freefish.torchesbecomesunlight.client.render.gui.recipebook.CookingPotRecipeBookTab;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -22,8 +29,6 @@ import javax.annotation.Nullable;
 
 public class OvenRecipe implements Recipe<RecipeWrapper> {
     public static final int INPUT_SLOTS = 9;
-
-    private final ResourceLocation id;
     private final String group;
     private final CookingPotRecipeBookTab tab;
     private final NonNullList<Ingredient> inputItems;
@@ -31,8 +36,7 @@ public class OvenRecipe implements Recipe<RecipeWrapper> {
     private final float experience;
     private final int cookTime;
 
-    public OvenRecipe(ResourceLocation id, String group, @Nullable CookingPotRecipeBookTab tab, NonNullList<Ingredient> inputItems, ItemStack output, float experience, int cookTime) {
-        this.id = id;
+    public OvenRecipe(String group, @Nullable CookingPotRecipeBookTab tab, NonNullList<Ingredient> inputItems, ItemStack output, float experience, int cookTime) {
         this.group = group;
         this.tab = tab;
         this.inputItems = inputItems;
@@ -40,11 +44,6 @@ public class OvenRecipe implements Recipe<RecipeWrapper> {
 
         this.experience = experience;
         this.cookTime = cookTime;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Override
@@ -63,12 +62,12 @@ public class OvenRecipe implements Recipe<RecipeWrapper> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return this.output;
     }
 
     @Override
-    public ItemStack assemble(RecipeWrapper inv, RegistryAccess access) {
+    public ItemStack assemble(RecipeWrapper inv, HolderLookup.Provider access) {
         return this.output.copy();
     }
 
@@ -119,78 +118,60 @@ public class OvenRecipe implements Recipe<RecipeWrapper> {
 
         if (Float.compare(that.getExperience(), getExperience()) != 0) return false;
         if (getCookTime() != that.getCookTime()) return false;
-        if (!getId().equals(that.getId())) return false;
         if (!getGroup().equals(that.getGroup())) return false;
         if (tab != that.tab) return false;
         if (!inputItems.equals(that.inputItems)) return false;
         return (output.equals(that.output));
     }
 
-    public static class Serializer implements RecipeSerializer<OvenRecipe>
-    {
-        public Serializer() {
+    public static class Serializer implements RecipeSerializer<OvenRecipe> {
+
+        /** 1.21 起配方的 JSON 与网络编解码统一走 Codec，原 fromJson/toNetwork 的手写路径已不存在 */
+        public static final MapCodec<OvenRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.group),
+                CookingPotRecipeBookTab.CODEC.optionalFieldOf("recipe_book_tab").forGetter(r -> Optional.ofNullable(r.tab)),
+                Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").forGetter(r -> r.inputItems),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.output),
+                Codec.FLOAT.optionalFieldOf("experience", 0.0F).forGetter(r -> r.experience),
+                Codec.INT.optionalFieldOf("cookingtime", 200).forGetter(r -> r.cookTime)
+        ).apply(inst, (group, tab, ingredients, result, exp, time) -> new OvenRecipe(
+                group, tab.orElse(null), NonNullList.copyOf(ingredients), result, exp, time)));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, OvenRecipe> STREAM_CODEC =
+                StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
+
+        @Override
+        public MapCodec<OvenRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public OvenRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            final String groupIn = GsonHelper.getAsString(json, "group", "");
-            final NonNullList<Ingredient> inputItemsIn = readIngredients(GsonHelper.getAsJsonArray(json, "ingredients"));
-            if (inputItemsIn.isEmpty()) {
-                throw new JsonParseException("No ingredients for cooking recipe");
-            } else if (inputItemsIn.size() > OvenRecipe.INPUT_SLOTS) {
-                throw new JsonParseException("Too many ingredients for cooking recipe! The max is " + OvenRecipe.INPUT_SLOTS);
-            } else {
-                final String tabKeyIn = GsonHelper.getAsString(json, "recipe_book_tab", null);
-                final CookingPotRecipeBookTab tabIn = CookingPotRecipeBookTab.findByName(tabKeyIn);
-                final ItemStack outputIn = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(json, "result"), true);
-                final float experienceIn = GsonHelper.getAsFloat(json, "experience", 0.0F);
-                final int cookTimeIn = GsonHelper.getAsInt(json, "cookingtime", 200);
-                return new OvenRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, experienceIn, cookTimeIn);
-            }
+        public StreamCodec<RegistryFriendlyByteBuf, OvenRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
 
-        private static NonNullList<Ingredient> readIngredients(JsonArray ingredientArray) {
-            NonNullList<Ingredient> nonnulllist = NonNullList.create();
-
-            for (int i = 0; i < ingredientArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(ingredientArray.get(i));
-                if (!ingredient.isEmpty()) {
-                    nonnulllist.add(ingredient);
-                }
+        private static OvenRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+            String group = buffer.readUtf();
+            CookingPotRecipeBookTab tab = CookingPotRecipeBookTab.findByName(buffer.readUtf());
+            int size = buffer.readVarInt();
+            NonNullList<Ingredient> ingredients = NonNullList.withSize(size, Ingredient.EMPTY);
+            for (int i = 0; i < size; i++) {
+                ingredients.set(i, Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
             }
-
-            return nonnulllist;
+            ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+            float exp = buffer.readFloat();
+            int time = buffer.readVarInt();
+            return new OvenRecipe(group, tab, ingredients, result, exp, time);
         }
 
-        @Nullable
-        @Override
-        public OvenRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            String groupIn = buffer.readUtf();
-            CookingPotRecipeBookTab tabIn = CookingPotRecipeBookTab.findByName(buffer.readUtf());
-            int i = buffer.readVarInt();
-            NonNullList<Ingredient> inputItemsIn = NonNullList.withSize(i, Ingredient.EMPTY);
-
-            for (int j = 0; j < inputItemsIn.size(); ++j) {
-                inputItemsIn.set(j, Ingredient.fromNetwork(buffer));
-            }
-
-            ItemStack outputIn = buffer.readItem();
-            float experienceIn = buffer.readFloat();
-            int cookTimeIn = buffer.readVarInt();
-            return new OvenRecipe(recipeId, groupIn,tabIn, inputItemsIn, outputIn, experienceIn, cookTimeIn);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, OvenRecipe recipe) {
+        private static void toNetwork(RegistryFriendlyByteBuf buffer, OvenRecipe recipe) {
             buffer.writeUtf(recipe.group);
             buffer.writeUtf(recipe.tab != null ? recipe.tab.toString() : "");
             buffer.writeVarInt(recipe.inputItems.size());
-
             for (Ingredient ingredient : recipe.inputItems) {
-                ingredient.toNetwork(buffer);
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
             }
-
-            buffer.writeItem(recipe.output);
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.output);
             buffer.writeFloat(recipe.experience);
             buffer.writeVarInt(recipe.cookTime);
         }
